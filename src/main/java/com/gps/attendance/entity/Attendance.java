@@ -23,11 +23,11 @@ public class Attendance {
 
     private LocalDateTime time;
 
-    private String city;
+    // private String city;
 
-    private String state;
+    // private String state;
 
-    private String address;
+    // private String address;
 
     public Long getId() {
         return id;
