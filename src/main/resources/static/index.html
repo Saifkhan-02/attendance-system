@@ -81,7 +81,7 @@ fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${
 
     let fullAddress = locationData.display_name;
 
-    fetch("http://localhost:8080/mark-attendance", {
+    fetch("/mark-attendance", {
 
         method:"POST",
 
