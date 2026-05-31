@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logout Successfully</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#f4f6f9;
+}
+
+.logout-box{
+    background:#fff;
+    width:450px;
+    padding:40px;
+    text-align:center;
+    border-radius:15px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.15);
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+    color:#007bff;
+    margin-bottom:15px;
+}
+
+.success-icon{
+    font-size:60px;
+    color:green;
+    margin-bottom:15px;
+}
+
+h2{
+    color:#333;
+    margin-bottom:10px;
+}
+
+p{
+    color:#666;
+    margin-bottom:15px;
+}
+
+#countdown{
+    color:red;
+    font-size:24px;
+    font-weight:bold;
+}
+
+.login-btn{
+    margin-top:20px;
+    padding:12px 25px;
+    background:#007bff;
+    color:white;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+.login-btn:hover{
+    background:#0056b3;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="logout-box">
+
+    <div class="logo">PharmaWEB</div>
+
+    <div class="success-icon">✓</div>
+
+    <h2>Logged Out Successfully</h2>
+
+    <p>You have been securely logged out from Admin Panel.</p>
+
+    <p>
+        Redirecting to Login Page in
+        <span id="countdown">5</span>
+        seconds...
+    </p>
+
+    <a href="/admin/login">
+        <button class="login-btn">
+            Login Again
+        </button>
+    </a>
+
+</div>
+
+<script>
+
+let timeLeft = 5;
+
+let timer = setInterval(function(){
+
+    document.getElementById("countdown").innerText = timeLeft;
+
+    timeLeft--;
+
+    if(timeLeft < 0){
+
+        clearInterval(timer);
+
+        window.location.href="/admin/login";
+    }
+
+},1000);
+
+</script>
+
+</body>
+</html>
