@@ -288,6 +288,12 @@
         <div class="row justify-content-center">
           <div class="col-11 col-sm-10 col-md-8 col-lg-6 col-xl-4">
             <div class="login-card">
+              <div class="">
+                  <select id="role">
+                    <option value="employee">Employee</option>
+                    <option value="admin">Admin</option>
+                  </select>
+              </div>
               <div class="inputbox">
                 <input type="text" id="username" name="user" required />
                 <span>Username/Employee ID</span>
@@ -302,7 +308,7 @@
               
               
                 <div class="w-100">
-                  <button type="button" class="button" onclick="loginEmployee()">
+                  <button type="button" class="button" onclick="login()">
                     Login
                   </button>
                 
@@ -317,6 +323,22 @@
       </div>
     </form>
     <script>
+
+    function login() {
+
+    let role = document.getElementById("role").value;
+
+      if(role === "employee") {
+
+          loginEmployee();
+
+      } else {
+
+          loginAdmin();
+
+      }
+    }
+
       function loginEmployee() {
         fetch("/login", {
           method: "POST",
@@ -351,6 +373,66 @@
             alert(error.message);
           });
       }
+
+    function loginAdmin(){
+
+    fetch("/admin/login",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+            username:
+            document.getElementById("username").value,
+
+            password:
+            document.getElementById("password").value
+
+        })
+
+    })
+
+    .then(response=>{
+
+        if(!response.ok){
+
+            throw new Error(
+                "Invalid Admin Credentials"
+            );
+        }
+
+        return response.json();
+
+    })
+
+    .then(data=>{
+
+        localStorage.setItem(
+            "adminId",
+            data.id
+        );
+
+        localStorage.setItem(
+            "adminName",
+            data.name
+        );
+
+        window.location.href =
+            "admin-dashboard.html";
+
+    })
+
+    .catch(error=>{
+
+        alert(error.message);
+
+    });
+
+}
     </script>
   </body>
 </html>
