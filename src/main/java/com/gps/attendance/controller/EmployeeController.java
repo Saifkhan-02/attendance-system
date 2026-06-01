@@ -1,11 +1,14 @@
 package com.gps.attendance.controller;
 
-import com.gps.attendance.entity.Employee;
-import com.gps.attendance.repository.EmployeeRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.gps.attendance.entity.Employee;
+import com.gps.attendance.repository.EmployeeRepository;
 
 @RestController
 @CrossOrigin("*")
@@ -17,6 +20,12 @@ public class EmployeeController {
     @PostMapping("/register")
     public String registerEmployee(
             @RequestBody Employee employee) {
+                
+                
+    System.out.println("========== REGISTER API HIT ==========");
+    System.out.println(employee.getName());
+    System.out.println(employee.getUsername());
+
 
         repository.save(employee);
 
