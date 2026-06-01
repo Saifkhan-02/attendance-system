@@ -1,0 +1,495 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mark Attendance</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <style>
+      body {
+        background: #f4f6fb;
+        font-family:
+          Segoe UI,
+          sans-serif;
+      }
+
+      /* Same Dashboard Theme */
+
+      .top-header {
+        background: linear-gradient(135deg, #0d4f9c, #3f7fe0);
+        color: white;
+        padding: 25px;
+        border-radius: 0 0 30px 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .page-card {
+        border: none;
+        border-radius: 25px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      }
+
+      .icon-circle {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: #e7f0ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+      }
+
+      .icon-circle i {
+        color: #2463eb;
+        font-size: 28px;
+      }
+
+      .form-control {
+        border-radius: 12px;
+        min-height: 50px;
+      }
+
+      .btn-attendance {
+        background: #2463eb;
+        border: none;
+        border-radius: 12px;
+        height: 52px;
+        font-weight: 600;
+      }
+
+      .btn-attendance:hover {
+        background: #124dc9;
+      }
+
+      .location-box {
+        background: #f8fbff;
+        border: 1px solid #d9e7ff;
+        border-radius: 15px;
+        padding: 15px;
+      }
+
+      .selfie-preview {
+        width: 140px;
+        height: 140px;
+        border-radius: 15px;
+        object-fit: cover;
+        border: 2px dashed #2463eb;
+      }
+
+      @media (max-width: 768px) {
+        .top-header {
+          text-align: center;
+        }
+
+        .selfie-preview {
+          width: 100%;
+          height: 220px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Header -->
+
+    <div class="top-header">
+      <div class="container">
+        <h2 class="fw-bold mb-1">Mark Attendance</h2>
+
+        <p class="mb-0">GPS Attendance System</p>
+      </div>
+    </div>
+
+    <div class="container py-4">
+      <div class="card page-card">
+        <div class="card-body p-4">
+          <div class="text-center mb-4">
+            <div class="icon-circle">
+              <i class="fa-solid fa-location-dot"></i>
+            </div>
+
+            <h4 class="mt-3 fw-bold">Check-In Attendance</h4>
+          </div>
+
+          <div class="row g-4">
+            <!-- GPS -->
+
+            <div class="col-lg-6">
+              <div class="location-box">
+                <h6 class="fw-bold mb-3">Current Location</h6>
+
+                <div class="mb-3">
+                  <label class="form-label"> Latitude </label>
+
+                  <input
+                    type="text"
+                    id="latitude"
+                    class="form-control"
+                    readonly
+                  />
+                </div>
+
+                <div>
+                  <label class="form-label"> Longitude </label>
+
+                  <input
+                    type="text"
+                    id="longitude"
+                    class="form-control"
+                    readonly
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Current Location</label>
+                  <input
+                    type="text"
+                    id="locationName"
+                    class="form-control"
+                    readonly
+                    placeholder="Fetching location..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Selfie -->
+
+            <div class="col-lg-6">
+              <div class="text-center">
+                <img
+                  id="preview"
+                  src="images/default-user.png"
+                  class="selfie-preview mb-3"
+                />
+
+                <input
+                  type="file"
+                  class="form-control"
+                  accept="image/*"
+                  onchange="previewImage(event)"
+                />
+
+                 <button type="button"
+            class="btn btn-outline-danger"
+            onclick="removeImage()">
+        Remove Image
+    </button>
+              </div>
+            </div>
+
+            <!-- Remarks -->
+
+            <div class="col-12">
+              <label class="form-label"> Remarks </label>
+
+              <textarea
+                class="form-control"
+                rows="4"
+                placeholder="Enter remarks..."
+              ></textarea>
+            </div>
+
+            <!-- Button -->
+
+            <div class="col-12">
+              <button class="btn btn-attendance w-100">
+                <i class="fa-solid fa-check me-2"></i>
+
+                Mark Attendance
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+
+        function previewImage(event) {
+
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function () {
+
+        document.getElementById("preview").src =
+            reader.result;
+
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function removeImage() {
+
+    // file input clear
+    document.getElementById("imageInput").value = "";
+
+    // default image restore
+    document.getElementById("preview").src =
+        "images/default-user.png";
+}
+
+      function previewImage(event) {
+        const reader = new FileReader();
+
+        reader.onload = function () {
+          document.getElementById("preview").src = reader.result;
+        };
+
+        reader.readAsDataURL(event.target.files[0]);
+      }
+
+      window.onload = getLocation;
+
+      function getLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(showPosition, showError, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0,
+          });
+        } else {
+          alert("Geolocation is not supported.");
+        }
+      }
+
+     function showPosition(position) {
+
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
+    const accuracy = position.coords.accuracy;
+
+    console.log("Latitude:", lat);
+    console.log("Longitude:", lng);
+    console.log("Accuracy:", accuracy);
+
+    // GPS Accuracay Validation
+    if (accuracy > 100){
+        alert(`GPS signal weak (Accuracy: ${Math.round(accuracy)}m).\nPlease move to an open area and try again.`);
+        return; // Attendance will not be marked if accuracy is poor
+    }
+
+    document.getElementById("latitude").value = lat;
+    document.getElementById("longitude").value = lng;
+
+    fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+    )
+    .then(response => response.json())
+    .then(data => {
+
+        const address = data.address || {};
+
+        const place =
+            address.village ||
+            address.town ||
+            address.city ||
+            address.hamlet ||
+            address.suburb ||
+            "";
+
+        const district =
+            address.county ||
+            address.state_district ||
+            "";
+
+        const state =
+            address.state || "";
+
+        document.getElementById("locationName").value =
+            `${place}, ${district}, ${state}`;
+
+    })
+    .catch(error => {
+
+        console.error(error);
+
+        document.getElementById("locationName").value =
+            "Location not found";
+
+    });
+
+}
+
+      function showError(error) {
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            alert("Location permission denied");
+            break;
+
+          case error.POSITION_UNAVAILABLE:
+            alert("Location unavailable");
+            break;
+
+          case error.TIMEOUT:
+            alert("Location request timed out");
+            break;
+
+          default:
+            alert("Unknown error");
+        }
+      }
+    </script>
+  </body>
+</html>
+
+
+
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    <title>GPS Attendance System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body{
+            font-family: Arial;
+            background:#f5f5f5;
+            text-align:center;
+            padding:40px;
+        }
+
+        .box{
+            background:white;
+            padding:30px;
+            border-radius:10px;
+            max-width:400px;
+            margin:auto;
+            box-shadow:0 0 10px rgba(0,0,0,0.1);
+        }
+
+        button{
+            padding:15px 25px;
+            border:none;
+            background:#007bff;
+            color:white;
+            border-radius:8px;
+            font-size:18px;
+            cursor:pointer;
+        }
+
+        #result{
+            margin-top:20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h2>GPS Attendance System</h2>
+
+    <button onclick="markAttendance()">
+        Mark Attendance
+    </button>
+
+    <div id="result"></div>
+
+</div>
+
+<script>
+
+function markAttendance(){
+
+    let employeeName = prompt("Enter Employee Name");
+
+    if(navigator.geolocation){
+
+        navigator.geolocation.getCurrentPosition(
+
+            function(position){
+
+                let lat = position.coords.latitude;
+                let lng = position.coords.longitude;
+
+                
+fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+.then(response => response.json())
+.then(locationData => {
+
+    let city =
+        locationData.address.city ||
+        locationData.address.town ||
+        locationData.address.village ||
+        "Unknown";
+
+    let state = locationData.address.state || "";
+
+    let fullAddress = locationData.display_name;
+
+    fetch("/mark-attendance", {
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+            employeeName:employeeName,
+            latitude:lat,
+            longitude:lng,
+            city:city,
+            state:state,
+            address:fullAddress
+
+        })
+
+    })
+
+    .then(response => response.text())
+
+    .then(data => {
+
+        document.getElementById("result").innerHTML =
+        data +
+        "<br><br>Latitude: " + lat +
+        "<br>Longitude: " + lng +
+        "<br>City: " + city +
+        "<br>State: " + state +
+        "<br>Address: " + fullAddress;
+
+    });
+
+});
+
+            },
+
+            function(){
+                alert("Location access denied");
+            }
+
+        );
+
+    }else{
+        alert("Geolocation not supported");
+    }
+}
+</script>
+
+</body>
+</html>
+
+
+ -->
+
+
