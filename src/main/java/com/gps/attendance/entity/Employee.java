@@ -22,6 +22,18 @@ public class Employee {
 
     private String password;
 
+    private String mobile;
+
+    private String designation;
+
+    private String headQuarters;
+
+    private String reportingManager;
+
+    private String joiningDate;
+    
+    private String status;
+
     public Employee() {
     }
 
@@ -63,5 +75,53 @@ public class Employee {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
+
+    public String getHeadquarters() {
+        return headQuarters;
+    }
+
+    public void setHeadquarters(String headQuarters) {
+        this.headQuarters = headQuarters;
+    }
+
+    public String getReportingManager() {
+        return reportingManager;
+    }
+
+    public void setReportingManager(String reportingManager) {
+        this.reportingManager = reportingManager;
+    }
+
+    public String getJoiningDate() {
+        return joiningDate;
+    }
+
+    public void setJoiningDate(String joiningDate) {
+        this.joiningDate = joiningDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
