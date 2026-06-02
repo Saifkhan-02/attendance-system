@@ -77,6 +77,9 @@ body{
 </style>
 </head>
 
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <body>
 
 <div class="container py-4">
@@ -94,16 +97,17 @@ body{
 
             <div class="col-md-9 mt-3 mt-md-0">
 
-                <h2 class="fw-bold mb-2">
-                    Alex Johnson
+                <h2 class="fw-bold mb-2" id="employeeNameHeader">
+                    Loading...
                 </h2>
 
-                <p class="mb-1">
-                    Medical Representative
+                <p class="mb-1" id="employeeDesignation">
+                   Loading...
                 </p>
 
                 <p class="mb-0">
-                    Employee ID : EMP001
+                    Employee ID : 
+                    <span id="employeeId"></span>
                 </p>
 
             </div>
@@ -134,15 +138,15 @@ body{
                 <div class="col-md-6">
                     <div class="info-box">
                         <div class="info-label">Full Name</div>
-                        <div class="info-value">Alex Johnson</div>
+                        <div class="info-value" id="employeeName"></div>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="info-box">
                         <div class="info-label">Email</div>
-                        <div class="info-value">
-                            alex@email.com
+                        <div class="info-value" id="employeeEmail">
+                            Loading...
                         </div>
                     </div>
                 </div>
@@ -150,8 +154,8 @@ body{
                 <div class="col-md-6">
                     <div class="info-box">
                         <div class="info-label">Mobile Number</div>
-                        <div class="info-value">
-                            +91 9876543210
+                        <div class="info-value" id="employeeMobile">
+                            Loading...
                         </div>
                     </div>
                 </div>
@@ -159,8 +163,8 @@ body{
                 <div class="col-md-6">
                     <div class="info-box">
                         <div class="info-label">Designation</div>
-                        <div class="info-value">
-                            Medical Representative
+                        <div class="info-value" id="employeeDesignation">
+                            Loading...
                         </div>
                     </div>
                 </div>
@@ -168,8 +172,8 @@ body{
                 <div class="col-md-6">
                     <div class="info-box">
                         <div class="info-label">Head Quarter</div>
-                        <div class="info-value">
-                            Lucknow
+                        <div class="info-value" id="employeeHeadQuarter">
+                            Loading...
                         </div>
                     </div>
                 </div>
@@ -177,8 +181,8 @@ body{
                 <div class="col-md-6">
                     <div class="info-box">
                         <div class="info-label">Reporting Manager</div>
-                        <div class="info-value">
-                            Rahul Sharma
+                        <div class="info-value" id="reportingManager">
+                            Loading...
                         </div>
                     </div>
                 </div>
@@ -186,8 +190,8 @@ body{
                 <div class="col-md-6">
                     <div class="info-box">
                         <div class="info-label">Joining Date</div>
-                        <div class="info-value">
-                            10 Jan 2024
+                        <div class="info-value" id="employeeJoiningDate">
+                            Loading...
                         </div>
                     </div>
                 </div>
@@ -195,7 +199,7 @@ body{
                 <div class="col-md-6">
                     <div class="info-box">
                         <div class="info-label">Status</div>
-                        <div class="info-value text-success">
+                        <div class="info-value text-success" id="employeeStatus">
                             Active
                         </div>
                     </div>
@@ -209,7 +213,75 @@ body{
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+
+   window.onload = loadProfile;
+
+function loadProfile() {
+
+    const employeeId =
+        localStorage.getItem("employeeId");
+
+    if (!employeeId) {
+        alert("Please log in first.");
+        window.location.href = "index.html";
+        return;
+    }
+
+    fetch(`/employee/${employeeId}`)
+
+    .then(response => {
+
+        if (!response.ok) {
+            throw new Error("Employee not found");
+        }
+
+        return response.json();
+    })
+
+    .then(employee => {
+
+        //Header Info
+       
+        document.getElementById("employeeNameHeader")
+                .innerText = employee.name;
+
+         document.getElementById("employeeName")
+                .innerText = employee.name;
+
+        document.getElementById("employeeId")
+                .innerText = employee.id;
+
+        document.getElementById("employeeEmail")
+                .innerText = employee.email;
+
+        document.getElementById("employeeMobile")
+                .innerText = employee.mobile;
+
+        document.getElementById("employeeDesignation")
+                .innerText = employee.designation;
+
+        document.getElementById("employeeHeadQuarter")
+                .innerText = employee.headQuarter;
+
+        document.getElementById("reportingManager")
+                .innerText = employee.reportingManager;
+
+        document.getElementById("employeeJoiningDate")
+                .innerText = employee.joiningDate;
+
+        document.getElementById("employeeStatus")
+                .innerText = employee.status;
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert("Unable to load profile");
+    });
+}
+</script>
 
 </body>
 </html>
