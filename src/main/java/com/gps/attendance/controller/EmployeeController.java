@@ -1,5 +1,7 @@
 package com.gps.attendance.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -72,4 +74,8 @@ public ResponseEntity<?> getEmployeeById(
     return ResponseEntity.ok(employee);
 }
 
+    @GetMapping("/get-employees")
+    public List<Employee> getEmployees() {
+          return repository.findAll();
+          }
 }
