@@ -1,6 +1,7 @@
 package com.gps.attendance.controller;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,9 +22,12 @@ public class AttendanceController {
     
 
     @PostMapping("/mark-attendance")
-    public String markAttendance(@RequestBody Attendance attendance){
+    public String markAttendance(
+        @RequestBody Attendance attendance){
 
-       attendance.setTime(LocalDateTime.now());
+       attendance.setAttendanceDate(LocalDate.now());
+
+       attendance.setAttendanceTime(LocalTime.now());
         
         repository.save(attendance);
 

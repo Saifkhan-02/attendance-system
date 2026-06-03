@@ -1,6 +1,7 @@
 package com.gps.attendance.entity;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,22 +16,31 @@ public class Attendance {
     
     private Long id;
 
+   private Long employeeId;
+
     private String employeeName;
 
-    private double latitude;
+    private LocalDate attendanceDate;
 
-    private double longitude;
+    private LocalTime attendanceTime;
 
-    private LocalDateTime time;
+    private Double latitude;
 
-    // private String city;
+    private Double longitude;
 
-    // private String state;
+    private String location;
 
-    // private String address;
+    private String status;
 
     public Long getId() {
         return id;
+    }
+
+    public Long getEmployeeId() {
+        return employeeId;
+    }
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
     }
 
     public void setId(Long id) {
@@ -45,7 +55,7 @@ public class Attendance {
         this.employeeName = employeeName;
     }
 
-    public double getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
@@ -53,7 +63,7 @@ public class Attendance {
         this.latitude = latitude;
     }
 
-    public double getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
@@ -61,11 +71,35 @@ public class Attendance {
         this.longitude = longitude;
     }
 
-    public LocalDateTime getTime() {
-        return time;
+    public LocalTime getAttendanceTime() {
+        return attendanceTime;
     }
 
-    public void setTime(LocalDateTime time) {
-        this.time = time;
+    public void setAttendanceTime(LocalTime attendanceTime) {
+        this.attendanceTime = attendanceTime;
+    }
+
+    public LocalDate getAttendanceDate() {
+        return attendanceDate;
+    }
+
+    public void setAttendanceDate(LocalDate attendanceDate) {
+        this.attendanceDate = attendanceDate;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String Location) {
+        this.location = Location;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
