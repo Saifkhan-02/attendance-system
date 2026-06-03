@@ -30,6 +30,10 @@ public class Attendance {
 
     private String location;
 
+    private String remarks;
+
+    private String imagePath;
+
     private String status;
 
     public Long getId() {
@@ -101,5 +105,19 @@ public class Attendance {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }

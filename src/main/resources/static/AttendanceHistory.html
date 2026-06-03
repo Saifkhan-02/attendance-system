@@ -254,18 +254,18 @@ body{
                         <tr>
 
                             <th>Date</th>
-                            <th>Check In</th>
-                            <th>Check Out</th>
-                            <th>Location</th>
+                            <th>Time</th>
+                            <th>Location</th>                           
                             <th>Latitude</th>
                             <th>Longitude</th>
+                            <th>Remarks</th>
                             <th>Status</th>
 
                         </tr>
 
                     </thead>
 
-                    <tbody id="attendanceTableBody">
+                    <tbody id="historyTable">
 
                         <tr>
 
@@ -332,5 +332,60 @@ body{
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<script>
+
+window.onload = loadAttendanceHistory;
+
+function loadAttendanceHistory(){
+
+    const employeeId =localStorage.getItem("employeeId");
+
+    fetch(`/attendance/history/${employeeId}`)
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        const table = document.getElementById("historyTable");
+
+       table.innerHTML += `
+<tr>
+
+    <td>${attendance.attendanceDate || "-"}</td>
+
+    <td>${attendance.attendanceTime || "-"}</td>
+
+    <td>${attendance.location || "-"}</td>
+
+    <td>${attendance.latitude || "-"}</td>
+
+    <td>${attendance.longitude || "-"}</td>
+
+    <td>${attendance.remarks || "-"}</td>
+
+    <td>
+        <span class="badge ${
+            attendance.status === "Present"
+                ? "bg-success"
+                : "bg-danger"
+        }">
+            ${attendance.status}
+        </span>
+    </td>
+
+</tr>
+`;
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+    });
+
+}
+
+</script>
 </body>
 </html>
