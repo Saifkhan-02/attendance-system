@@ -1,391 +1,340 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Attendance History</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance History</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
 
-<style>
+    <style>
+      body {
+        background: #f4f7fc;
+      }
 
-body{
-    background:#f4f7fc;
-}
+      .page-header {
+        background: linear-gradient(135deg, #0d4f9c, #3f7fe0);
+        color: white;
+        padding: 25px;
+        border-radius: 18px;
+        margin-bottom: 25px;
+      }
 
-.page-header{
-    background:linear-gradient(135deg,#0d4f9c,#3f7fe0);
-    color:white;
-    padding:25px;
-    border-radius:18px;
-    margin-bottom:25px;
-}
+      .summary-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        transition: 0.3s;
+      }
 
-.summary-card{
-    border:none;
-    border-radius:16px;
-    box-shadow:0 8px 25px rgba(0,0,0,.08);
-    transition:.3s;
-}
+      .summary-card:hover {
+        transform: translateY(-3px);
+      }
 
-.summary-card:hover{
-    transform:translateY(-3px);
-}
+      .filter-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      }
 
-.filter-card{
-    border:none;
-    border-radius:16px;
-    box-shadow:0 8px 25px rgba(0,0,0,.08);
-}
+      .table-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      }
 
-.table-card{
-    border:none;
-    border-radius:16px;
-    box-shadow:0 8px 25px rgba(0,0,0,.08);
-}
+      .table thead {
+        background: #0d4f9c;
+        color: white;
+      }
 
-.table thead{
-    background:#0d4f9c;
-    color:white;
-}
+      .badge-present {
+        background: #198754;
+      }
 
-.badge-present{
-    background:#198754;
-}
+      .badge-late {
+        background: #ffc107;
+        color: black;
+      }
 
-.badge-late{
-    background:#ffc107;
-    color:black;
-}
+      .badge-absent {
+        background: #dc3545;
+      }
 
-.badge-absent{
-    background:#dc3545;
-}
+      @media (max-width: 768px) {
+        .page-header {
+          text-align: center;
+        }
 
-@media(max-width:768px){
+        .table {
+          min-width: 900px;
+        }
+      }
+    </style>
+  </head>
 
-    .page-header{
-        text-align:center;
-    }
+  <body>
+    <div class="container py-4">
+      <!-- Header -->
 
-    .table{
-        min-width:900px;
-    }
-}
+      <div class="page-header">
+        <h2 class="fw-bold mb-2">Attendance History</h2>
 
-</style>
-</head>
+        <p class="mb-0">View your attendance records and visit history</p>
+      </div>
 
-<body>
+      <!-- Summary Cards -->
 
-<div class="container py-4">
-
-    <!-- Header -->
-
-    <div class="page-header">
-
-        <h2 class="fw-bold mb-2">
-            Attendance History
-        </h2>
-
-        <p class="mb-0">
-            View your attendance records and visit history
-        </p>
-
-    </div>
-
-    <!-- Summary Cards -->
-
-    <div class="row g-4 mb-4">
-
+      <div class="row g-4 mb-4">
         <div class="col-md-3 col-6">
+          <div class="card summary-card">
+            <div class="card-body text-center">
+              <i class="fa-solid fa-calendar-check fa-2x text-primary mb-2"></i>
 
-            <div class="card summary-card">
-                <div class="card-body text-center">
+              <h5>Total Attendance</h5>
 
-                    <i class="fa-solid fa-calendar-check fa-2x text-primary mb-2"></i>
-
-                    <h5>Total Attendance</h5>
-
-                    <h3 class="fw-bold">
-                        26
-                    </h3>
-
-                </div>
+              <h3 class="fw-bold" id="totalAttendance">0</h3>
             </div>
-
+          </div>
         </div>
 
         <div class="col-md-3 col-6">
+          <div class="card summary-card">
+            <div class="card-body text-center">
+              <i class="fa-solid fa-circle-check fa-2x text-success mb-2"></i>
 
-            <div class="card summary-card">
-                <div class="card-body text-center">
+              <h5>Present</h5>
 
-                    <i class="fa-solid fa-circle-check fa-2x text-success mb-2"></i>
-
-                    <h5>Present</h5>
-
-                    <h3 class="fw-bold">
-                        24
-                    </h3>
-
-                </div>
+              <h3 class="fw-bold" id="presentCount">0</h3>
             </div>
-
+          </div>
         </div>
 
         <div class="col-md-3 col-6">
+          <div class="card summary-card">
+            <div class="card-body text-center">
+              <i class="fa-solid fa-clock fa-2x text-warning mb-2"></i>
 
-            <div class="card summary-card">
-                <div class="card-body text-center">
+              <h5>Late</h5>
 
-                    <i class="fa-solid fa-clock fa-2x text-warning mb-2"></i>
-
-                    <h5>Late</h5>
-
-                    <h3 class="fw-bold">
-                        1
-                    </h3>
-
-                </div>
+              <h3 class="fw-bold" id="lateCount">0</h3>
             </div>
-
+          </div>
         </div>
 
         <div class="col-md-3 col-6">
+          <div class="card summary-card">
+            <div class="card-body text-center">
+              <i class="fa-solid fa-circle-xmark fa-2x text-danger mb-2"></i>
 
-            <div class="card summary-card">
-                <div class="card-body text-center">
+              <h5>Absent</h5>
 
-                    <i class="fa-solid fa-circle-xmark fa-2x text-danger mb-2"></i>
-
-                    <h5>Absent</h5>
-
-                    <h3 class="fw-bold">
-                        1
-                    </h3>
-
-                </div>
+              <h3 class="fw-bold" id="absentCount">0</h3>
             </div>
-
+          </div>
         </div>
+      </div>
 
-    </div>
+      <!-- Filter Section -->
 
-    <!-- Filter Section -->
-
-    <div class="card filter-card mb-4">
-
+      <div class="card filter-card mb-4">
         <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label"> From Date </label>
 
-            <div class="row g-3">
-
-                <div class="col-md-4">
-
-                    <label class="form-label">
-                        From Date
-                    </label>
-
-                    <input type="date"
-                           class="form-control">
-
-                </div>
-
-                <div class="col-md-4">
-
-                    <label class="form-label">
-                        To Date
-                    </label>
-
-                    <input type="date"
-                           class="form-control">
-
-                </div>
-
-                <div class="col-md-4 d-flex align-items-end">
-
-                    <button class="btn btn-primary w-100">
-
-                        <i class="fa-solid fa-filter me-2"></i>
-
-                        Filter
-
-                    </button>
-
-                </div>
-
+              <input type="date" class="form-control" />
             </div>
 
+            <div class="col-md-4">
+              <label class="form-label"> To Date </label>
+
+              <input type="date" class="form-control" />
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+              <button class="btn btn-primary w-100">
+                <i class="fa-solid fa-filter me-2"></i>
+
+                Filter
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
 
-    </div>
+      <!-- Attendance Table -->
 
-    <!-- Attendance Table -->
-
-    <div class="card table-card">
-
+      <div class="card table-card">
         <div class="card-body">
+          <div
+            class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"
+          >
+            <h4 class="fw-bold mb-0">Attendance Records</h4>
 
-            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <button class="btn btn-success">
+              <i class="fa-solid fa-download me-2"></i>
 
-                <h4 class="fw-bold mb-0">
-                    Attendance Records
-                </h4>
+              Export
+            </button>
+          </div>
 
-                <button class="btn btn-success">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Location</th>
+                  <th>Latitude</th>
+                  <th>Longitude</th>
+                  <th>Remarks</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
 
-                    <i class="fa-solid fa-download me-2"></i>
+              <tbody id="historyTable">
+                <tr>
+                  <td>15-07-2025</td>
+                  <td>09:05 AM</td>
+                  <td>06:10 PM</td>
+                  <td>Lucknow, UP</td>
+                  <td>26.8467</td>
+                  <td>80.9462</td>
 
-                    Export
+                  <td>
+                    <span class="badge badge-present"> Present </span>
+                  </td>
+                </tr>
 
-                </button>
+                <tr>
+                  <td>14-07-2025</td>
+                  <td>09:35 AM</td>
+                  <td>06:00 PM</td>
+                  <td>Sitapur, UP</td>
+                  <td>27.5619</td>
+                  <td>80.6826</td>
 
-            </div>
+                  <td>
+                    <span class="badge badge-late"> Late </span>
+                  </td>
+                </tr>
 
-            <div class="table-responsive">
+                <tr>
+                  <td>13-07-2025</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td>-</td>
 
-                <table class="table table-hover align-middle">
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Location</th>                           
-                            <th>Latitude</th>
-                            <th>Longitude</th>
-                            <th>Remarks</th>
-                            <th>Status</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody id="historyTable">
-
-                        <tr>
-
-                            <td>15-07-2025</td>
-                            <td>09:05 AM</td>
-                            <td>06:10 PM</td>
-                            <td>Lucknow, UP</td>
-                            <td>26.8467</td>
-                            <td>80.9462</td>
-
-                            <td>
-                                <span class="badge badge-present">
-                                    Present
-                                </span>
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <td>14-07-2025</td>
-                            <td>09:35 AM</td>
-                            <td>06:00 PM</td>
-                            <td>Sitapur, UP</td>
-                            <td>27.5619</td>
-                            <td>80.6826</td>
-
-                            <td>
-                                <span class="badge badge-late">
-                                    Late
-                                </span>
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <td>13-07-2025</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-
-                            <td>
-                                <span class="badge badge-absent">
-                                    Absent
-                                </span>
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
+                  <td>
+                    <span class="badge badge-absent"> Absent </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-
+      </div>
     </div>
 
-</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
 
-<script>
+      window.onload = loadAttendanceHistory;
 
-window.onload = loadAttendanceHistory;
+      function loadAttendanceHistory(){
 
-function loadAttendanceHistory(){
+          const employeeId =localStorage.getItem("employeeId");
 
-    const employeeId =localStorage.getItem("employeeId");
+          fetch(`/attendance/history/${employeeId}`)
 
-    fetch(`/attendance/history/${employeeId}`)
+          .then(response => response.json())
 
-    .then(response => response.json())
+          .then(data => {
 
-    .then(data => {
+              const table = document.getElementById("historyTable");
 
-        const table = document.getElementById("historyTable");
+              table.innerHTML = ""; // Clear existing rows
+              let total = 0, present = 0, late = 0, absent = 0;
 
-       table.innerHTML += `
-<tr>
+              data.forEach(attendance => {
 
-    <td>${attendance.attendanceDate || "-"}</td>
+                  total++;
 
-    <td>${attendance.attendanceTime || "-"}</td>
+                  if(attendance.status === "Present"){
+                      present++;
+                  } else if(attendance.status === "Late"){
+                      late++;
+                  } else if(attendance.status === "Absent"){
+                      absent++;
+                  }
 
-    <td>${attendance.location || "-"}</td>
 
-    <td>${attendance.latitude || "-"}</td>
+              table.innerHTML += `
+              <tr>
+                  <td>${attendance.attendanceDate}</td>
+                  <td>${attendance.attendanceTime}</td>
+                  <td>${attendance.location}</td>
+                  <td>${attendance.latitude}</td>
+                  <td>${attendance.longitude}</td>
 
-    <td>${attendance.longitude || "-"}</td>
+                  <td>
+                      <span class= "badge bg-success">
+                          ${attendance.status}
+                      </span>
+                  </td>
+              </tr>
+              `;
+              });
 
-    <td>${attendance.remarks || "-"}</td>
+          document.getElementById("totalAttendance").innerText = total;
+          document.getElementById("presentCount").innerText = present;
+          document.getElementById("lateCount").innerText = late;
+          document.getElementById("absentCount").innerText = absent;
+      })
 
-    <td>
-        <span class="badge ${
-            attendance.status === "Present"
-                ? "bg-success"
-                : "bg-danger"
-        }">
-            ${attendance.status}
-        </span>
-    </td>
+             table.innerHTML += `
+      <tr>
 
-</tr>
-`;
+          <td>${attendance.attendanceDate || "-"}</td>
 
-    })
+          <td>${attendance.attendanceTime || "-"}</td>
 
-    .catch(error => {
+          <td>${attendance.location || "-"}</td>
 
-        console.error(error);
+          <td>${attendance.latitude || "-"}</td>
 
-    });
+          <td>${attendance.longitude || "-"}</td>
 
-}
+          <td>${attendance.remarks || "-"}</td>
 
-</script>
-</body>
+          <td>
+              <span class="badge ${
+                  attendance.status === "Present"
+                      ? "bg-success"
+                      : "bg-danger"
+              }">
+                  ${attendance.status}
+              </span>
+          </td>
+
+      </tr>
+      `;
+
+         
+
+      }
+    </script>
+  </body>
 </html>

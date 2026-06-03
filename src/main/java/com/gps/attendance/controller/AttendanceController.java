@@ -42,5 +42,9 @@ public class AttendanceController {
         @PathVariable Long employeeId){
 
     return repository.findByEmployeeId(employeeId);
-}
+    }
+
+
+    
+
 }
