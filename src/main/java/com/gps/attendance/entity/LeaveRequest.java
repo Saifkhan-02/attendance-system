@@ -19,6 +19,8 @@ public class LeaveRequest {
 
     private Long employeeId;
 
+    private String employeeName;
+
     private String leaveType;
 
     private LocalDate fromDate;
@@ -48,6 +50,14 @@ public class LeaveRequest {
 
     public void setEmployeeId(Long employeeId) {
         this.employeeId = employeeId;
+    }
+
+    public String getEmployeeName() {
+        return employeeName;
+    }
+
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
     }
 
     public String getLeaveType() {
