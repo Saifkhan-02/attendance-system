@@ -25,7 +25,7 @@
       /* Navbar */
 
       .top-navbar {
-        min-height: 80px;
+        height: 90px;
         background: #fff;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         position: fixed;
@@ -34,12 +34,17 @@
         right: 0;
         z-index: 1050;
       }
+      .navbar-logo {
+        width: 90px;
+        height: 85px;
+        object-fit: contain;
+      }
 
       /* Sidebar */
 
       .sidebar {
         position: fixed;
-        top: 70px;
+        top: 90px;
         left: 0;
         width: 250px;
         height: 100vh;
@@ -73,7 +78,7 @@
       .main-content {
         position: relative;
         margin-left: 250px;
-        margin-top: 80px;
+        margin-top: 100px;
         padding: 20px;
         transition: 0.3s;
         z-index: 1;
@@ -104,6 +109,68 @@
         margin-bottom: 20px;
       }
 
+      .profile-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+      }
+
+      .profile-card {
+        background: #fff;
+        width: 420px;
+        max-width: 90%;
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+
+      }
+      .profile-card h3, .profile-card h5, .online-status h6{
+        text-align: center;
+      }
+
+      .profile-card p{
+        text-align: left;
+        padding-left: 20px ;
+      }
+
+      .profile-pic {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 3px solid #0d6efd;
+        margin-bottom: 15px;
+      }
+
+      .online-status {
+        color: green;
+        font-weight: 600;
+      }
+
+      .close-btn {
+        float: right;
+        font-size: 28px;
+        cursor: pointer;
+      }
+
+      .profile-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
       /* Mobile */
 
       @media (max-width: 768px) {
@@ -122,14 +189,18 @@
         .admin-info {
           display: none !important;
         }
-        .dashboard-card{
+        .dashboard-card {
           height: 100%;
         }
-        .dashboard-card .card-body{
+        .dashboard-card .card-body {
           min-height: 180px;
           display: flex;
           flex-direction: column;
           justify-content: center;
+        }
+        .navbar-logo {
+          width: 80px;
+          height: 75px;
         }
       }
     </style>
@@ -144,7 +215,11 @@
           <i class="fas fa-bars"></i>
         </button>
 
-        <h5 class="mb-0 text-primary fw-bold">Attendance System</h5>
+        <img
+          src="images/Inflix-logo-web.png"
+          alt="Logo"
+          class="navbar-logo me-2"
+        />
       </div>
 
       <div class="d-flex align-items-center ms-auto">
@@ -157,10 +232,12 @@
         </div>
 
         <img
+          id="profileBtn"
           src="/images/admin.jpg"
           width="40"
           height="40"
           class="rounded-circle border border-primary"
+          style="cursor: pointer"
         />
       </div>
     </nav>
@@ -176,7 +253,7 @@
           </a>
         </li>
 
-          <li class="nav-item">
+        <li class="nav-item">
           <a href="admin-employeeTracking.html" class="nav-link">
             <i class="fas fa-location-dot me-2"></i>
             Employee Tracking
@@ -197,7 +274,7 @@
           </a>
         </li>
 
-          <li class="nav-item">
+        <li class="nav-item">
           <a href="#" class="nav-link">
             <i class="fas fa-box me-2"></i>
             Orders
@@ -445,6 +522,63 @@
             document.getElementById("totalDoctors").innerText = doctors.length;
           });
       };
+    </script>
+
+    <!-- Profile Popup -->
+    <div id="profileModal" class="profile-modal">
+      <div class="profile-card">
+        <span id="closeModal" class="close-btn">&times;</span>
+
+        <img src="/images/admin.jpg" class="profile-pic" />
+
+        <h3>Raqib Khan</h3>
+
+        <h6 class="online-status">🟢 Online</h6>
+
+        <h5 class="text-primary">Owner & Administrator</h5>
+
+        <hr />
+
+        <p>
+          <strong>Email:</strong>
+          admin@inflixpharma.com
+        </p>
+
+        <p>
+          <strong>Mobile:</strong>
+          +91 XXXXX XXXXX
+        </p>
+
+        <hr />
+
+        <div class="profile-actions">
+          <button class="btn btn-primary">Edit Profile</button>
+
+          <button class="btn btn-warning">Change Password</button>
+
+          <a href="index.html" class="btn btn-danger"> Logout </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const profileBtn = document.getElementById("profileBtn");
+      const profileModal = document.getElementById("profileModal");
+      const closeModal = document.getElementById("closeModal");
+
+      profileBtn.addEventListener("click", function () {
+        profileModal.style.display = "block";
+      });
+
+      closeModal.addEventListener("click", function () {
+        profileModal.style.display = "none";
+      });
+
+      window.addEventListener("click", function (event) {
+        if (event.target === profileModal) {
+          profileModal.style.display = "none";
+        }
+      });
     </script>
   </body>
 </html>

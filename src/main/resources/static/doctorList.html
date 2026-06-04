@@ -34,11 +34,16 @@
         right: 0;
         z-index: 1050;
       }
+       .navbar-logo{
+          width: 90px;
+          height: 85px;
+          object-fit: contain;
+        }
 
       /* Sidebar */
       .sidebar {
         position: fixed;
-        top: 70px;
+        top: 90px;
         left: 0;
         width: 250px;
         height: 100vh;
@@ -71,7 +76,7 @@
       /* Main */
       .main-content {
         margin-left: 250px;
-        margin-top: 80px;
+        margin-top: 100px;
         padding: 20px;
         transition: 0.3s;
       }
@@ -135,6 +140,10 @@
         font-size:10px;
         white-space:nowrap;
     }
+     .navbar-logo{
+          width: 80px;
+          height: 75px;
+        }
 
 }
 
@@ -158,9 +167,7 @@
 
         </button>
 
-        <h5 class="mb-0 text-primary fw-bold">
-            Attendance System
-        </h5>
+       <img src="images/Inflix-logo-web.png" alt="Logo" class="navbar-logo me-2">
 
     </div>
 
@@ -334,16 +341,6 @@
                 <option>Lucknow</option>
 
                 <option>Sitapur</option>
-              </select>
-            </div>
-
-            <div class="col-lg-3">
-              <select class="form-select">
-                <option>All Employees</option>
-
-                <option>Raqib Khan</option>
-
-                <option>Aman Verma</option>
               </select>
             </div>
           </div>
@@ -603,6 +600,29 @@ window.onload = function () {
 
 }
 
+</script>
+
+
+<script>
+document.getElementById("searchDoctor").addEventListener("keyup", function () {
+
+    let searchValue = this.value.toLowerCase();
+
+    let rows = document.querySelectorAll("#doctorTable tr");
+
+    rows.forEach((row) => {
+
+        let DoctorName = row.cells[2].innerText.toLowerCase();
+
+        if (DoctorName.includes(searchValue)) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+
+    });
+
+});
 </script>
 
   </body>
