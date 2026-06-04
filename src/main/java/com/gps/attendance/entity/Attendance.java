@@ -125,19 +125,4 @@ public class Attendance {
         this.imagePath = imagePath;
     }
 
-    public LocalDate getAttendanceDate() {
-        return attendanceDate;
-    }
-
-    public void setAttendanceDate(LocalDate attendanceDate) {
-        this.attendanceDate = attendanceDate;
-    }
-
-    public LocalTime getAttendanceTime() {
-        return attendanceTime;
-    }
-
-    public void setAttendanceTime(LocalTime attendanceTime) {
-        this.attendanceTime = attendanceTime;
-    }
 }
