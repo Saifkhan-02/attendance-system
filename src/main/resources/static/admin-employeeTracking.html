@@ -34,15 +34,20 @@
         z-index: 1050;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       }
+       .navbar-logo{
+        width: 90px;
+        height: 85px;
+        object-fit: contain;
+      }
 
       /* Sidebar */
 
       .sidebar {
         position: fixed;
-        top: 70px;
+        top: 90px;
         left: 0;
         width: 250px;
-        height: 100vh;
+        height: calc(100vh - 100px);
         background: #0f172a;
         overflow-y: auto;
         transition: 0.3s;
@@ -71,7 +76,7 @@
       /* Main Content */
 
       .main-content {
-        margin-top: 90px;
+        margin-top: 100px;
         margin-left: 250px;
         padding: 20px;
         transition: 0.3s;
@@ -98,23 +103,27 @@
       }
 
       @media (max-width: 768px) {
-        .admin-info{
-            display: none !important;
+        .admin-info {
+          display: none !important;
         }
-        .top-navbar{
-            height: 70px;
+        .top-navbar {
+          height: 90px;
         }
-        .sidebar{
-            top: 70;
+        .sidebar {
+          top: 90px;
         }
-        .main-content{
-            margin-left: 0;
+        .main-content {
+          margin-left: 0;
         }
-        .sidebar{
-            margin-left: -250px;
+        .sidebar {
+          margin-left: -250px;
         }
-        .sidebar.show{
-            margin-left: 0;
+        .sidebar.show {
+          margin-left: 0;
+        }
+         .navbar-logo{
+          width: 80px;
+          height: 75px;
         }
       }
     </style>
@@ -129,7 +138,7 @@
           <i class="fas fa-bars"></i>
         </button>
 
-        <h5 class="mb-0 text-primary fw-bold">Attendance System</h5>
+        <img src="images/Inflix-logo-web.png" alt="Logo" class="navbar-logo me-2">
       </div>
 
       <div class="d-flex align-items-center ms-auto">
@@ -172,10 +181,10 @@
         Doctors
       </a>
 
-     <a href="#" class="nav-link">
-            <i class="fas fa-box me-2"></i>
-            Orders
-          </a>
+      <a href="#" class="nav-link">
+        <i class="fas fa-box me-2"></i>
+        Orders
+      </a>
 
       <a href="#" class="nav-link">
         <i class="fas fa-chart-line me-2"></i>
@@ -254,12 +263,11 @@
             <div class="col-md-3">
               <input
                 type="text"
+                id="searchEmployee"
                 class="form-control"
                 placeholder="Search Employee"
               />
             </div>
-
-            
           </div>
         </div>
       </div>
@@ -278,19 +286,13 @@
             >
               <thead class="table-primary">
                 <tr>
-                  <th>Photo</th>
-
                   <th>ID</th>
-
-                  <th>Name</th>
-
-                  <th>Username</th>
-
-                  <th>Email</th>
-
-                  <th>Status</th>
-
-                  <th>Action</th>
+                  <th>Employee Name</th>
+                  <th>Time</th>
+                  <th>Date</th>
+                  <th>Latitude</th>
+                  <th>Longitude</th>
+                  <th>Map</th>
                 </tr>
               </thead>
 
@@ -342,82 +344,47 @@
       window.onload = function () {
         fetch("/get-employees")
           .then((response) => response.json())
-
           .then((employees) => {
             document.getElementById("totalEmployees").innerText =
               employees.length;
+          });
 
+        fetch("/attendance-list")
+          .then((response) => response.json())
+
+          .then((attendances) => {
             document.getElementById("activeEmployees").innerText =
-              employees.length;
+              attendances.length;
 
             document.getElementById("doctorVisits").innerText =
-              employees.length;
+              attendances.length;
 
-            document.getElementById("todayVisits").innerText = employees.length;
+            document.getElementById("todayVisits").innerText =
+              attendances.length;
 
             let table = document.getElementById("employeeTrackingTable");
 
             table.innerHTML = "";
 
-            employees.forEach((employee) => {
+            attendances.forEach((attendance) => {
               table.innerHTML += `
-
-            <tr>
-
-                <td>
-
-                    <img
-                    src="https://via.placeholder.com/50"
-                    class="rounded-circle">
-
-                </td>
-
-                <td>${employee.id}</td>
-
-                <td>${employee.name}</td>
-
-                <td>${employee.username}</td>
-
-                <td>${employee.email}</td>
-
-                <td>
-
-                    <span class="badge bg-success">
-
-                        Active
-
-                    </span>
-
-                </td>
-
-                <td>
-
-                    <button
-                    class="btn btn-info btn-sm">
-
-                        <i class="fas fa-eye"></i>
-
-                    </button>
-
-                    <button
-                    class="btn btn-warning btn-sm">
-
-                        <i class="fas fa-edit"></i>
-
-                    </button>
-
-                    <button
-                    class="btn btn-danger btn-sm">
-
-                        <i class="fas fa-trash"></i>
-
-                    </button>
-
-                </td>
-
-            </tr>
-
-            `;
+<tr>
+    <td>${attendance.id}</td>
+    <td>${attendance.employeeName}</td>
+    <td>${attendance.attendanceTime}</td>
+    <td>${attendance.attendanceDate}</td>
+    <td>${attendance.latitude}</td>
+    <td>${attendance.longitude}</td>
+    <td>
+        <a
+          href="https://www.google.com/maps?q=${attendance.latitude},${attendance.longitude}"
+          target="_blank"
+          class="btn btn-primary btn-sm">
+          View Map
+        </a>
+    </td>
+</tr>
+`;
             });
           })
 
@@ -425,6 +392,26 @@
             console.log(error);
           });
       };
+    </script>
+
+    <script>
+      document
+        .getElementById("searchEmployee")
+        .addEventListener("keyup", function () {
+          let searchValue = this.value.toLowerCase();
+
+          let rows = document.querySelectorAll("#employeeTrackingTable tr");
+
+          rows.forEach((row) => {
+            let employeeName = row.cells[1].innerText.toLowerCase();
+
+            if (employeeName.includes(searchValue)) {
+              row.style.display = "";
+            } else {
+              row.style.display = "none";
+            }
+          });
+        });
     </script>
   </body>
 </html>

@@ -13,7 +13,7 @@ public class Attendance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    
+
     private Long id;
 
    private Long employeeId;
@@ -36,6 +36,10 @@ public class Attendance {
 
     private String status;
 
+
+    // private String city;
+    // private String state;
+    // private String address;
     public Long getId() {
         return id;
     }
@@ -120,4 +124,5 @@ public class Attendance {
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
     }
+
 }

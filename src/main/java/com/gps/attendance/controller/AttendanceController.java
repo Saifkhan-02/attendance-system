@@ -48,4 +48,8 @@ public class AttendanceController {
 
     
 
+    @GetMapping("/attendance-list")
+    public List<Attendance> getAllAttendance() {
+        return repository.findAll();
+    }
 }
