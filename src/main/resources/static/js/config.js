@@ -4,4 +4,4 @@ const BASE_URL =
         ? "http://localhost:8080"
         : "https://attendance-system.onrender.com";
 
-        alert("BASE_URL = " + BASE_URL);
+        // alert("BASE_URL = " + BASE_URL);
