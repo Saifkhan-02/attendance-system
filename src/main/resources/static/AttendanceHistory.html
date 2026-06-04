@@ -248,15 +248,18 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+<script src="js/config.js"></script>
    <script>
 
 window.onload = loadAttendanceHistory;
 
 function loadAttendanceHistory() {
 
-    const employeeId =
-        localStorage.getItem("employeeId");
+   const employeeId = localStorage.getItem("employeeId");
+
+console.log("History Employee ID:", employeeId);
+console.log(localStorage.getItem("employeeId"));
+  
 
     if (!employeeId) {
 
@@ -275,7 +278,9 @@ function loadAttendanceHistory() {
         </tr>
     `;
 
-    fetch(`https://attendance-system.onrender.com/attendance/history/${employeeId}`)
+   
+
+    fetch(`${BASE_URL}/attendance/history/${employeeId}`)
 
     .then(response => {
 

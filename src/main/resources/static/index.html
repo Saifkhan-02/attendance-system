@@ -366,6 +366,9 @@
             localStorage.setItem("employeeName", data.name);
             localStorage.setItem("employeeUsername", data.username);
 
+             console.log("Saved Employee ID:",
+        localStorage.getItem("employeeId"));
+
             window.location.href = "Dashboard.html";
           })
 

@@ -41,6 +41,7 @@ public class AttendanceController {
     public List<Attendance> getAttendanceHistory(
         @PathVariable Long employeeId){
 
+              System.out.println("History API Hit : " + employeeId);
     return repository.findByEmployeeId(employeeId);
     }
 
