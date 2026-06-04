@@ -3,3 +3,5 @@ const BASE_URL =
     window.location.hostname === "localhost"
         ? "http://localhost:8080"
         : "https://attendance-system.onrender.com";
+
+        alert("BASE_URL = " + BASE_URL);
