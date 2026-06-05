@@ -15,6 +15,9 @@ public class Doctor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "employee_id")
+    private Long employeeId;
+
     @Column(name = "doctor_name")
     private String doctorName;
 
@@ -33,8 +36,8 @@ public class Doctor {
     @Column(name = "phone")
     private String phone;
 
-    @Column(name = "email")
-    private String email;
+    @Column(name = "address")
+    private String address;
 
     @Column(name = "status")
     private String status;
@@ -47,6 +50,14 @@ public class Doctor {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
     }
 
     public String getDoctorName() {
@@ -97,12 +108,12 @@ public class Doctor {
         this.phone = phone;
     }
 
-    public String getEmail() {
-        return email;
+    public String getAddress() {
+        return address;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getStatus() {

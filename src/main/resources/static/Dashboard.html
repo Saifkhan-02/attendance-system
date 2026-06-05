@@ -278,8 +278,22 @@
           </a>
         </div>
 
+         <!-- Doctors -->
+        <div class="col-6 col-md-3">
+          <a href="DoctorVisit.html" class="text-decoration-none text-dark">
+          <div class="dashboard-card">
+            <div class="icon-circle bg2">
+              <i class="fas fa-user-doctor text-warning"></i>
+            </div>
+
+            <h6>Doctor visits</h6>
+          </div>
+          </a>
+        </div>
+
         <!-- Calls -->
         <div class="col-6 col-md-3">
+          <a href="Calls.html" class="text-decoration-none text-dark">
           <div class="dashboard-card">
             <div class="icon-circle bg2">
               <i class="fas fa-phone-alt text-success"></i>
@@ -288,9 +302,36 @@
 
             <h6>Calls</h6>
           </div>
+          </a>
         </div>
 
-        <!-- Tour Plan -->
+        <!-- Expenses -->
+        <div class="col-6 col-md-3">
+          <a href="Expenses.html" class="text-decoration-none text-dark">
+          <div class="dashboard-card">
+            <div class="icon-circle bg2">
+              <i class="fas fa-wallet text-danger"></i>
+            </div>
+
+            <h6>Expenses</h6>
+          </div>
+          </a>
+        </div>
+
+        <!-- Stockist -->
+        <div class="col-6 col-md-3">
+          <a href="Stockist.html" class="text-decoration-none text-dark">
+          <div class="dashboard-card">
+            <div class="icon-circle bg2">
+              <i class="fas fa-boxes-stacked text-warning"></i>
+            </div>
+
+            <h6>Stockist</h6>
+          </div>
+          </a>
+        </div>
+
+         <!-- Tour Plan -->
         <div class="col-6 col-md-3">
           <a href="TourPlan.html" class="text-decoration-none text-dark">
           <div class="dashboard-card">
@@ -316,30 +357,6 @@
           </a>
         </div>
 
-        <!-- Expenses -->
-        <div class="col-6 col-md-3">
-          <a href="Expenses.html" class="text-decoration-none text-dark">
-          <div class="dashboard-card">
-            <div class="icon-circle bg2">
-              <i class="fas fa-wallet text-danger"></i>
-            </div>
-
-            <h6>Expenses</h6>
-          </div>
-          </a>
-        </div>
-
-        <!-- Stockist -->
-        <div class="col-6 col-md-3">
-          <div class="dashboard-card">
-            <div class="icon-circle bg2">
-              <i class="fas fa-boxes-stacked text-warning"></i>
-            </div>
-
-            <h6>Stockist</h6>
-          </div>
-        </div>
-
         <!-- Attendance History -->
         <div class="col-6 col-md-3">
             <a href="AttendanceHistory.html" class="text-decoration-none text-dark">
@@ -353,16 +370,7 @@
         </a>
         </div>
 
-        <!-- Doctors -->
-        <div class="col-6 col-md-3">
-          <div class="dashboard-card">
-            <div class="icon-circle bg2">
-              <i class="fas fa-user-doctor text-warning"></i>
-            </div>
-
-            <h6>Doctors</h6>
-          </div>
-        </div>
+       
 
         <!-- Summary -->
         <div class="col-6 col-md-3">
@@ -454,8 +462,7 @@
       const employeeName = localStorage.getItem("employeeName");
 
       if (employeeName) {
-        document.getElementById("employeeName").innerText =
-          "Welcome, " + employeeName;
+        document.getElementById("employeeName").innerText =  employeeName;
       } else {
         window.location.href = "index.html";
       }

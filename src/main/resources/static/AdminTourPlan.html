@@ -4,9 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Admin Leave Requests</title>
+<title>Admin Tour Plans</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
 body{
@@ -27,8 +28,8 @@ body{
     box-shadow:0 10px 30px rgba(0,0,0,.08);
 }
 
-.badge-pending{
-    background:#fd7e14;
+.badge-planned{
+    background:#0d6efd;
 }
 
 .badge-approved{
@@ -38,14 +39,23 @@ body{
 .badge-rejected{
     background:#dc3545;
 }
+
+.table td,
+.table th{
+    vertical-align:middle;
+}
 </style>
 </head>
 
 <body>
 
 <div class="page-header text-center">
-    <h2 class="fw-bold mb-1">Leave Requests</h2>
-    <p class="mb-0">Approve or reject employee leave requests</p>
+    <h2 class="fw-bold mb-1">
+        Tour Plan Requests
+    </h2>
+    <p class="mb-0">
+        Approve or reject employee tour plans
+    </p>
 </div>
 
 <div class="container py-4">
@@ -53,7 +63,9 @@ body{
     <div class="card">
         <div class="card-body">
 
-            <h4 class="fw-bold mb-4">All Leave Requests</h4>
+            <h4 class="fw-bold mb-4">
+                All Tour Plans
+            </h4>
 
             <div class="table-responsive">
 
@@ -61,23 +73,21 @@ body{
 
                     <thead class="table-primary">
                         <tr>
-                           <th>Employee ID</th>
+                            <th>Employee ID</th>
                             <th>Employee Name</th>
-                            <th>Employee Contact</th>
-                            <th>Leave Type</th>
-                            <th>From</th>
-                            <th>To</th>
-                            <th>Reason</th>
+                            <th>Tour Date</th>
+                            <th>HQ</th>
+                            <th>Area</th>
+                            <th>Purpose</th>
+                            <th>Remarks</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
 
-                    <tbody id="leaveRequestTable"></tbody>
+                    <tbody id="tourPlanTable"></tbody>
 
                 </table>
-
-                
 
             </div>
 
@@ -90,54 +100,60 @@ body{
 
 <script>
 
-window.onload = loadAllLeaves;
+window.onload = loadTourPlans;
 
-function loadAllLeaves() {
+function loadTourPlans(){
 
-    fetch(`${BASE_URL}/admin/leaves`)
+    fetch(`${BASE_URL}/admin/tour-plans`)
 
     .then(response => response.json())
 
     .then(data => {
 
-        const table = document.getElementById("leaveRequestTable");
+        const table =
+            document.getElementById("tourPlanTable");
 
         table.innerHTML = "";
 
-        if(data.length === 0) {
+        if(data.length === 0){
+
             table.innerHTML = `
                 <tr>
-                    <td colspan="7" class="text-center">
-                        No Leave Requests Found
+                    <td colspan="9" class="text-center">
+                        No Tour Plans Found
                     </td>
                 </tr>
             `;
+
             return;
         }
 
-        data.forEach(leave => {
+        data.forEach(plan => {
 
-            let badgeClass = "badge-pending";
+            let badgeClass = "badge-planned";
 
-            if(leave.status === "Approved") {
+            if(plan.status === "Approved"){
                 badgeClass = "badge-approved";
             }
 
-            if(leave.status === "Rejected") {
+            if(plan.status === "Rejected"){
                 badgeClass = "badge-rejected";
             }
 
             let actionButtons = "-";
 
-            if(leave.status === "Pending") {
+            if(plan.status === "Planned"){
+
                 actionButtons = `
-                    <button class="btn btn-success btn-sm me-1"
-                            onclick="approveLeave(${leave.id})">
+                    <button
+                        class="btn btn-success btn-sm me-1"
+                        onclick="approveTourPlan(${plan.id})">
                         Approve
                     </button>
 
-                    <button class="btn btn-danger btn-sm"
-                            onclick="rejectLeave(${leave.id})">
+                    <button
+                        class="btn btn-danger btn-sm"
+                        onclick="rejectTourPlan(${plan.id})">
                         Reject
                     </button>
                 `;
@@ -145,28 +161,32 @@ function loadAllLeaves() {
 
             table.innerHTML += `
                 <tr>
-                    <td>${leave.employeeId || "-"}</td>
-                    <td>${leave.employeeName || "-"}</td>
-                    <td>${leave.emergencyContact || "-"}</td>
-                    <td>${leave.leaveType || "-"}</td>
-                    <td>${leave.fromDate || "-"}</td>
-                    <td>${leave.toDate || "-"}</td>
-                    <td>${leave.reason || "-"}</td>
+                    <td>${plan.employeeId || "-"}</td>
+                    <td>${plan.employeeName || "-"}</td>
+                    <td>${plan.tourDate || "-"}</td>
+                    <td>${plan.hq || "-"}</td>
+                    <td>${plan.area || "-"}</td>
+                    <td>${plan.purpose || "-"}</td>
+                    <td>${plan.remarks || "-"}</td>
                     <td>
                         <span class="badge ${badgeClass}">
-                            ${leave.status}
+                            ${plan.status || "Planned"}
                         </span>
                     </td>
                     <td>${actionButtons}</td>
                 </tr>
             `;
         });
+    })
+    .catch(error => {
+        console.error(error);
+        alert("Failed to load tour plans");
     });
 }
 
-function approveLeave(id) {
+function approveTourPlan(id){
 
-    fetch(`${BASE_URL}/leave/approve/${id}`, {
+    fetch(`${BASE_URL}/tour-plan/approve/${id}`, {
         method:"PUT"
     })
 
@@ -174,13 +194,13 @@ function approveLeave(id) {
 
     .then(data => {
         alert(data);
-        loadAllLeaves();
+        loadTourPlans();
     });
 }
 
-function rejectLeave(id) {
+function rejectTourPlan(id){
 
-    fetch(`${BASE_URL}/leave/reject/${id}`, {
+    fetch(`${BASE_URL}/tour-plan/reject/${id}`, {
         method:"PUT"
     })
 
@@ -188,7 +208,7 @@ function rejectLeave(id) {
 
     .then(data => {
         alert(data);
-        loadAllLeaves();
+        loadTourPlans();
     });
 }
 

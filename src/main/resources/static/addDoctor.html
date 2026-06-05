@@ -124,17 +124,31 @@
 
                     <!-- Employee -->
 
-                    <div class="col-md-6 mb-3">
+                   <div class="col-md-6 mb-3">
 
-                        <label class="form-label">
-                            Employee Name
-                        </label>
+    <label class="form-label">
+        Assign Employee
+    </label>
 
-                        <input type="text"
-                               name="employeeName"
-                               class="form-control">
+    <select id="employeeSelect"
+            class="form-select"
+            required>
 
-                    </div>
+        <option value="">
+            Select Employee
+        </option>
+
+    </select>
+
+    <input type="hidden"
+           id="employeeId"
+           name="employeeId">
+
+    <input type="hidden"
+           id="employeeName"
+           name="employeeName">
+
+</div>
 
                     <!-- Phone -->
 
@@ -150,16 +164,16 @@
 
                     </div>
 
-                    <!-- Email -->
+                    <!-- Address -->
 
                     <div class="col-md-6 mb-3">
 
                         <label class="form-label">
-                            Email
+                            Address
                         </label>
 
-                        <input type="email"
-                               name="email"
+                        <input type="text"
+                               name="address"
                                class="form-control">
 
                     </div>
@@ -217,7 +231,85 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+<script src="js/config.js"></script>
+
 <script>
+
+window.onload = loadEmployees;
+
+function loadEmployees() {
+
+    fetch(`${BASE_URL}/get-employees`)
+    .then(response => response.json())
+    .then(data => {
+
+        const select =
+            document.getElementById("employeeSelect");
+
+        select.innerHTML = `
+            <option value="">
+                Select Employee
+            </option>
+        `;
+
+        data.forEach(emp => {
+
+            select.innerHTML += `
+                <option value="${emp.id}"
+                        data-name="${emp.name}">
+                    ${emp.name} - ${emp.username || ""} 
+                </option>
+            `;
+        });
+    })
+    .catch(error => {
+        console.error(error);
+        alert("Failed to load employees");
+    });
+}
+
+document.getElementById("employeeSelect")
+.addEventListener("change", function(){
+
+    const selectedOption =
+        this.options[this.selectedIndex];
+
+    document.getElementById("employeeId").value =
+        this.value;
+
+    document.getElementById("employeeName").value =
+        selectedOption.getAttribute("data-name");
+});
+
+document.querySelector("form")
+.addEventListener("submit", function(e){
+
+    e.preventDefault();
+
+    let formData = new FormData(this);
+
+    fetch(`${BASE_URL}/admin/save-doctor`, {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        alert("Doctor Added Successfully!");
+
+        window.location.href = "doctorList.html";
+    })
+    .catch(error => {
+
+        console.error(error);
+
+        alert("Error while saving doctor!");
+    });
+});
+
+</script>
+
+<!-- <script>
 
 document.querySelector("form")
 .addEventListener("submit", function(e){
@@ -246,7 +338,7 @@ document.querySelector("form")
 
 });
 
-</script>
+</script> -->
 
 
 </body>

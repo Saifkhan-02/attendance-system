@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Add Product</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+<style>
+body{
+    background:#f4f6f9;
+}
+
+.form-card,
+.table-card{
+    border:none;
+    border-radius:15px;
+    box-shadow:0 3px 15px rgba(0,0,0,0.1);
+}
+
+.page-header{
+    background:linear-gradient(135deg,#0d6efd,#4f8dfd);
+    color:white;
+    border-radius:15px;
+    padding:20px;
+    margin-bottom:20px;
+}
+
+.form-control,
+.form-select{
+    border-radius:12px;
+    padding:12px;
+}
+
+.status-active{
+    color:#198754;
+    font-weight:600;
+}
+
+.status-inactive{
+    color:#dc3545;
+    font-weight:600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container mt-4">
+
+    <div class="page-header">
+        <h2>
+            <i class="fas fa-pills"></i>
+            Add Product
+        </h2>
+        <p class="mb-0">
+            Create and manage product master records
+        </p>
+    </div>
+
+    <div class="card form-card">
+        <div class="card-body p-4">
+
+            <h4 class="fw-bold mb-4">Product Details</h4>
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <label class="form-label">Product Name</label>
+                    <input type="text"
+                           id="productName"
+                           class="form-control"
+                           placeholder="Enter product name">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Product Code</label>
+                    <input type="text"
+                           id="productCode"
+                           class="form-control"
+                           placeholder="Enter product code">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">MRP</label>
+                    <input type="number"
+                           id="mrp"
+                           class="form-control"
+                           placeholder="Enter MRP">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Status</label>
+                    <select id="status"
+                            class="form-select">
+                        <option>Active</option>
+                        <option>Inactive</option>
+                    </select>
+                </div>
+
+                <div class="col-md-12">
+                    <button class="btn btn-primary"
+                            onclick="saveProduct()">
+                        <i class="fas fa-save me-2"></i>
+                        Save Product
+                    </button>
+
+                    <button class="btn btn-secondary"
+                            onclick="clearForm()">
+                        Clear
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card table-card mt-4">
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+
+                <h4 class="fw-bold mb-0">Product List</h4>
+
+                <button class="btn btn-outline-primary"
+                        onclick="loadProducts()">
+                    <i class="fas fa-rotate-right me-2"></i>
+                    Refresh
+                </button>
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-primary">
+                        <tr>
+                            <th>ID</th>
+                            <th>Product Name</th>
+                            <th>Code</th>
+                            <th>MRP</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="productTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/config.js"></script>
+
+<script>
+
+window.onload = loadProducts;
+
+function saveProduct(){
+
+    const productData = {
+        productName: document.getElementById("productName").value,
+        productCode: document.getElementById("productCode").value,
+        mrp: document.getElementById("mrp").value,
+        status: document.getElementById("status").value
+    };
+
+    fetch(`${BASE_URL}/admin/save-product`, {
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify(productData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert("Product Saved Successfully");
+        clearForm();
+        loadProducts();
+    })
+    .catch(error => {
+        console.error(error);
+        alert("Failed to save product");
+    });
+}
+
+function loadProducts(){
+
+    fetch(`${BASE_URL}/products`)
+    .then(response => response.json())
+    .then(data => {
+
+        const table =
+            document.getElementById("productTable");
+
+        table.innerHTML = "";
+
+        if(data.length === 0){
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center">
+                        No Products Found
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        data.forEach(product => {
+
+            const statusClass =
+                product.status === "Active"
+                    ? "status-active"
+                    : "status-inactive";
+
+            table.innerHTML += `
+                <tr>
+                    <td>${product.id}</td>
+                    <td>${product.productName}</td>
+                    <td>${product.productCode || "-"}</td>
+                    <td>₹${product.mrp || 0}</td>
+                    <td>
+                        <span class="${statusClass}">
+                            ${product.status}
+                        </span>
+                    </td>
+                </tr>
+            `;
+        });
+    })
+    .catch(error => {
+        console.error(error);
+    });
+}
+
+function clearForm(){
+
+    document.getElementById("productName").value = "";
+    document.getElementById("productCode").value = "";
+    document.getElementById("mrp").value = "";
+    document.getElementById("status").selectedIndex = 0;
+}
+
+</script>
+
+</body>
+</html>
