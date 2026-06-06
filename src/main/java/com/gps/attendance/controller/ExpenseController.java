@@ -18,6 +18,9 @@ import com.gps.attendance.repository.ExpenseRepository;
 public class ExpenseController {
 
     @Autowired
+    private ExpenseRepository expenseRepository;
+
+    @Autowired
     private ExpenseRepository repository;
 
     @PostMapping("/expense/submit")
@@ -32,5 +35,12 @@ public class ExpenseController {
     public List<Expense> getExpenseHistory(@PathVariable Long employeeId) {
 
         return repository.findByEmployeeId(employeeId);
+    }
+
+    @GetMapping("/expenses/chart-data")
+    public List<Object[]> getExpenseChartData() {
+
+        return expenseRepository
+                .getMonthlyExpenseStats();
     }
 }
