@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Create Order</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+body{
+    background:#f4f6fb;
+}
+
+.top-header{
+    background:linear-gradient(135deg,#0d4f9c,#3f7fe0);
+    color:white;
+    padding:25px;
+    border-radius:0 0 25px 25px;
+    box-shadow:0 5px 20px rgba(0,0,0,.15);
+}
+
+.order-card,
+.history-card{
+    border:none;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.form-control,
+.form-select{
+    border-radius:12px;
+    padding:12px;
+}
+
+.btn-submit{
+    background:#0d6efd;
+    border:none;
+    border-radius:12px;
+    padding:12px 30px;
+}
+
+.btn-submit:hover{
+    background:#0b5ed7;
+}
+
+.stock-box{
+    background:#e9f2ff;
+    color:#0d4f9c;
+    border-radius:15px;
+    padding:15px;
+    font-weight:700;
+}
+
+.status-placed{
+    color:#198754;
+    font-weight:600;
+}
+
+.status-pending{
+    color:#fd7e14;
+    font-weight:600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="top-header text-center">
+    <h2 class="fw-bold mb-1">Create Order</h2>
+    <p class="mb-0">Place doctor orders and update your stock automatically</p>
+</div>
+
+<div class="container py-4">
+
+    <div class="card order-card">
+        <div class="card-body p-4">
+
+            <h4 class="fw-bold mb-4">Order Details</h4>
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <label class="form-label">Doctor</label>
+                    <select id="doctorId" class="form-select" onchange="setDoctorName()">
+                        <option value="">Select Doctor</option>
+                    </select>
+
+                    <input type="hidden" id="doctorName">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Product</label>
+                    <select id="stockId" class="form-select" onchange="loadAvailableStock()">
+                        <option value="">Select Product</option>
+                    </select>
+
+                    <input type="hidden" id="productName">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Available Stock</label>
+                    <div class="stock-box" id="availableStock">
+                       0 Units
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Order Quantity</label>
+                    <input type="number"
+                           id="orderQuantity"
+                           class="form-control"
+                           placeholder="Enter order quantity">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Order Date</label>
+                    <input type="date"
+                           id="orderDate"
+                           class="form-control">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Order Amount</label>
+                    <input type="number"
+                           id="orderAmount"
+                           class="form-control"
+                           placeholder="Enter order amount">
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label">Remarks</label>
+                    <textarea id="remarks"
+                              rows="3"
+                              class="form-control"
+                              placeholder="Enter order remarks"></textarea>
+                </div>
+
+                <div class="col-md-12">
+                    <button class="btn btn-submit text-white"
+                            onclick="placeOrder()">
+
+                        <i class="fa-solid fa-cart-shopping me-2"></i>
+                        Place Order
+
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card history-card mt-4">
+        <div class="card-body">
+
+            <h4 class="fw-bold mb-4">Order History</h4>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Doctor</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="orderTable"></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/config.js"></script>
+
+<script>
+let stockList = [];
+
+window.onload = function(){
+    loadAssignedDoctors();
+    loadStockProducts();
+    loadOrderHistory();
+
+    document.getElementById("orderDate").value =
+        new Date().toISOString().split("T")[0];
+};
+
+function loadAssignedDoctors(){
+
+    const employeeId =
+        localStorage.getItem("employeeId");
+
+    fetch(`${BASE_URL}/doctor/assigned/${employeeId}`)
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        const dropdown =
+            document.getElementById("doctorId");
+
+        dropdown.innerHTML = `
+            <option value="">
+                Select Doctor
+            </option>
+        `;
+
+        data.forEach(doctor => {
+
+            dropdown.innerHTML += `
+                <option value="${doctor.id}"
+                        data-name="${doctor.doctorName}">
+                    ${doctor.doctorName} - ${doctor.city || ""}
+                </option>
+            `;
+        });
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert("Failed to load assigned doctors");
+    });
+}
+
+function loadStockProducts(){
+    
+    const employeeId = localStorage.getItem("employeeId");
+
+    fetch(`${BASE_URL}/stock/history/${employeeId}`)
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        stockList = data;
+
+        const dropdown  =document.getElementById("stockId");
+        dropdown.innerHTML = `<option value=""> Select Product </option>`;
+
+        data.forEach(stock => {
+            
+            if (Number(stock.quantity) > 0 ) {
+                dropdown.innerHTML +=  ` <option value ="${stock.id}">
+                    ${stock.productName}
+                </option> `;
+            }
+        });
+    })
+    .catch(error => {
+        console.error(error);
+
+        alert("Failed to load stock products");
+    });
+
+}
+
+function setDoctorName(){
+    const select = document.getElementById("doctorId");
+    const selected = select.options[select.selectedIndex];
+
+    document.getElementById("doctorName").value =
+        selected.getAttribute("data-name") || "";
+}
+
+function loadAvailableStock(){
+    const stockId = document.getElementById("stockId").value;
+
+    const selectedStock =
+        stockList.find(stock => 
+            String(stock.id) === String(stockId)
+            );
+
+    if(!selectedStock){
+        document.getElementById("availableStock").innerText = "0 Units";
+        
+        return;
+    }
+
+    document.getElementById("availableStock").innerText =
+        selectedStock.quantity + " Units";
+
+    document.getElementById("productName").value =
+        selectedStock.productName;
+}
+
+function placeOrder(){
+
+    const stockId =
+        document.getElementById("stockId").value;
+
+    const orderQuantity =
+        Number(document.getElementById("orderQuantity").value);
+
+    const selectedStock =
+        stockList.find(stock =>
+            String(stock.id) === String(stockId)
+        );
+
+    if(!selectedStock){
+        alert("Please select product");
+        return;
+    }
+
+    if(orderQuantity <= 0){
+        alert("Enter valid order quantity");
+        return;
+    }
+
+    if(orderQuantity > Number(selectedStock.quantity)){
+        alert("Order quantity cannot be greater than available stock");
+        return;
+    }
+
+    const orderData = {
+        employeeId: localStorage.getItem("employeeId"),
+        employeeName: localStorage.getItem("employeeName"),
+
+        doctorId: document.getElementById("doctorId").value,
+        doctorName: document.getElementById("doctorName").value,
+
+        stockId: stockId,
+        productName: document.getElementById("productName").value,
+
+        orderQuantity: orderQuantity,
+        orderAmount: document.getElementById("orderAmount").value,
+        orderDate: document.getElementById("orderDate").value,
+        remarks: document.getElementById("remarks").value
+    };
+
+    fetch(`${BASE_URL}/order/place`, {
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify(orderData)
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        alert("Order Placed Successfully");
+
+        document.getElementById("stockId").selectedIndex = 0;
+        document.getElementById("availableStock").innerText = "0 Units";
+        document.getElementById("productName").value = "";
+        document.getElementById("orderQuantity").value = "";
+        document.getElementById("orderAmount").value = "";
+        document.getElementById("remarks").value = "";
+
+        loadStockProducts();
+        loadOrderHistory();
+    })
+    .catch(error => {
+        console.error(error);
+        alert("Failed to place order");
+    });
+}
+
+function loadOrderHistory(){
+
+    const employeeId =
+        localStorage.getItem("employeeId");
+
+    fetch(`${BASE_URL}/order/history/${employeeId}`)
+    .then(response => response.json())
+    .then(data => {
+
+        const table =
+            document.getElementById("orderTable");
+
+        table.innerHTML = "";
+
+        if(data.length === 0){
+            table.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center">
+                        No Orders Found
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        data.forEach(order => {
+
+            table.innerHTML += `
+                <tr>
+                    <td>${order.doctorName || "-"}</td>
+                    <td>${order.productName || "-"}</td>
+                    <td>${order.orderQuantity || 0}</td>
+                    <td>₹${order.orderAmount || 0}</td>
+                    <td>${order.orderDate || "-"}</td>
+                    <td>
+                        <span class="status-placed">
+                            ${order.status || "Placed"}
+                        </span>
+                    </td>
+                </tr>
+            `;
+        });
+    });
+}
+</script>
+
+</body>
+</html>

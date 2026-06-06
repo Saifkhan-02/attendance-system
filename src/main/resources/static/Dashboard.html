@@ -213,7 +213,7 @@
       }
     </style>
   </head>
-    <body>
+  <body>
     <!-- HEADER -->
 
     <div class="dashboard-header">
@@ -278,69 +278,68 @@
           </a>
         </div>
 
-         <!-- Doctors -->
+        <!-- Doctors -->
         <div class="col-6 col-md-3">
           <a href="DoctorVisit.html" class="text-decoration-none text-dark">
-          <div class="dashboard-card">
-            <div class="icon-circle bg2">
-              <i class="fas fa-user-doctor text-warning"></i>
-            </div>
+            <div class="dashboard-card">
+              <div class="icon-circle bg2">
+                <i class="fas fa-user-doctor text-warning"></i>
+              </div>
 
-            <h6>Doctor visits</h6>
-          </div>
+              <h6>Doctor visits</h6>
+            </div>
           </a>
         </div>
 
         <!-- Calls -->
         <div class="col-6 col-md-3">
           <a href="Calls.html" class="text-decoration-none text-dark">
-          <div class="dashboard-card">
-            <div class="icon-circle bg2">
-              <i class="fas fa-phone-alt text-success"></i>
-              
-            </div>
+            <div class="dashboard-card">
+              <div class="icon-circle bg2">
+                <i class="fas fa-phone-alt text-success"></i>
+              </div>
 
-            <h6>Calls</h6>
-          </div>
+              <h6>Calls</h6>
+            </div>
           </a>
         </div>
 
         <!-- Expenses -->
         <div class="col-6 col-md-3">
           <a href="Expenses.html" class="text-decoration-none text-dark">
-          <div class="dashboard-card">
-            <div class="icon-circle bg2">
-              <i class="fas fa-wallet text-danger"></i>
-            </div>
+            <div class="dashboard-card">
+              <div class="icon-circle bg2">
+                <i class="fas fa-wallet text-danger"></i>
+              </div>
 
-            <h6>Expenses</h6>
-          </div>
+              <h6>Expenses</h6>
+            </div>
           </a>
         </div>
 
         <!-- Stockist -->
         <div class="col-6 col-md-3">
           <a href="Stockist.html" class="text-decoration-none text-dark">
-          <div class="dashboard-card">
-            <div class="icon-circle bg2">
-              <i class="fas fa-boxes-stacked text-warning"></i>
-            </div>
+            <div class="dashboard-card">
+              <div class="icon-circle bg2">
+                <i class="fas fa-boxes-stacked text-warning"></i>
+              </div>
 
-            <h6>Stockist</h6>
-          </div>
+              <h6>Stockist</h6>
+            </div>
           </a>
         </div>
 
-         <!-- Tour Plan -->
+        <!-- Tour Plan -->
         <div class="col-6 col-md-3">
           <a href="TourPlan.html" class="text-decoration-none text-dark">
-          <div class="dashboard-card">
-            <div class="icon-circle bg3">
-              <i class="fas fa-route text-success"></i>
-            </div>
+            <div class="dashboard-card">
+              <div class="icon-circle bg3">
+                <i class="fas fa-route text-success"></i>
+              </div>
 
-            <h6>Tour Plan</h6>
-          </div>
+              <h6>Tour Plan</h6>
+            </div>
           </a>
         </div>
 
@@ -359,21 +358,36 @@
 
         <!-- Attendance History -->
         <div class="col-6 col-md-3">
-            <a href="AttendanceHistory.html" class="text-decoration-none text-dark">
-          <div class="dashboard-card">
-            <div class="icon-circle bg4">
-              <i class="fas fa-calendar-days text-danger"></i>
-            </div>
+          <a
+            href="AttendanceHistory.html"
+            class="text-decoration-none text-dark"
+          >
+            <div class="dashboard-card">
+              <div class="icon-circle bg4">
+                <i class="fas fa-calendar-days text-danger"></i>
+              </div>
 
-            <h6>Attendance History</h6>
-          </div>
-        </a>
+              <h6>Attendance History</h6>
+            </div>
+          </a>
         </div>
 
-       
+        <!-- Order Summary -->
+        <div class="col-6 col-md-3">
+          <a href="Order.html" class="text-decoration-none text-dark">
+            <div class="dashboard-card">
+              <div class="icon-circle bg3">
+                <i class="fas fa-box text-info"></i>
+              </div>
+
+              <h6>Order</h6>
+            </div>
+          </a>
+        </div>
 
         <!-- Summary -->
         <div class="col-6 col-md-3">
+          <a href="Summary.html" class="text-decoration-none text-dark">
           <div class="dashboard-card">
             <div class="icon-circle bg3">
               <i class="fas fa-chart-line text-success"></i>
@@ -381,12 +395,14 @@
 
             <h6>Summary</h6>
           </div>
+          </a>
         </div>
       </div>
 
       <!-- SUMMARY Report live -->
 
       <div class="summary-box">
+       
         <div class="row text-center">
           <div class="col-4">
             <h2>18</h2>
@@ -456,13 +472,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-      
 
     <script>
       const employeeName = localStorage.getItem("employeeName");
 
       if (employeeName) {
-        document.getElementById("employeeName").innerText =  employeeName;
+        document.getElementById("employeeName").innerText = employeeName;
       } else {
         window.location.href = "index.html";
       }
