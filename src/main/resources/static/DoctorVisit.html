@@ -79,25 +79,46 @@ body{
             <h4 class="fw-bold mb-4">Submit Doctor Visit</h4>
 
             <div class="row g-3">
+                <div class="col-md-6">
+    <label class="form-label">Working With</label>
+    <select id="workingWith" class="form-select" required>
+        <option value="">Select Designation</option>
+        <option value="Individual">Individual</option>
+        <option value="ASM">ASM</option>
+        <option value="TSM">TSM</option>
+        <option value="ZSM">ZSM</option>
+        <option value="State Head">State Head</option>
+    </select>
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Person Name</label>
+    <input type="text" id="workingPersonName"
+           class="form-control"
+           placeholder="Enter person name">
+</div>
 
                 <div class="col-md-6">
-                    <label class="form-label">Doctor Name</label>
-                    <input type="text" id="doctorName" class="form-control" placeholder="Enter doctor name">
+                    <label class="form-label">Doctor/Chemist Name</label>
+                    <input type="text" id="doctorName" class="form-control" 
+                    placeholder="Enter doctor name" required>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Specialization</label>
-                    <input type="text" id="specialization" class="form-control" placeholder="Enter specialization">
+                    <input type="text" id="specialization" class="form-control" 
+                    placeholder="Enter specialization" required>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Hospital / Clinic</label>
-                    <input type="text" id="hospitalName" class="form-control" placeholder="Enter hospital or clinic">
+                    <input type="text" id="hospitalName" class="form-control" 
+                     placeholder="Enter hospital or clinic" required>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label">Visit Date</label>
-                    <input type="date" id="visitDate" class="form-control">
+                    <input type="date" id="visitDate" class="form-control" required>
                 </div>
 
                 <!-- <div class="col-md-6">
@@ -105,7 +126,7 @@ body{
                     <input type="time" id="visitTime" class="form-control">
                 </div> -->
 
-                <div class="col-md-6">
+                <!-- <div class="col-md-6">
                     <label class="form-label">Purpose</label>
                     <select id="purpose" class="form-select">
                         <option>Product Promotion</option>
@@ -115,12 +136,38 @@ body{
                         <option>New Product Launch</option>
                         <option>Other</option>
                     </select>
+                </div> -->
+
+                <div class="mb-3">
+                  <label class="form-label">Current Location</label>
+                  <input
+                    type="text"
+                    id="locationName"
+                    class="form-control"
+                    readonly
+                    placeholder="Fetching location..."
+                    required
+                  />
                 </div>
 
-                <div class="col-md-6">
-                    <label class="form-label">Location</label>
-                    <input type="text" id="location" class="form-control" placeholder="Enter location / Address">
-                </div>
+                <!-- upload photo -->
+                <div class="col-md-12">
+    <label class="form-label">Upload Image</label>
+
+    <div class="mb-2">
+        <button type="button" class="btn btn-outline-primary" onclick="openCamera()">
+            <i class="fa-solid fa-camera me-2"></i>Open Camera
+        </button>
+
+        <button type="button" class="btn btn-success d-none" id="captureBtn" onclick="capturePhoto()">
+            Capture Photo
+        </button>
+    </div>
+
+    <video id="cameraPreview" autoplay playsinline class="d-none" style="width:100%;max-height:260px;border-radius:12px;object-fit:cover;"></video>
+    <canvas id="cameraCanvas" class="d-none"></canvas>
+    <img id="capturedImage" class="d-none mt-2" style="width:100%;max-height:260px;border-radius:12px;object-fit:cover;">
+</div>
 
                 <div class="col-md-6">
                     <label class="form-label">Doctor Response</label>
@@ -142,6 +189,8 @@ body{
                         <i class="fa-solid fa-paper-plane me-2"></i>
                         Submit Visit
                     </button>
+
+
                 </div>
 
             </div>
@@ -159,13 +208,17 @@ body{
                 <table class="table align-middle table-hover">
                     <thead class="table-primary">
                         <tr>
-                            <th>Doctor</th>
+                            <th>Working With</th>
+                            <th>Person Name</th>    
+                            <th>Dr./Chemist</th>
                             <th>Specialization</th>
-                            <th>Hospital</th>
+                            <th>Hospital/Clinic</th>
                             <th>Date</th>
                             <th>Time</th>
-                            <th>Purpose</th>
+                            <th>Location</th>
+                            <th>Image</th>
                             <th>Response</th>
+                            <th>Remarks</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -184,9 +237,55 @@ body{
 
 <script>
 
-window.onload = loadDoctorVisitHistory;
+let cameraStream = null;
+let capturedPhotoBase64 = "";
+
+window.onload = function () {
+    loadDoctorVisitHistory();
+    getCurrentLocation();
+};
 
 function submitDoctorVisit() {
+
+    if (!document.getElementById("workingWith").value) {
+    alert("Please select Working With");
+    return;
+}
+
+    if (!document.getElementById("doctorName").value.trim()) {
+    alert("Doctor name required ");
+    return;
+}
+
+if (!document.getElementById("specialization").value.trim()) {
+    alert("Please fill Specialization First");
+    return;
+}
+
+if (!document.getElementById("hospitalName").value.trim()) {
+    alert("Please fill Hospital / Clinic First ");
+    return;
+}
+
+if (!document.getElementById("visitDate").value) {
+    alert("Please select Visit date ");
+    return;
+}
+
+if (!document.getElementById("locationName").value.trim()) {
+    alert("your Current location is not accurate ");
+    return;
+}
+
+if (!document.getElementById("doctorResponse").value.trim()) {
+    alert("Please select Doctor response First");
+    return;
+}
+
+if (!capturedPhotoBase64) {
+    alert("Please upload image first");
+    return;
+}
 
     const visitData = {
 
@@ -195,6 +294,12 @@ function submitDoctorVisit() {
 
         employeeName:
             localStorage.getItem("employeeName"),
+
+        workingWith:
+            document.getElementById("workingWith").value,
+
+        workingPersonName:
+            document.getElementById("workingPersonName").value,
 
         doctorName:
             document.getElementById("doctorName").value,
@@ -208,17 +313,17 @@ function submitDoctorVisit() {
         visitDate:
             document.getElementById("visitDate").value,
 
-        purpose:
-            document.getElementById("purpose").value,
-
         location:
-            document.getElementById("location").value,
+            document.getElementById("locationName").value,
 
         doctorResponse:
             document.getElementById("doctorResponse").value,
 
         remarks:
-            document.getElementById("remarks").value
+            document.getElementById("remarks").value,
+
+        photo:
+            capturedPhotoBase64
     };
 
     fetch(`${BASE_URL}/doctor-visit/save`, {
@@ -238,11 +343,16 @@ function submitDoctorVisit() {
 
         alert("Doctor Visit Submitted Successfully");
 
+        document.getElementById("workingWith").value = "";
+        document.getElementById("workingPersonName").value = "";
         document.getElementById("doctorName").value = "";
         document.getElementById("specialization").value = "";
         document.getElementById("hospitalName").value = "";
         document.getElementById("visitDate").value = "";
-        document.getElementById("location").value = "";
+        document.getElementById("locationName").value = "";
+        capturedPhotoBase64 = "";
+        document.getElementById("captureImage").classList.add("d-none");
+        document.getElementById("doctorResponse");
         document.getElementById("remarks").value = "";
 
         loadDoctorVisitHistory();
@@ -278,7 +388,7 @@ function loadDoctorVisitHistory() {
 
             table.innerHTML = `
                 <tr>
-                    <td colspan="8" class="text-center">
+                    <td colspan="12" class="text-center">
                         No Doctor Visits Found
                     </td>
                 </tr>
@@ -307,6 +417,9 @@ function loadDoctorVisitHistory() {
             table.innerHTML += `
 
             <tr>
+                <td>${visit.workingWith || "-"}</td>
+
+                <td>${visit.workingPersonName || "-"}</td>
 
                 <td>${visit.doctorName || "-"}</td>
 
@@ -318,9 +431,13 @@ function loadDoctorVisitHistory() {
 
                 <td>${visit.visitTime || "-"}</td>
 
-                <td>${visit.purpose || "-"}</td>
+                <td>${visit.location || "-"}</td>
+
+                <td>${visit.photo ? `<img src="${visit.photo}" width="60" style="border-radius:8px;">` : "-"} </td>
 
                 <td>${visit.doctorResponse || "-"}</td>
+
+                <td>${visit.remarks || "-"}</td>
 
                 <td>
                     <span class="${statusClass}">
@@ -341,6 +458,94 @@ function loadDoctorVisitHistory() {
 
     });
 
+}
+// Camera function
+function openCamera() {
+    navigator.mediaDevices.getUserMedia({
+        video: {
+            facingMode: "environment"
+        },
+        audio: false
+    })
+    .then(function (stream) {
+        cameraStream = stream;
+
+        const video = document.getElementById("cameraPreview");
+        video.srcObject = stream;
+        video.classList.remove("d-none");
+
+        document.getElementById("captureBtn").classList.remove("d-none");
+    })
+    .catch(function (error) {
+        console.error(error);
+        alert("Camera open nahi ho pa raha. Permission allow karo.");
+    });
+}
+
+function capturePhoto() {
+    const video = document.getElementById("cameraPreview");
+    const canvas = document.getElementById("cameraCanvas");
+    const img = document.getElementById("capturedImage");
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    capturedPhotoBase64 = canvas.toDataURL("image/jpeg", 0.8);
+
+    img.src = capturedPhotoBase64;
+    img.classList.remove("d-none");
+
+    video.classList.add("d-none");
+    document.getElementById("captureBtn").classList.add("d-none");
+
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+    }
+}
+
+function getCurrentLocation() {
+    const locationInput = document.getElementById("locationName");
+
+    if (!navigator.geolocation) {
+        locationInput.value = "Location not supported";
+        return;
+    }
+
+    locationInput.value = "Fetching location...";
+
+    navigator.geolocation.getCurrentPosition(
+        function (position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        locationInput.value = data.display_name;
+                    } else {
+                        locationInput.value = "Location found";
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    locationInput.value = "Location found";
+                });
+        },
+        function (error) {
+            console.error(error);
+            locationInput.value = "";
+            alert("Location permission allow karo");
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        }
+    );
 }
 
 </script>

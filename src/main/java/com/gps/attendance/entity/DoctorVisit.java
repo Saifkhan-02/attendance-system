@@ -17,6 +17,11 @@ public class DoctorVisit {
     private Long employeeId;
     private String employeeName;
 
+    private String workingWith;
+private String workingPersonName;
+
+
+
     private String doctorName;
     private String specialization;
     private String hospitalName;
@@ -26,6 +31,8 @@ public class DoctorVisit {
 
     private String purpose;
     private String location;
+
+    private String photo;
     private String doctorResponse;
     private String remarks;
     private String status;
@@ -52,6 +59,7 @@ public class DoctorVisit {
     public void setEmployeeName(String employeeName) {
         this.employeeName = employeeName;
     }
+
 
     public String getDoctorName() {
         return doctorName;
