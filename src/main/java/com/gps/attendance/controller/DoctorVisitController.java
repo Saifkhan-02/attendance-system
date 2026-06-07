@@ -3,7 +3,15 @@ package com.gps.attendance.controller;
 import java.time.LocalTime;
 import java.util.List;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.gps.attendance.repository.AttendanceRepository;
+import com.gps.attendance.repository.LeaveRequestRepository;
+import com.gps.attendance.repository.EmployeeRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,12 +22,23 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gps.attendance.entity.DoctorVisit;
 import com.gps.attendance.repository.DoctorVisitRepository;
 
+
+
 @RestController
 @CrossOrigin("*")
 public class DoctorVisitController {
 
     @Autowired
     private DoctorVisitRepository repository;
+
+    @Autowired
+private AttendanceRepository attendanceRepository;
+
+@Autowired
+private LeaveRequestRepository leaveRequestRepository;
+
+@Autowired
+private EmployeeRepository employeeRepository;
 
     @PostMapping("/doctor-visit/save")
     public DoctorVisit saveDoctorVisit(
@@ -37,17 +56,74 @@ public class DoctorVisitController {
 
         return repository.findByEmployeeId(employeeId);
     }
-    
-    
+
+    @GetMapping("/doctor-visit/count")
+    public long getDoctorVisitCount() {
+        return repository.count();
+    }
+
+    @GetMapping("/doctor-visit/all")
+    public List<DoctorVisit> getAllDoctorVisits() {
+        return repository.findAll();
+    }
+
+    @GetMapping("/doctor-visit/top10")
+    public List<DoctorVisit> getTop10DoctorVisits() {
+
+        return repository.findAllByOrderByIdDesc(
+                PageRequest.of(0, 10)
+        );
+    }
+
+    @GetMapping("/doctor-visit/search/{keyword}")
+    public List<DoctorVisit> searchDoctorVisits(
+            @PathVariable String keyword) {
+
+        return repository
+                .findByEmployeeNameContainingIgnoreCase(keyword);
+    }
+
+    @GetMapping("/doctor-visit/chart-data")
+    public List<Object[]> getChartData() {
+
+        return repository.getMonthlyVisitStats();
+    }
+
+    @GetMapping("/doctor-visit/chart-data-daily")
+    public List<Object[]> getDailyChartData() {
+
+        return repository.getDailyVisitStats();
+    }
+
+    @GetMapping("/attendance/chart-data")
+public Map<String, Long> getAttendanceChartData() {
+
+    long totalEmployees = employeeRepository.count();
+
+    long present =
+            attendanceRepository.countByStatus("Present");
+
+    long leave =
+            leaveRequestRepository.countByStatus("Approved");
+
+    long absent =
+            totalEmployees - present - leave;
+
+    Map<String, Long> data =
+            new HashMap<>();
+
+    data.put("present", present);
+    data.put("absent", absent);
+    data.put("leave", leave);
+
+    return data;
+}
 
 // @PostMapping("/doctor-visit/save")
 // public DoctorVisit saveVisit(
 //         @RequestBody DoctorVisit visit){
-
 //     visit.setVisitTime(LocalTime.now());
-
 //     visit.setStatus("Completed");
-
 //     return repository.save(visit);
 // }
 }

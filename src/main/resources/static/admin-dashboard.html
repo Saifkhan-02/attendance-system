@@ -25,7 +25,7 @@
       /* Navbar */
 
       .top-navbar {
-        height: 90px;
+        min-height: 80px;
         background: #fff;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         position: fixed;
@@ -51,7 +51,7 @@
         background: #0f172a;
         transition: 0.3s;
         overflow-y: auto;
-        z-index: 9999;
+        z-index: 1000;
       }
 
       .sidebar.hide {
@@ -59,12 +59,11 @@
       }
 
       .sidebar .nav-link {
-        color: white;
+        color: #fff;
         padding: 12px 20px;
         margin: 5px 10px;
         border-radius: 8px;
       }
-
       .sidebar .nav-link:hover {
         background: #1e293b;
       }
@@ -134,15 +133,16 @@
         transform: translate(-50%, -50%);
 
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-
       }
-      .profile-card h3, .profile-card h5, .online-status h6{
+      .profile-card h3,
+      .profile-card h5,
+      .online-status h6 {
         text-align: center;
       }
 
-      .profile-card p{
+      .profile-card p {
         text-align: left;
-        padding-left: 20px ;
+        padding-left: 20px;
       }
 
       .profile-pic {
@@ -170,6 +170,7 @@
         gap: 10px;
         flex-wrap: wrap;
       }
+     
 
       /* Mobile */
 
@@ -202,8 +203,11 @@
           width: 80px;
           height: 75px;
         }
+        
       }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
   </head>
 
   <body>
@@ -329,16 +333,16 @@
           </div>
         </div>
 
-        <!-- Verified Visits -->
+        <!-- doctors Visits -->
 
         <div class="col-6 col-md-6 col-lg-3">
           <div class="card dashboard-card">
             <div class="card-body text-center">
-              <i class="fas fa-circle-check fa-2x text-info mb-3"></i>
+              <i class="fas fa-hospital fa-2x text-info mb-3"></i>
 
-              <h6 class="text-muted">Verified Visits</h6>
+              <h6 class="text-muted">Doctor Visits</h6>
 
-              <div class="count text-info">15</div>
+              <div class="count text-info" id="doctorVisitCount">0</div>
             </div>
           </div>
         </div>
@@ -397,6 +401,85 @@
           </div>
         </div>
       </div>
+      <!-- ================= Add Charts ================= -->
+
+       <div class="row mt-4">
+
+        <div class="col-lg-5">
+      <div class="card shadow-sm mt-4 mb-4">
+        <div
+          class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+        >
+          <span>Doctor Visits Trend</span>
+
+          <select
+            id="chartType"
+            class="form-select form-select-sm"
+            style="width: 120px"
+          >
+            <option value="monthly">Monthly</option>
+
+            <option value="daily">Daily</option>
+          </select>
+        </div>
+        <div class="card-body">
+          <div style="height: 350px">
+            <canvas id="doctorVisitChart"></canvas>
+          </div>
+        </div>
+      </div>
+       </div>
+
+
+      <div class="col-lg-3">
+
+    <div class="card shadow-sm mt-4 mb-4">
+
+        <div class="card-header bg-success text-white">
+            Attendance Status
+        </div>
+
+        <div class="card-body">
+
+            <canvas id="attendanceChart"></canvas>
+
+            <div class="mt-3 small text-center">
+    <div>Present: <span id="presentCount">0</span></div>
+    <div>Absent: <span id="absentCount">0</span></div>
+    <div>Leave: <span id="leaveCount">0</span></div>
+</div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="col-lg-4">
+
+    <div class="card shadow-sm mt-4 mb-4">
+
+        <div class="card-header bg-info text-white">
+            Monthly Expenses
+        </div>
+
+        <div class="card-body">
+
+            <div style="height:350px">
+                <canvas id="expenseChart"></canvas>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+       
+      
+       </div>
+       
+
       <!-- ================= LIVE EMPLOYEE TRACKING ================= -->
 
       <div class="card dashboard-card mb-4">
@@ -450,6 +533,41 @@
           </div>
         </div>
       </div>
+      <!-- ================= doctor visit table  ================= -->
+
+      <div class="card shadow-sm mt-4 mb-4">
+        <div
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <h5 class="mb-0">Doctor Visits</h5>
+
+          <input
+            type="text"
+            id="doctorSearch"
+            class="form-control w-25"
+            placeholder="Search Employee"
+          />
+        </div>
+
+        <div class="card-body">
+          <div style="max-height: 400px; overflow-y: auto">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Employee</th>
+                  <th>Doctor</th>
+                  <th>Hospital</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+
+              <tbody id="doctorVisitTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
       <!-- ================= RECENT ACTIVITIES ================= -->
 
@@ -470,7 +588,7 @@
           </ul>
         </div>
       </div>
-    </div>
+    </di>
 
     <!-- ================= BOOTSTRAP JS ================= -->
 
@@ -579,6 +697,334 @@
           profileModal.style.display = "none";
         }
       });
+    </script>
+    <script>
+      async function loadDoctorVisitCount() {
+        try {
+          const response = await fetch("/doctor-visit/count");
+
+          const count = await response.text();
+
+          document.getElementById("doctorVisitCount").innerText = count;
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      async function loadDoctorVisits() {
+        const response = await fetch("/doctor-visit/top10");
+
+        const visits = await response.json();
+
+        let html = "";
+
+        visits.forEach((v) => {
+          html += `
+            <tr>
+                <td>${v.employeeName || ""}</td>
+                <td>${v.doctorName || ""}</td>
+                <td>${v.hospitalName || ""}</td>
+                <td>${v.visitDate || ""}</td>
+                <td>${v.visitTime || ""}</td>
+                <td>${v.status || ""}</td>
+            </tr>
+        `;
+        });
+
+        document.getElementById("doctorVisitTableBody").innerHTML = html;
+      }
+
+      document
+        .getElementById("doctorSearch")
+        .addEventListener("keyup", async function () {
+          const keyword = this.value.trim();
+
+          if (keyword === "") {
+            loadDoctorVisits();
+            return;
+          }
+
+          const response = await fetch(`/doctor-visit/search/${keyword}`);
+
+          const visits = await response.json();
+
+          let html = "";
+
+          visits.forEach((v) => {
+            html += `
+        <tr>
+            <td>${v.employeeName || ""}</td>
+            <td>${v.doctorName || ""}</td>
+            <td>${v.hospitalName || ""}</td>
+            <td>${v.visitDate || ""}</td>
+            <td>${v.visitTime || ""}</td>
+            <td>${v.status || ""}</td>
+        </tr>
+        `;
+          });
+
+          document.getElementById("doctorVisitTableBody").innerHTML = html;
+        });
+
+        let doctorVisitChart = null;
+
+      async function loadDoctorVisitChart(url = "/doctor-visit/chart-data") {
+        const response = await fetch(url);
+
+        const chartData = await response.json();
+
+        const labels = [];
+        const data = [];
+
+    chartData.forEach((item) => {
+
+    const value = item[0];
+
+    if (url.includes("daily")) {
+
+        const date = new Date(value);
+
+        labels.push(
+            date.toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: 'short'
+            })
+        );
+        
+
+    } else {
+
+        const parts = value.split("-");
+
+        const months = {
+            "01":"Jan",
+            "02":"Feb",
+            "03":"Mar",
+            "04":"Apr",
+            "05":"May",
+            "06":"Jun",
+            "07":"Jul",
+            "08":"Aug",
+            "09":"Sep",
+            "10":"Oct",
+            "11":"Nov",
+            "12":"Dec"
+        };
+
+        labels.push(months[parts[1]]);
+    }
+
+    data.push(item[1]);
+
+});
+
+        const ctx = document.getElementById("doctorVisitChart");
+
+        new Chart(ctx, {
+          type: "line",
+
+          data: {
+            labels: labels,
+
+            datasets: [
+              {
+                label: "Doctor Visits",
+
+                data: data,
+
+                borderWidth: 3,
+
+                tension: 0.4,
+
+                fill: false,
+              },
+            ],
+          },
+
+          options: {
+            responsive: true,
+
+            maintainAspectRatio: false,
+          },
+        });
+      }
+
+      document
+        .getElementById("chartType")
+        .addEventListener("change", function () {
+          if (this.value === "daily") {
+            loadDoctorVisitChart("/doctor-visit/chart-data-daily");
+          } else {
+            loadDoctorVisitChart("/doctor-visit/chart-data");
+          }
+        });
+
+        async function loadAttendanceChart() {
+
+    const response =
+        await fetch('/attendance/chart-data');
+
+    const data =
+        await response.json();
+
+    const ctx =
+        document.getElementById(
+            'attendanceChart'
+        );
+
+    new Chart(ctx, {
+
+        type: 'doughnut',
+
+        data: {
+
+            labels: [
+                'Present',
+                'Absent',
+                'Leave'
+            ],
+
+            datasets: [{
+
+                data: [
+                    data.present,
+                    data.absent,
+                    data.leave
+                ],
+
+                backgroundColor: [
+                    '#28a745',
+                    '#dc3545',
+                    '#ffc107'
+                ]
+            }]
+        },
+
+        options: {
+
+            responsive: true,
+
+            plugins: {
+
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    document.getElementById("presentCount").innerText =
+    data.present;
+
+document.getElementById("absentCount").innerText =
+    data.absent;
+
+document.getElementById("leaveCount").innerText =
+    data.leave;
+}
+
+async function loadExpenseChart() {
+
+    const response =
+        await fetch('/expenses/chart-data');
+
+    const data =
+        await response.json();
+
+    const labels = data.map(item => {
+
+    const month = item[0];
+
+    const months = {
+        "01": "Jan",
+        "02": "Feb",
+        "03": "Mar",
+        "04": "Apr",
+        "05": "May",
+        "06": "Jun",
+        "07": "Jul",
+        "08": "Aug",
+        "09": "Sep",
+        "10": "Oct",
+        "11": "Nov",
+        "12": "Dec"
+    };
+
+    const parts = month.split("-");
+
+    return months[parts[1]] + " " + parts[0];
+});
+
+    const amounts =
+        data.map(item => item[1]);
+
+      Chart.register(ChartDataLabels);
+
+    const ctx =
+        document.getElementById('expenseChart');
+
+    new Chart(ctx, {
+
+        type: 'bar',
+
+        data: {
+
+            labels: labels,
+
+            datasets: [{
+
+                label: 'Expenses (₹)',
+
+                data: amounts,
+
+                backgroundColor:
+                    '#36A2EB',
+
+              barPercentage:0.8,
+              categoryPercentage:0.9
+            }]
+        },
+
+        options: {
+
+            responsive: true,
+            maintainAspectRatio:false,
+
+            plugins: {
+
+    legend: {
+        display: true
+    },
+
+    datalabels: {
+        anchor: 'end',
+        align: 'top',
+        color: '#000',
+        font: {
+            weight: 'bold',
+            size: 12
+        },
+        formatter: function(value) {
+            return '₹' + value;
+        }
+    }
+},
+
+            scales: {
+
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+     loadDoctorVisitCount();  
+     loadDoctorVisits();
+     loadDoctorVisitChart();
+     loadAttendanceChart();
+     loadExpenseChart();
     </script>
   </body>
 </html>
