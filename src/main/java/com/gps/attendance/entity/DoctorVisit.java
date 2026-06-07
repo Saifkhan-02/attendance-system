@@ -18,19 +18,26 @@ public class DoctorVisit {
     private String employeeName;
 
     private String workingWith;
-private String workingPersonName;
+    private String workingPersonName;
 
 
 
     private String doctorName;
     private String specialization;
+
+    private String dob;
+    private String anniversaryDate;
     private String hospitalName;
     private String visitDate;
 
     private LocalTime visitTime;
 
-    private String purpose;
     private String location;
+
+    private String landmark;
+    private String latitude;
+    private String longitude;
+    private String accuracy;
 
     private String photo;
     private String doctorResponse;
@@ -60,6 +67,19 @@ private String workingPersonName;
         this.employeeName = employeeName;
     }
 
+    public String getworkingWith(){
+        return workingWith;
+    }
+    public void setworkingWith(String workingWith) {
+        this.workingWith = workingWith;
+    }
+
+    public String getWorkingPersonName() {
+        return workingPersonName;
+    }
+    public void setWorkingPersonName(String workingPersonName) {
+        this.workingPersonName = workingPersonName;
+    }
 
     public String getDoctorName() {
         return doctorName;
@@ -75,6 +95,19 @@ private String workingPersonName;
         this.specialization = specialization;
     }
 
+    public String getDOB() {
+        return dob;
+    }
+    public void setDOB(String dob) {
+        this.dob = dob;
+    }
+
+       public String getAnniversaryDate() {
+        return dob;
+    }
+    public void setAnniversaryDate(String anniversaryDate) {
+        this.anniversaryDate = anniversaryDate;
+    }
     public String getHospitalName() {
         return hospitalName;
     }
@@ -96,18 +129,46 @@ private String workingPersonName;
         this.visitTime = visitTime;
     }
 
-    public String getPurpose() {
-        return purpose;
-    }
-    public void setPurpose(String purpose) {
-        this.purpose = purpose;
-    }
 
     public String getLocation() {
         return location;
     }
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getLandmark(){
+        return landmark;
+    }
+    public void setLandmark(String landmark) {
+        this.landmark = landmark;
+    }
+      public String getLatitude(){
+        return latitude;
+    }
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+      public String getLongitude(){
+        return  longitude;
+    }
+    public void setLongitude(String longitude) {
+        this.longitude =  longitude;
+    }
+
+      public String getAccuracy(){
+        return accuracy;
+    }
+
+    public void setAccuracy(String accuracy) {
+        this.accuracy = accuracy;
+    }
+    public String getPhoto() {
+        return photo;
+    }
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
     public String getDoctorResponse() {

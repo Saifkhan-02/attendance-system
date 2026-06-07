@@ -111,6 +111,16 @@ body{
                 </div>
 
                 <div class="col-md-6">
+    <label class="form-label">DOB</label>
+    <input type="date" id="dob" class="form-control">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Date of Anniversary</label>
+    <input type="date" id="anniversaryDate" class="form-control">
+</div>
+
+                <div class="col-md-6">
                     <label class="form-label">Hospital / Clinic</label>
                     <input type="text" id="hospitalName" class="form-control" 
                      placeholder="Enter hospital or clinic" required>
@@ -148,7 +158,21 @@ body{
                     placeholder="Fetching location..."
                     required
                   />
+                  <input type="hidden" id="latitude">
+<input type="hidden" id="longitude">
+<input type="hidden" id="accuracy">
                 </div>
+
+                <div class="col-md-12">
+    <label class="form-label">Landmark / Clinic Area</label>
+    <input
+        type="text"
+        id="landmark"
+        class="form-control"
+        placeholder="Landmark"
+        required
+    />
+</div>
 
                 <!-- upload photo -->
                 <div class="col-md-12">
@@ -216,6 +240,8 @@ body{
                             <th>Date</th>
                             <th>Time</th>
                             <th>Location</th>
+                            <th>Landmark</th>
+<th>Accuracy</th>
                             <th>Image</th>
                             <th>Response</th>
                             <th>Remarks</th>
@@ -238,7 +264,7 @@ body{
 <script>
 
 let cameraStream = null;
-let capturedPhotoBase64 = "";
+//let capturedPhotoBase64 = "";
 
 window.onload = function () {
     loadDoctorVisitHistory();
@@ -251,6 +277,15 @@ function submitDoctorVisit() {
     alert("Please select Working With");
     return;
 }
+
+    const workingWith = document.getElementById("workingWith").value;
+    if (
+        workingWith != "Individual" &&
+        !document.getElementById("workingPersonName").value.trim()
+    ) {
+        alert("Please enter person Name");
+        return;
+    }
 
     if (!document.getElementById("doctorName").value.trim()) {
     alert("Doctor name required ");
@@ -276,16 +311,25 @@ if (!document.getElementById("locationName").value.trim()) {
     alert("your Current location is not accurate ");
     return;
 }
+if (!document.getElementById("landmark").value.trim()) {
+    alert("Please enter Landmark / Clinic Area");
+    return;
+}
+
+if (Number(document.getElementById("accuracy").value) > 100) {
+    alert("Location accuracy is low. Please go to an open area then refresh/retry.");
+    return;
+}
 
 if (!document.getElementById("doctorResponse").value.trim()) {
     alert("Please select Doctor response First");
     return;
 }
 
-if (!capturedPhotoBase64) {
-    alert("Please upload image first");
-    return;
-}
+//if (!capturedPhotoBase64) {
+  //  alert("Please upload image first");
+    //return;
+//}
 
     const visitData = {
 
@@ -307,6 +351,12 @@ if (!capturedPhotoBase64) {
         specialization:
             document.getElementById("specialization").value,
 
+        dob:
+            document.getElementById("dob").value,
+        
+        anniversaryDate:
+            document.getElementById("anniversaryDate").value,
+
         hospitalName:
             document.getElementById("hospitalName").value,
 
@@ -316,55 +366,53 @@ if (!capturedPhotoBase64) {
         location:
             document.getElementById("locationName").value,
 
+        landmark:
+            document.getElementById("landmark").value,
+
+        latitude:
+            document.getElementById("latitude").value,
+
+        longitude:
+            document.getElementById("longitude").value,
+
+        accuracy:
+            document.getElementById("accuracy").value,
+
         doctorResponse:
             document.getElementById("doctorResponse").value,
 
         remarks:
             document.getElementById("remarks").value,
 
-        photo:
-            capturedPhotoBase64
+       // photo:
+         //   capturedPhotoBase64
     };
 
-    fetch(`${BASE_URL}/doctor-visit/save`, {
+   fetch(`${BASE_URL}/doctor-visit/save`, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify(visitData)
+})
+.then(async response => {
+    const text = await response.text();
 
-        method: "POST",
+    console.log("STATUS:", response.status);
+    console.log("RESPONSE:", text);
+    console.log("SENT DATA:", visitData);
 
-        headers: {
-            "Content-Type": "application/json"
-        },
+    if (!response.ok) {
+        throw new Error(text);
+    }
 
-        body: JSON.stringify(visitData)
-    })
-
-    .then(response => response.json())
-
-    .then(data => {
-
-        alert("Doctor Visit Submitted Successfully");
-
-        document.getElementById("workingWith").value = "";
-        document.getElementById("workingPersonName").value = "";
-        document.getElementById("doctorName").value = "";
-        document.getElementById("specialization").value = "";
-        document.getElementById("hospitalName").value = "";
-        document.getElementById("visitDate").value = "";
-        document.getElementById("locationName").value = "";
-        capturedPhotoBase64 = "";
-        document.getElementById("captureImage").classList.add("d-none");
-        document.getElementById("doctorResponse");
-        document.getElementById("remarks").value = "";
-
-        loadDoctorVisitHistory();
-    })
-
-    .catch(error => {
-
-        console.error(error);
-
-        alert("Failed To Submit Visit");
-
-    });
+    alert("Doctor Visit Submitted Successfully");
+    loadDoctorVisitHistory();
+})
+.catch(error => {
+    console.error("SAVE ERROR:", error);
+    alert("Failed To Submit Visit");
+});
 
 }
 
@@ -425,6 +473,10 @@ function loadDoctorVisitHistory() {
 
                 <td>${visit.specialization || "-"}</td>
 
+
+                <td>${visit.dob || "-"}</td>
+                <td>${visit.anniversaryDate || "-"}</td>
+
                 <td>${visit.hospitalName || "-"}</td>
 
                 <td>${visit.visitDate || "-"}</td>
@@ -432,6 +484,9 @@ function loadDoctorVisitHistory() {
                 <td>${visit.visitTime || "-"}</td>
 
                 <td>${visit.location || "-"}</td>
+
+                <td>${visit.landmark || "-"}</td>
+                <td>${visit.accuracy ? visit.accuracy + " m" : "-"}</td>
 
                 <td>${visit.photo ? `<img src="${visit.photo}" width="60" style="border-radius:8px;">` : "-"} </td>
 
@@ -482,7 +537,62 @@ function openCamera() {
     });
 }
 
-function capturePhoto() {
+
+
+function getCurrentLocation() {
+    const locationInput = document.getElementById("locationName");
+
+    if (!navigator.geolocation) {
+        locationInput.value = "Location not supported";
+        return;
+    }
+
+    locationInput.value = "Fetching location...";
+
+    navigator.geolocation.getCurrentPosition(
+        function (position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const acc = position.coords.accuracy;
+
+            document.getElementById("latitude").value = lat;
+            document.getElementById("longitude").value = lng;
+            document.getElementById("accuracy").value = acc;
+
+          //  if (acc > 100) {
+            //    alert("Location accuracy is low, Go to an open area and then referesh.");
+           // }
+
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1&zoom=18&lat=${lat}&lon=${lng}`)
+                .then(response => response.json())
+                .then(data => {
+                    locationInput.value = data.display_name || "Location found";
+                })
+                .catch(error => {
+                    console.error(error);
+                    locationInput.value = "Location found";
+                });
+        },
+        function (error) {
+            console.error(error);
+            locationInput.value = "";
+            alert("Location permission allow karo");
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 30000,
+            maximumAge: 0
+        }
+    );
+}
+
+</script>
+
+</body>
+</html>
+
+
+<!-- function capturePhoto() {
     const video = document.getElementById("cameraPreview");
     const canvas = document.getElementById("cameraCanvas");
     const img = document.getElementById("capturedImage");
@@ -504,51 +614,4 @@ function capturePhoto() {
     if (cameraStream) {
         cameraStream.getTracks().forEach(track => track.stop());
     }
-}
-
-function getCurrentLocation() {
-    const locationInput = document.getElementById("locationName");
-
-    if (!navigator.geolocation) {
-        locationInput.value = "Location not supported";
-        return;
-    }
-
-    locationInput.value = "Fetching location...";
-
-    navigator.geolocation.getCurrentPosition(
-        function (position) {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data && data.display_name) {
-                        locationInput.value = data.display_name;
-                    } else {
-                        locationInput.value = "Location found";
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    locationInput.value = "Location found";
-                });
-        },
-        function (error) {
-            console.error(error);
-            locationInput.value = "";
-            alert("Location permission allow karo");
-        },
-        {
-            enableHighAccuracy: true,
-            timeout: 15000,
-            maximumAge: 0
-        }
-    );
-}
-
-</script>
-
-</body>
-</html>
+} -->
