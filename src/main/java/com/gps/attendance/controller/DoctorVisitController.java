@@ -131,6 +131,29 @@ public List<DoctorVisit> getUniqueDoctors(@PathVariable Long employeeId) {
             .stream()
             .toList();
 }
+
+@GetMapping("/doctor-visit/daily-target/{employeeId}")
+public Map<String, Object> getDailyTarget(@PathVariable Long employeeId) {
+
+    String today = java.time.LocalDate.now().toString();
+
+    long achievement =
+            repository.countByEmployeeIdAndVisitDate(employeeId, today);
+
+    int target = 25;
+
+    int progress =
+            (int) Math.min((achievement * 100) / target, 100);
+
+    Map<String, Object> data = new HashMap<>();
+
+    data.put("target", target);
+    data.put("achievement", achievement);
+    data.put("progress", progress);
+    data.put("date", today);
+
+    return data;
+}
 // @PostMapping("/doctor-visit/save")
 // public DoctorVisit saveVisit(
 //         @RequestBody DoctorVisit visit){

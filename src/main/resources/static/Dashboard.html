@@ -399,6 +399,52 @@
         </div>
       </div>
 
+         <!--Target VS Achievements -->
+
+      <!-- Target vs Achievement -->
+      <div class="target-achievement-box mt-4">
+        <div class="row g-2">
+          <!-- Target -->
+          <div class="col-6">
+            <div class="info-card target-card">
+              <div class="icon-circle">
+                <i class="fas fa-bullseye"></i>
+              </div>
+              <h4 id="dailyTarget">25</h4>
+              <p>Target</p>
+            </div>
+          </div>
+
+          <!-- Achievement -->
+          <div class="col-6">
+            <div class="info-card achievement-card">
+              <div class="icon-circle">
+                <i class="fas fa-trophy"></i>
+              </div>
+              <h4 id="dailyAchievement">0</h4>
+              <p>Achievement</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="mt-3">
+          <div class="d-flex justify-content-between small mb-1">
+            <span id="dailyProgressText">Progress</span>
+            <span>0%</span>
+          </div>
+
+          <div class="progress" style="height: 8px">
+            <div
+              class="progress-bar bg-success"
+              id="dailyProgressBar"
+              
+              style="width: 0%"
+            ></div>
+          </div>
+        </div>
+      </div>
+
       <!-- SUMMARY Report live -->
 
       <div class="summary-box">
@@ -424,56 +470,18 @@
         </div>
       </div>
 
-      <!--Target VS Achievements -->
-
-      <!-- Target vs Achievement -->
-      <div class="target-achievement-box mt-4">
-        <div class="row g-2">
-          <!-- Target -->
-          <div class="col-6">
-            <div class="info-card target-card">
-              <div class="icon-circle">
-                <i class="fas fa-bullseye"></i>
-              </div>
-              <h4 id="targetCount">25</h4>
-              <p>Target</p>
-            </div>
-          </div>
-
-          <!-- Achievement -->
-          <div class="col-6">
-            <div class="info-card achievement-card">
-              <div class="icon-circle">
-                <i class="fas fa-trophy"></i>
-              </div>
-              <h4 id="achievementCount">18</h4>
-              <p>Achievement</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Progress -->
-        <div class="mt-3">
-          <div class="d-flex justify-content-between small mb-1">
-            <span>Progress</span>
-            <span>72%</span>
-          </div>
-
-          <div class="progress" style="height: 8px">
-            <div
-              class="progress-bar bg-success"
-              role="progressbar"
-              style="width: 72%"
-            ></div>
-          </div>
-        </div>
-      </div>
+     
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+
+      window.onload =function () {
+         loadDailyTargetProgress();
+      };
+
       const employeeName = localStorage.getItem("employeeName");
 
       if (employeeName) {
@@ -481,6 +489,29 @@
       } else {
         window.location.href = "index.html";
       }
+
+      function loadDailyTargetProgress() {
+    const employeeId = localStorage.getItem("employeeId");
+
+    fetch(`${BASE_URL}/doctor-visit/daily-target/${employeeId}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("dailyTarget").innerText =
+                data.target || 25;
+
+            document.getElementById("dailyAchievement").innerText =
+                data.achievement || 0;
+
+            document.getElementById("dailyProgressText").innerText =
+                (data.progress || 0) + "%";
+
+            document.getElementById("dailyProgressBar").style.width =
+                (data.progress || 0) + "%";
+        })
+        .catch(error => {
+            console.error("Daily target error:", error);
+        });
+}
     </script>
   </body>
 </html>

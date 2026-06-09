@@ -16,6 +16,8 @@ public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> 
 
     List<DoctorVisit> findByEmployeeNameContainingIgnoreCase(String keyword);
 
+    long countByEmployeeIdAndVisitDate(Long employeeId, String visitDate);
+
     @Query("""
         SELECT SUBSTRING(d.visitDate,1,7), COUNT(d)
         FROM DoctorVisit d
