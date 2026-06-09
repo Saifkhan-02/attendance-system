@@ -286,6 +286,13 @@
         </li>
 
         <li class="nav-item">
+          <a href="AdminTourApproval.html" class="nav-link">
+            <i class="fa-solid fa-route"></i>
+            Tour Approval
+          </a>
+        </li>
+
+        <li class="nav-item">
           <a href="#" class="nav-link">
             <i class="fas fa-chart-line me-2"></i>
             Reports
@@ -699,18 +706,23 @@
       });
     </script>
     <script>
-      async function loadDoctorVisitCount() {
-        try {
-          const response = await fetch("/doctor-visit/count");
+     async function loadDoctorVisitCount() {
+    try {
+        const response = await fetch("/doctor-visit/count");
 
-          const count = await response.text();
-
-          document.getElementById("doctorVisitCount").innerText = count;
-        } catch (error) {
-          console.error(error);
+        if (!response.ok) {
+            throw new Error("API Error: " + response.status);
         }
-      }
 
+        const count = await response.text();
+
+        document.getElementById("doctorVisitCount").innerText = count;
+
+    } catch (error) {
+        console.error("Doctor Visit Count Error:", error);
+        document.getElementById("doctorVisitCount").innerText = "0";
+    }
+}
       async function loadDoctorVisits() {
         const response = await fetch("/doctor-visit/top10");
 

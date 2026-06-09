@@ -1,32 +1,85 @@
 package com.gps.attendance.entity;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "tour_plan")
 public class TourPlan {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "employee_id")
     private Long employeeId;
 
+    @Column(name = "employee_name")
     private String employeeName;
 
-    private String tourDate;
+    @Column(name = "travel_date")
+    private LocalDate travelDate;
 
-    private String hq;
+    @Column(name = "tour_type")
+    private String tourType;
 
-    private String area;
+    @Column(name = "from_hq")
+    private String fromHq;
 
-    private String purpose;
+    @Column(name = "to_hq")
+    private String toHq;
 
+    @Column(name = "travel_km")
+    private Double travelKm;
+
+    @Column(name = "fare_amount")
+    private Double fareAmount;
+
+    @Column(name = "out_station")
+    private String outStation;
+
+    @Column(name = "da_amount")
+    private Double daAmount;
+
+    @Column(name = "other_amount")
+    private Double otherAmount;
+
+    @Column(name = "remarks")
     private String remarks;
 
+    @Column(name = "status")
     private String status;
+
+    @Column(name = "admin_remark")
+    private String adminRemark;
+
+    @Column(name = "approved_by")
+    private String approvedBy;
+
+    @Column(name = "approved_at")
+    private LocalDateTime approvedAt;
+
+    @Column(name = "edited_by")
+    private String editedBy;
+
+    @Column(name = "edited_at")
+    private LocalDateTime editedAt;
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    public TourPlan() {
+    }
 
     public Long getId() {
         return id;
@@ -52,36 +105,76 @@ public class TourPlan {
         this.employeeName = employeeName;
     }
 
-    public String getTourDate() {
-        return tourDate;
+    public LocalDate getTravelDate() {
+        return travelDate;
     }
 
-    public void setTourDate(String tourDate) {
-        this.tourDate = tourDate;
+    public void setTravelDate(LocalDate travelDate) {
+        this.travelDate = travelDate;
     }
 
-    public String getHq() {
-        return hq;
+    public String getTourType() {
+        return tourType;
     }
 
-    public void setHq(String hq) {
-        this.hq = hq;
+    public void setTourType(String tourType) {
+        this.tourType = tourType;
     }
 
-    public String getArea() {
-        return area;
+    public String getFromHq() {
+        return fromHq;
     }
 
-    public void setArea(String area) {
-        this.area = area;
+    public void setFromHq(String fromHq) {
+        this.fromHq = fromHq;
     }
 
-    public String getPurpose() {
-        return purpose;
+    public String getToHq() {
+        return toHq;
     }
 
-    public void setPurpose(String purpose) {
-        this.purpose = purpose;
+    public void setToHq(String toHq) {
+        this.toHq = toHq;
+    }
+
+    public Double getTravelKm() {
+        return travelKm;
+    }
+
+    public void setTravelKm(Double travelKm) {
+        this.travelKm = travelKm;
+    }
+
+    public Double getFareAmount() {
+        return fareAmount;
+    }
+
+    public void setFareAmount(Double fareAmount) {
+        this.fareAmount = fareAmount;
+    }
+
+    public String getOutStation() {
+        return outStation;
+    }
+
+    public void setOutStation(String outStation) {
+        this.outStation = outStation;
+    }
+
+    public Double getDaAmount() {
+        return daAmount;
+    }
+
+    public void setDaAmount(Double daAmount) {
+        this.daAmount = daAmount;
+    }
+
+    public Double getOtherAmount() {
+        return otherAmount;
+    }
+
+    public void setOtherAmount(Double otherAmount) {
+        this.otherAmount = otherAmount;
     }
 
     public String getRemarks() {
@@ -98,5 +191,53 @@ public class TourPlan {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getAdminRemark() {
+        return adminRemark;
+    }
+
+    public void setAdminRemark(String adminRemark) {
+        this.adminRemark = adminRemark;
+    }
+
+    public String getApprovedBy() {
+        return approvedBy;
+    }
+
+    public void setApprovedBy(String approvedBy) {
+        this.approvedBy = approvedBy;
+    }
+
+    public LocalDateTime getApprovedAt() {
+        return approvedAt;
+    }
+
+    public void setApprovedAt(LocalDateTime approvedAt) {
+        this.approvedAt = approvedAt;
+    }
+
+    public String getEditedBy() {
+        return editedBy;
+    }
+
+    public void setEditedBy(String editedBy) {
+        this.editedBy = editedBy;
+    }
+
+    public LocalDateTime getEditedAt() {
+        return editedAt;
+    }
+
+    public void setEditedAt(LocalDateTime editedAt) {
+        this.editedAt = editedAt;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

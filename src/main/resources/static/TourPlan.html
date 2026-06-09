@@ -1,255 +1,914 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>Tour Plan</title>
+    <title>Tour Plan</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
 
-<style>
-body{
-    background:#f4f6fb;
+    <style>
+      body {
+        background: #f4f6fb;
+      }
+
+      .top-header {
+        background: linear-gradient(135deg, #0d4f9c, #3f7fe0);
+        color: white;
+        padding: 15px;
+        border-radius: 0 0 25px 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+      }
+
+         .tour-card,
+         .history-card{
+           width:100%;
+           border:none;
+           padding: 15px;
+           margin: auto;
+           border-radius:30px;
+           box-shadow:0 10px 30px rgba(0,0,0,.08);
+        }
+        .tour-card{
+            margin-top: -40px;
+        }
+        .history-card{
+            border-radius:30px;
+            padding:20px;
+        }
+
+        .card-body{
+            padding:15px !important;
+        }
+
+      .btn-submit {
+        background: #0d6efd;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 30px;
+      }
+
+      .btn-submit:hover {
+        background: #0b5ed7;
+      }
+
+      .status-planned {
+        color: #198754;
+        font-weight: 600;
+      }
+
+      .status-completed {
+        color: #2a25ab;
+        font-weight: 600;
+      }
+
+      .status-cancelled {
+        color: #dc3545;
+        font-weight: 600;
+      }
+
+      .dashboard-card{
+    border-radius:30px !important;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition:all .3s ease;
+    }
+    .form-control,
+    .form-select{
+        height: 45px;
+        border-radius: 12px;
+    }
+    textarea.form-control{
+        height: 100px;
+    }
+
+.dashboard-card:hover{
+    transform:translateY(-5px);
 }
 
-.top-header{
-    background:linear-gradient(135deg,#0d4f9c,#3f7fe0);
-    color:white;
-    padding:25px;
-    border-radius:0 0 25px 25px;
-    box-shadow:0 5px 20px rgba(0,0,0,.15);
-}
-
-.tour-card,
-.history-card{
-    border:none;
+.icon-circle{
+    width:70px;
+    height:70px;
     border-radius:20px;
-    box-shadow:0 10px 30px rgba(0,0,0,.08);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:28px;
 }
 
-.form-control,
-.form-select{
-    border-radius:12px;
-    padding:12px;
+.km-icon{
+    background:#dbeafe;
+    color:#2563eb;
 }
 
-.btn-submit{
-    background:#0d6efd;
-    border:none;
-    border-radius:12px;
-    padding:12px 30px;
+.fare-icon{
+    background:#dcfce7;
+    color:#16a34a;
 }
 
-.btn-submit:hover{
-    background:#0b5ed7;
+.da-icon{
+    background:#ffedd5;
+    color:#ea580c;
 }
 
-.status-planned{
-    color:#198754;
+.expense-icon{
+    background:#fee2e2;
+    color:#dc2626;
+}
+
+.km-title,
+.km-value{
+    color:#2563eb;
+}
+
+.fare-title,
+.fare-value{
+    color:#16a34a;
+}
+
+.da-title,
+.da-value{
+    color:#ea580c;
+}
+
+.expense-title,
+.expense-value{
+    color:#dc2626;
+}
+
+.dashboard-card h6{
+    font-size:14px;
     font-weight:600;
 }
 
-.status-completed{
-    color:#2a25ab;
-    font-weight:600;
+.dashboard-card h2{
+    font-size:30px;
+    font-weight:700;
+}
+.btn-pdf{
+    padding:8px 15px;
+    font-size:14px;
+    border-radius:10px;
+}
+.filter-input{
+    height: 38px;
+    font-size: 13px;
+}
+.filter-btn{
+    height: 38px;
+    font-size: 13px;
+    border-radius: 8px;
+    padding: 0;
 }
 
-.status-cancelled{
-    color:#dc3545;
-    font-weight:600;
+@media(max-width:768px){
+
+   .dashboard-card h6{
+    font-size: 13px;
+   }
+
+   .dashboard-card h2{
+    font-size: 16px;
+
+   }
+   .icon-circle{
+    width: 45px;
+    height: 45px;
+    font-size: 15px;
+   }
+   .text-muted{
+    font-size: 10px;
+   }
+    .history-card{
+        padding:15px;
+    }
+
+    .card-body h4{
+        font-size:15px;
+    }
+      .card-body button{
+        padding:6px 9px;
+        font-size:10px;
+    }
+    .filter-input{
+    height: 34px;
+    font-size: 12px;
+   }
+   
+   .filter-btn{
+    height: 34px;
+    font-size: 12px;
+    }
+    .table-responsive{
+        font-size: 12px;
+    }
+    .table-responsive th, td{
+        padding: 8px 6px;
+        white-space: nowrap;
+    }
 }
-</style>
-</head>
 
-<body>
 
-<div class="top-header text-center">
-    <h2 class="fw-bold mb-1">Tour Plan</h2>
-    <p class="mb-0">Create and track your field tour plans</p>
+    </style>
+  </head>
+
+  <body>
+    <div class="top-header text-center">
+      <h2 class="fw-bold mb-1">Tour Plan</h2>
+      <p class="mb-0">Create and track your field tour plans</p>
+    </div>
+
+    
+
+<!-- Dashboard Cards -->
+<div class="container-fluid px-4 py-4">
+<div class="row g-3 mb-4">
+
+<div class="col-lg-3 col-md-6 col-6">
+    <div class="card dashboard-card shadow-sm border-0">
+        <div class="card-body d-flex align-items-center">
+
+            <div class="icon-circle km-icon">
+                <i class="fa-solid fa-route"></i>
+            </div>
+
+            <div class="ms-3">
+                <h6 class="km-title mb-1">Total KM</h6>
+                <h2 id="totalKm" class="km-value mb-0">0</h2>
+                <small class="text-muted">Kilometers</small>
+            </div>
+
+        </div>
+    </div>
 </div>
 
-<div class="container py-4">
+   <div class="col-lg-3 col-md-6 col-6">
+    <div class="card dashboard-card shadow-sm border-0">
+        <div class="card-body d-flex align-items-center">
 
-    <!-- Tour Plan Form -->
-    <div class="card tour-card">
-        <div class="card-body p-4">
+            <div class="icon-circle fare-icon">
+                <i class="fa-solid fa-money-bill-wave"></i>
+            </div>
 
-            <h4 class="fw-bold mb-4">Create Tour Plan</h4>
-
-            <div class="row g-3">
-
-                <div class="col-md-6">
-                    <label class="form-label">Tour Date</label>
-                    <input type="date" id="tourDate" class="form-control">
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">HQ</label>
-                    <input type="text" id="hq" class="form-control" placeholder="Enter HQ">
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">Area</label>
-                    <input type="text" id="area" class="form-control" placeholder="Enter Area / City">
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">Purpose</label>
-                    <select id="purpose" class="form-select">
-                        <option>Doctor Visit</option>
-                        <option>Chemist Visit</option>
-                        <option>Stockist Visit</option>
-                        <option>Hospital Visit</option>
-                        <option>Market Survey</option>
-                        <option>Other</option>
-                    </select>
-                </div>
-
-                <div class="col-md-12">
-                    <label class="form-label">Remarks</label>
-                    <textarea id="remarks" rows="4" class="form-control" placeholder="Enter remarks"></textarea>
-                </div>
-
-                <div class="col-md-12">
-                    <button class="btn btn-submit text-white" onclick="submitTourPlan()">
-                        <i class="fa-solid fa-paper-plane me-2"></i>
-                        Submit Tour Plan
-                    </button>
-                </div>
-
+            <div class="ms-3">
+                <h6 class="fare-title mb-1">Total Fare</h6>
+                <h2 id="totalFare" class="fare-value mb-0">₹0</h2>
+                <small class="text-muted">Travel Fare</small>
             </div>
 
         </div>
     </div>
+</div>
 
-    <!-- Tour Plan History -->
-    <div class="card history-card mt-4">
-        <div class="card-body">
+   <div class="col-lg-3 col-md-6 col-6">
+    <div class="card dashboard-card shadow-sm border-0">
+        <div class="card-body d-flex align-items-center">
 
-            <h4 class="fw-bold mb-4">Tour Plan History</h4>
+            <div class="icon-circle da-icon">
+                <i class="fa-solid fa-utensils"></i>
+            </div>
 
-            <div class="table-responsive">
-                <table class="table align-middle table-hover">
-                    <thead class="table-primary">
-                        <tr>
-                            <th>Tour Date</th>
-                            <th>HQ</th>
-                            <th>Area</th>
-                            <th>Purpose</th>
-                            <th>Remarks</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="tourHistoryTable"></tbody>
-                </table>
+            <div class="ms-3">
+                <h6 class="da-title mb-1">Total D.A</h6>
+                <h2 id="totalDa" class="da-value mb-0">₹0</h2>
+                <small class="text-muted">Daily Allowance</small>
             </div>
 
         </div>
     </div>
+</div>
+
+   <div class="col-lg-3 col-md-6 col-6">
+    <div class="card dashboard-card shadow-sm border-0">
+        <div class="card-body d-flex align-items-center">
+
+            <div class="icon-circle expense-icon">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+
+            <div class="ms-3">
+                <h6 class="expense-title mb-1">Total Expense</h6>
+                <h2 id="totalExpense" class="expense-value mb-0">₹0</h2>
+                <small class="text-muted">Overall Expense</small>
+            </div>
+
+        </div>
+    </div>
+</div>
+</div>
+</div>
+<div class="container-fluid px-4 py-4">
+<div class="row">
+ <div class="col-12">
+
+<!-- Tour Form -->
+
+<div class="card tour-card">
+
+    <div class="card-body p-4">
+
+        <h4 class="fw-bold mb-4">
+            <i class="fa-solid fa-route me-2"></i>
+            Create Tour Plan
+        </h4>
+
+        <div class="row g-3">
+
+            <div class="col-md-6">
+                <label class="form-label">
+                    Employee Name
+                </label>
+
+                <input
+                    type="text"
+                    id="employeeName"
+                    class="form-control"
+                    readonly>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">
+                    Employee ID
+                </label>
+
+                <input
+                    type="text"
+                    id="employeeId"
+                    class="form-control"
+                    readonly>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">
+                    Travel Date
+                </label>
+
+                <input
+                    type="date"
+                    id="travelDate"
+                    class="form-control">
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">
+                    Tour Type
+                </label>
+
+                <select
+                    id="tourType"
+                    class="form-select">
+
+                    <option value="LOCAL">
+                        LOCAL
+                    </option>
+
+                    <option value="OUT_STATION">
+                        OUT STATION
+                    </option>
+
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">
+                    From H.Q
+                </label>
+
+                <select id="fromHq"
+                 class="form-select"
+                  onchange="calculateDistance()">
+
+                    <option value="">
+                        Select From H.Q
+                    </option>
+
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">
+                    To H.Q
+                </label>
+
+                <select id="toHq"
+                 class="form-select" 
+                 onchange="calculateDistance()">
+
+                    <option value="">
+                        Select To H.Q
+                    </option>
+
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">
+                    Travel KM
+                </label>
+
+                <input
+                    type="number"
+                    id="travelKm"
+                    class="form-control"
+                    readonly>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">
+                    Fare Amount
+                </label>
+
+                <input
+                    type="number"
+                    id="fareAmount"
+                    class="form-control"
+                    readonly>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">
+                    Out Station
+                </label>
+
+                <select
+                    id="outStation"
+                    class="form-select">
+
+                    <option value="NO">
+                        NO
+                    </option>
+
+                    <option value="YES">
+                        YES
+                    </option>
+
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">
+                    D.A Amount
+                </label>
+
+                <input
+                    type="number"
+                    id="daAmount"
+                    class="form-control">
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">
+                    Other Amount
+                </label>
+
+                <input
+                    type="number"
+                    id="otherAmount"
+                    class="form-control">
+            </div>
+
+            <div class="col-md-12">
+                <label class="form-label">
+                    Remarks
+                </label>
+
+                <textarea
+                    id="remarks"
+                    rows="4"
+                    class="form-control"></textarea>
+            </div>
+
+            <div class="col-md-12">
+
+                <button
+                    class="btn btn-submit text-white"
+                    onclick="submitTourPlan()">
+
+                    <i class="fa-solid fa-paper-plane me-2"></i>
+
+                    Submit Tour Plan
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Tour Plan History -->
+
+<div class="card history-card mt-4">
+
+
+<div class="card-body">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h4 class="fw-bold mb-0">
+
+            <i class="fa-solid fa-clock-rotate-left me-2"></i>
+
+            Tour Plan History
+
+        </h4>
+
+        <button
+            class="btn btn-danger"
+            onclick="downloadPdf()">
+
+            <i class="fa-solid fa-file-pdf me-2"></i>
+
+            Download PDF
+
+        </button>
+
+    </div>
+
+    <!-- Month Filter -->
+
+  <div class="row mb-3 g-2 align-items-center">
+
+    <div class="col-8 col-md-3 col-lg-2">
+        <input
+            type="month"
+            id="monthFilter"
+            class="form-control filter-input">
+    </div>
+
+    <div class="col-4 col-md-2 col-lg-1">
+        <button
+            class="btn btn-primary filter-btn w-100"
+            onclick="loadTourHistory()">
+            Filter
+        </button>
+    </div>
+
+</div>
+
+    <!-- History Table -->
+
+    <div class="table-responsive">
+
+        <table class="table table-hover align-middle">
+
+            <thead class="table-primary">
+
+                <tr>
+
+                    <th>Employee</th>
+
+                    <th>Date</th>
+
+                    <th>From H.Q</th>
+
+                    <th>To H.Q</th>
+
+                    <th>KM</th>
+
+                    <th>Fare</th>
+
+                    <th>D.A</th>
+
+                    <th>Other</th>
+
+                    <th>Status</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="tourHistoryTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+</div>
+</div>
+</div>
+    
+
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script src="js/config.js"></script>
 
 <script>
-window.onload = loadTourHistory;
+
+const KM_RATE = 2;
+
+window.onload = function () {
+
+    document.getElementById("employeeId").value =
+        localStorage.getItem("employeeId") || "";
+
+    document.getElementById("employeeName").value =
+        localStorage.getItem("employeeName") || "";
+
+    loadHQList();
+    loadTourHistory();
+};
+
+function loadHQList() {
+
+    const employeeId =
+        localStorage.getItem("employeeId");
+
+    fetch(`${BASE_URL}/hq/employee/${employeeId}`)
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            const fromHq =
+                document.getElementById("fromHq");
+
+            const toHq =
+                document.getElementById("toHq");
+
+            fromHq.innerHTML =
+                '<option value="">Select From H.Q</option>';
+
+            toHq.innerHTML =
+                '<option value="">Select To H.Q</option>';
+
+            data.forEach(hq => {
+
+                fromHq.innerHTML +=
+                `<option value="${hq.hqName}">
+                    ${hq.hqName}
+                </option>`;
+
+                toHq.innerHTML +=
+                `<option value="${hq.hqName}">
+                    ${hq.hqName}
+                </option>`;
+            });
+
+        })
+
+        .catch(error => {
+            console.error(error);
+        });
+}
+
+document.addEventListener("change", function (e) {
+
+    if (
+        e.target.id === "fromHq" ||
+        e.target.id === "toHq"
+    ) {
+
+        calculateDistance();
+    }
+
+});
+
 
 function submitTourPlan() {
 
     const tourData = {
-        employeeId: localStorage.getItem("employeeId"),
-        employeeName: localStorage.getItem("employeeName"),
-        tourDate: document.getElementById("tourDate").value,
-        hq: document.getElementById("hq").value,
-        area: document.getElementById("area").value,
-        purpose: document.getElementById("purpose").value,
-        remarks: document.getElementById("remarks").value
+
+        employeeId:
+            localStorage.getItem("employeeId"),
+
+        employeeName:
+            localStorage.getItem("employeeName"),
+
+        travelDate:
+            document.getElementById("travelDate").value,
+
+        tourType:
+            document.getElementById("tourType").value,
+
+        fromHq:
+            document.getElementById("fromHq").value,
+
+        toHq:
+            document.getElementById("toHq").value,
+
+        travelKm:
+            document.getElementById("travelKm").value,
+
+        fareAmount:
+            document.getElementById("fareAmount").value,
+
+        outStation:
+            document.getElementById("outStation").value,
+
+        daAmount:
+            document.getElementById("daAmount").value,
+
+        otherAmount:
+            document.getElementById("otherAmount").value,
+
+        remarks:
+            document.getElementById("remarks").value
     };
 
     fetch(`${BASE_URL}/tour-plan/save`, {
+
         method: "POST",
+
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(tourData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert("Tour Plan Submitted Successfully");
 
-        document.getElementById("tourDate").value = "";
-        document.getElementById("hq").value = "";
-        document.getElementById("area").value = "";
-        document.getElementById("purpose").selectedIndex = 0;
-        document.getElementById("remarks").value = "";
+        body: JSON.stringify(tourData)
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        Swal.fire({
+            icon: "success",
+            title: "Success",
+            text: "Tour Plan Submitted Successfully",
+            confirmButtonColor: "#0d6efd"
+        });
 
         loadTourHistory();
+
     })
+
     .catch(error => {
+
         console.error(error);
-        alert("Failed to submit tour plan");
+
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Failed To Submit Tour Plan"
+        });
+
     });
 }
 
 function loadTourHistory() {
 
-    const employeeId = localStorage.getItem("employeeId");
+    const employeeId =
+        localStorage.getItem("employeeId");
 
-    fetch(`${BASE_URL}/tour-plan/history/${employeeId}`)
+    fetch(
+        `${BASE_URL}/tour-plan/history/${employeeId}`
+    )
+
     .then(response => response.json())
+
     .then(data => {
 
-        const table = document.getElementById("tourHistoryTable");
-        table.innerHTML = "";
+        const table =
+            document.getElementById(
+                "tourHistoryTable"
+            );
 
-        if (data.length === 0) {
-            table.innerHTML = `
-                <tr>
-                    <td colspan="6" class="text-center">
-                        No Tour Plans Found
-                    </td>
-                </tr>
-            `;
-            return;
-        }
+        table.innerHTML = "";
 
         data.forEach(tour => {
 
-            let statusClass = "status-planned";
+            let badgeClass =
+                "status-pending";
 
-            if (tour.status === "Completed") {
-                statusClass = "status-completed";
+            if (
+                tour.status === "APPROVED"
+            ) {
+
+                badgeClass =
+                    "status-approved";
             }
 
-            if (tour.status === "Cancelled") {
-                statusClass = "status-cancelled";
+            if (
+                tour.status === "REJECTED"
+            ) {
+
+                badgeClass =
+                    "status-rejected";
             }
 
             table.innerHTML += `
-                <tr>
-                    <td>${tour.tourDate || "-"}</td>
-                    <td>${tour.hq || "-"}</td>
-                    <td>${tour.area || "-"}</td>
-                    <td>${tour.purpose || "-"}</td>
-                    <td>${tour.remarks || "-"}</td>
-                    <td>
-                        <span class="${statusClass}">
-                            ${tour.status || "Planned"}
-                        </span>
-                    </td>
-                </tr>
+
+            <tr>
+
+                <td>
+                    ${tour.employeeName || "-"}
+                </td>
+
+                <td>
+                    ${tour.travelDate || "-"}
+                </td>
+
+                <td>
+                    ${tour.fromHq || "-"}
+                </td>
+
+                <td>
+                    ${tour.toHq || "-"}
+                </td>
+
+                <td>
+                    ${tour.travelKm || 0}
+                </td>
+
+                <td>
+                    ₹${tour.fareAmount || 0}
+                </td>
+
+                <td>
+                    ₹${tour.daAmount || 0}
+                </td>
+
+                <td>
+                    ₹${tour.otherAmount || 0}
+                </td>
+
+                <td>
+
+                    <span class="${badgeClass}">
+                        ${tour.status || "PENDING"}
+                    </span>
+
+                </td>
+
+            </tr>
+
             `;
         });
+
     })
+
     .catch(error => {
         console.error(error);
     });
 }
-</script>
 
+function downloadPdf() {
+
+    const employeeId =
+        localStorage.getItem("employeeId");
+
+    window.open(
+        `${BASE_URL}/tour-plan/pdf/${employeeId}`
+    );
+}
+
+   async function calculateDistance() {
+
+    const from =
+        document.getElementById("fromHq").value;
+
+    const to =
+        document.getElementById("toHq").value;
+
+    if (!from || !to) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `${BASE_URL}/hq/distance?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
+            );
+
+        const data =
+            await response.json();
+
+        document.getElementById("travelKm").value =
+            data.km;
+
+        document.getElementById("fareAmount").value =
+            data.fare;
+
+    } catch (error) {
+
+        console.error(
+            "Distance Error",
+            error
+        );
+    }
+}
+
+
+</script>
 </body>
 </html>
