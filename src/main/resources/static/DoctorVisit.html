@@ -321,6 +321,7 @@ let capturedPhotoBase64 = "";
 window.onload = function () {
     loadDoctorVisitHistory();
     getCurrentLocation();
+    
 };
 
 function submitDoctorVisit() {
@@ -468,6 +469,8 @@ if (!document.getElementById("landmark").value.trim()) {
         throw new Error(text);
     }
 
+   
+
     alert("Doctor Visit Submitted Successfully");
     loadDoctorVisitHistory();
 })
@@ -476,6 +479,41 @@ if (!document.getElementById("landmark").value.trim()) {
     alert("Failed To Submit Visit");
 });
 
+}
+
+function clearForm() {
+
+    document.getElementById("workingWith").selectedIndex = 0;
+    document.getElementById("workingPersonName").value = "";
+
+    document.getElementById("doctorName").value = "";
+    document.getElementById("specialization").value = "";
+
+    document.getElementById("dob").value = "";
+    document.getElementById("anniversaryDate").value = "";
+
+    document.getElementById("hospitalName").value = "";
+
+    document.getElementById("visitDate").value =
+        new Date().toISOString().split("T")[0];
+
+    document.getElementById("landmark").value = "";
+
+    document.getElementById("doctorResponse").selectedIndex = 0;
+    document.getElementById("remarks").value = "";
+
+    // Image reset
+
+    document.getElementById("capturedImage").src = "";
+    document.getElementById("capturedImage").classList.add("d-none");
+
+    const retakeBtn = document.getElementById("retakeBtn");
+    if (retakeBtn) {
+        retakeBtn.classList.add("d-none");
+    }
+
+    // Location refresh
+    getCurrentLocation();
 }
 
 function loadDoctorVisitHistory() {

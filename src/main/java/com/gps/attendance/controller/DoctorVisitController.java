@@ -145,6 +145,10 @@ public Map<String, Object> getDailyTarget(@PathVariable Long employeeId) {
     int progress =
             (int) Math.min((achievement * 100) / target, 100);
 
+    System.out.println("EMPLOYEE ID: " + employeeId);
+    System.out.println("TODAY: " + today);
+    System.out.println("ACHIEVEMENT: " + achievement);
+
     Map<String, Object> data = new HashMap<>();
 
     data.put("target", target);
