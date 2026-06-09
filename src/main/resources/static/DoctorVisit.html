@@ -193,11 +193,19 @@ body{
         <button type="button" class="btn btn-success d-none" id="captureBtn" onclick="capturePhoto()">
             Capture Photo
         </button>
+        <button type="button"
+        class="btn btn-warning d-none"
+        id="retakeBtn"
+        onclick="retakePhoto()">
+    <i class="fa-solid fa-rotate-right me-2"></i>
+    Retake Image
+</button>
     </div>
 
     <video id="cameraPreview" autoplay playsinline class="d-none" style="width:100%;max-height:260px;border-radius:12px;object-fit:cover;"></video>
     <canvas id="cameraCanvas" class="d-none"></canvas>
     <img id="capturedImage" class="d-none mt-2" style="width:100%;max-height:260px;border-radius:12px;object-fit:cover;">
+    
 </div>
 
                 <!-- <div class="col-md-6">
@@ -308,7 +316,7 @@ body{
 <script>
 
 let cameraStream = null;
-//let capturedPhotoBase64 = "";
+let capturedPhotoBase64 = "";
 
 window.onload = function () {
     loadDoctorVisitHistory();
@@ -370,15 +378,15 @@ if (!document.getElementById("landmark").value.trim()) {
     return;
 }
 
-if (Number(document.getElementById("accuracy").value) > 100) {
-    alert("Location accuracy is low. Please go to an open area then refresh/retry.");
-    return;
-}
+//if (Number(document.getElementById("accuracy").value) > 100) {
+//    alert("Location accuracy is low. Please go to an open area then refresh/retry.");
+//    return;
+//}
 
-if (!document.getElementById("doctorResponse").value.trim()) {
-    alert("Please select Doctor response First");
-    return;
-}
+//if (!document.getElementById("doctorResponse").value.trim()) {
+//    alert("Please select Doctor response First");
+//    return;
+//}
 
 //if (!capturedPhotoBase64) {
   //  alert("Please upload image first");
@@ -432,8 +440,8 @@ if (!document.getElementById("doctorResponse").value.trim()) {
         accuracy:
             document.getElementById("accuracy").value,
 
-        doctorResponse:
-            document.getElementById("doctorResponse").value,
+        //doctorResponse:
+          //  document.getElementById("doctorResponse").value,
 
         remarks:
             document.getElementById("remarks").value,
@@ -545,8 +553,6 @@ function loadDoctorVisitHistory() {
 
                 <td>${visit.photo ? `<img src="${visit.photo}" width="60" style="border-radius:8px;">` : "-"} </td>
 
-                <td>${visit.doctorResponse || "-"}</td>
-
                 <td>${visit.remarks || "-"}</td>
 
                 <td>
@@ -585,6 +591,10 @@ function openCamera() {
         video.classList.remove("d-none");
 
         document.getElementById("captureBtn").classList.remove("d-none");
+        document.getElementById("capturedImage")
+        .classList.add("d-none");
+        document.getElementById("retakeBtn")
+        .classList.add("d-none");
     })
     .catch(function (error) {
         console.error(error);
@@ -592,7 +602,53 @@ function openCamera() {
     });
 }
 
+function capturePhoto() {
+    const video = document.getElementById("cameraPreview");
+    const canvas = document.getElementById("cameraCanvas");
+    const img = document.getElementById("capturedImage");
 
+    if (!video.videoWidth || !video.videoHeight) {
+        alert("Camera ready nahi hai. 2 second wait karke dobara capture karein.");
+        return;
+    }
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    capturedPhotoBase64 = canvas.toDataURL("image/jpeg", 0.8);
+
+    img.src = capturedPhotoBase64;
+    img.classList.remove("d-none");
+
+    video.classList.add("d-none");
+    document.getElementById("captureBtn").classList.add("d-none");
+    document.getElementById("retakeBtn")
+        .classList.remove("d-none");
+
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+    }
+
+    alert("Photo captured successfully");
+}
+
+function retakePhoto() {
+
+    capturedPhotoBase64 = "";
+
+    document.getElementById("capturedImage").src = "";
+
+    document.getElementById("capturedImage")
+            .classList.add("d-none");
+
+    document.getElementById("retakeBtn")
+            .classList.add("d-none");
+
+    openCamera();
+}
 
 function getCurrentLocation() {
     const locationInput = document.getElementById("locationName");
