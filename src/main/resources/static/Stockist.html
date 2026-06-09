@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Stock Management</title>
+<title>Available Stock</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -23,8 +23,7 @@ body{
 }
 
 .summary-card,
-.stock-card,
-.table-card{
+.stock-card{
     border:none;
     border-radius:20px;
     box-shadow:0 10px 30px rgba(0,0,0,.08);
@@ -34,17 +33,6 @@ body{
 .form-select{
     border-radius:12px;
     padding:12px;
-}
-
-.btn-submit{
-    background:#0d6efd;
-    border:none;
-    border-radius:12px;
-    padding:12px 30px;
-}
-
-.btn-submit:hover{
-    background:#0b5ed7;
 }
 
 .status-instock{
@@ -57,21 +45,18 @@ body{
     font-weight:600;
 }
 
-.status-expired{
+.status-out{
     color:#dc3545;
     font-weight:600;
 }
 
-.icon-box{
-    width:50px;
-    height:50px;
-    border-radius:15px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+.stock-box{
     background:#e9f2ff;
-    color:#0d6efd;
-    font-size:22px;
+    color:#0d4f9c;
+    border-radius:15px;
+    padding:18px;
+    font-weight:700;
+    font-size:20px;
 }
 </style>
 </head>
@@ -79,16 +64,15 @@ body{
 <body>
 
 <div class="top-header text-center">
-    <h2 class="fw-bold mb-1">Stock Management</h2>
-    <p class="mb-0">Manage your assigned product stock</p>
+    <h2 class="fw-bold mb-1">Available Stock</h2>
+    <p class="mb-0">View product stock and selling price</p>
 </div>
 
 <div class="container py-4">
 
-    <!-- Summary Cards -->
     <div class="row g-4 mb-4">
 
-        <div class="col-md-3 col-6">
+        <div class="col-md-4 col-6">
             <div class="card summary-card">
                 <div class="card-body text-center">
                     <i class="fa-solid fa-boxes-stacked fa-2x text-primary mb-2"></i>
@@ -98,7 +82,7 @@ body{
             </div>
         </div>
 
-        <div class="col-md-3 col-6">
+        <div class="col-md-4 col-6">
             <div class="card summary-card">
                 <div class="card-body text-center">
                     <i class="fa-solid fa-cubes fa-2x text-success mb-2"></i>
@@ -108,78 +92,40 @@ body{
             </div>
         </div>
 
-        <div class="col-md-3 col-6">
+        <div class="col-md-4 col-12">
             <div class="card summary-card">
                 <div class="card-body text-center">
                     <i class="fa-solid fa-triangle-exclamation fa-2x text-warning mb-2"></i>
-                    <h6>Low Stock</h6>
+                    <h6>Low Stock Products</h6>
                     <h3 class="fw-bold" id="lowStockCount">0</h3>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-3 col-6">
-            <div class="card summary-card">
-                <div class="card-body text-center">
-                    <i class="fa-solid fa-calendar-xmark fa-2x text-danger mb-2"></i>
-                    <h6>Expired</h6>
-                    <h3 class="fw-bold" id="expiredCount">0</h3>
-                </div>
-            </div>
-        </div>
-
     </div>
 
-    <!-- Add Stock Form -->
     <div class="card stock-card">
         <div class="card-body p-4">
 
-            <h4 class="fw-bold mb-4">Add Product Stock</h4>
+            <h4 class="fw-bold mb-4">Check Product Stock</h4>
 
             <div class="row g-3">
 
                 <div class="col-md-6">
-                    <label class="form-label">Product Name</label>
-                    <select id="productName" class="form-select" required>
-                        <!-- <option value="">Select Product</option>
-                        <option value="Paracetamol 500mg">Paracetamol 500mg</option>
-                        <option value="Azithromycin 500mg">Azithromycin 500mg</option>
-                        <option value="Pantoprazole 40mg">Pantoprazole 40mg</option>
-                        <option value="Cetirizine 10mg">Cetirizine 10mg</option>
-                        <option value="Dolo 650">Dolo 650</option> -->
-                    </select> 
+                    <label class="form-label">Select Product</label>
+                    <select id="productId" class="form-select" onchange="showProductStock()">
+                        <option value="">Select Product</option>
+                    </select>
                 </div>
 
-                <div class="col-md-6">
-                    <label class="form-label">Batch Number</label>
-                    <input type="text" id="batchNumber" class="form-control" placeholder="Enter batch number">
+                <div class="col-md-3">
+                    <label class="form-label">Available Units</label>
+                    <div class="stock-box" id="selectedAvailableUnits">0</div>
                 </div>
 
-                <div class="col-md-6">
-                    <label class="form-label">Quantity</label>
-                    <input type="number" id="quantity" class="form-control" placeholder="Enter quantity">
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">Price</label>
-                    <input type="number" id="price" class="form-control" placeholder="Enter price">
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">Expiry Date</label>
-                    <input type="date" id="expiryDate" class="form-control">
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">Remarks</label>
-                    <input type="text" id="remarks" class="form-control" placeholder="Optional remarks">
-                </div>
-
-                <div class="col-md-12">
-                    <button class="btn btn-submit text-white" onclick="addStock()">
-                        <i class="fa-solid fa-plus me-2"></i>
-                        Add Stock
-                    </button>
+                <div class="col-md-3">
+                    <label class="form-label">Selling Price</label>
+                    <div class="stock-box" id="selectedSellingPrice">₹0</div>
                 </div>
 
             </div>
@@ -187,19 +133,16 @@ body{
         </div>
     </div>
 
-    <!-- Stock Table -->
-    <div class="card table-card mt-4">
+    <div class="card stock-card mt-4">
         <div class="card-body">
 
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <h4 class="fw-bold mb-0">Product Stock List</h4>
 
-                <h4 class="fw-bold mb-0">My Stock</h4>
-
-                <button class="btn btn-outline-primary" onclick="loadStock()">
+                <button class="btn btn-outline-primary" onclick="loadGlobalStock()">
                     <i class="fa-solid fa-rotate-right me-2"></i>
                     Refresh
                 </button>
-
             </div>
 
             <div class="table-responsive">
@@ -207,11 +150,8 @@ body{
                     <thead class="table-primary">
                         <tr>
                             <th>Product</th>
-                            <th>Batch</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Expiry</th>
-                            <th>Remarks</th>
+                            <th>Available Units</th>
+                            <th>Selling Price</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -229,143 +169,70 @@ body{
 <script src="js/config.js"></script>
 
 <script>
+let globalStockList = [];
 
-    window.onload = function () {
-        loadProducts();
-        loadStock();
-    };
+window.onload = function () {
+    loadGlobalStock();
+};
 
-    function loadProducts() {
-
-    fetch(`${BASE_URL}/products`)
+function loadGlobalStock() {
+    fetch(`${BASE_URL}/stock/global/products`)
         .then(response => response.json())
         .then(data => {
+            globalStockList = data;
 
-            const dropdown = document.getElementById("productName");
-
-            dropdown.innerHTML = `
-                <option value="">Select Product</option>
-            `;
-
-            data.forEach(product => {
-
-                if (product.status === "Active") {
-                    dropdown.innerHTML += `
-                        <option value="${product.productName}">
-                            ${product.productName}
-                        </option>
-                    `;
-                }
-
-            });
-        })
-        .catch(error => {
-            console.error(error);
-            alert("Failed to load products");
-        });
-}
-
-function addStock() {
-
-    const stockData = {
-        employeeId: localStorage.getItem("employeeId"),
-        employeeName: localStorage.getItem("employeeName"),
-
-        productName: document.getElementById("productName").value,
-        batchNumber: document.getElementById("batchNumber").value,
-        quantity: document.getElementById("quantity").value,
-        price: document.getElementById("price").value,
-        expiryDate: document.getElementById("expiryDate").value,
-        remarks: document.getElementById("remarks").value
-    };
-
-    fetch(`${BASE_URL}/stock/add`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(stockData)
-    })
-    .then(response => response.json())
-    .then(data => {
-
-        alert("Stock Added Successfully");
-
-        document.getElementById("productName").selectedIndex = 0;
-        document.getElementById("batchNumber").value = "";
-        document.getElementById("quantity").value = "";
-        document.getElementById("price").value = "";
-        document.getElementById("expiryDate").value = "";
-        document.getElementById("remarks").value = "";
-
-        loadStock();
-    })
-    .catch(error => {
-        console.error(error);
-        alert("Failed to add stock");
-    });
-}
-
-function loadStock() {
-
-    const employeeId = localStorage.getItem("employeeId");
-
-    fetch(`${BASE_URL}/stock/history/${employeeId}`)
-        .then(response => response.json())
-        .then(data => {
-
+            const dropdown = document.getElementById("productId");
             const table = document.getElementById("stockTable");
 
+            dropdown.innerHTML = `<option value="">Select Product</option>`;
             table.innerHTML = "";
 
             let totalProducts = data.length;
             let totalUnits = 0;
-            let lowStock = 0;
-            let expired = 0;
+            let lowStockCount = 0;
 
             if (data.length === 0) {
                 table.innerHTML = `
                     <tr>
-                        <td colspan="7" class="text-center">
-                            No Stock Records Found
+                        <td colspan="4" class="text-center">
+                            No Stock Found
                         </td>
                     </tr>
                 `;
 
-                updateSummary(0, 0, 0, 0);
+                updateSummary(0, 0, 0);
                 return;
             }
 
-            data.forEach(stock => {
+            data.forEach(product => {
+                const availableUnits = Number(product.availableUnits || 0);
+                const sellingPrice = Number(product.sellingPrice || 0);
 
-                const quantity = Number(stock.quantity || 0);
-                totalUnits += quantity;
+                totalUnits += availableUnits;
 
                 let statusText = "In Stock";
                 let statusClass = "status-instock";
 
-                const today = new Date();
-                const expiryDate = new Date(stock.expiryDate);
-
-                if (stock.expiryDate && expiryDate < today) {
-                    statusText = "Expired";
-                    statusClass = "status-expired";
-                    expired++;
-                }
-                else if (quantity <= 20) {
+                if (availableUnits <= 0) {
+                    statusText = "Out of Stock";
+                    statusClass = "status-out";
+                } else if (availableUnits <= 20) {
                     statusText = "Low Stock";
                     statusClass = "status-low";
-                    lowStock++;
+                    lowStockCount++;
                 }
+
+                dropdown.innerHTML += `
+                    <option value="${product.id}">
+                        ${product.productName}
+                    </option>
+                `;
 
                 table.innerHTML += `
                     <tr>
-                        <td>${stock.productName || "-"}</td>
-                        <td>${stock.batchNumber || "-"}</td>
-                        <td>${stock.quantity || 0}</td>
-                        <td>₹${stock.price || 0}</td>
-                        <td>${stock.expiryDate || "-"}</td>
-                        <td>${stock.remarks || "-"}</td>
+                        <td>${product.productName || "-"}</td>
+                        <td>${availableUnits}</td>
+                        <td>₹${sellingPrice}</td>
                         <td>
                             <span class="${statusClass}">
                                 ${statusText}
@@ -375,12 +242,7 @@ function loadStock() {
                 `;
             });
 
-            updateSummary(
-                totalProducts,
-                totalUnits,
-                lowStock,
-                expired
-            );
+            updateSummary(totalProducts, totalUnits, lowStockCount);
         })
         .catch(error => {
             console.error(error);
@@ -388,14 +250,31 @@ function loadStock() {
         });
 }
 
-function updateSummary(totalProducts, totalUnits, lowStock, expired) {
+function showProductStock() {
+    const productId = document.getElementById("productId").value;
 
-    document.getElementById("totalProducts").innerText = totalProducts;
-    document.getElementById("totalUnits").innerText = totalUnits;
-    document.getElementById("lowStockCount").innerText = lowStock;
-    document.getElementById("expiredCount").innerText = expired;
+    const product = globalStockList.find(
+        item => String(item.id) === String(productId)
+    );
+
+    if (!product) {
+        document.getElementById("selectedAvailableUnits").innerText = "0";
+        document.getElementById("selectedSellingPrice").innerText = "₹0";
+        return;
+    }
+
+    document.getElementById("selectedAvailableUnits").innerText =
+        product.availableUnits || 0;
+
+    document.getElementById("selectedSellingPrice").innerText =
+        "₹" + (product.sellingPrice || 0);
 }
 
+function updateSummary(totalProducts, totalUnits, lowStockCount) {
+    document.getElementById("totalProducts").innerText = totalProducts;
+    document.getElementById("totalUnits").innerText = totalUnits;
+    document.getElementById("lowStockCount").innerText = lowStockCount;
+}
 </script>
 
 </body>

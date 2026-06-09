@@ -103,7 +103,7 @@ public class DoctorVisit {
     }
 
        public String getAnniversaryDate() {
-        return dob;
+        return anniversaryDate;
     }
     public void setAnniversaryDate(String anniversaryDate) {
         this.anniversaryDate = anniversaryDate;

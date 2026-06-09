@@ -8,8 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.gps.attendance.entity.DoctorVisit;
 
-public interface DoctorVisitRepository
-        extends JpaRepository<DoctorVisit, Long> {
+public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> {
 
     List<DoctorVisit> findByEmployeeId(Long employeeId);
 
@@ -18,19 +17,19 @@ public interface DoctorVisitRepository
     List<DoctorVisit> findByEmployeeNameContainingIgnoreCase(String keyword);
 
     @Query("""
-SELECT SUBSTRING(d.visitDate,1,7), COUNT(d)
-FROM DoctorVisit d
-GROUP BY SUBSTRING(d.visitDate,1,7)
-ORDER BY SUBSTRING(d.visitDate,1,7)
-""")
+        SELECT SUBSTRING(d.visitDate,1,7), COUNT(d)
+        FROM DoctorVisit d
+        GROUP BY SUBSTRING(d.visitDate,1,7)
+        ORDER BY SUBSTRING(d.visitDate,1,7)
+    """)
     List<Object[]> getMonthlyVisitStats();
 
-   @Query("""
-SELECT d.visitDate, COUNT(d)
-FROM DoctorVisit d
-GROUP BY d.visitDate
-ORDER BY d.visitDate DESC
-LIMIT 7
-""")
-List<Object[]> getDailyVisitStats();
+    @Query("""
+        SELECT d.visitDate, COUNT(d)
+        FROM DoctorVisit d
+        GROUP BY d.visitDate
+        ORDER BY d.visitDate DESC
+        LIMIT 7
+    """)
+    List<Object[]> getDailyVisitStats();
 }

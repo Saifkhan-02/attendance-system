@@ -1,5 +1,6 @@
 package com.gps.attendance.entity;
 
+import java.math.BigDecimal;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,17 +22,18 @@ public class ProductOrder {
     private Long doctorId;
     private String doctorName;
 
-    private Long stockId;
+    private Long productId;
     private String productName;
 
     private Integer orderQuantity;
+    private BigDecimal sellingPrice;
     private Double orderAmount;
     private String orderDate;
 
     @Column(length = 1000)
     private String remarks;
 
-    private String status;
+    private String status = "Placed";
 
     public Long getId() {
         return id;
@@ -73,12 +75,12 @@ public class ProductOrder {
         this.doctorName = doctorName;
     }
 
-    public Long getStockId() {
-        return stockId;
+    public Long getProductId() {
+        return productId;
     }
 
-    public void setStockId(Long stockId) {
-        this.stockId = stockId;
+    public void setProductId(Long productId) {
+        this.productId = productId;
     }
 
     public String getProductName() {
@@ -99,6 +101,14 @@ public class ProductOrder {
 
     public Double getOrderAmount() {
         return orderAmount;
+    }
+
+    public BigDecimal getSellingPrice() {
+        return sellingPrice;
+    }
+
+    public void setSellingPrice(BigDecimal sellingPrice) {
+        this.sellingPrice = sellingPrice;
     }
 
     public void setOrderAmount(Double orderAmount) {

@@ -195,24 +195,40 @@
               <div class="detail-value" id="modalHospital">-</div>
             </div>
 
-            <div class="mb-3">
+            <!-- <div class="mb-3">
               <div class="detail-label">Mobile</div>
               <div class="detail-value" id="modalMobile">-</div>
-            </div>
+            </div> -->
 
             <div class="mb-3">
-              <div class="detail-label">Area</div>
+              <div class="detail-label">Landmark/Area</div>
               <div class="detail-value" id="modalArea">-</div>
             </div>
 
             <div class="mb-3">
-              <div class="detail-label">Address</div>
-              <div class="detail-value" id="modalAddress">-</div>
+              <div class="detail-label">Location</div>
+              <div class="detail-value" id="modalLocation">-</div>
             </div>
 
-            <a id="callNowBtn" href="#" class="btn btn-call w-100">
-              <i class="fa-solid fa-phone me-2"></i>
-              Call Now
+
+            <div class="mb-3">
+    <div class="detail-label">DOB</div>
+    <div class="detail-value" id="modalDob">-</div>
+</div>
+
+<div class="mb-3">
+    <div class="detail-label">Anniversary Date</div>
+    <div class="detail-value" id="modalAnniversary">-</div>
+</div>
+
+<div class="mb-3">
+    <div class="detail-label">Last Visit Date</div>
+    <div class="detail-value" id="modalVisitDate">-</div>
+</div>
+
+            <a id="callNowBtn" href="#">
+             
+            
             </a>
           </div>
         </div>
@@ -225,114 +241,133 @@
 
     <script>
       let doctors = [];
-
+      let currentDoctorList = [];
       window.onload = loadDoctors;
 
       function loadDoctors() {
         const employeeId = localStorage.getItem("employeeId");
 
-        fetch(`${BASE_URL}/doctor/assigned/${employeeId}`)
+        fetch(`${BASE_URL}/doctor-visit/unique-doctors/${employeeId}`)
           .then((response) => response.json())
           .then((data) => {
             doctors = data;
             displayDoctors(doctors);
           });
-
-        displayDoctors(doctors);
+          
       }
 
       function displayDoctors(list) {
-        const container = document.getElementById("doctorList");
+    const container = document.getElementById("doctorList");
 
-        container.innerHTML = "";
+    container.innerHTML = "";
+    currentDoctorList = list;
 
-        if (list.length === 0) {
-          container.innerHTML = `
+    if (!list || list.length === 0) {
+        container.innerHTML = `
             <div class="col-12">
                 <div class="alert alert-warning text-center">
-                    No assigned doctors found
+                    No doctors found
                 </div>
             </div>
         `;
+        return;
+    }
 
-          return;
-        }
-
-        list.forEach((doctor) => {
-          container.innerHTML += `
+    list.forEach((doctor, index) => {
+        container.innerHTML += `
             <div class="col-md-6 col-lg-4">
-
                 <div class="card doctor-card h-100"
-                     onclick='openDoctorModal(${JSON.stringify(doctor)})'>
+                     onclick="openDoctorFromList(${index})">
 
                     <div class="card-body">
 
                         <div class="d-flex align-items-center gap-3 mb-3">
-
                             <div class="icon-box">
                                 <i class="fa-solid fa-user-doctor"></i>
                             </div>
 
                             <div>
                                 <h5 class="fw-bold mb-1">
-                                    ${doctor.doctorName}
+                                    ${doctor.doctorName || "-"}
                                 </h5>
                                 <p class="text-muted mb-0">
-                                    ${doctor.specialization}
+                                    ${doctor.specialization || "-"}
                                 </p>
                             </div>
-
                         </div>
 
                         <p class="mb-1">
                             <i class="fa-solid fa-hospital me-2 text-primary"></i>
-                            ${doctor.clinicName}
+                            ${doctor.hospitalName || "-"}
                         </p>
 
                         <p class="mb-1">
                             <i class="fa-solid fa-location-dot me-2 text-danger"></i>
-                            ${doctor.city}
+                            ${doctor.landmark || doctor.location || "-"}
                         </p>
 
+                        
+
                         <p class="mb-0">
-                            <i class="fa-solid fa-phone me-2 text-success"></i>
-                            ${doctor.phone}
+                            <i class="fa-solid fa-calendar me-2 text-success"></i>
+                            ${doctor.visitDate || "-"}
                         </p>
 
                     </div>
-
                 </div>
-
             </div>
         `;
-        });
-      }
+    });
+}
+function openDoctorFromList(index) {
+    const doctor = currentDoctorList[index];
 
-      function openDoctorModal(doctor) {
-        document.getElementById("modalDoctorName").innerText =
-          doctor.doctorName || "-";
+    if (!doctor) {
+        alert("Doctor details not found");
+        return;
+    }
 
-        document.getElementById("modalSpecialization").innerText =
-          doctor.specialization || "-";
+    openDoctorModal(doctor);
+}
+ function openDoctorModal(doctor) {
+    document.getElementById("modalDoctorName").innerText =
+        doctor.doctorName || "-";
 
-        document.getElementById("modalHospital").innerText =
-          doctor.clinicName || "-";
+    document.getElementById("modalSpecialization").innerText =
+        doctor.specialization || "-";
 
-        document.getElementById("modalMobile").innerText = doctor.phone || "-";
+    document.getElementById("modalHospital").innerText =
+        doctor.hospitalName || "-";
 
-        document.getElementById("modalArea").innerText = doctor.city || "-";
+    //document.getElementById("modalMobile").innerText =
+      //  doctor.mobile || doctor.phone || "-";
 
-        document.getElementById("modalAddress").innerText =
-          doctor.address || "-";
+    document.getElementById("modalArea").innerText =
+        doctor.landmark || "-";
 
-        document.getElementById("callNowBtn").href = `tel:${doctor.phone}`;
+    document.getElementById("modalLocation").innerText =
+        doctor.location || "-";
 
-        const modal = new bootstrap.Modal(
-          document.getElementById("doctorModal"),
-        );
+    document.getElementById("modalDob").innerText =
+        doctor.dob || "-";
 
-        modal.show();
-      }
+    document.getElementById("modalAnniversary").innerText =
+        doctor.anniversaryDate || "-";
+
+    document.getElementById("modalVisitDate").innerText =
+        doctor.visitDate || "-";
+
+    const mobile = doctor.mobile || doctor.phone;
+
+    document.getElementById("callNowBtn").href =
+        mobile ? `tel:${mobile}` : "#";
+
+    const modal = new bootstrap.Modal(
+        document.getElementById("doctorModal")
+    );
+
+    modal.show();
+}      
 
       function searchDoctors() {
         const keyword = document
@@ -342,7 +377,7 @@
         const filtered = doctors.filter(
           (doctor) =>
             doctor.doctorName.toLowerCase().includes(keyword) ||
-            doctor.city.toLowerCase().includes(keyword) ||
+           (doctor.landmark || doctor.location || "").toLowerCase().includes(keyword) ||
             doctor.specialization.toLowerCase().includes(keyword),
         );
 

@@ -60,6 +60,13 @@ body{
     color:#dc3545;
     font-weight:600;
 }
+.stock-box{
+    background:#e9f2ff;
+    color:#0d4f9c;
+    border-radius:15px;
+    padding:15px;
+    font-weight:700;
+}
 </style>
 </head>
 
@@ -193,7 +200,7 @@ body{
     <img id="capturedImage" class="d-none mt-2" style="width:100%;max-height:260px;border-radius:12px;object-fit:cover;">
 </div>
 
-                <div class="col-md-6">
+                <!-- <div class="col-md-6">
                     <label class="form-label">Doctor Response</label>
                     <select id="doctorResponse" class="form-select">
                         <option>Positive</option>
@@ -201,7 +208,42 @@ body{
                         <option>Negative</option>
                         <option>Follow-up Required</option>
                     </select>
-                </div>
+                </div> -->
+
+                <!-- <hr class="my-4"> -->
+<!-- 
+<h4 class="fw-bold mb-3">Order Details</h4>
+
+<div class="col-md-6">
+    <label class="form-label">Product</label>
+    <select id="stockId" class="form-select" onchange="loadAvailableStock()">
+        <option value="">Select Product</option>
+    </select>
+    <input type="hidden" id="productName">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Available Stock</label>
+    <div class="stock-box" id="availableStock">
+        0 Units
+    </div>
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Order Quantity</label>
+    <input type="number"
+           id="orderQuantity"
+           class="form-control"
+           placeholder="Enter order quantity">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">Order Amount</label>
+    <input type="number"
+           id="orderAmount"
+           class="form-control"
+           placeholder="Enter order amount">
+</div> -->
 
                 <div class="col-md-12">
                     <label class="form-label">Remarks</label>
@@ -236,12 +278,14 @@ body{
                             <th>Person Name</th>    
                             <th>Dr./Chemist</th>
                             <th>Specialization</th>
+                            <th>DOB</th>
+                            <th>DOA</th>
                             <th>Hospital/Clinic</th>
                             <th>Date</th>
                             <th>Time</th>
                             <th>Location</th>
                             <th>Landmark</th>
-<th>Accuracy</th>
+                            <th>Accuracy</th>
                             <th>Image</th>
                             <th>Response</th>
                             <th>Remarks</th>
@@ -294,6 +338,16 @@ function submitDoctorVisit() {
 
 if (!document.getElementById("specialization").value.trim()) {
     alert("Please fill Specialization First");
+    return;
+}
+
+if (!document.getElementById("dob").value) {
+    alert("Please select DOB");
+    return;
+}
+
+if (!document.getElementById("anniversaryDate").value) {
+    alert("Please select DOA");
     return;
 }
 
@@ -436,7 +490,7 @@ function loadDoctorVisitHistory() {
 
             table.innerHTML = `
                 <tr>
-                    <td colspan="12" class="text-center">
+                    <td colspan="16" class="text-center">
                         No Doctor Visits Found
                     </td>
                 </tr>
@@ -475,6 +529,7 @@ function loadDoctorVisitHistory() {
 
 
                 <td>${visit.dob || "-"}</td>
+                
                 <td>${visit.anniversaryDate || "-"}</td>
 
                 <td>${visit.hospitalName || "-"}</td>
@@ -592,26 +647,4 @@ function getCurrentLocation() {
 </html>
 
 
-<!-- function capturePhoto() {
-    const video = document.getElementById("cameraPreview");
-    const canvas = document.getElementById("cameraCanvas");
-    const img = document.getElementById("capturedImage");
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    capturedPhotoBase64 = canvas.toDataURL("image/jpeg", 0.8);
-
-    img.src = capturedPhotoBase64;
-    img.classList.remove("d-none");
-
-    video.classList.add("d-none");
-    document.getElementById("captureBtn").classList.add("d-none");
-
-    if (cameraStream) {
-        cameraStream.getTracks().forEach(track => track.stop());
-    }
-} -->

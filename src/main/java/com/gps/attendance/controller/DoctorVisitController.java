@@ -1,14 +1,10 @@
 package com.gps.attendance.controller;
 
 import java.time.LocalTime;
-import java.util.List;
-
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import com.gps.attendance.repository.AttendanceRepository;
-import com.gps.attendance.repository.LeaveRequestRepository;
-import com.gps.attendance.repository.EmployeeRepository;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +16,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gps.attendance.entity.DoctorVisit;
+import com.gps.attendance.repository.AttendanceRepository;
 import com.gps.attendance.repository.DoctorVisitRepository;
+import com.gps.attendance.repository.EmployeeRepository;
+import com.gps.attendance.repository.LeaveRequestRepository;
 
 
 
@@ -118,7 +117,20 @@ public Map<String, Long> getAttendanceChartData() {
 
     return data;
 }
-
+@GetMapping("/doctor-visit/unique-doctors/{employeeId}")
+public List<DoctorVisit> getUniqueDoctors(@PathVariable Long employeeId) {
+    return repository.findByEmployeeId(employeeId)
+            .stream()
+            .filter(v -> v.getDoctorName() != null && !v.getDoctorName().isBlank())
+            .collect(Collectors.toMap(
+                    DoctorVisit::getDoctorName,
+                    v -> v,
+                    (oldValue, newValue) -> newValue
+            ))
+            .values()
+            .stream()
+            .toList();
+}
 // @PostMapping("/doctor-visit/save")
 // public DoctorVisit saveVisit(
 //         @RequestBody DoctorVisit visit){
