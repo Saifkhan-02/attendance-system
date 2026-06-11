@@ -10,4 +10,10 @@ public interface TourPlanRepository
         extends JpaRepository<TourPlan, Long> {
 
     List<TourPlan> findByEmployeeId(Long employeeId);
+
+    List<TourPlan> findByStatus(String status);
+
+    long countByStatus(String status);
+    
+
 }
