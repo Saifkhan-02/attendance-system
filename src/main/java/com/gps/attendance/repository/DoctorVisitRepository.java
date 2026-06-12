@@ -17,6 +17,7 @@ public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> 
     List<DoctorVisit> findByEmployeeNameContainingIgnoreCase(String keyword);
 
     long countByEmployeeIdAndVisitDate(Long employeeId, String visitDate);
+    long countByEmployeeIdAndVisitDateStartingWith(Long employeeId, String month);
 
     @Query("""
         SELECT SUBSTRING(d.visitDate,1,7), COUNT(d)
@@ -34,4 +35,13 @@ public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> 
         LIMIT 7
     """)
     List<Object[]> getDailyVisitStats();
+
+    // Count distinct doctors by employee and month
+    @Query("""
+    SELECT COUNT(DISTINCT d.doctorName)
+    FROM DoctorVisit d
+    WHERE d.employeeId = :employeeId
+    AND d.visitDate LIKE CONCAT(:month, '%')
+""")
+long countDistinctDoctorByEmployeeAndMonth(Long employeeId, String month);
 }

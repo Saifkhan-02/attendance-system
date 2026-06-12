@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Support</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+body{
+    background:#f4f6fb;
+}
+
+.top-header{
+    background:linear-gradient(135deg,#006b2e,#74b843);
+    color:white;
+    padding:25px;
+    border-radius:0 0 25px 25px;
+    box-shadow:0 5px 20px rgba(0,107,46,.25);
+}
+
+.support-card,
+.info-card{
+    border:none;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.form-control,
+.form-select{
+    border-radius:12px;
+    padding:12px;
+}
+
+.btn-submit{
+    background:#006b2e;
+    border:none;
+    border-radius:12px;
+    padding:12px 30px;
+}
+
+.btn-submit:hover{
+    background:#004b22;
+}
+
+.icon-box{
+    width:55px;
+    height:55px;
+    border-radius:16px;
+    background:#eaf7e8;
+    color:#006b2e;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+}
+
+.contact-box{
+    background:#f8fbff;
+    border-radius:16px;
+    padding:16px;
+}
+.back-btn{
+    width:40px;
+    height:40px;
+    padding:0px 5px;
+    border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="top-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <button class="btn btn-light btn-sm back-btn" 
+                onclick="window.location.href='Dashboard.html'">
+            <i class="fa-solid fa-arrow-left me-2"></i>
+            
+        </button>
+
+        <div class="text-center flex-grow-1">
+            <h2 class="fw-bold mb-1">Support</h2>
+            <p class="mb-0">Raise your issue or contact admin</p>
+        </div>
+
+        <div style="width:90px;"></div>
+    </div>
+</div>
+
+<div class="container py-4">
+
+    <div class="row g-4">
+
+        <div class="col-lg-8">
+            <div class="card support-card">
+                <div class="card-body p-4">
+
+                    <h4 class="fw-bold mb-3">Submit Support Request</h4>
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <label class="form-label">Employee Name</label>
+                            <input type="text" id="employeeName" class="form-control" readonly>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Issue Type</label>
+                            <select id="issueType" class="form-select">
+                                <option value="">Select Issue Type</option>
+                                <option>Login Issue</option>
+                                <option>Attendance Issue</option>
+                                <option>Doctor Visit Issue</option>
+                                <option>Order / Stock Issue</option>
+                                <option>Expense Issue</option>
+                                <option>App Bug</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Priority</label>
+                            <select id="priority" class="form-select">
+                                <option>Normal</option>
+                                <option>High</option>
+                                <option>Urgent</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Contact Number</label>
+                            <input type="tel" id="contactNumber" class="form-control" placeholder="Enter contact number">
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">Issue Description</label>
+                            <textarea id="description" rows="5" class="form-control"
+                                      placeholder="Describe your issue..."></textarea>
+                        </div>
+
+                        <div class="col-md-12">
+                            <button class="btn btn-submit text-white" onclick="submitSupportRequest()">
+                                <i class="fa-solid fa-paper-plane me-2"></i>
+                                Submit Request
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card info-card mb-4">
+                <div class="card-body p-4">
+
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="icon-box">
+                            <i class="fa-solid fa-headset"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0">Need Help?</h5>
+                            <small class="text-muted">Contact support team</small>
+                        </div>
+                    </div>
+
+                    <div class="contact-box mb-3">
+                        <strong>Email</strong>
+                        <p class="mb-0">support@inflixpharma.com</p>
+                    </div>
+
+                    <div class="contact-box mb-3">
+                        <strong>Phone</strong>
+                        <p class="mb-0">+91 00000 00000</p>
+                    </div>
+
+                    <div class="contact-box">
+                        <strong>Timing</strong>
+                        <p class="mb-0">10:00 AM - 6:00 PM</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card info-card">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Quick Tips</h5>
+
+                    <p class="mb-2">
+                        <i class="fa-solid fa-circle-check text-success me-2"></i>
+                        Refresh page before reporting issue.
+                    </p>
+
+                    <p class="mb-2">
+                        <i class="fa-solid fa-circle-check text-success me-2"></i>
+                        Allow location/camera permission.
+                    </p>
+
+                    <p class="mb-0">
+                        <i class="fa-solid fa-circle-check text-success me-2"></i>
+                        Add clear details for faster support.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/config.js"></script>
+
+<script>
+window.onload = function(){
+    document.getElementById("employeeName").value =
+        localStorage.getItem("employeeName") || "";
+};
+
+function submitSupportRequest(){
+
+    const issueType = document.getElementById("issueType").value;
+    const description = document.getElementById("description").value.trim();
+
+    if(!issueType){
+        alert("Please select issue type");
+        return;
+    }
+
+    if(!description){
+        alert("Please enter issue description");
+        return;
+    }
+
+    alert("Support request submitted successfully");
+
+    document.getElementById("issueType").value = "";
+    document.getElementById("priority").value = "Normal";
+    document.getElementById("contactNumber").value = "";
+    document.getElementById("description").value = "";
+}
+</script>
+
+</body>
+</html>

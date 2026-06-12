@@ -17,25 +17,108 @@
     />
 
     <style>
+      :root {
+        --primary-green: #006b2e;
+        --dark-green: #004b22;
+        --light-green: #74b843;
+        --soft-green: #eaf7e8;
+        --danger-red: #e21b23;
+        --text-dark: #1f2933;
+      }
       body {
         background: #f4f7fc;
         font-family: "Segoe UI", sans-serif;
       }
+      /* Side Bar  */
+      .sidebar-overlay{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.35);
+    z-index:999;
+    display:none;
+}
+
+.side-menu{
+    position:fixed;
+    top:0;
+    left:-280px;
+    width:280px;
+    height:100%;
+    background:#a9c1e5;
+    z-index:1000;
+    box-shadow:5px 0 25px rgba(0,0,0,.15);
+    transition:.3s ease;
+    padding:20px;
+}
+
+.side-menu.active{
+    left:0;
+}
+
+.sidebar-overlay.active{
+    display:block;
+}
+
+.side-header{
+    background:linear-gradient(135deg,#006b2e,#74b843);
+    color:white;
+    padding:18px;
+    border-radius:18px;
+    margin-bottom:20px;
+}
+
+.side-link{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px 12px;
+    border-radius:14px;
+    font-weight:600;
+    cursor:pointer;
+    margin-bottom:8px;
+    color:#1f2933;
+}
+
+.side-link:hover{
+    background:#eaf7e8;
+    color:#006b2e;
+}
+
+.side-link i{
+    width:22px;
+}
 
       /* HEADER */
 
       .dashboard-header {
-        background: linear-gradient(135deg, #0f4c81, #3a7bd5);
-
+        background: linear-gradient(90deg, #023977, #3a71c5, #023977);
         color: white;
 
         padding: 20px;
 
         border-radius: 0 0 30px 30px;
 
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 20px rgba(0, 107, 46, 0.25);
       }
 
+      .company-logo {
+        background: whitesmoke;
+        max-width: 130px;
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
+        padding: 5px 10px;
+      }
+
+      .top-header {
+        background: white;
+        padding: 25px;
+        border-radius: 0 0 25px 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+      }
       .icon-btn {
         width: 50px;
         height: 50px;
@@ -59,15 +142,15 @@
       /* CARDS */
 
       .dashboard-card {
-        background: white;
-
+        background: linear-gradient(135deg, #02873c, #74b843, #006b2e);
+        color: #eaf7e8;
         border-radius: 20px;
 
         padding: 25px 10px;
 
         text-align: center;
 
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 
         transition: 0.3s;
 
@@ -136,6 +219,17 @@
         font-weight: 600;
       }
 
+      .progress-bar {
+        background: linear-gradient(
+          90deg,
+          var(--primary-green),
+          var(--light-green)
+        );
+      }
+      .table-primary {
+        --bs-table-bg: var(--soft-green);
+        --bs-table-color: var(--dark-green);
+      }
       /* MOBILE */
 
       @media (max-width: 768px) {
@@ -214,19 +308,63 @@
     </style>
   </head>
   <body>
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<div id="sideMenu" class="side-menu">
+
+    <div class="side-header">
+        <h5 class="fw-bold mb-1" id="sideEmployeeName">Employee</h5>
+        <small>Inflix Pharma</small>
+    </div>
+
+    <div class="side-link" onclick="window.location.href='EmpProfile.html'">
+        <i class="fa-solid fa-user"></i>
+        <span>Profile</span>
+    </div>
+
+    <div class="side-link" onclick="window.location.href='Dashboard.html'">
+        <i class="fa-solid fa-house"></i>
+        <span>Dashboard</span>
+    </div>
+
+    <div class="side-link" onclick="window.location.href='Summary.html'">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Summary</span>
+    </div>
+
+     <div class="side-link" onclick="window.location.href='Support.html'">
+      <i class="fa-solid fa-headset"></i>
+      <span>Support</span>
+    </div>
+
+    <div class="side-link text-danger" onclick="logoutEmployee()">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span>Logout</span>
+    </div>
+
+   
+
+</div>
     <!-- HEADER -->
 
     <div class="dashboard-header">
       <div class="container">
         <div class="d-flex justify-content-between align-items-center">
-          <button class="icon-btn">
+          <button class="icon-btn"
+           onclick="openSidebar()">
             <i class="fas fa-bars"></i>
           </button>
 
           <div class="text-center">
+            <img
+              src="images/inflix-logo-web.png"
+              alt="Inflix Pharma"
+              class="company-logo"
+            />
+
             <h4 class="fw-bold mb-0">EMPLOYEE DASHBOARD</h4>
 
-            <small> GPS Attendance System </small>
+            <small class="fw-bold"> Welcome to Inflix Pharma </small>
           </div>
 
           <button class="icon-btn">
@@ -252,10 +390,11 @@
 
     <div class="container">
       <div class="row g-3">
-        <div class="col-6 col-md-3">
+         <!-- profile -->
+        <!-- <div class="col-6 col-md-3">
           <a href="EmpProfile.html" class="text-decoration-none text-dark">
             <div class="dashboard-card">
-              <!-- profile -->
+             
               <div class="icon-circle bg4">
                 <i class="fas fa-user text-danger"></i>
               </div>
@@ -263,7 +402,7 @@
               <h6>Profile</h6>
             </div>
           </a>
-        </div>
+        </div> -->
 
         <!-- Attendance Mark -->
         <div class="col-6 col-md-3">
@@ -388,18 +527,18 @@
         <!-- Summary -->
         <div class="col-6 col-md-3">
           <a href="Summary.html" class="text-decoration-none text-dark">
-          <div class="dashboard-card">
-            <div class="icon-circle bg3">
-              <i class="fas fa-chart-line text-success"></i>
-            </div>
+            <div class="dashboard-card">
+              <div class="icon-circle bg3">
+                <i class="fas fa-chart-line text-success"></i>
+              </div>
 
-            <h6>Summary</h6>
-          </div>
+              <h6>Summary</h6>
+            </div>
           </a>
         </div>
       </div>
 
-         <!--Target VS Achievements -->
+      <!--Target VS Achievements -->
 
       <!-- Target vs Achievement -->
       <div class="target-achievement-box mt-4">
@@ -438,7 +577,6 @@
             <div
               class="progress-bar bg-success"
               id="dailyProgressBar"
-              
               style="width: 0%"
             ></div>
           </div>
@@ -469,17 +607,14 @@
           </div>
         </div>
       </div> -->
-
-     
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/config.js"></script>
     <script>
-
-      window.onload =function () {
-         loadDailyTargetProgress();
+      window.onload = function () {
+        loadDailyTargetProgress();
       };
 
       const employeeName = localStorage.getItem("employeeName");
@@ -491,27 +626,53 @@
       }
 
       function loadDailyTargetProgress() {
-    const employeeId = localStorage.getItem("employeeId");
 
-    fetch(`${BASE_URL}/doctor-visit/daily-target/${employeeId}`)
-        .then(response => response.json())
-        .then(data => {
+        const employeeId = localStorage.getItem("employeeId");
+
+        fetch(`${BASE_URL}/doctor-visit/daily-target/${employeeId}`)
+          .then((response) => response.json())
+          .then((data) => {
             document.getElementById("dailyTarget").innerText =
-                data.target || 25;
+              data.target || 25;
 
             document.getElementById("dailyAchievement").innerText =
-                data.achievement || 0;
+              data.achievement || 0;
 
             document.getElementById("dailyProgressText").innerText =
-                (data.progress || 0) + "%";
+              (data.progress || 0) + "%";
 
             document.getElementById("dailyProgressBar").style.width =
-                (data.progress || 0) + "%";
-        })
-        .catch(error => {
+              (data.progress || 0) + "%";
+          })
+          .catch((error) => {
             console.error("Daily target error:", error);
-        });
+          });
+      }
+
+      function openSidebar() {
+    document.getElementById("sideMenu").classList.add("active");
+    document.getElementById("sidebarOverlay").classList.add("active");
+
+    document.getElementById("sideEmployeeName").innerText =
+        localStorage.getItem("employeeName") || "Employee";
 }
+
+function closeSidebar() {
+    document.getElementById("sideMenu").classList.remove("active");
+    document.getElementById("sidebarOverlay").classList.remove("active");
+}
+
+function logoutEmployee() {
+    localStorage.clear();
+    window.location.href = "index.html";
+}
+    //  function Logout() {
+    //    localStorage.removeItem("employeeId");
+    //    localStorage.removeItem("employeeName");
+    //    localStorage.removeItem("employeeUsername");
+    //    window.location.href = "index.html";
+    //  }
+
     </script>
   </body>
 </html>

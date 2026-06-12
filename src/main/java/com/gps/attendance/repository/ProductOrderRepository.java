@@ -8,4 +8,6 @@ import com.gps.attendance.entity.ProductOrder;
 
 public interface ProductOrderRepository extends JpaRepository<ProductOrder, Long> {
     List<ProductOrder> findByEmployeeId(Long employeeId);
+
+    long countByEmployeeIdAndOrderDateStartingWith(Long employeeId, String month);
 }
