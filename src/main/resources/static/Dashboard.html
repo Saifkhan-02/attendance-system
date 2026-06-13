@@ -26,7 +26,7 @@
         --text-dark: #1f2933;
       }
       body {
-        background: #f4f7fc;
+        background: #cad5e8e8;
         font-family: "Segoe UI", sans-serif;
       }
       /* Side Bar  */
@@ -142,7 +142,7 @@
       /* CARDS */
 
       .dashboard-card {
-        background: linear-gradient(135deg, #02873c, #74b843, #006b2e);
+        background: linear-gradient(135deg, #02873c, #35c26d, #006b2e);
         color: #eaf7e8;
         border-radius: 20px;
 
@@ -378,7 +378,7 @@
 
     <div class="container">
       <div class="welcome-section">
-        <h4 class="text-primary">Welcome Back,</h4>
+        <h4 class="text-primary fw-bold">Welcome Back,</h4>
 
         <h3 id="employeeName"></h3>
 
@@ -417,7 +417,7 @@
           </a>
         </div>
 
-        <!-- Doctors -->
+        <!-- Doctor visits -->
         <div class="col-6 col-md-3">
           <a href="DoctorVisit.html" class="text-decoration-none text-dark">
             <div class="dashboard-card">
@@ -430,15 +430,42 @@
           </a>
         </div>
 
-        <!-- Calls -->
+          <!-- Order Summary -->
+        <div class="col-6 col-md-3">
+          <a href="ProductOrder.html" class="text-decoration-none text-dark">
+            <div class="dashboard-card">
+              <div class="icon-circle bg3">
+                <i class="fas fa-shopping-cart text-info"></i>
+              </div>
+
+              <h6>Order</h6>
+            </div>
+          </a>
+        </div>
+
+          <!-- Payment Page -->
+        <div class="col-6 col-md-3">
+          <a href="PaymentPage.html" class="text-decoration-none text-dark">
+            <div class="dashboard-card">
+              <div class="icon-circle bg3">
+                <i class="fas fa-wallet text-primary"></i>
+              </div>
+
+              <h6>Payment</h6>
+            </div>
+          </a>
+        </div>
+
+
+        <!--Doctors list -->
         <div class="col-6 col-md-3">
           <a href="DoctorCalls.html" class="text-decoration-none text-dark">
             <div class="dashboard-card">
               <div class="icon-circle bg2">
-                <i class="fas fa-user-doctor text-success"></i>
+                <i class="fas fa-hospital-user text-secondary"></i>
               </div>
 
-              <h6>Doctor Calls</h6>
+              <h6>Doctors List</h6>
             </div>
           </a>
         </div>
@@ -448,7 +475,7 @@
           <a href="Expenses.html" class="text-decoration-none text-dark">
             <div class="dashboard-card">
               <div class="icon-circle bg2">
-                <i class="fas fa-wallet text-danger"></i>
+                <i class="fa-solid fa-money-bill text-danger"></i>
               </div>
 
               <h6>Expenses</h6>
@@ -511,21 +538,8 @@
           </a>
         </div>
 
-        <!-- Order Summary -->
-        <div class="col-6 col-md-3">
-          <a href="ProductOrder.html" class="text-decoration-none text-dark">
-            <div class="dashboard-card">
-              <div class="icon-circle bg3">
-                <i class="fas fa-box text-info"></i>
-              </div>
-
-              <h6>Order</h6>
-            </div>
-          </a>
-        </div>
-
         <!-- Summary -->
-        <div class="col-6 col-md-3">
+        <!-- <div class="col-6 col-md-3">
           <a href="Summary.html" class="text-decoration-none text-dark">
             <div class="dashboard-card">
               <div class="icon-circle bg3">
@@ -536,7 +550,7 @@
             </div>
           </a>
         </div>
-      </div>
+      </div> -->
 
       <!--Target VS Achievements -->
 
