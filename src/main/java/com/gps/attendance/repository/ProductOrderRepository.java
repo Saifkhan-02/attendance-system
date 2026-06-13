@@ -10,4 +10,12 @@ public interface ProductOrderRepository extends JpaRepository<ProductOrder, Long
     List<ProductOrder> findByEmployeeId(Long employeeId);
 
     long countByEmployeeIdAndOrderDateStartingWith(Long employeeId, String month);
+
+     List<ProductOrder> findByDoctorId(Long doctorId);
+
+    // Date wise
+    List<ProductOrder> findByOrderDate(String orderDate);
+
+    // Month wise
+    List<ProductOrder> findByOrderDateStartingWith(String month);
 }

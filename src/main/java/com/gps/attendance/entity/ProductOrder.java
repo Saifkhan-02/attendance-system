@@ -1,6 +1,7 @@
 package com.gps.attendance.entity;
 
 import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,6 +31,9 @@ public class ProductOrder {
     private Double orderAmount;
     private String orderDate;
 
+    private Double paidAmount = 0.0;
+private Double dueAmount = 0.0;
+private String paymentMode = "Pending";
     @Column(length = 1000)
     private String remarks;
 
@@ -123,6 +127,29 @@ public class ProductOrder {
         this.orderDate = orderDate;
     }
 
+    public Double getPaidAmount() {
+    return paidAmount;
+}
+
+public void setPaidAmount(Double paidAmount) {
+    this.paidAmount = paidAmount;
+}
+
+public Double getDueAmount() {
+    return dueAmount;
+}
+
+public void setDueAmount(Double dueAmount) {
+    this.dueAmount = dueAmount;
+}
+
+public String getPaymentMode() {
+    return paymentMode;
+}
+
+public void setPaymentMode(String paymentMode) {
+    this.paymentMode = paymentMode;
+}
     public String getRemarks() {
         return remarks;
     }
