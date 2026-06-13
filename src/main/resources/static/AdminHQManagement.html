@@ -1,0 +1,718 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Admin Dashboard</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        background: #f4f6f9;
+        overflow-x: hidden;
+      }
+
+      /* Navbar */
+
+      .top-navbar {
+        min-height: 80px;
+        background: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1050;
+      }
+      .navbar-logo {
+        width: 90px;
+        height: 85px;
+        object-fit: contain;
+      }
+
+      /* Sidebar */
+
+      .sidebar {
+        position: fixed;
+        top: 90px;
+        left: 0;
+        width: 250px;
+        height: 100vh;
+        background: #0f172a;
+        transition: 0.3s;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+
+      .sidebar.hide {
+        margin-left: -250px;
+      }
+
+      .sidebar .nav-link {
+        color: #fff;
+        padding: 12px 20px;
+        margin: 5px 10px;
+        border-radius: 8px;
+      }
+      .sidebar .nav-link:hover {
+        background: #1e293b;
+      }
+
+      .sidebar .nav-link.active {
+        background: #0d6efd;
+      }
+
+      .welcome-box {
+        background: #fff;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 20px;
+      }
+
+      .welcome-box h2 {
+        color: #0d6efd;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+
+      .welcome-box p {
+        color: #6c757d;
+        margin: 0;
+      }
+
+      /* Main Content */
+
+      .main-content {
+        position: relative;
+        margin-left: 250px;
+        margin-top: 100px;
+        padding: 20px;
+        transition: 0.3s;
+        z-index: 1;
+      }
+
+      .main-content.full {
+        margin-left: 0;
+      }
+      .dashboard-card{
+        max-height: 520px;
+        overflow-y: auto;
+
+      }
+      .dashboard-card{
+        position: sticky;
+        top: 0;
+        z-index: 1;
+      }
+
+      /* Mobile */
+
+      @media (max-width: 768px) {
+        .sidebar {
+          margin-left: -250px;
+        }
+
+        .sidebar.show {
+          margin-left: 0;
+        }
+
+        .main-content {
+          margin-left: 0;
+        }
+
+        .navbar-logo {
+          width: 80px;
+          height: 75px;
+        }
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  </head>
+
+  <body>
+    <!-- NAVBAR -->
+
+    <nav class="navbar top-navbar px-3">
+      <div class="d-flex align-items-center">
+        <button class="btn btn-light me-3" onclick="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <img
+          src="images/Inflix-logo-web.png"
+          alt="Logo"
+          class="navbar-logo me-2"
+        />
+      </div>
+
+      <div class="d-flex align-items-center ms-auto">
+        <div class="text-end me-2 admin-info">
+          <div class="fw-bold">Admin</div>
+
+          <div class="small text-muted">Raqib Khan</div>
+
+          <div id="datetime" class="small text-secondary"></div>
+        </div>
+
+        <img
+          id="profileBtn"
+          src="/images/admin.jpg"
+          width="40"
+          height="40"
+          class="rounded-circle border border-primary"
+          style="cursor: pointer"
+        />
+      </div>
+    </nav>
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar" id="sidebar">
+      <ul class="nav flex-column mt-3">
+        <li class="nav-item">
+          <a href="admin-dashboard.html" class="nav-link ">
+            <i class="fas fa-home me-2"></i>
+            Dashboard
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="admin-employeeTracking.html" class="nav-link">
+            <i class="fas fa-location-dot me-2"></i>
+            Employee Tracking
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="employeeList.html" class="nav-link">
+            <i class="fas fa-users me-2"></i>
+            Employees
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="doctorList.html" class="nav-link">
+            <i class="fas fa-user-doctor me-2"></i>
+            Doctors
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="fas fa-box me-2"></i>
+            Orders
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="AdminTourApproval.html" class="nav-link">
+            <i class="fa-solid fa-route"></i>
+            Tour Approval
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="AdminHQManagement.html" class="nav-link active">
+            <i class="fas fa-map-marker-alt me-2"></i>
+            HQ Management
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="fas fa-chart-line me-2"></i>
+            Reports
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="main-content" id="mainContent">
+      <div class="welcome-box">
+        <h2>HQ Management 📍</h2>
+        <p class="mb-0">Manage HQ Locations and Employee Mapping</p>
+      </div>
+
+      <div class="row g-4">
+        <!-- Add HQ -->
+
+        <div class="col-lg-4">
+          <div class="card dashboard-cardAdd">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0">Add New HQ</h5>
+            </div>
+
+            <div class="card-body">
+                <form id="hqForm">
+              <div class="mb-3">
+                <label class="form-label"> HQ Name </label>
+
+                <input
+                  type="text"
+                  id="hqName"
+                  class="form-control"
+                  placeholder="Enter HQ Name"
+                />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label"> Latitude </label>
+
+                <input
+                  type="text"
+                  id="latitude"
+                  class="form-control"
+                  readonly
+                />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label"> Longitude </label>
+
+                <input
+                  type="text"
+                  id="longitude"
+                  class="form-control"
+                  readonly
+                />
+              </div>
+
+              <div class="mt-3">
+                <label class="form-label"> Location Preview </label>
+
+                <div id="locationPreview" class="alert alert-info">
+                  No Location Selected
+                </div>
+              </div>
+
+              <div class="d-grid gap-2 mt-3">
+                <button
+                  type="button"
+                  class="btn btn-info"
+                  onclick="getCoordinates()"
+                >
+                  <i class="fas fa-location-dot"></i>
+                  Get Coordinates
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-success"
+                  onclick="saveHQ()"
+                >
+                  <i class="fas fa-save"></i>
+                  Save HQ
+                </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HQ List -->
+
+        <div class="col-lg-8">
+          <div class="card dashboard-card">
+            <div class="card-header bg-success text-white">
+              <h5 class="mb-0">HQ List</h5>
+            </div>
+
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-borderd">
+                  <thead class="table-primary">
+                    <tr>
+                      <th>ID</th>
+
+                      <th>HQ Name</th>
+
+                      <th>Latitude</th>
+
+                      <th>Longitude</th>
+
+                      <th>Status</th>
+
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="hqTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Employee HQ Mapping -->
+
+      <div class="row mt-4">
+        <div class="col-lg-12">
+          <div class="card dashboard-card">
+            <div class="card-header bg-info text-white">
+              <h5 class="mb-0">Employee HQ Mapping</h5>
+            </div>
+
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-5">
+                  <label class="form-label"> Employee </label>
+
+                  <select id="employeeSelect" class="form-select">
+                    <option>Select Employee</option>
+                  </select>
+                </div>
+
+                <div class="col-md-5">
+                  <label class="form-label"> HQ </label>
+
+                  <select id="hqSelect" class="form-select">
+                    <option>Select HQ</option>
+                  </select>
+                </div>
+
+                <div class="col-md-2">
+                  <label class="form-label"> &nbsp; </label>
+
+                  <button class="btn btn-primary w-100" onclick="assignHQ()">
+                    Assign
+                  </button>
+                </div>
+              </div>
+
+              <hr />
+
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead class="table-info">
+                    <tr>
+                      <th>ID</th>
+
+                      <th>Employee</th>
+
+                      <th>HQ</th>
+
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="mappingTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= BOOTSTRAP JS ================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+     const BASE_URL = "http://localhost:8080";
+
+     window.onload = function(){
+        loadHQs();
+        loadEmployees();
+        loadMappings();
+     }
+    </script>
+
+
+    <!-- ================= SIDEBAR TOGGLE ================= -->
+
+    <script>
+      function toggleSidebar() {
+        let sidebar = document.getElementById("sidebar");
+
+        let main = document.getElementById("mainContent");
+
+        if (window.innerWidth <= 768) {
+          sidebar.classList.toggle("show");
+        } else {
+          sidebar.classList.toggle("hide");
+
+          main.classList.toggle("full");
+        }
+      }
+
+      function updateTime() {
+        document.getElementById("datetime").innerHTML =
+          new Date().toLocaleString();
+      }
+
+      setInterval(updateTime, 1000);
+
+      updateTime();
+    </script>
+
+    <script>
+      function saveHQ() {
+        alert("HQ Save API Pending");
+      }
+
+      function assignHQ() {
+        alert("HQ Mapping API Pending");
+      }
+    </script>
+
+    <!-- ================= Page Load ================= -->
+    <script>
+      window.onload = function () {
+        loadHQs();
+
+        loadEmployees();
+
+        loadMappings();
+      };
+    </script>
+
+    <!-- ================= Load HQ List ================= -->
+    <script>
+    async function loadHQs() {
+
+    console.log("loadHQs called");
+
+    const response = await fetch(`${BASE_URL}/hq/all`);
+
+    const hqs = await response.json();
+
+    console.log(hqs);
+
+    let html = "";
+
+    let dropdown = document.getElementById("hqSelect");
+
+    dropdown.innerHTML = `
+        <option value="">Select HQ</option>
+    `;
+
+    hqs.forEach(hq => {
+
+        // HQ Dropdown Fill
+        dropdown.innerHTML += `
+            <option value="${hq.id}">
+                ${hq.hqName}
+            </option>
+        `;
+
+        // HQ Table Fill
+        html += `
+        <tr>
+            <td>${hq.id}</td>
+            <td>${hq.hqName}</td>
+            <td>${hq.latitude}</td>
+            <td>${hq.longitude}</td>
+            <td>
+                ${hq.active ? "Active" : "Inactive"}
+            </td>
+            <td>
+                <button
+                    class="btn btn-danger btn-sm"
+                    onclick="deleteHQ(${hq.id})">
+                    Delete
+                </button>
+            </td>
+        </tr>
+        `;
+    });
+
+    document.getElementById("hqTableBody").innerHTML = html;
+}
+loadHQs();
+    </script>
+
+    <!-- ================= Save HQ ================= -->
+    <script>
+      async function saveHQ() {
+        const payload = {
+          hqName: document.getElementById("hqName").value,
+          latitude: parseFloat(document.getElementById("latitude").value),
+          longitude: parseFloat(document.getElementById("longitude").value),
+          active: true,
+        };
+
+        console.log(payload);
+
+        try {
+          const response = await fetch("http://localhost:8080/hq/save", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          console.log("Status =", response.status);
+
+          const data = await response.text();
+
+          console.log(data);
+
+          alert("HQ Saved");
+
+          document.getElementById("hqForm").reset();
+
+          loadHQs();
+        } catch (error) {
+          console.error(error);
+
+          alert("ERROR : " + error);
+        }
+      }
+    </script>
+
+    <!-- ================= Load Employees ================= -->
+    <script>
+      async function loadEmployees() {
+        const response = await fetch(`${BASE_URL}/get-employees`);
+
+        const employees = await response.json();
+
+        let dropdown = document.getElementById("employeeSelect");
+
+        dropdown.innerHTML = "<option>Select Employee</option>";
+
+        employees.forEach((emp) => {
+          dropdown.innerHTML += `
+
+        <option value="${emp.id}">
+            ${emp.name}
+        </option>
+
+        `;
+        });
+      }
+    </script>
+
+    <!-- ================= Assign HQ ================= -->
+     <script>
+    async function assignHQ() {
+
+    const payload = {
+        employeeId: Number(document.getElementById("employeeSelect").value),
+        hqId: Number(document.getElementById("hqSelect").value)
+    };
+
+    console.log(payload);
+
+    try {
+
+        const response = await fetch(`${BASE_URL}/hq/mapping/save`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        console.log("Status =", response.status);
+
+        const data = await response.text();
+        console.log(data);
+
+        if (response.ok) {
+            alert("HQ Assigned");
+            loadMappings();
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert(error);
+    }
+}
+    </script>
+    <!-- ================= Load Mapping Table================= -->
+    <script>
+      async function loadMappings() {
+        const response = await fetch(`${BASE_URL}/hq/mapping/all`);
+
+        const mappings = await response.json();
+
+        let table = document.getElementById("mappingTableBody");
+
+        table.innerHTML = "";
+
+        mappings.forEach((item) => {
+          table.innerHTML += `
+
+        <tr>
+
+            <td>${item.id}</td>
+
+            <td>
+                ${item.employeeName}
+            </td>
+
+            <td>
+                ${item.hqName}
+            </td>
+
+            <td>
+
+                <button
+                    class="btn btn-danger btn-sm">
+
+                    Delete
+
+                </button>
+
+            </td>
+
+        </tr>
+
+        `;
+        });
+      }
+    </script>
+    <script>
+      async function getCoordinates() {
+        const city = document.getElementById("hqName").value.trim();
+
+        if (city === "") {
+          alert("Please Enter HQ Name");
+
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${city},India&format=json&limit=1`,
+          );
+
+          const data = await response.json();
+
+          if (data.length > 0) {
+            document.getElementById("latitude").value = data[0].lat;
+
+            document.getElementById("longitude").value = data[0].lon;
+
+            document.getElementById("locationPreview").innerHTML =
+              data[0].display_name;
+
+            alert("Coordinates Loaded");
+          } else {
+            alert("Location Not Found");
+          }
+        } catch (error) {
+          console.error(error);
+
+          alert("Error Loading Coordinates");
+        }
+      }
+    </script>
+  </body>
+</html>
