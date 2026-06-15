@@ -32,8 +32,8 @@ public class ProductOrder {
     private String orderDate;
 
     private Double paidAmount = 0.0;
-private Double dueAmount = 0.0;
-private String paymentMode = "Pending";
+    private Double dueAmount = 0.0;
+    private String paymentMode = "Pending";
     @Column(length = 1000)
     private String remarks;
 
@@ -165,4 +165,6 @@ public void setPaymentMode(String paymentMode) {
     public void setStatus(String status) {
         this.status = status;
     }
+
+ 
 }

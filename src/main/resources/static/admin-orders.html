@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Admin Dashboard</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        background: #f4f6f9;
+        overflow-x: hidden;
+      }
+
+      /* Navbar */
+
+      .top-navbar {
+        min-height: 80px;
+        background: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1050;
+      }
+      .navbar-logo {
+        width: 90px;
+        height: 85px;
+        object-fit: contain;
+      }
+
+      /* Sidebar */
+
+      .sidebar {
+        position: fixed;
+        top: 90px;
+        left: 0;
+        width: 250px;
+        height: 100vh;
+        background: #0f172a;
+        transition: 0.3s;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+
+      .sidebar.hide {
+        margin-left: -250px;
+      }
+
+      .sidebar .nav-link {
+        color: #fff;
+        padding: 12px 20px;
+        margin: 5px 10px;
+        border-radius: 8px;
+      }
+      .sidebar .nav-link:hover {
+        background: #1e293b;
+      }
+
+      .sidebar .nav-link.active {
+        background: #0d6efd;
+      }
+
+      /* Main Content */
+
+      .main-content {
+        position: relative;
+        margin-left: 250px;
+        margin-top: 100px;
+        padding: 20px;
+        transition: 0.3s;
+        z-index: 1;
+      }
+
+      .main-content.full {
+        margin-left: 0;
+      }
+ .filter-row select,
+.filter-row button {
+    height: 28px;
+}
+
+.filter-row {
+    align-items: end;
+}
+
+    .dashboard-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.dashboard-card .card-body {
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+
+.count {
+    font-size: 45px;
+    font-weight: bold;
+}
+
+.summary-icon {
+    font-size: 42px;
+    margin-bottom: 20px;
+}
+
+      /* Mobile */
+
+      @media (max-width: 768px) {
+        .sidebar {
+          margin-left: -250px;
+        }
+
+        .sidebar.show {
+          margin-left: 0;
+        }
+
+        .main-content {
+          margin-left: 0;
+        }
+
+        .navbar-logo {
+          width: 80px;
+          height: 75px;
+        }
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  </head>
+  <body>
+    <!-- NAVBAR -->
+
+    <nav class="navbar top-navbar px-3">
+      <div class="d-flex align-items-center">
+        <button class="btn btn-light me-3" onclick="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <img
+          src="images/Inflix-logo-web.png"
+          alt="Logo"
+          class="navbar-logo me-2"
+        />
+      </div>
+
+      <div class="d-flex align-items-center ms-auto">
+        <div class="text-end me-2 admin-info">
+          <div class="fw-bold">Admin</div>
+
+          <div class="small text-muted">Raqib Khan</div>
+
+          <div id="datetime" class="small text-secondary"></div>
+        </div>
+
+        <img
+          id="profileBtn"
+          src="/images/admin.jpg"
+          width="40"
+          height="40"
+          class="rounded-circle border border-primary"
+          style="cursor: pointer"
+        />
+      </div>
+    </nav>
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar" id="sidebar">
+      <ul class="nav flex-column mt-3">
+        <li class="nav-item">
+          <a href="admin-dashboard.html" class="nav-link ">
+            <i class="fas fa-home me-2"></i>
+            Dashboard
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="admin-employeeTracking.html" class="nav-link">
+            <i class="fas fa-location-dot me-2"></i>
+            Employee Tracking
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="employeeList.html" class="nav-link">
+            <i class="fas fa-users me-2"></i>
+            Employees
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="doctorList.html" class="nav-link">
+            <i class="fas fa-user-doctor me-2"></i>
+            Doctors
+          </a>
+        </li>
+
+        <a href="admin-orders.html" class="nav-link active">
+          <i class="fas fa-box me-2"></i>
+          Orders
+        </a>
+
+        <li class="nav-item">
+          <a href="AdminTourApproval.html" class="nav-link">
+            <i class="fa-solid fa-route"></i>
+            Tour Approval
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="AdminHQManagement.html" class="nav-link">
+            <i class="fas fa-map-marker-alt me-2"></i>
+            HQ Management
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="fas fa-chart-line me-2"></i>
+            Reports
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- MAIN CONTENT -->
+     <div class="main-content" id="mainContent">
+
+    <div class="card dashboard-card mb-4 border-0">
+
+    <div class="card-body">
+
+        <div class="row align-items-center">
+
+            <div class="col-md-8">
+
+                <h2 class="fw-bold text-primary">
+                    Orders Management
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Monitor employee orders, payments and order history.
+                </p>
+
+            </div>
+
+            <div class="col-md-4 text-end">
+
+                <i class="fas fa-box-open text-primary"
+                   style="font-size:70px;"></i>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-md-4">
+                <label class="form-label">
+                    Month
+                </label>
+
+               <select class="form-select form-select-sm" id="monthFilter">
+
+                    <option value="01">January</option>
+                    <option value="02">February</option>
+                    <option value="03">March</option>
+                    <option value="04">April</option>
+                    <option value="05">May</option>
+                    <option value="06" selected>June</option>
+                    <option value="07">July</option>
+                    <option value="08">August</option>
+                    <option value="09">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">
+                    Year
+                </label>
+
+                <select class="form-select form-select-sm" id="yearFilter">
+
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026" selected>2026 </option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+
+                </select>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+
+                <button class="btn btn-success btn-sm w-100"
+                    onclick="loadSummary()">
+                    Search
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+    <!-- Summary Cards -->
+
+    <div class="row g-4 mb-4">
+
+        <!-- Total Orders -->
+
+<div class="col-6 col-md-6 col-lg-3">
+    <div class="card dashboard-card">
+        <div class="card-body text-center">
+
+            <i class="fas fa-box fa-2x text-primary mb-3"></i>
+
+            <h6 class="text-muted">
+                Total Orders
+            </h6>
+
+            <div class="count text-primary"
+                 id="totalOrders">
+                0
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Total Amount -->
+
+<div class="col-6 col-md-6 col-lg-3">
+    <div class="card dashboard-card">
+        <div class="card-body text-center">
+
+            <i class="fas fa-indian-rupee-sign fa-2x text-success mb-3"></i>
+
+            <h6 class="text-muted">
+                Total Amount
+            </h6>
+
+            <div class="count text-success"
+                 id="totalAmount">
+                ₹0
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Paid Amount -->
+
+<div class="col-6 col-md-6 col-lg-3">
+    <div class="card dashboard-card">
+        <div class="card-body text-center">
+
+            <i class="fas fa-wallet fa-2x text-info mb-3"></i>
+
+            <h6 class="text-muted">
+                Paid Amount
+            </h6>
+
+            <div class="count text-info"
+                 id="paidAmount">
+                ₹0
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Due Amount -->
+
+<div class="col-6 col-md-6 col-lg-3">
+    <div class="card dashboard-card">
+        <div class="card-body text-center">
+
+            <i class="fas fa-money-bill-wave fa-2x text-danger mb-3"></i>
+
+            <h6 class="text-muted">
+                Due Amount
+            </h6>
+
+            <div class="count text-danger"
+                 id="dueAmount">
+                ₹0
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</div>
+<!-- Filters -->
+
+<div class="card dashboard-cards mb-4">
+
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Filter Orders</h5>
+    </div>
+
+    <div class="card-body">
+
+        <div class="row g-3">
+
+            <div class="col-md-3">
+                <input type="text"
+                       id="employeeFilter"
+                       class="form-control"
+                       placeholder="Employee Name">
+            </div>
+
+            <div class="col-md-3">
+                <input type="text"
+                       id="doctorFilter"
+                       class="form-control"
+                       placeholder="Doctor Name">
+            </div>
+
+            <div class="col-md-2">
+                <input type="date"
+                       id="fromDate"
+                       class="form-control">
+            </div>
+
+            <div class="col-md-2">
+                <input type="date"
+                       id="toDate"
+                       class="form-control">
+            </div>
+
+            <div class="col-md-1">
+                <button 
+                onclick="searchOrders()"
+                class="btn btn-primary w-100">
+                    Search
+                </button>
+            </div>
+
+            <div class="col-md-1">
+                <button
+                onclick="resetFilters()"
+                 class="btn btn-secondary w-100">
+                    Reset
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- Order List -->
+
+<div class="card dashboard-cards">
+
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0">Orders List</h5>
+    </div>
+
+    <div class="card-body">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover table-bordered align-middle">
+
+                <thead class="table-light">
+
+                <tr>
+                    <th>Order ID</th>
+                    <th>Employee Name</th>
+                    <th>Doctor Name</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Amount</th>
+                    <th>Paid</th>
+                    <th>Due</th>
+                    <th>Payment Mode</th>
+                    <th>Order Date</th>
+                    <th>Remarks</th>
+                    <th>Bill</th>
+                </tr>
+
+                </thead>
+
+                <tbody id="ordersTableBody"></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+      <!-- ================= BOOTSTRAP JS ================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- ================= SIDEBAR TOGGLE ================= -->
+
+    <script>
+      function toggleSidebar() {
+        let sidebar = document.getElementById("sidebar");
+
+        let main = document.getElementById("mainContent");
+
+        if (window.innerWidth <= 768) {
+          sidebar.classList.toggle("show");
+        } else {
+          sidebar.classList.toggle("hide");
+
+          main.classList.toggle("full");
+        }
+      }
+
+      function updateTime() {
+        document.getElementById("datetime").innerHTML =
+          new Date().toLocaleString();
+      }
+
+      setInterval(updateTime, 1000);
+
+      updateTime();
+    </script>
+
+    <script>
+
+async function loadOrders() {
+
+    const response =
+        await fetch('/order/all');
+
+    const orders =
+        await response.json();
+
+    let html = '';
+
+    orders.forEach(order => {
+
+        html += `
+        <tr>
+            <td>${order.id || ''}</td>
+            <td>${order.employeeName || ''}</td>
+            <td>${order.doctorName || ''}</td>
+            <td>${order.productName || ''}</td>
+            <td>${order.orderQuantity || 0}</td>
+            <td>₹${order.orderAmount || 0}</td>
+            <td>₹${order.paidAmount || 0}</td>
+            <td>₹${order.dueAmount || 0}</td>
+            <td>${order.paymentMode || ''}</td>
+            <td>${order.orderDate || ''}</td>
+            <td>${order.remarks || ''}</td>
+            <td>
+              <button
+                   class="btn btn-danger btn-sm"
+                   onclick="downloadBill(${order.id})">
+                    <i class="fas fa-file-pdf"></i> Bill
+                    </button>
+                    </td>
+        </tr>
+        `;
+
+    });
+
+    document.getElementById(
+        'ordersTableBody'
+    ).innerHTML = html;
+}
+
+
+loadOrders();
+
+</script>
+
+<script>
+async function loadSummary() {
+
+    const month =
+        document.getElementById(
+            'monthFilter'
+        ).value;
+
+    const year =
+        document.getElementById(
+            'yearFilter'
+        ).value;
+
+    const response =
+        await fetch(
+            `/order/summary?month=${month}&year=${year}`
+        );
+
+    const data =
+        await response.json();
+
+    document.getElementById(
+        'totalOrders'
+    ).innerText =
+        data.totalOrders;
+
+    document.getElementById(
+        'totalAmount'
+    ).innerText =
+        '₹' + data.totalAmount;
+
+    document.getElementById(
+        'paidAmount'
+    ).innerText =
+        '₹' + data.paidAmount;
+
+    document.getElementById(
+        'dueAmount'
+    ).innerText =
+        '₹' + data.dueAmount;
+}
+async function searchOrders() {
+
+    const employeeName =
+        document.getElementById('employeeFilter').value;
+
+    const doctorName =
+        document.getElementById('doctorFilter').value;
+
+    const response =
+        await fetch(
+            `/order/search?employeeName=${employeeName}&doctorName=${doctorName}`
+        );
+
+    const orders = await response.json();
+
+    let html = '';
+
+    orders.forEach(order => {
+
+        html += `
+        <tr>
+            <td>${order.id}</td>
+            <td>${order.employeeName}</td>
+            <td>${order.doctorName}</td>
+            <td>${order.productName}</td>
+            <td>${order.orderQuantity}</td>
+            <td>${order.orderAmount}</td>
+            <td>${order.paidAmount}</td>
+            <td>${order.dueAmount}</td>
+            <td>${order.paymentMode}</td>
+            <td>${order.orderDate}</td>
+            <td>${order.remarks}</td>
+        </tr>
+        `;
+    });
+
+    document.getElementById(
+        "ordersTableBody"
+    ).innerHTML = html;
+}
+
+window.onload = function () {
+
+    loadSummary();
+
+};
+
+  function downloadBill(orderId) {
+    window.open(
+        `http://localhost:8080/order/bill/${orderId}`,
+        "_blank"
+    );
+}
+
+function resetFilters() {
+
+    document.getElementById(
+        'employeeFilter'
+    ).value = '';
+
+    document.getElementById(
+        'doctorFilter'
+    ).value = '';
+
+    document.getElementById(
+        'fromDate'
+    ).value = '';
+
+    document.getElementById(
+        'toDate'
+    ).value = '';
+
+    loadOrders();
+}
+
+loadSummary();
+</script>
+
+<script>
+  function loadSummary() {
+
+    const month =
+            document.getElementById(
+                    "monthFilter"
+            ).value;
+
+    const year =
+            document.getElementById(
+                    "yearFilter"
+            ).value;
+
+    fetch(
+            `http://localhost:8080/order/summary?month=${month}&year=${year}`
+    )
+            .then(response => response.json())
+            .then(data => {
+
+                document.getElementById(
+                        "totalOrders"
+                ).innerText =
+                        data.totalOrders;
+
+                document.getElementById(
+                        "totalAmount"
+                ).innerText =
+                        "₹" + data.totalAmount;
+
+                document.getElementById(
+                        "paidAmount"
+                ).innerText =
+                        "₹" + data.paidAmount;
+
+                document.getElementById(
+                        "dueAmount"
+                ).innerText =
+                        "₹" + data.dueAmount;
+
+            });
+
+}
+</script>
+
+
+  </body>
+</html>
