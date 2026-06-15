@@ -2,17 +2,18 @@ package com.gps.attendance.dto;
 
 public class SalesChartDTO {
 
-    private String label;
-    private Double saleAmount;
-    private Double paidAmount;
-    private Double dueAmount;
-
+    private final String label;
+    private final Double saleAmount;
+    private final Double paidAmount;
+    private final Double dueAmount;
+ 
     public SalesChartDTO(String label, Double saleAmount, Double paidAmount, Double dueAmount) {
         this.label = label;
         this.saleAmount = saleAmount;
         this.paidAmount = paidAmount;
         this.dueAmount = dueAmount;
     }
+
 
     public String getLabel() {
         return label;

@@ -8,11 +8,13 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gps.attendance.entity.Employee;
 import com.gps.attendance.repository.EmployeeRepository;
+
 
 @RestController
 @CrossOrigin("*")
@@ -78,4 +80,38 @@ public ResponseEntity<?> getEmployeeById(
     public List<Employee> getEmployees() {
           return repository.findAll();
           }
+    @PutMapping("/employee/update-photo/{id}")
+public ResponseEntity<?> updateProfilePhoto(
+        @PathVariable Long id,
+        @RequestBody Employee request) {
+
+    Employee employee =
+            repository.findById(id).orElse(null);
+
+    if (employee == null) {
+        return ResponseEntity.badRequest()
+                .body("Employee Not Found");
+    }
+
+    employee.setProfileImage(request.getProfileImage());
+
+    repository.save(employee);
+
+    return ResponseEntity.ok(employee);
+}
+
+@PutMapping("/employee/update-profile/{id}")
+public Employee updateEmployeeProfile(
+        @PathVariable Long id,
+        @RequestBody Employee updatedEmployee
+) {
+    Employee employee = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+    employee.setEmail(updatedEmployee.getEmail());
+    employee.setMobile(updatedEmployee.getMobile());
+    employee.setHeadquarters(updatedEmployee.getHeadquarters());
+
+    return repository.save(employee);
+}
 }

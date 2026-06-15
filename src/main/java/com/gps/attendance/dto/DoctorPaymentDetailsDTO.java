@@ -2,11 +2,11 @@ package com.gps.attendance.dto;
 
 public class DoctorPaymentDetailsDTO {
 
-    private String doctorName;
-    private Double totalSale;
-    private Double paymentReceived;
-    private Double paymentDue;
-    private String status;
+    private final String doctorName;
+    private final Double totalSale;
+    private final Double paymentReceived;
+    private final Double paymentDue;
+    private final String status;
 
     public DoctorPaymentDetailsDTO(String doctorName, Double totalSale, Double paymentReceived, Double paymentDue, String status) {
         this.doctorName = doctorName;

@@ -1,5 +1,6 @@
 package com.gps.attendance.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,6 +15,8 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String profileImage;
+
     private String name;
 
     private String email;
@@ -26,7 +29,8 @@ public class Employee {
 
     private String designation;
 
-    private String headQuarters;
+    @Column(name = "head_quarters")
+    private String headquarters;
 
     private String reportingManager;
 
@@ -43,6 +47,14 @@ public class Employee {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 
     public String getName() {
@@ -94,11 +106,11 @@ public class Employee {
     }
 
     public String getHeadquarters() {
-        return headQuarters;
+        return headquarters;
     }
 
-    public void setHeadquarters(String headQuarters) {
-        this.headQuarters = headQuarters;
+    public void setHeadquarters(String headquarters) {
+        this.headquarters = headquarters;
     }
 
     public String getReportingManager() {
