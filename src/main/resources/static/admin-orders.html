@@ -680,6 +680,13 @@ async function searchOrders() {
             <td>${order.paymentMode}</td>
             <td>${order.orderDate}</td>
             <td>${order.remarks}</td>
+            <td>
+    <button
+        class="btn btn-danger btn-sm"
+        onclick="downloadBill(${order.id})">
+        <i class="fas fa-file-pdf"></i> Bill
+    </button>
+</td>
         </tr>
         `;
     });
@@ -695,9 +702,9 @@ window.onload = function () {
 
 };
 
-  function downloadBill(orderId) {
+function downloadBill(orderId) {
     window.open(
-        `http://localhost:8080/order/bill/${orderId}`,
+        `/order/bill/${orderId}`,
         "_blank"
     );
 }
@@ -724,50 +731,6 @@ function resetFilters() {
 }
 
 loadSummary();
-</script>
-
-<script>
-  function loadSummary() {
-
-    const month =
-            document.getElementById(
-                    "monthFilter"
-            ).value;
-
-    const year =
-            document.getElementById(
-                    "yearFilter"
-            ).value;
-
-    fetch(
-            `http://localhost:8080/order/summary?month=${month}&year=${year}`
-    )
-            .then(response => response.json())
-            .then(data => {
-
-                document.getElementById(
-                        "totalOrders"
-                ).innerText =
-                        data.totalOrders;
-
-                document.getElementById(
-                        "totalAmount"
-                ).innerText =
-                        "₹" + data.totalAmount;
-
-                document.getElementById(
-                        "paidAmount"
-                ).innerText =
-                        "₹" + data.paidAmount;
-
-                document.getElementById(
-                        "dueAmount"
-                ).innerText =
-                        "₹" + data.dueAmount;
-
-            });
-
-}
 </script>
 
 
