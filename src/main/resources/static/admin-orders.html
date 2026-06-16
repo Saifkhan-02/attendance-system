@@ -96,6 +96,9 @@
 }
 
     .dashboard-card {
+    height: 170px;
+    display: flex;
+    flex-direction: column;
     border: none;
     border-radius: 15px;
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
@@ -144,6 +147,21 @@
           width: 80px;
           height: 75px;
         }
+          .dashboard-card{
+        height: 170px;
+        padding: 10px;
+    }
+
+    .dashboard-card h2,
+    .dashboard-card .amount,
+    .dashboard-card .value{
+        font-size: 36px !important;
+        line-height: 1.1;
+    }
+
+    .dashboard-card h5{
+        font-size: 18px;
+    }
       }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
