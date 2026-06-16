@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.gps.attendance.entity.Employee;
-import com.gps.attendance.repository.EmployeeRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,13 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gps.attendance.entity.Employee;
 import com.gps.attendance.entity.EmployeeHQMapping;
 import com.gps.attendance.entity.HQList;
 import com.gps.attendance.repository.EmployeeHQMappingRepository;
+import com.gps.attendance.repository.EmployeeRepository;
 import com.gps.attendance.repository.HQListRepository;
-
-
-
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -39,8 +35,7 @@ public class HQController {
     private EmployeeHQMappingRepository mappingRepository;
 
     @Autowired
-    private EmployeeRepository 
-    employeeRepository;
+    private EmployeeRepository employeeRepository;
 
     @GetMapping("/employee/{employeeId}")
     public List<HQList> getEmployeeHQs(
@@ -146,38 +141,55 @@ public class HQController {
     }
 
     @GetMapping("/mapping/all")
-public List<Map<String, Object>> getAllMappings() {
+    public List<Map<String, Object>> getAllMappings() {
 
-    List<EmployeeHQMapping> mappings = mappingRepository.findAll();
+        List<EmployeeHQMapping> mappings = mappingRepository.findAll();
 
-    List<Map<String, Object>> result = new ArrayList<>();
+        List<Map<String, Object>> result = new ArrayList<>();
 
-    for (EmployeeHQMapping m : mappings) {
+        for (EmployeeHQMapping m : mappings) {
 
-        Employee emp =  employeeRepository.findById(m.getEmployeeId()).orElse(null);
+            Employee emp = employeeRepository.findById(m.getEmployeeId()).orElse(null);
 
-        HQList hq =
-            hqRepository.findById(m.getHqId()).orElse(null);
+            HQList hq
+                    = hqRepository.findById(m.getHqId()).orElse(null);
 
-        Map<String, Object> row = new HashMap<>();
+            Map<String, Object> row = new HashMap<>();
 
-        row.put("id", m.getId());
+            row.put("id", m.getId());
 
-        row.put("employeeName",
-            emp != null ? emp.getName() : "");
+            row.put("employeeName",
+                    emp != null ? emp.getName() : "");
 
-        row.put("hqName",
-            hq != null ? hq.getHqName() : "");
+            row.put("hqName",
+                    hq != null ? hq.getHqName() : "");
 
-        result.add(row);
+            result.add(row);
+        }
+
+        return result;
     }
-
-    return result;
-}
 
     @DeleteMapping("/delete/{id}")
     public String deleteHQ(@PathVariable Long id) {
+
+        List<EmployeeHQMapping> mappings
+                = mappingRepository.findByHqId(id);
+
+        if (!mappings.isEmpty()) {
+            mappingRepository.deleteAll(mappings);
+        }
+
         hqRepository.deleteById(id);
+
         return "HQ Deleted";
+    }
+
+    @DeleteMapping("/mapping/delete/{id}")
+    public String deleteMapping(@PathVariable Long id) {
+
+        mappingRepository.deleteById(id);
+
+        return "Mapping Deleted Successfully";
     }
 }

@@ -532,6 +532,39 @@
 
     document.getElementById("hqTableBody").innerHTML = html;
 }
+async function deleteHQ(id) {
+
+    if (!confirm("Kya aap HQ delete karna chahte hain?")) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${BASE_URL}/hq/delete/${id}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        if (response.ok) {
+
+            alert("HQ Deleted Successfully");
+
+            loadHQs();
+
+        } else {
+
+            alert("Delete Failed");
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Error : " + error);
+    }
+}
 loadHQs();
     </script>
 
@@ -662,13 +695,11 @@ loadHQs();
             </td>
 
             <td>
-
-                <button
-                    class="btn btn-danger btn-sm">
-
-                    Delete
-
-                </button>
+            <button
+             class="btn btn-danger btn-sm"
+              onclick="deleteMapping(${item.id})">
+               Delete
+               </button>
 
             </td>
 
@@ -676,7 +707,43 @@ loadHQs();
 
         `;
         });
+
+      
+
       }
+        async function deleteMapping(id) {
+
+    if (!confirm("Delete Mapping?")) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${BASE_URL}/hq/mapping/delete/${id}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        if (response.ok) {
+
+            alert("Mapping Deleted Successfully");
+
+            loadMappings();
+
+        } else {
+
+            alert("Delete Failed");
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Error : " + error);
+    }
+}
     </script>
     <script>
       async function getCoordinates() {

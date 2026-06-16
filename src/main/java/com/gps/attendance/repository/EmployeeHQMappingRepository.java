@@ -11,4 +11,5 @@ public interface EmployeeHQMappingRepository
 
     List<EmployeeHQMapping> findByEmployeeId(Long employeeId);
 
+    List<EmployeeHQMapping> findByHqId(Long hqId);
 }
