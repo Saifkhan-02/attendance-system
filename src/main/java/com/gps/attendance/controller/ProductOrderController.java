@@ -1,10 +1,7 @@
 package com.gps.attendance.controller;
 
-<<<<<<< HEAD
 import java.time.LocalDate;
-=======
 import java.util.HashMap;
->>>>>>> cca82ee376ae58397759ea1240b9707e15a73317
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +19,6 @@ import com.gps.attendance.entity.ProductOrder;
 import com.gps.attendance.repository.GlobalStockRepository;
 import com.gps.attendance.repository.ProductOrderRepository;
 
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.ByteArrayOutputStream;
 
@@ -76,22 +72,6 @@ public class ProductOrderController {
             availableUnits = stock.getAvailableUnits();
         }
 
-        System.out.println("STOCK PRODUCT: " + stock.getProductName());
-        System.out.println("AVAILABLE UNITS: " + availableUnits);
-
-        if (order.getOrderQuantity() > availableUnits) {
-            throw new RuntimeException("Insufficient stock");
-        }
-
-        stock.setAvailableUnits(availableUnits - order.getOrderQuantity());
-        globalStockRepository.save(stock);
-
-        order.setStatus("Placed");
-
-        return orderRepository.save(order);
-    }
-
-<<<<<<< HEAD
     System.out.println("STOCK PRODUCT: " + stock.getProductName());
     System.out.println("AVAILABLE UNITS: " + availableUnits);
 
@@ -124,7 +104,6 @@ public List<ProductOrder> getMonthlyOrders(
             .findByEmployeeIdAndOrderDateStartingWithOrderByIdDesc(employeeId, month);
 }
 
-=======
     @GetMapping("/history/{employeeId}")
     public List<ProductOrder> getOrderHistory(@PathVariable Long employeeId) {
         return orderRepository.findByEmployeeId(employeeId);
@@ -439,7 +418,6 @@ for (ProductOrder order : allOrders) {
                 .body(out.toByteArray());
     }
 
->>>>>>> cca82ee376ae58397759ea1240b9707e15a73317
 }
 // package com.gps.attendance.controller;
 

@@ -22,7 +22,6 @@ public interface ProductOrderRepository extends JpaRepository<ProductOrder, Long
     // Month wise
     List<ProductOrder> findByOrderDateStartingWith(String month);
 
-<<<<<<< HEAD
     @Query("SELECT COALESCE(SUM(p.orderAmount), 0) FROM ProductOrder p WHERE p.employeeId = :employeeId AND p.orderDate LIKE CONCAT(:month, '%')")
 Double getMonthlySalesByEmployee(@Param("employeeId") Long employeeId,
                                  @Param("month") String month);
@@ -37,12 +36,10 @@ List<ProductOrder> findByEmployeeIdAndOrderDateStartingWithOrderByIdDesc(
         String month
 );                            
 
-}
-=======
-    List<ProductOrder>
+ List<ProductOrder>
             findByEmployeeNameContainingIgnoreCaseAndDoctorNameContainingIgnoreCase(
                     String employeeName,
                     String doctorName
             );
+   
 }
->>>>>>> cca82ee376ae58397759ea1240b9707e15a73317
