@@ -2,6 +2,7 @@ package com.gps.attendance.repository;
 
 import java.util.List;
 
+import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -44,4 +45,20 @@ public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> 
     AND d.visitDate LIKE CONCAT(:month, '%')
 """)
 long countDistinctDoctorByEmployeeAndMonth(Long employeeId, String month);
+
+// Duplicate protection
+Optional<DoctorVisit> findFirstByEmployeeIdAndDoctorNameIgnoreCaseAndVisitDate(
+        Long employeeId,
+        String doctorName,
+        String visitDate
+);
+List<DoctorVisit> findByEmployeeIdAndVisitDateOrderByIdDesc(
+        Long employeeId,
+        String visitDate
+);
+List<DoctorVisit> findByEmployeeIdAndVisitDateOrderByVisitTimeDesc(
+        Long employeeId,
+        String visitDate
+);
+
 }

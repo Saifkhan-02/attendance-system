@@ -1,149 +1,170 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>Doctor Visit</title>
+    <title>Doctor Visit</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
 
-<style>
-body{
-    background:#f4f6fb;
-}
+    <style>
+      body {
+        background: #f4f6fb;
+      }
 
-.top-header{
-    background:linear-gradient(135deg,#0d4f9c,#3f7fe0);
-    color:white;
-    padding:25px;
-    border-radius:0 0 25px 25px;
-    box-shadow:0 5px 20px rgba(0,0,0,.15);
-}
+      .top-header {
+        background: linear-gradient(135deg, #0d4f9c, #3f7fe0);
+        color: white;
+        padding: 25px;
+        border-radius: 0 0 25px 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+      }
 
-.visit-card,
-.history-card{
-    border:none;
-    border-radius:20px;
-    box-shadow:0 10px 30px rgba(0,0,0,.08);
-}
+      .visit-card,
+      .history-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      }
 
-.form-control,
-.form-select{
-    border-radius:12px;
-    padding:12px;
-}
+      .form-control,
+      .form-select {
+        border-radius: 12px;
+        padding: 12px;
+      }
 
-.btn-submit{
-    background:#0d6efd;
-    border:none;
-    border-radius:12px;
-    padding:12px 30px;
-}
+      .btn-submit {
+        background: #0d6efd;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 30px;
+      }
 
-.btn-submit:hover{
-    background:#0b5ed7;
-}
+      .btn-submit:hover {
+        background: #0b5ed7;
+      }
 
-.status-completed{
-    color:#198754;
-    font-weight:600;
-}
+      .status-completed {
+        color: #198754;
+        font-weight: 600;
+      }
 
-.status-pending{
-    color:#fd7e14;
-    font-weight:600;
-}
+      .status-pending {
+        color: #fd7e14;
+        font-weight: 600;
+      }
 
-.status-rejected{
-    color:#dc3545;
-    font-weight:600;
-}
-.stock-box{
-    background:#e9f2ff;
-    color:#0d4f9c;
-    border-radius:15px;
-    padding:15px;
-    font-weight:700;
-}
-</style>
-</head>
+      .status-rejected {
+        color: #dc3545;
+        font-weight: 600;
+      }
+      .stock-box {
+        background: #e9f2ff;
+        color: #0d4f9c;
+        border-radius: 15px;
+        padding: 15px;
+        font-weight: 700;
+      }
+    </style>
+  </head>
 
-<body>
+  <body>
+    <div class="top-header text-center">
+      <h2 class="fw-bold mb-1">Doctor Visit</h2>
+      <p class="mb-0">Submit and track your doctor visit reports</p>
+    </div>
 
-<div class="top-header text-center">
-    <h2 class="fw-bold mb-1">Doctor Visit</h2>
-    <p class="mb-0">Submit and track your doctor visit reports</p>
-</div>
-
-<div class="container py-4">
-
-    <!-- Doctor Visit Form -->
-    <div class="card visit-card">
+    <div class="container py-4">
+      <!-- Doctor Visit Form -->
+      <div class="card visit-card">
         <div class="card-body p-4">
+          <h4 class="fw-bold mb-4">Submit Doctor Visit</h4>
 
-            <h4 class="fw-bold mb-4">Submit Doctor Visit</h4>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Working With</label>
+              <select id="workingWith" class="form-select" required>
+                <option value="">Select Designation</option>
+                <option value="Individual">Individual</option>
+                <option value="ASM">ASM</option>
+                <option value="TSM">TSM</option>
+                <option value="ZSM">ZSM</option>
+                <option value="State Head">State Head</option>
+              </select>
+            </div>
 
-            <div class="row g-3">
-                <div class="col-md-6">
-    <label class="form-label">Working With</label>
-    <select id="workingWith" class="form-select" required>
-        <option value="">Select Designation</option>
-        <option value="Individual">Individual</option>
-        <option value="ASM">ASM</option>
-        <option value="TSM">TSM</option>
-        <option value="ZSM">ZSM</option>
-        <option value="State Head">State Head</option>
-    </select>
-</div>
+            <div class="col-md-6">
+              <label class="form-label">Person Name</label>
+              <input
+                type="text"
+                id="workingPersonName"
+                class="form-control"
+                placeholder="Enter person name"
+              />
+            </div>
 
-<div class="col-md-6">
-    <label class="form-label">Person Name</label>
-    <input type="text" id="workingPersonName"
-           class="form-control"
-           placeholder="Enter person name">
-</div>
+            <div class="col-md-6">
+              <label class="form-label">Doctor/Chemist Name</label>
+              <input
+                type="text"
+                id="doctorName"
+                class="form-control"
+                placeholder="Enter doctor name"
+                required
+              />
+            </div>
 
-                <div class="col-md-6">
-                    <label class="form-label">Doctor/Chemist Name</label>
-                    <input type="text" id="doctorName" class="form-control" 
-                    placeholder="Enter doctor name" required>
-                </div>
+            <div class="col-md-6">
+              <label class="form-label">Specialization</label>
+              <input
+                type="text"
+                id="specialization"
+                class="form-control"
+                placeholder="Enter specialization"
+                required
+              />
+            </div>
 
-                <div class="col-md-6">
-                    <label class="form-label">Specialization</label>
-                    <input type="text" id="specialization" class="form-control" 
-                    placeholder="Enter specialization" required>
-                </div>
+            <div class="col-md-6">
+              <label class="form-label">DOB</label>
+              <input type="date" id="dob" class="form-control" />
+            </div>
 
-                <div class="col-md-6">
-    <label class="form-label">DOB</label>
-    <input type="date" id="dob" class="form-control">
-</div>
+            <div class="col-md-6">
+              <label class="form-label">Date of Anniversary</label>
+              <input type="date" id="anniversaryDate" class="form-control" />
+            </div>
 
-<div class="col-md-6">
-    <label class="form-label">Date of Anniversary</label>
-    <input type="date" id="anniversaryDate" class="form-control">
-</div>
+            <div class="col-md-6">
+              <label class="form-label">Hospital / Clinic</label>
+              <input
+                type="text"
+                id="hospitalName"
+                class="form-control"
+                placeholder="Enter hospital or clinic"
+                required
+              />
+            </div>
 
-                <div class="col-md-6">
-                    <label class="form-label">Hospital / Clinic</label>
-                    <input type="text" id="hospitalName" class="form-control" 
-                     placeholder="Enter hospital or clinic" required>
-                </div>
+            <div class="col-md-6">
+              <label class="form-label">Visit Date</label>
+              <input type="date" id="visitDate" class="form-control" required />
+            </div>
 
-                <div class="col-md-6">
-                    <label class="form-label">Visit Date</label>
-                    <input type="date" id="visitDate" class="form-control" required>
-                </div>
-
-                <!-- <div class="col-md-6">
+            <!-- <div class="col-md-6">
                     <label class="form-label">Visit Time</label>
                     <input type="time" id="visitTime" class="form-control">
                 </div> -->
 
-                <!-- <div class="col-md-6">
+            <!-- <div class="col-md-6">
                     <label class="form-label">Purpose</label>
                     <select id="purpose" class="form-select">
                         <option>Product Promotion</option>
@@ -155,60 +176,90 @@ body{
                     </select>
                 </div> -->
 
-                <div class="mb-3">
-                  <label class="form-label">Current Location</label>
-                  <input
-                    type="text"
-                    id="locationName"
-                    class="form-control"
-                    readonly
-                    placeholder="Fetching location..."
-                    required
-                  />
-                  <input type="hidden" id="latitude">
-<input type="hidden" id="longitude">
-<input type="hidden" id="accuracy">
-                </div>
+            <div class="mb-3">
+              <label class="form-label">Current Location</label>
+              <input
+                type="text"
+                id="locationName"
+                class="form-control"
+                readonly
+                placeholder="Fetching location..."
+                required
+              />
+              <input type="hidden" id="latitude" />
+              <input type="hidden" id="longitude" />
+              <input type="hidden" id="accuracy" />
+            </div>
 
-                <div class="col-md-12">
-    <label class="form-label">Landmark / Clinic Area</label>
-    <input
-        type="text"
-        id="landmark"
-        class="form-control"
-        placeholder="Landmark"
-        required
-    />
-</div>
+            <div class="col-md-12">
+              <label class="form-label">Landmark / Clinic Area</label>
+              <input
+                type="text"
+                id="landmark"
+                class="form-control"
+                placeholder="Landmark"
+                required
+              />
+            </div>
 
-                <!-- upload photo -->
-                <div class="col-md-12">
-    <label class="form-label">Upload Image</label>
+            <!-- upload photo -->
+            <div class="col-md-12">
+              <label class="form-label">Upload Image</label>
 
-    <div class="mb-2">
-        <button type="button" class="btn btn-outline-primary" onclick="openCamera()">
-            <i class="fa-solid fa-camera me-2"></i>Open Camera
-        </button>
+              <div class="mb-2">
+                <button
+                  type="button"
+                  class="btn btn-outline-primary"
+                  onclick="openCamera()"
+                >
+                  <i class="fa-solid fa-camera me-2"></i>Open Camera
+                </button>
 
-        <button type="button" class="btn btn-success d-none" id="captureBtn" onclick="capturePhoto()">
-            Capture Photo
-        </button>
-        <button type="button"
-        class="btn btn-warning d-none"
-        id="retakeBtn"
-        onclick="retakePhoto()">
-    <i class="fa-solid fa-rotate-right me-2"></i>
-    Retake Image
-</button>
-    </div>
+                <button
+                  type="button"
+                  class="btn btn-success d-none"
+                  id="captureBtn"
+                  onclick="capturePhoto()"
+                >
+                  Capture Photo
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-warning d-none"
+                  id="retakeBtn"
+                  onclick="retakePhoto()"
+                >
+                  <i class="fa-solid fa-rotate-right me-2"></i>
+                  Retake Image
+                </button>
+              </div>
 
-    <video id="cameraPreview" autoplay playsinline class="d-none" style="width:100%;max-height:260px;border-radius:12px;object-fit:cover;"></video>
-    <canvas id="cameraCanvas" class="d-none"></canvas>
-    <img id="capturedImage" class="d-none mt-2" style="width:100%;max-height:260px;border-radius:12px;object-fit:cover;">
-    
-</div>
+              <video
+                id="cameraPreview"
+                autoplay
+                playsinline
+                class="d-none"
+                style="
+                  width: 100%;
+                  max-height: 260px;
+                  border-radius: 12px;
+                  object-fit: cover;
+                "
+              ></video>
+              <canvas id="cameraCanvas" class="d-none"></canvas>
+              <img
+                id="capturedImage"
+                class="d-none mt-2"
+                style="
+                  width: 100%;
+                  max-height: 260px;
+                  border-radius: 12px;
+                  object-fit: cover;
+                "
+              />
+            </div>
 
-                <!-- <div class="col-md-6">
+            <!-- <div class="col-md-6">
                     <label class="form-label">Doctor Response</label>
                     <select id="doctorResponse" class="form-select">
                         <option>Positive</option>
@@ -218,8 +269,8 @@ body{
                     </select>
                 </div> -->
 
-                <!-- <hr class="my-4"> -->
-<!-- 
+            <!-- <hr class="my-4"> -->
+            <!-- 
 <h4 class="fw-bold mb-3">Order Details</h4>
 
 <div class="col-md-6">
@@ -253,288 +304,379 @@ body{
            placeholder="Enter order amount">
 </div> -->
 
-                <div class="col-md-12">
-                    <label class="form-label">Remarks</label>
-                    <textarea id="remarks" rows="4" class="form-control" placeholder="Enter visit remarks"></textarea>
-                </div>
-
-                <div class="col-md-12">
-                    <button class="btn btn-submit text-white" onclick="submitDoctorVisit()">
-                        <i class="fa-solid fa-paper-plane me-2"></i>
-                        Submit Visit
-                    </button>
-
-
-                </div>
-
+            <div class="col-md-12">
+              <label class="form-label">Remarks</label>
+              <textarea
+                id="remarks"
+                rows="4"
+                class="form-control"
+                placeholder="Enter visit remarks"
+              ></textarea>
             </div>
 
+            <div class="col-md-12">
+              <button
+                id="submitVisitBtn"
+                class="btn btn-submit text-white"
+                onclick="submitDoctorVisit()"
+              >
+                <i class="fa-solid fa-paper-plane me-2"></i>
+                Submit Visit
+              </button>
+            </div>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <!-- Doctor Visit History -->
-    <div class="card history-card mt-4">
+      <!-- Doctor Visit History -->
+      <div class="card history-card mt-4">
         <div class="card-body">
+          <h4 class="fw-bold mb-4">Doctor Visit History</h4>
 
-            <h4 class="fw-bold mb-4">Doctor Visit History</h4>
+          <div class="table-responsive">
+            <table class="table align-middle table-hover">
+              <thead class="table-primary">
+                <tr>
+                  <th>Working With</th>
+                  <th>Person Name</th>
+                  <th>Dr./Chemist</th>
+                  <th>Specialization</th>
+                  <th>DOB</th>
+                  <th>DOA</th>
+                  <th>Hospital/Clinic</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Location</th>
+                  <th>Landmark</th>
+                  <th>Accuracy</th>
+                  <th>Image</th>
+                  <th>Remarks</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
 
-            <div class="table-responsive">
-                <table class="table align-middle table-hover">
-                    <thead class="table-primary">
-                        <tr>
-                            <th>Working With</th>
-                            <th>Person Name</th>    
-                            <th>Dr./Chemist</th>
-                            <th>Specialization</th>
-                            <th>DOB</th>
-                            <th>DOA</th>
-                            <th>Hospital/Clinic</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Location</th>
-                            <th>Landmark</th>
-                            <th>Accuracy</th>
-                            <th>Image</th>
-                            <th>Response</th>
-                            <th>Remarks</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
+              <tbody id="doctorVisitTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
-                    <tbody id="doctorVisitTable"></tbody>
-                </table>
+      <!-- Edit Doctor Visit -->
+      <div class="modal fade" id="editVisitModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content rounded-4">
+            <div class="modal-header">
+              <h5 class="modal-title fw-bold">Edit Doctor Visit</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
             </div>
 
+            <div class="modal-body">
+              <input type="hidden" id="editVisitId" />
+
+              <label class="form-label">Working With</label>
+              <select id="editWorkingWith" class="form-select mb-3">
+                <option value="Individual">Individual</option>
+                <option value="ASM">ASM</option>
+                <option value="TSM">TSM</option>
+                <option value="ZSM">ZSM</option>
+                <option value="State Head">State Head</option>
+              </select>
+
+              <label class="form-label">Person Name</label>
+              <input
+                type="text"
+                id="editWorkingPersonName"
+                class="form-control mb-3"
+              />
+
+              <label class="form-label">Landmark</label>
+              <input type="text" id="editLandmark" class="form-control mb-3" />
+
+              <label class="form-label">Remarks</label>
+              <textarea id="editRemarks" class="form-control mb-3"></textarea>
+
+              <button
+                class="btn btn-primary w-100"
+                onclick="updateDoctorVisit()"
+              >
+                Update Visit
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Visit Image Modal -->
+      <div class="modal fade" id="visitImageModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content rounded-4">
+            <div class="modal-header">
+              <h5 class="modal-title">Visit Image</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+
+            <div class="modal-body text-center">
+              <img
+                id="visitFullImage"
+                src=""
+                style="
+                  max-width: 100%;
+                  max-height: 75vh;
+                  border-radius: 14px;
+                  object-fit: contain;
+                "
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="js/config.js"></script>
+    <script>
+      let cameraStream = null;
+      let capturedPhotoBase64 = "";
+      let capturedVisitBlob = null;
 
-<script>
+      let isSubmittingVisit = false;
 
-let cameraStream = null;
-let capturedPhotoBase64 = "";
+      window.onload = function () {
+        loadDoctorVisitHistory();
+        getCurrentLocation();
+      };
 
-window.onload = function () {
-    loadDoctorVisitHistory();
-    getCurrentLocation();
-    
-};
+     
 
-function submitDoctorVisit() {
+async function submitDoctorVisit() {
+ 
 
-    if (!document.getElementById("workingWith").value) {
-    alert("Please select Working With");
+
+        if (!document.getElementById("workingWith").value) {
+          alert("Please select Working With");
+          return;
+        }
+
+        const workingWith = document.getElementById("workingWith").value;
+        if (
+          workingWith != "Individual" &&
+          !document.getElementById("workingPersonName").value.trim()
+        ) {
+          alert("Please enter person Name");
+          return;
+        }
+
+        if (!document.getElementById("doctorName").value.trim()) {
+          alert("Doctor name required ");
+          return;
+        }
+
+        if (!document.getElementById("specialization").value.trim()) {
+          alert("Please fill Specialization First");
+          return;
+        }
+
+        if (!document.getElementById("dob").value) {
+          alert("Please select DOB");
+          return;
+        }
+
+        if (!document.getElementById("anniversaryDate").value) {
+          alert("Please select DOA");
+          return;
+        }
+
+        if (!document.getElementById("hospitalName").value.trim()) {
+          alert("Please fill Hospital / Clinic First ");
+          return;
+        }
+
+        if (!document.getElementById("visitDate").value) {
+          alert("Please select Visit date ");
+          return;
+        }
+
+        if (!document.getElementById("locationName").value.trim()) {
+          alert("your Current location is not accurate ");
+          return;
+        }
+        if (!document.getElementById("landmark").value.trim()) {
+          alert("Please enter Landmark / Clinic Area");
+          return;
+        }
+
+        //if (Number(document.getElementById("accuracy").value) > 100) {
+        //    alert("Location accuracy is low. Please go to an open area then refresh/retry.");
+        //    return;
+        //}
+
+        //if (!document.getElementById("doctorResponse").value.trim()) {
+        //    alert("Please select Doctor response First");
+        //    return;
+        //}
+
+        if (!capturedVisitBlob) {
+          alert("Please capture image first");
+          return;
+        }
+
+         if (isSubmittingVisit) {
     return;
+  }
+
+  const submitBtn = document.getElementById("submitVisitBtn");
+
+  isSubmittingVisit = true;
+submitBtn.disabled = true;
+submitBtn.innerHTML = "Submitting...";
+        const photoUrl = await uploadDoctorVisitPhoto();
+
+       if (!photoUrl) {
+  isSubmittingVisit = false;
+  submitBtn.disabled = false;
+  submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane me-2"></i> Submit Visit`;
+  return;
 }
+        const visitData = {
+          employeeId: localStorage.getItem("employeeId"),
 
-    const workingWith = document.getElementById("workingWith").value;
-    if (
-        workingWith != "Individual" &&
-        !document.getElementById("workingPersonName").value.trim()
-    ) {
-        alert("Please enter person Name");
-        return;
-    }
+          employeeName: localStorage.getItem("employeeName"),
 
-    if (!document.getElementById("doctorName").value.trim()) {
-    alert("Doctor name required ");
-    return;
-}
+          workingWith: document.getElementById("workingWith").value,
 
-if (!document.getElementById("specialization").value.trim()) {
-    alert("Please fill Specialization First");
-    return;
-}
+          workingPersonName: document.getElementById("workingPersonName").value,
 
-if (!document.getElementById("dob").value) {
-    alert("Please select DOB");
-    return;
-}
+          doctorName: document.getElementById("doctorName").value,
 
-if (!document.getElementById("anniversaryDate").value) {
-    alert("Please select DOA");
-    return;
-}
+          specialization: document.getElementById("specialization").value,
 
-if (!document.getElementById("hospitalName").value.trim()) {
-    alert("Please fill Hospital / Clinic First ");
-    return;
-}
+          dob: document.getElementById("dob").value,
 
-if (!document.getElementById("visitDate").value) {
-    alert("Please select Visit date ");
-    return;
-}
+          anniversaryDate: document.getElementById("anniversaryDate").value,
 
-if (!document.getElementById("locationName").value.trim()) {
-    alert("your Current location is not accurate ");
-    return;
-}
-if (!document.getElementById("landmark").value.trim()) {
-    alert("Please enter Landmark / Clinic Area");
-    return;
-}
+          hospitalName: document.getElementById("hospitalName").value,
 
-//if (Number(document.getElementById("accuracy").value) > 100) {
-//    alert("Location accuracy is low. Please go to an open area then refresh/retry.");
-//    return;
-//}
+          visitDate: document.getElementById("visitDate").value,
 
-//if (!document.getElementById("doctorResponse").value.trim()) {
-//    alert("Please select Doctor response First");
-//    return;
-//}
+          location: document.getElementById("locationName").value,
 
-//if (!capturedPhotoBase64) {
-  //  alert("Please upload image first");
-    //return;
-//}
+          landmark: document.getElementById("landmark").value,
 
-    const visitData = {
+          latitude: document.getElementById("latitude").value,
 
-        employeeId:
-            localStorage.getItem("employeeId"),
+          longitude: document.getElementById("longitude").value,
 
-        employeeName:
-            localStorage.getItem("employeeName"),
+          accuracy: document.getElementById("accuracy").value,
 
-        workingWith:
-            document.getElementById("workingWith").value,
-
-        workingPersonName:
-            document.getElementById("workingPersonName").value,
-
-        doctorName:
-            document.getElementById("doctorName").value,
-
-        specialization:
-            document.getElementById("specialization").value,
-
-        dob:
-            document.getElementById("dob").value,
-        
-        anniversaryDate:
-            document.getElementById("anniversaryDate").value,
-
-        hospitalName:
-            document.getElementById("hospitalName").value,
-
-        visitDate:
-            document.getElementById("visitDate").value,
-
-        location:
-            document.getElementById("locationName").value,
-
-        landmark:
-            document.getElementById("landmark").value,
-
-        latitude:
-            document.getElementById("latitude").value,
-
-        longitude:
-            document.getElementById("longitude").value,
-
-        accuracy:
-            document.getElementById("accuracy").value,
-
-        //doctorResponse:
+          //doctorResponse:
           //  document.getElementById("doctorResponse").value,
 
-        remarks:
-            document.getElementById("remarks").value,
+          remarks: document.getElementById("remarks").value,
 
-       // photo:
-         //   capturedPhotoBase64
-    };
+          photo: photoUrl,
+        };
 
-   fetch(`${BASE_URL}/doctor-visit/save`, {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify(visitData)
-})
-.then(async response => {
-    const text = await response.text();
+        
+        
+        fetch(`${BASE_URL}/doctor-visit/save`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(visitData),
+        })
+          .then(async (response) => {
+            const text = await response.text();
 
-    console.log("STATUS:", response.status);
-    console.log("RESPONSE:", text);
-    console.log("SENT DATA:", visitData);
+            console.log("STATUS:", response.status);
+            console.log("RESPONSE:", text);
+            console.log("SENT DATA:", visitData);
 
-    if (!response.ok) {
-        throw new Error(text);
-    }
+            if (!response.ok) {
+              throw new Error(text);
+            }
 
-   
+            alert("Doctor Visit Submitted Successfully");
 
-    alert("Doctor Visit Submitted Successfully");
-    loadDoctorVisitHistory();
-})
-.catch(error => {
-    console.error("SAVE ERROR:", error);
-    alert("Failed To Submit Visit");
-});
+            clearForm();
+            
+            loadDoctorVisitHistory();
+            isSubmittingVisit = false;
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane me-2"></i> Submit Visit`;
+            
+          })
+          .catch((error) => {
+            isSubmittingVisit = false;
+  submitBtn.disabled = false;
+  submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane me-2"></i> Submit Visit`;
 
-}
+  console.error("SAVE ERROR:", error);
+  alert(error.message || "Failed To Submit Visit");
+          });
+      }
 
-function clearForm() {
+      function clearForm() {
+        document.getElementById("workingWith").selectedIndex = 0;
+        document.getElementById("workingPersonName").value = "";
 
-    document.getElementById("workingWith").selectedIndex = 0;
-    document.getElementById("workingPersonName").value = "";
+        document.getElementById("doctorName").value = "";
+        document.getElementById("specialization").value = "";
 
-    document.getElementById("doctorName").value = "";
-    document.getElementById("specialization").value = "";
+        document.getElementById("dob").value = "";
+        document.getElementById("anniversaryDate").value = "";
 
-    document.getElementById("dob").value = "";
-    document.getElementById("anniversaryDate").value = "";
+        document.getElementById("hospitalName").value = "";
 
-    document.getElementById("hospitalName").value = "";
+        document.getElementById("visitDate").value = new Date()
+          .toISOString()
+          .split("T")[0];
 
-    document.getElementById("visitDate").value =
-        new Date().toISOString().split("T")[0];
+        document.getElementById("landmark").value = "";
 
-    document.getElementById("landmark").value = "";
+        document.getElementById("remarks").value = "";
 
-    document.getElementById("doctorResponse").selectedIndex = 0;
-    document.getElementById("remarks").value = "";
+        capturedPhotoBase64 = "";
+        capturedVisitBlob = null;
 
-    // Image reset
+        document.getElementById("capturedImage").src = "";
+        document.getElementById("capturedImage").classList.add("d-none");
+        document.getElementById("cameraPreview").classList.add("d-none");
+        document.getElementById("captureBtn").classList.add("d-none");
+        document.getElementById("retakeBtn").classList.add("d-none");
 
-    document.getElementById("capturedImage").src = "";
-    document.getElementById("capturedImage").classList.add("d-none");
+        const retakeBtn = document.getElementById("retakeBtn");
+        if (retakeBtn) {
+          retakeBtn.classList.add("d-none");
+        }
 
-    const retakeBtn = document.getElementById("retakeBtn");
-    if (retakeBtn) {
-        retakeBtn.classList.add("d-none");
-    }
+        // Location refresh
+        getCurrentLocation();
+      }
 
-    // Location refresh
-    getCurrentLocation();
-}
+      function loadDoctorVisitHistory() {
+        const employeeId = localStorage.getItem("employeeId");
 
-function loadDoctorVisitHistory() {
+        fetch(`${BASE_URL}/doctor-visit/history/today/${employeeId}`)
+          .then((response) => response.json())
 
-    const employeeId =
-        localStorage.getItem("employeeId");
+          .then((data) => {
+            const table = document.getElementById("doctorVisitTable");
 
-    fetch(`${BASE_URL}/doctor-visit/history/${employeeId}`)
+            table.innerHTML = "";
 
-    .then(response => response.json())
-
-    .then(data => {
-
-        const table =
-            document.getElementById("doctorVisitTable");
-
-        table.innerHTML = "";
-
-        if(data.length === 0){
-
-            table.innerHTML = `
+            if (data.length === 0) {
+              table.innerHTML = `
                 <tr>
                     <td colspan="16" class="text-center">
                         No Doctor Visits Found
@@ -542,27 +684,21 @@ function loadDoctorVisitHistory() {
                 </tr>
             `;
 
-            return;
-        }
-
-        data.forEach(visit => {
-
-            let statusClass =
-                "status-completed";
-
-            if(visit.status === "Rejected"){
-
-                statusClass =
-                    "status-rejected";
+              return;
             }
 
-            if(visit.status === "Pending"){
+            data.forEach((visit) => {
+              let statusClass = "status-completed";
 
-                statusClass =
-                    "status-pending";
-            }
+              if (visit.status === "Rejected") {
+                statusClass = "status-rejected";
+              }
 
-            table.innerHTML += `
+              if (visit.status === "Pending") {
+                statusClass = "status-pending";
+              }
+
+              table.innerHTML += `
 
             <tr>
                 <td>${visit.workingWith || "-"}</td>
@@ -589,7 +725,10 @@ function loadDoctorVisitHistory() {
                 <td>${visit.landmark || "-"}</td>
                 <td>${visit.accuracy ? visit.accuracy + " m" : "-"}</td>
 
-                <td>${visit.photo ? `<img src="${visit.photo}" width="60" style="border-radius:8px;">` : "-"} </td>
+                <td>  <img src="${visit.photo}"
+                onclick="openVisitImage('${visit.photo}')"
+                style="width:55px;height:55px;object-fit:cover;border-radius:10px;cursor:pointer;">
+                </td>
 
                 <td>${visit.remarks || "-"}</td>
 
@@ -599,107 +738,115 @@ function loadDoctorVisitHistory() {
                     </span>
                 </td>
 
+                <td>
+                    <button class="btn btn-sm btn-primary"
+                            onclick='openEditVisitModal(${JSON.stringify(visit)})'>
+                      <i class="fa-solid fa-pen"></i>
+                    </button>
+                </td>
+
             </tr>
 
             `;
-        });
+            });
+          })
 
-    })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+      // Camera function
+      function openCamera() {
+        navigator.mediaDevices
+          .getUserMedia({
+            video: {
+              facingMode: "environment",
+            },
+            audio: false,
+          })
+          .then(function (stream) {
+            cameraStream = stream;
 
-    .catch(error => {
+            const video = document.getElementById("cameraPreview");
+            video.srcObject = stream;
+            video.classList.remove("d-none");
 
-        console.error(error);
+            document.getElementById("captureBtn").classList.remove("d-none");
+            document.getElementById("capturedImage").classList.add("d-none");
+            document.getElementById("retakeBtn").classList.add("d-none");
+          })
+          .catch(function (error) {
+            console.error(error);
+            alert("Camera open nahi ho pa raha. Permission allow karo.");
+          });
+      }
 
-    });
-
-}
-// Camera function
-function openCamera() {
-    navigator.mediaDevices.getUserMedia({
-        video: {
-            facingMode: "environment"
-        },
-        audio: false
-    })
-    .then(function (stream) {
-        cameraStream = stream;
-
+      function capturePhoto() {
         const video = document.getElementById("cameraPreview");
-        video.srcObject = stream;
-        video.classList.remove("d-none");
+        const canvas = document.getElementById("cameraCanvas");
+        const img = document.getElementById("capturedImage");
 
-        document.getElementById("captureBtn").classList.remove("d-none");
-        document.getElementById("capturedImage")
-        .classList.add("d-none");
-        document.getElementById("retakeBtn")
-        .classList.add("d-none");
-    })
-    .catch(function (error) {
-        console.error(error);
-        alert("Camera open nahi ho pa raha. Permission allow karo.");
-    });
-}
+        if (!video.videoWidth || !video.videoHeight) {
+          alert(
+            "Camera ready nahi hai. 2 second wait karke dobara capture karein.",
+          );
+          return;
+        }
 
-function capturePhoto() {
-    const video = document.getElementById("cameraPreview");
-    const canvas = document.getElementById("cameraCanvas");
-    const img = document.getElementById("capturedImage");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
 
-    if (!video.videoWidth || !video.videoHeight) {
-        alert("Camera ready nahi hai. 2 second wait karke dobara capture karein.");
-        return;
-    }
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+        capturedPhotoBase64 = canvas.toDataURL("image/jpeg", 0.8);
 
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(
+          function (blob) {
+            capturedVisitBlob = blob;
+          },
+          "image/jpeg",
+          0.7,
+        );
 
-    capturedPhotoBase64 = canvas.toDataURL("image/jpeg", 0.8);
+        img.src = capturedPhotoBase64;
+        img.classList.remove("d-none");
 
-    img.src = capturedPhotoBase64;
-    img.classList.remove("d-none");
+        video.classList.add("d-none");
+        document.getElementById("captureBtn").classList.add("d-none");
+        document.getElementById("retakeBtn").classList.remove("d-none");
 
-    video.classList.add("d-none");
-    document.getElementById("captureBtn").classList.add("d-none");
-    document.getElementById("retakeBtn")
-        .classList.remove("d-none");
+        if (cameraStream) {
+          cameraStream.getTracks().forEach((track) => track.stop());
+        }
 
-    if (cameraStream) {
-        cameraStream.getTracks().forEach(track => track.stop());
-    }
+        alert("Photo captured successfully");
+      }
 
-    alert("Photo captured successfully");
-}
+      function retakePhoto() {
+        capturedPhotoBase64 = "";
 
-function retakePhoto() {
+        document.getElementById("capturedImage").src = "";
 
-    capturedPhotoBase64 = "";
+        document.getElementById("capturedImage").classList.add("d-none");
 
-    document.getElementById("capturedImage").src = "";
+        document.getElementById("retakeBtn").classList.add("d-none");
 
-    document.getElementById("capturedImage")
-            .classList.add("d-none");
+        openCamera();
+      }
 
-    document.getElementById("retakeBtn")
-            .classList.add("d-none");
+      function getCurrentLocation() {
+        const locationInput = document.getElementById("locationName");
 
-    openCamera();
-}
+        if (!navigator.geolocation) {
+          locationInput.value = "Location not supported";
+          return;
+        }
 
-function getCurrentLocation() {
-    const locationInput = document.getElementById("locationName");
+        locationInput.value = "Fetching location...";
 
-    if (!navigator.geolocation) {
-        locationInput.value = "Location not supported";
-        return;
-    }
-
-    locationInput.value = "Fetching location...";
-
-    navigator.geolocation.getCurrentPosition(
-        function (position) {
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
             const acc = position.coords.accuracy;
@@ -708,37 +855,123 @@ function getCurrentLocation() {
             document.getElementById("longitude").value = lng;
             document.getElementById("accuracy").value = acc;
 
-          //  if (acc > 100) {
+            //  if (acc > 100) {
             //    alert("Location accuracy is low, Go to an open area and then referesh.");
-           // }
+            // }
 
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1&zoom=18&lat=${lat}&lon=${lng}`)
-                .then(response => response.json())
-                .then(data => {
-                    locationInput.value = data.display_name || "Location found";
-                })
-                .catch(error => {
-                    console.error(error);
-                    locationInput.value = "Location found";
-                });
-        },
-        function (error) {
+            fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&addressdetails=1&zoom=18&lat=${lat}&lon=${lng}`,
+            )
+              .then((response) => response.json())
+              .then((data) => {
+                locationInput.value = data.display_name || "Location found";
+              })
+              .catch((error) => {
+                console.error(error);
+                locationInput.value = "Location found";
+              });
+          },
+          function (error) {
             console.error(error);
             locationInput.value = "";
             alert("Location permission allow karo");
-        },
-        {
+          },
+          {
             enableHighAccuracy: true,
             timeout: 30000,
-            maximumAge: 0
+            maximumAge: 0,
+          },
+        );
+      }
+
+      async function uploadDoctorVisitPhoto() {
+        const employeeId = localStorage.getItem("employeeId");
+
+        if (!capturedVisitBlob) {
+          alert("Please capture image first");
+          return null;
         }
-    );
+
+        const formData = new FormData();
+        formData.append("file", capturedVisitBlob, "doctor-visit.jpg");
+
+        const response = await fetch(
+          `${BASE_URL}/doctor-visit/upload-photo/${employeeId}`,
+          {
+            method: "POST",
+            body: formData,
+          },
+        );
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("PHOTO UPLOAD ERROR:", errorText);
+          alert("Photo upload failed");
+          return null;
+        }
+
+        return await response.text();
+      }
+
+      function openVisitImage(imageUrl) {
+        document.getElementById("visitFullImage").src = imageUrl;
+
+        const modal = new bootstrap.Modal(
+          document.getElementById("visitImageModal"),
+        );
+
+        modal.show();
+      }
+    
+      function openEditVisitModal(visit) {
+    document.getElementById("editVisitId").value = visit.id;
+    document.getElementById("editWorkingWith").value = visit.workingWith || "Individual";
+    document.getElementById("editWorkingPersonName").value = visit.workingPersonName || "";
+    document.getElementById("editLandmark").value = visit.landmark || "";
+    document.getElementById("editRemarks").value = visit.remarks || "";
+
+    const modal = new bootstrap.Modal(document.getElementById("editVisitModal"));
+    modal.show();
 }
 
-</script>
+      function updateDoctorVisit() {
+    const visitId = document.getElementById("editVisitId").value;
 
-</body>
+    const updatedVisit = {
+        workingWith: document.getElementById("editWorkingWith").value,
+        workingPersonName: document.getElementById("editWorkingPersonName").value,
+        landmark: document.getElementById("editLandmark").value,
+        remarks: document.getElementById("editRemarks").value
+    };
+
+    fetch(`${BASE_URL}/doctor-visit/update/${visitId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(updatedVisit)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Update failed");
+        }
+        return response.json();
+    })
+    .then(data => {
+        document.activeElement.blur();
+
+        const modalElement = document.getElementById("editVisitModal");
+        bootstrap.Modal.getInstance(modalElement).hide();
+
+        alert("Visit updated successfully");
+        loadDoctorVisitHistory();
+    })
+    .catch(error => {
+        console.error(error);
+        alert("Failed to update visit");
+    });
+}
+    
+    </script>
+  </body>
 </html>
-
-
-

@@ -67,10 +67,10 @@ public class DoctorVisit {
         this.employeeName = employeeName;
     }
 
-    public String getworkingWith(){
+    public String getWorkingWith(){
         return workingWith;
     }
-    public void setworkingWith(String workingWith) {
+    public void setWorkingWith(String workingWith) {
         this.workingWith = workingWith;
     }
 

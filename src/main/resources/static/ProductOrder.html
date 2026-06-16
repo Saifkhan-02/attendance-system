@@ -490,7 +490,7 @@
       function loadOrderHistory() {
         const employeeId = localStorage.getItem("employeeId");
 
-        fetch(`${BASE_URL}/order/history/${employeeId}`)
+        fetch(`${BASE_URL}/order/history/today/${employeeId}`)
           .then((response) => response.json())
           .then((data) => {
             console.log("ORDER HISTORY:", data);

@@ -1,5 +1,6 @@
 package com.gps.attendance.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +11,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.gps.attendance.entity.Employee;
 import com.gps.attendance.repository.EmployeeRepository;
+import com.gps.attendance.service.CloudinaryService;
 
 
 @RestController
@@ -23,14 +27,14 @@ public class EmployeeController {
     @Autowired
     private EmployeeRepository repository;
 
+    @Autowired
+private CloudinaryService cloudinaryService;
+
     @PostMapping("/register")
     public String registerEmployee(
             @RequestBody Employee employee) {
                 
                 
-    // System.out.println("========== REGISTER API HIT ==========");
-    // System.out.println(employee.getName());
-    // System.out.println(employee.getUsername());
 
 
         repository.save(employee);
@@ -111,6 +115,27 @@ public Employee updateEmployeeProfile(
     employee.setEmail(updatedEmployee.getEmail());
     employee.setMobile(updatedEmployee.getMobile());
     employee.setHeadquarters(updatedEmployee.getHeadquarters());
+
+    return repository.save(employee);
+}
+
+@PutMapping("/employee/upload-photo/{id}")
+public Employee uploadEmployeePhoto(
+        @PathVariable Long id,
+        @RequestParam("file") MultipartFile file
+) throws IOException {
+
+        System.out.println("Upload API Hit");
+    System.out.println("Employee ID = " + id);
+    System.out.println("File empty = " + file.isEmpty());
+    System.out.println("File size = " + file.getSize());
+    
+    Employee employee = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+    String imageUrl = cloudinaryService.uploadProfileImage(file, id);
+
+    employee.setProfileImage(imageUrl);
 
     return repository.save(employee);
 }

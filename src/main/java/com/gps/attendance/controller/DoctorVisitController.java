@@ -1,25 +1,34 @@
 package com.gps.attendance.controller;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.gps.attendance.entity.DoctorVisit;
 import com.gps.attendance.repository.AttendanceRepository;
 import com.gps.attendance.repository.DoctorVisitRepository;
 import com.gps.attendance.repository.EmployeeRepository;
 import com.gps.attendance.repository.LeaveRequestRepository;
+import com.gps.attendance.service.CloudinaryService;
 
 
 
@@ -39,14 +48,35 @@ private LeaveRequestRepository leaveRequestRepository;
 @Autowired
 private EmployeeRepository employeeRepository;
 
+@Autowired
+private CloudinaryService cloudinaryService;
+
     @PostMapping("/doctor-visit/save")
-    public DoctorVisit saveDoctorVisit(
+    public ResponseEntity<?> saveDoctorVisit(
             @RequestBody DoctorVisit visit) {
 
+   String doctorName = visit.getDoctorName().trim();
+
+Optional<DoctorVisit> existingVisit =
+        repository.findFirstByEmployeeIdAndDoctorNameIgnoreCaseAndVisitDate(
+                visit.getEmployeeId(),
+                doctorName,
+                visit.getVisitDate()
+        );
+
+if (existingVisit.isPresent()) {
+    return ResponseEntity
+            .badRequest()
+            .body("This doctor visit is already submitted today.");
+}
+
+        visit.setDoctorName(doctorName);
         visit.setVisitTime(LocalTime.now());
         visit.setStatus("Completed");
 
-        return repository.save(visit);
+         DoctorVisit savedVisit = repository.save(visit);
+
+        return ResponseEntity.ok(savedVisit);
     }
 
     @GetMapping("/doctor-visit/history/{employeeId}")
@@ -55,6 +85,18 @@ private EmployeeRepository employeeRepository;
 
         return repository.findByEmployeeId(employeeId);
     }
+
+    @GetMapping("/doctor-visit/history/today/{employeeId}")
+public List<DoctorVisit> getTodayDoctorVisitHistory(
+        @PathVariable Long employeeId
+) {
+    String today = LocalDate.now().toString();
+
+    return repository.findByEmployeeIdAndVisitDateOrderByIdDesc(
+            employeeId,
+            today
+    );
+}
 
     @GetMapping("/doctor-visit/count")
     public long getDoctorVisitCount() {
@@ -158,11 +200,28 @@ public Map<String, Object> getDailyTarget(@PathVariable Long employeeId) {
 
     return data;
 }
-// @PostMapping("/doctor-visit/save")
-// public DoctorVisit saveVisit(
-//         @RequestBody DoctorVisit visit){
-//     visit.setVisitTime(LocalTime.now());
-//     visit.setStatus("Completed");
-//     return repository.save(visit);
-// }
+@PostMapping("/doctor-visit/upload-photo/{employeeId}")
+public String uploadDoctorVisitPhoto(
+        @PathVariable Long employeeId,
+        @RequestParam("file") MultipartFile file
+) throws IOException {
+
+    return cloudinaryService.uploadDoctorVisitImage(file, employeeId);
+}
+
+@PutMapping("/doctor-visit/update/{id}")
+public DoctorVisit updateDoctorVisit(
+        @PathVariable Long id,
+        @RequestBody DoctorVisit updatedVisit
+) {
+    DoctorVisit visit = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Visit not found"));
+
+    visit.setWorkingWith(updatedVisit.getWorkingWith());
+    visit.setWorkingPersonName(updatedVisit.getWorkingPersonName());
+    visit.setRemarks(updatedVisit.getRemarks());
+    visit.setLandmark(updatedVisit.getLandmark());
+
+    return repository.save(visit);
+}
 }

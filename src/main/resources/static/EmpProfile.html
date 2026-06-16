@@ -382,6 +382,9 @@
             //Header Info
             currentEmployee = employee;
 
+            document.getElementById("profileImage").src =
+              employee.profileImage || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
             document.getElementById("employeeNameHeader").innerText =
               employee.name;
             
@@ -421,7 +424,7 @@
           });
       }
 
-  function openEditProfileModal() {
+      function openEditProfileModal() {
   if (!currentEmployee) {
     alert("Profile data not loaded yet");
     return;
@@ -435,7 +438,7 @@
   modal.show();
 }
 
-function updateEmployeeProfile() {
+      function updateEmployeeProfile() {
   const employeeId = localStorage.getItem("employeeId");
 
   const updatedData = {
@@ -539,7 +542,7 @@ function updateEmployeeProfile() {
   reader.readAsDataURL(file);
 }
 
-      function uploadProfileImage() {
+     function uploadProfileImage() {
   const employeeId = localStorage.getItem("employeeId");
 
   if (!cropper) {
@@ -547,42 +550,41 @@ function updateEmployeeProfile() {
     return;
   }
 
-  const canvas = cropper.getCroppedCanvas({
-    width: 300,
-    height: 300
-  });
+  cropper.getCroppedCanvas({
+    width: 400,
+    height: 400
+  }).toBlob(function (blob) {
 
-  selectedProfileImage = canvas.toDataURL("image/jpeg", 0.9);
+    const formData = new FormData();
+    formData.append("file", blob, "profile.jpg");
 
-  fetch(`${BASE_URL}/employee/update-photo/${employeeId}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      profileImage: selectedProfileImage
+    fetch(`${BASE_URL}/employee/upload-photo/${employeeId}`, {
+      method: "PUT",
+      body: formData
     })
-  })
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById("profileImage").src =
-        data.profileImage || selectedProfileImage;
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Photo upload failed");
+        }
+        return response.json();
+      })
+      .then(data => {
+        document.getElementById("profileImage").src = data.profileImage;
 
-      const modalElement = document.getElementById("photoModal");
-      const modal = bootstrap.Modal.getInstance(modalElement);
-      modal.hide();
+        const modalElement = document.getElementById("photoModal");
+        bootstrap.Modal.getInstance(modalElement).hide();
 
-      if (cropper) {
         cropper.destroy();
         cropper = null;
-      }
 
-      alert("Profile photo updated");
-    })
-    .catch(error => {
-      console.error(error);
-      alert("Failed to update photo");
-    });
+        alert("Profile photo updated");
+      })
+      .catch(error => {
+        console.error(error);
+        alert("Failed to upload photo");
+      });
+
+  }, "image/jpeg", 0.75);
 }
 
      

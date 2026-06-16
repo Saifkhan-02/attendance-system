@@ -1,6 +1,7 @@
 
 package com.gps.attendance.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gps.attendance.entity.GlobalStock;
@@ -60,10 +62,23 @@ public ProductOrder placeOrder(@RequestBody ProductOrder order) {
     return orderRepository.save(order);
 }
 
-    @GetMapping("/history/{employeeId}")
-    public List<ProductOrder> getOrderHistory(@PathVariable Long employeeId) {
-        return orderRepository.findByEmployeeId(employeeId);
-    }
+    @GetMapping("/history/today/{employeeId}")
+public List<ProductOrder> getTodayOrders(@PathVariable Long employeeId) {
+    String today = LocalDate.now().toString();
+
+    return orderRepository
+            .findByEmployeeIdAndOrderDateOrderByIdDesc(employeeId, today);
+}
+
+@GetMapping("/history/monthly/{employeeId}")
+public List<ProductOrder> getMonthlyOrders(
+        @PathVariable Long employeeId,
+        @RequestParam String month
+) {
+    return orderRepository
+            .findByEmployeeIdAndOrderDateStartingWithOrderByIdDesc(employeeId, month);
+}
+
 }
 // package com.gps.attendance.controller;
 

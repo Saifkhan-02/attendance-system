@@ -104,13 +104,13 @@
           onclick="window.location.href = 'Dashboard.html'"
         >
           <i class="fa-solid fa-arrow-left me-2"></i>
-          Back
+          
         </button>
 
         <div class="text-center flex-grow-1">
           <h2 class="fw-bold mb-1">Performance Summary</h2>
           <p class="mb-0">
-            Your attendance, visits, orders, stock and activity overview
+            Track Your Overall performance
           </p>
         </div>
 
@@ -159,7 +159,7 @@
 
         <!-- Total Visits -->
         <div class="col-md-3 col-6">
-          <div class="card summary-card">
+          <div class="card summary-card" onclick="openDoctorVisitList()" style="cursor:pointer;">
             <div class="card-body d-flex align-items-center gap-3">
               <div class="icon-box bg-soft-green">
                 <i class="fa-solid fa-user-doctor"></i>
@@ -189,8 +189,9 @@
           </div>
         </div>
 
+        <!-- Total Orders -->
         <div class="col-md-3 col-6">
-          <div class="card summary-card">
+          <div class="card summary-card" onclick="openOrderHistory()" style="cursor:pointer;">
             <div class="card-body d-flex align-items-center gap-3">
               <div class="icon-box bg-soft-purple">
                 <i class="fa-solid fa-cart-shopping"></i>
@@ -204,9 +205,73 @@
         </div>
       </div>
 
+      <!-- Incentive Tracker -->
+      <div class="card summary-card mb-4">
+  <div class="card-body">
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+      <div>
+        <h4 class="fw-bold mb-1">Incentive Tracker</h4>
+        <p class="text-muted mb-0">Monthly sales based incentive progress</p>
+      </div>
+
+      <div class="text-end">
+        <div class="card-title-small">Current Incentive</div>
+        <h3 class="fw-bold text-success mb-0" id="currentIncentive">₹0</h3>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-md-4">
+        <div class="p-3 rounded-4 bg-light">
+          <div class="card-title-small">Monthly Sales</div>
+          <h4 class="fw-bold mb-0" id="monthlySales">₹0</h4>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="p-3 rounded-4 bg-light">
+          <div class="card-title-small">Next Milestone</div>
+          <h4 class="fw-bold mb-0" id="nextMilestone">₹1,00,000</h4>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="p-3 rounded-4 bg-light">
+          <div class="card-title-small">Remaining</div>
+          <h4 class="fw-bold mb-0 text-danger" id="remainingAmount">₹0</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress mb-4" style="height:18px;border-radius:20px;">
+      <div
+        id="incentiveProgressBar"
+        class="progress-bar bg-success"
+        style="width:0%;border-radius:20px;">
+        0%
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-bordered align-middle mb-0">
+        <thead class="table-primary">
+          <tr>
+            <th>Sales Milestone</th>
+            <th>Incentive</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="milestoneTable"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
       <div class="row g-4 mb-4">
         <!-- Total stock -->
-        <div class="col-md-4">
+        <!-- <div class="col-md-4">
           <div class="card summary-card">
             <div class="card-body text-center">
               <i class="fa-solid fa-boxes-stacked fa-2x text-primary mb-2"></i>
@@ -214,7 +279,7 @@
               <h3 class="fw-bold" id="totalStock">0</h3>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <!-- total expense -->
         <div class="col-md-4">
@@ -325,14 +390,21 @@
         loadMonthlySummary();
       };
 
+      function openDoctorVisitList() {
+        window.location.href = "DoctorVisitHistory.html";
+      }
+
       function loadMonthlySummary() {
+
+     
+
         const employeeId = localStorage.getItem("employeeId");
         const month = document.getElementById("summaryMonth").value;
 
         fetch(`${BASE_URL}/summary/monthly/${employeeId}?month=${month}`)
           .then((response) => response.json())
           .then((data) => {
-            console.log("SUMMARY DATA:", data);
+             console.log("SUMMARY DATA:", data);
 
             const attendance = data.attendance || 0;
             const doctorVisits = data.doctorVisits || 0;
@@ -340,23 +412,96 @@
             const orders = data.orders || 0;
 
             document.getElementById("totalAttendance").innerText = attendance;
-            document.getElementById("totalDoctorVisits").innerText =
-              doctorVisits;
+            document.getElementById("totalDoctorVisits").innerText = doctorVisits;
             document.getElementById("totalDoctorList").innerText = doctorList;
             document.getElementById("totalOrders").innerText = orders;
 
-            document.getElementById("totalStock").innerText = data.stock || 0;
+           // document.getElementById("totalStock").innerText = data.stock || 0;
             document.getElementById("totalExpense").innerText =
               "₹" + (data.expense || 0);
             document.getElementById("totalLeaves").innerText = data.leaves || 0;
 
             loadCharts(attendance, doctorVisits, doctorList, orders);
+
+            loadIncentiveSummary();
           })
           .catch((error) => {
+
             console.error("SUMMARY ERROR:", error);
             alert("Failed to load summary");
           });
       }
+
+      function openOrderHistory() {
+        const month = document.getElementById("summaryMonth").value;
+        window.location.href = `OrderHistory.html?month=${month}`;
+      }
+
+      function loadIncentiveSummary() {
+  const employeeId = localStorage.getItem("employeeId");
+  const month = document.getElementById("summaryMonth").value;
+
+  fetch(`${BASE_URL}/summary/incentive/${employeeId}?month=${month}`)
+    .then(response => response.json())
+    .then(data => {
+      const monthlySales = data.monthlySales || 0;
+      const incentive = data.incentive || 0;
+      const nextMilestone = data.nextMilestone || 100000;
+      const remaining = data.remaining || 0;
+
+      document.getElementById("monthlySales").innerText = formatRupees(monthlySales);
+      document.getElementById("currentIncentive").innerText = formatRupees(incentive);
+      document.getElementById("nextMilestone").innerText = formatRupees(nextMilestone);
+      document.getElementById("remainingAmount").innerText = formatRupees(remaining);
+
+      let progress = Math.min((monthlySales / nextMilestone) * 100, 100);
+      progress = Math.round(progress);
+
+      const progressBar = document.getElementById("incentiveProgressBar");
+      progressBar.style.width = progress + "%";
+      progressBar.innerText = progress + "%";
+
+      renderMilestoneTable(monthlySales);
+    })
+    .catch(error => {
+      console.error("INCENTIVE ERROR:", error);
+    });
+}
+
+      function renderMilestoneTable(monthlySales) {
+  const milestones = [
+    { sale: 100000, incentive: 10000 },
+    { sale: 200000, incentive: 15000 },
+    { sale: 300000, incentive: 20000 },
+    { sale: 400000, incentive: 35000 },
+    { sale: 450000, incentive: 40000 }
+  ];
+
+  const table = document.getElementById("milestoneTable");
+  table.innerHTML = "";
+
+  milestones.forEach(item => {
+    const achieved = monthlySales >= item.sale;
+
+    table.innerHTML += `
+      <tr>
+        <td>${formatRupees(item.sale)}</td>
+        <td>${formatRupees(item.incentive)}</td>
+        <td>
+          ${
+            achieved
+              ? `<span class="badge bg-success">Achieved</span>`
+              : `<span class="badge bg-warning text-dark">Pending</span>`
+          }
+        </td>
+      </tr>
+    `;
+  });
+}
+
+      function formatRupees(amount) {
+  return "₹" + Number(amount).toLocaleString("en-IN");
+}
 
       function loadCharts(attendance, doctorVisits, doctorList, orders) {
         if (activityChart) {
