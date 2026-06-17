@@ -424,9 +424,9 @@
         <div
           class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
         >
-          <span>Doctor Visits Trend</span>
+          <span>Doctor Visits Trend (Last 7 Days)</span>
 
-          <select
+         <!----- <select
             id="chartType"
             class="form-select form-select-sm"
             style="width: 120px"
@@ -434,7 +434,7 @@
             <option value="monthly">Monthly</option>
 
             <option value="daily">Daily</option>
-          </select>
+          </select>-->
         </div>
         <div class="card-body">
           <div style="height: 350px">
@@ -839,7 +839,11 @@
 
         const ctx = document.getElementById("doctorVisitChart");
 
-        new Chart(ctx, {
+        if (doctorVisitChart) {
+    doctorVisitChart.destroy();
+   }
+
+        doctorVisitChart = new Chart(ctx, {
           type: "line",
 
           data: {
@@ -857,7 +861,17 @@
 
                 fill: false,
               },
-            ],
+            ],datasets: [
+{
+    label: "Doctor Visits",
+    data: data,
+    borderWidth: 3,
+    tension: 0.4,
+    fill: true,
+    pointRadius: 5,
+    pointHoverRadius: 7
+},
+],
           },
 
           options: {
@@ -868,15 +882,6 @@
         });
       }
 
-      document
-        .getElementById("chartType")
-        .addEventListener("change", function () {
-          if (this.value === "daily") {
-            loadDoctorVisitChart("/doctor-visit/chart-data-daily");
-          } else {
-            loadDoctorVisitChart("/doctor-visit/chart-data");
-          }
-        });
 
         async function loadAttendanceChart() {
 
@@ -1041,7 +1046,7 @@ async function loadExpenseChart() {
 
      loadDoctorVisitCount();  
      loadDoctorVisits();
-     loadDoctorVisitChart();
+     loadDoctorVisitChart("/doctor-visit/chart-data-weekly");
      loadAttendanceChart();
      loadExpenseChart();
     </script>
