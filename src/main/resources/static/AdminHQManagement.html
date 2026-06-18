@@ -3,14 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>Admin Dashboard</title>
+    <title>headquarter Management</title>
 
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
       rel="stylesheet"
@@ -18,11 +16,9 @@
 
     <style>
       body {
-        background: #f4f6f9;
+        background: #f4f6fb;
         overflow-x: hidden;
       }
-
-      /* Navbar */
 
       .top-navbar {
         min-height: 80px;
@@ -34,13 +30,12 @@
         right: 0;
         z-index: 1050;
       }
+
       .navbar-logo {
         width: 90px;
         height: 85px;
         object-fit: contain;
       }
-
-      /* Sidebar */
 
       .sidebar {
         position: fixed;
@@ -64,86 +59,106 @@
         margin: 5px 10px;
         border-radius: 8px;
       }
+
       .sidebar .nav-link:hover {
         background: #1e293b;
       }
-
       .sidebar .nav-link.active {
         background: #0d6efd;
       }
 
-      .welcome-box {
-        background: #fff;
-        padding: 20px;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        margin-bottom: 20px;
-      }
-
-      .welcome-box h2 {
-        color: #0d6efd;
-        font-weight: 700;
-        margin-bottom: 5px;
-      }
-
-      .welcome-box p {
-        color: #6c757d;
-        margin: 0;
-      }
-
-      /* Main Content */
-
       .main-content {
-        position: relative;
         margin-left: 250px;
         margin-top: 100px;
-        padding: 20px;
+        padding: 22px;
         transition: 0.3s;
-        z-index: 1;
       }
 
       .main-content.full {
         margin-left: 0;
       }
-      .dashboard-card{
-        max-height: 520px;
-        overflow-y: auto;
 
-      }
-      .dashboard-card{
-        position: sticky;
-        top: 0;
-        z-index: 1;
+      .welcome-box {
+        background: linear-gradient(135deg, #0d4f9c, #3f7fe0);
+        color: white;
+        padding: 26px;
+        border-radius: 22px;
+        box-shadow: 0 10px 28px rgba(13, 79, 156, 0.25);
+        margin-bottom: 24px;
       }
 
-      /* Mobile */
+      .admin-card,
+      .summary-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      }
+
+      .form-control {
+        border-radius: 12px;
+        padding: 12px;
+      }
+
+      .summary-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+        font-size: 22px;
+      }
+      .clickable-card {
+        cursor: pointer;
+        transition: 0.25s;
+      }
+
+      .clickable-card:hover {
+        transform: translateY(-4px);
+      }
+
+      .icon-blue {
+        background: #e9f2ff;
+        color: #0d6efd;
+      }
+      .icon-green {
+        background: #eafaf1;
+        color: #198754;
+      }
+
+      .status-active {
+        color: #198754;
+        font-weight: 700;
+      }
+
+      .status-inactive {
+        color: #dc3545;
+        font-weight: 700;
+      }
 
       @media (max-width: 768px) {
         .sidebar {
           margin-left: -250px;
         }
-
         .sidebar.show {
           margin-left: 0;
         }
-
         .main-content {
           margin-left: 0;
         }
-
+        .admin-info {
+          display: none !important;
+        }
         .navbar-logo {
           width: 80px;
           height: 75px;
         }
       }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
   </head>
 
   <body>
-    <!-- NAVBAR -->
-
     <nav class="navbar top-navbar px-3">
       <div class="d-flex align-items-center">
         <button class="btn btn-light me-3" onclick="toggleSidebar()">
@@ -160,80 +175,72 @@
       <div class="d-flex align-items-center ms-auto">
         <div class="text-end me-2 admin-info">
           <div class="fw-bold">Admin</div>
-
-          <div class="small text-muted">Raqib Khan</div>
-
+          <div class="small text-muted">Admin</div>
           <div id="datetime" class="small text-secondary"></div>
         </div>
 
         <img
-          id="profileBtn"
-          src="/images/admin.jpg"
+          src="images/admin.jpg"
           width="40"
           height="40"
           class="rounded-circle border border-primary"
-          style="cursor: pointer"
         />
       </div>
     </nav>
 
-    <!-- SIDEBAR -->
-
     <div class="sidebar" id="sidebar">
       <ul class="nav flex-column mt-3">
         <li class="nav-item">
-          <a href="admin-dashboard.html" class="nav-link ">
-            <i class="fas fa-home me-2"></i>
-            Dashboard
+          <a href="admin-dashboard.html" class="nav-link">
+            <i class="fas fa-home me-2"></i>Dashboard
           </a>
         </li>
 
         <li class="nav-item">
           <a href="admin-employeeTracking.html" class="nav-link">
-            <i class="fas fa-location-dot me-2"></i>
-            Employee Tracking
+            <i class="fas fa-location-dot me-2"></i>Employee Tracking
           </a>
         </li>
 
         <li class="nav-item">
           <a href="employeeList.html" class="nav-link">
-            <i class="fas fa-users me-2"></i>
-            Employees
+            <i class="fas fa-users me-2"></i>Employees
           </a>
         </li>
 
         <li class="nav-item">
           <a href="doctorList.html" class="nav-link">
-            <i class="fas fa-user-doctor me-2"></i>
-            Doctors
+            <i class="fas fa-user-doctor me-2"></i>Doctors
           </a>
         </li>
 
         <li class="nav-item">
           <a href="admin-orders.html" class="nav-link">
-            <i class="fas fa-box me-2"></i>
-            Orders
+            <i class="fas fa-box me-2"></i>Orders
           </a>
         </li>
 
         <li class="nav-item">
           <a href="AdminTourApproval.html" class="nav-link">
-            <i class="fa-solid fa-route"></i>
-            Tour Approval
+            <i class="fa-solid fa-route me-2"></i>Tour Approval
           </a>
         </li>
 
         <li class="nav-item">
-          <a href="AdminHQManagement.html" class="nav-link active">
-            <i class="fas fa-map-marker-alt me-2"></i>
-            HQ Management
+          <a href="AdminheadquarterManagement.html" class="nav-link active">
+            <i class="fas fa-map-marker-alt me-2"></i>headquarter Management
           </a>
         </li>
 
         <li class="nav-item">
-          <a href="#" class="nav-link">
-            <i class="fas fa-chart-line me-2"></i>
-            Reports
+          <a href="AdminDistributor.html" class="nav-link">
+            <i class="fa-solid fa-truck-medical me-2"></i>Distributors
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="AdminStockDashboard.html" class="nav-link">
+            <i class="fa-solid fa-warehouse me-2"></i>Stock Dashboard
           </a>
         </li>
       </ul>
@@ -241,174 +248,141 @@
 
     <div class="main-content" id="mainContent">
       <div class="welcome-box">
-        <h2>HQ Management 📍</h2>
-        <p class="mb-0">Manage HQ Locations and Employee Mapping</p>
+        <div
+          class="d-flex justify-content-between align-items-center flex-wrap gap-2"
+        >
+          <div>
+            <h2 class="fw-bold mb-1">headquarter Management 📍</h2>
+            <p class="mb-0">Manage headquarter records</p>
+          </div>
+
+          <a
+            href="AdminEmployeeHQMapping.html"
+            class="btn btn-light fw-semibold"
+          >
+            <i class="fa-solid fa-users-gear me-2"></i>
+            Employee headquarter Mapping
+          </a>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <div
+            class="card summary-card clickable-card"
+            onclick="showAllheadquarterList()"
+          >
+            <div class="card-body text-center">
+              <div class="summary-icon icon-blue mb-2">
+                <i class="fa-solid fa-map-location-dot"></i>
+              </div>
+              <h6 class="text-muted">Total headquarter</h6>
+              <h3 class="fw-bold" id="totalheadquarter">0</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- <div class="col-md-6">
+      <div class="card summary-card">
+        <div class="card-body text-center">
+          <div class="summary-icon icon-green mb-2">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <h6 class="text-muted">Active headquarter</h6>
+          <h3 class="fw-bold" id="activeheadquarter">0</h3>
+        </div>
+      </div>
+    </div> -->
       </div>
 
       <div class="row g-4">
-        <!-- Add HQ -->
-
         <div class="col-lg-4">
-          <div class="card dashboard-cardAdd">
+          <div class="card admin-card">
             <div class="card-header bg-primary text-white">
-              <h5 class="mb-0">Add New HQ</h5>
+              <h5 class="mb-0">
+                <i class="fa-solid fa-plus me-2"></i>
+                Add New headquarter
+              </h5>
             </div>
 
-            <div class="card-body">
-                <form id="hqForm">
-              <div class="mb-3">
-                <label class="form-label"> HQ Name </label>
-
-                <input
-                  type="text"
-                  id="hqName"
-                  class="form-control"
-                  placeholder="Enter HQ Name"
-                />
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label"> Latitude </label>
-
-                <input
-                  type="text"
-                  id="latitude"
-                  class="form-control"
-                  readonly
-                />
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label"> Longitude </label>
-
-                <input
-                  type="text"
-                  id="longitude"
-                  class="form-control"
-                  readonly
-                />
-              </div>
-
-              <div class="mt-3">
-                <label class="form-label"> Location Preview </label>
-
-                <div id="locationPreview" class="alert alert-info">
-                  No Location Selected
+            <div class="card-body p-4">
+              <form id="headquarterForm">
+                <div class="mb-3">
+                  <label class="form-label">headquarter Name</label>
+                  <input
+                    type="text"
+                    id="headquarterName"
+                    class="form-control"
+                    placeholder="Enter headquarter name"
+                  />
                 </div>
-              </div>
 
-              <div class="d-grid gap-2 mt-3">
-                <button
-                  type="button"
-                  class="btn btn-info"
-                  onclick="getCoordinates()"
-                >
-                  <i class="fas fa-location-dot"></i>
-                  Get Coordinates
-                </button>
+                <!-- <div class="mb-3">
+              <label class="form-label">Latitude</label>
+              <input type="text" id="latitude" class="form-control" readonly>
+            </div>
 
-                <button
-                  type="button"
-                  class="btn btn-success"
-                  onclick="saveHQ()"
-                >
-                  <i class="fas fa-save"></i>
-                  Save HQ
-                </button>
-                </form>
+            <div class="mb-3">
+              <label class="form-label">Longitude</label>
+              <input type="text" id="longitude" class="form-control" readonly>
+            </div> -->
+
+                <!-- <div class="mb-3">
+              <label class="form-label">Location Preview</label>
+              <div id="locationPreview" class="alert alert-info mb-0">
+                No Location Selected
               </div>
+            </div> -->
+
+                <div class="d-grid gap-2">
+                  <!-- <button type="button" class="btn btn-info" onclick="getCoordinates()">
+                <i class="fas fa-location-dot me-2"></i>
+                Get Coordinates
+              </button> -->
+
+                  <button
+                    type="button"
+                    class="btn btn-success"
+                    onclick="saveheadquarter()"
+                  >
+                    <i class="fas fa-save me-2"></i>
+                    Add headquarter
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
 
-        <!-- HQ List -->
-
         <div class="col-lg-8">
-          <div class="card dashboard-card">
-            <div class="card-header bg-success text-white">
-              <h5 class="mb-0">HQ List</h5>
+          <div class="card admin-card">
+            <div
+              class="card-header bg-success text-white d-flex justify-content-between align-items-center"
+            >
+              <h5 class="mb-0">
+                <i class="fa-solid fa-list me-2"></i>
+                headquarter List
+              </h5>
+
+              <button class="btn btn-light btn-sm" onclick="loadheadquarters()">
+                <i class="fa-solid fa-rotate-right me-1"></i>
+                Refresh
+              </button>
             </div>
 
-            <div class="card-body">
+            <div class="card-body p-4">
               <div class="table-responsive">
-                <table class="table table-borderd">
+                <table class="table table-hover align-middle">
                   <thead class="table-primary">
                     <tr>
                       <th>ID</th>
-
-                      <th>HQ Name</th>
-
-                      <th>Latitude</th>
-
-                      <th>Longitude</th>
-
+                      <th>headquarter Name</th>
                       <th>Status</th>
-
                       <th>Action</th>
                     </tr>
                   </thead>
 
-                  <tbody id="hqTableBody"></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Employee HQ Mapping -->
-
-      <div class="row mt-4">
-        <div class="col-lg-12">
-          <div class="card dashboard-card">
-            <div class="card-header bg-info text-white">
-              <h5 class="mb-0">Employee HQ Mapping</h5>
-            </div>
-
-            <div class="card-body">
-              <div class="row">
-                <div class="col-md-5">
-                  <label class="form-label"> Employee </label>
-
-                  <select id="employeeSelect" class="form-select">
-                    <option>Select Employee</option>
-                  </select>
-                </div>
-
-                <div class="col-md-5">
-                  <label class="form-label"> HQ </label>
-
-                  <select id="hqSelect" class="form-select">
-                    <option>Select HQ</option>
-                  </select>
-                </div>
-
-                <div class="col-md-2">
-                  <label class="form-label"> &nbsp; </label>
-
-                  <button class="btn btn-primary w-100" onclick="assignHQ()">
-                    Assign
-                  </button>
-                </div>
-              </div>
-
-              <hr />
-
-              <div class="table-responsive">
-                <table class="table table-bordered">
-                  <thead class="table-info">
-                    <tr>
-                      <th>ID</th>
-
-                      <th>Employee</th>
-
-                      <th>HQ</th>
-
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-
-                  <tbody id="mappingTableBody"></tbody>
+                  <tbody id="headquarterTableBody"></tbody>
                 </table>
               </div>
             </div>
@@ -417,34 +391,47 @@
       </div>
     </div>
 
-    <!-- ================= BOOTSTRAP JS ================= -->
+    <!-- headquarter List Modal -->
+    <div class="modal fade" id="headquarterListModal" tabindex="-1">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 20px">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">
+              <i class="fa-solid fa-map-location-dot me-2"></i>
+              All Headquarters
+            </h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+
+          <div class="modal-body">
+            <div id="headquarterModalList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
 
     <script>
-     const BASE_URL = "http://localhost:8080";
+      window.onload = function () {
+        updateTime();
+        setInterval(updateTime, 1000);
+        loadheadquarters();
+      };
 
-     window.onload = function(){
-        loadHQs();
-        loadEmployees();
-        loadMappings();
-     }
-    </script>
-
-
-    <!-- ================= SIDEBAR TOGGLE ================= -->
-
-    <script>
       function toggleSidebar() {
-        let sidebar = document.getElementById("sidebar");
-
-        let main = document.getElementById("mainContent");
+        const sidebar = document.getElementById("sidebar");
+        const main = document.getElementById("mainContent");
 
         if (window.innerWidth <= 768) {
           sidebar.classList.toggle("show");
         } else {
           sidebar.classList.toggle("hide");
-
           main.classList.toggle("full");
         }
       }
@@ -454,134 +441,123 @@
           new Date().toLocaleString();
       }
 
-      setInterval(updateTime, 1000);
+      async function loadheadquarters() {
+        try {
+          const response = await fetch(`${BASE_URL}/headquarter/all`);
+          const headquarters = await response.json();
 
-      updateTime();
-    </script>
+          document.getElementById("totalheadquarter").innerText =
+            headquarters.length;
 
-    <script>
-      function saveHQ() {
-        alert("HQ Save API Pending");
-      }
+          // const activeCount = headquarters.filter(headquarter => headquarter.active === true).length;
+          // document.getElementById("activeheadquarter").innerText = activeCount;
 
-      function assignHQ() {
-        alert("HQ Mapping API Pending");
-      }
-    </script>
+          const table = document.getElementById("headquarterTableBody");
+          table.innerHTML = "";
 
-    <!-- ================= Page Load ================= -->
-    <script>
-      window.onload = function () {
-        loadHQs();
-
-        loadEmployees();
-
-        loadMappings();
-      };
-    </script>
-
-    <!-- ================= Load HQ List ================= -->
-    <script>
-    async function loadHQs() {
-
-    console.log("loadHQs called");
-
-    const response = await fetch(`${BASE_URL}/hq/all`);
-
-    const hqs = await response.json();
-
-    console.log(hqs);
-
-    let html = "";
-
-    let dropdown = document.getElementById("hqSelect");
-
-    dropdown.innerHTML = `
-        <option value="">Select HQ</option>
-    `;
-
-    hqs.forEach(hq => {
-
-        // HQ Dropdown Fill
-        dropdown.innerHTML += `
-            <option value="${hq.id}">
-                ${hq.hqName}
-            </option>
-        `;
-
-        // HQ Table Fill
-        html += `
+          if (!headquarters || headquarters.length === 0) {
+            table.innerHTML = `
         <tr>
-            <td>${hq.id}</td>
-            <td>${hq.hqName}</td>
-            <td>${hq.latitude}</td>
-            <td>${hq.longitude}</td>
-            <td>
-                ${hq.active ? "Active" : "Inactive"}
-            </td>
-            <td>
-                <button
-                    class="btn btn-danger btn-sm"
-                    onclick="deleteHQ(${hq.id})">
-                    Delete
-                </button>
-            </td>
+          <td colspan="6" class="text-center">No headquarter found</td>
         </tr>
+      `;
+            return;
+          }
+
+          headquarters.forEach((headquarter) => {
+            const status = (headquarter.status || "Active").trim();
+            const statusClass =
+              status === "Active" ? "status-active" : "status-inactive";
+
+            table.innerHTML += `
+        <tr>
+          <td>${headquarter.id}</td>
+          <td class="fw-semibold">${headquarter.headquarterName || "-"}</td>
+          <td><span class="${statusClass}">${status}</span></td>
+         <td>
+  <button class="btn btn-sm ${
+    status === "Active" ? "btn-danger" : "btn-success"
+  }" onclick="toggleHQStatus(${headquarter.id})">
+    <i class="fa-solid ${
+      status === "Active" ? "fa-ban" : "fa-check"
+    }"></i>
+  </button>
+</td>
+        </tr>
+      `;
+          });
+        } catch (error) {
+          console.error(error);
+          alert("Failed to load headquarters");
+        }
+      }
+
+      function showAllheadquarterList() {
+        const container = document.getElementById("headquarterModalList");
+
+        fetch(`${BASE_URL}/headquarter/all`)
+          .then((res) => res.json())
+          .then((headquarters) => {
+            if (!headquarters || headquarters.length === 0) {
+              container.innerHTML = `<div class="text-center text-muted">No headquarter found</div>`;
+            } else {
+              container.innerHTML = `
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-primary">
+                <tr>
+                  <th>ID</th>
+                  <th>headquarter Name</th>
+                 
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${headquarters
+                  .map(
+                    (headquarter) => `
+                  <tr>
+                    <td>${headquarter.id}</td>
+                    <td>${headquarter.headquarterName || "-"}</td>
+                 
+                   <td>
+                    <span class="${headquarter.status === "Active"? "status-active": "status-inactive"}">
+                        ${headquarter.status || "Inactive"}
+                    </span>
+                   </td>
+                  </tr>
+                `,
+                  )
+                  .join("")}
+              </tbody>
+            </table>
+          </div>
         `;
-    });
-
-    document.getElementById("hqTableBody").innerHTML = html;
-}
-async function deleteHQ(id) {
-
-    if (!confirm("Kya aap HQ delete karna chahte hain?")) {
-        return;
-    }
-
-    try {
-
-        const response = await fetch(
-            `${BASE_URL}/hq/delete/${id}`,
-            {
-                method: "DELETE"
             }
-        );
 
-        if (response.ok) {
+            new bootstrap.Modal(
+              document.getElementById("headquarterListModal"),
+            ).show();
+          });
+      }
+      async function saveheadquarter() {
+        const headquarterName = document
+          .getElementById("headquarterName")
+          .value.trim();
 
-            alert("HQ Deleted Successfully");
-
-            loadHQs();
-
-        } else {
-
-            alert("Delete Failed");
+        if (!headquarterName) {
+          alert("Please enter headquarter name");
+          return;
         }
 
-    } catch (error) {
-
-        console.error(error);
-
-        alert("Error : " + error);
-    }
-}
-loadHQs();
-    </script>
-
-    <!-- ================= Save HQ ================= -->
-    <script>
-      async function saveHQ() {
         const payload = {
-          hqName: document.getElementById("hqName").value,
-          latitude: parseFloat(document.getElementById("latitude").value),
-          longitude: parseFloat(document.getElementById("longitude").value),
+          headquarterName: headquarterName,
+
           active: true,
         };
 
-        console.log(payload);
-
         try {
-          const response = await fetch("http://localhost:8080/hq/save", {
+          const response = await fetch(`${BASE_URL}/headquarter/save`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -589,197 +565,53 @@ loadHQs();
             body: JSON.stringify(payload),
           });
 
-          console.log("Status =", response.status);
+          if (!response.ok) {
+            throw new Error(await response.text());
+          }
 
-          const data = await response.text();
-
-          console.log(data);
-
-          alert("HQ Saved");
-
-          document.getElementById("hqForm").reset();
-
-          loadHQs();
+          alert("headquarter Added Successfully");
+          document.getElementById("headquarterForm").reset();
+          //document.getElementById("locationPreview").innerText = "No Location Selected";
+          loadheadquarters();
         } catch (error) {
           console.error(error);
-
-          alert("ERROR : " + error);
+          alert("Failed to save headquarter");
         }
       }
-    </script>
 
-    <!-- ================= Load Employees ================= -->
-    <script>
-      async function loadEmployees() {
-        const response = await fetch(`${BASE_URL}/get-employees`);
-
-        const employees = await response.json();
-
-        let dropdown = document.getElementById("employeeSelect");
-
-        dropdown.innerHTML = "<option>Select Employee</option>";
-
-        employees.forEach((emp) => {
-          dropdown.innerHTML += `
-
-        <option value="${emp.id}">
-            ${emp.name}
-        </option>
-
-        `;
-        });
-      }
-    </script>
-
-    <!-- ================= Assign HQ ================= -->
-     <script>
-    async function assignHQ() {
-
-    const payload = {
-        employeeId: Number(document.getElementById("employeeSelect").value),
-        hqId: Number(document.getElementById("hqSelect").value)
-    };
-
-    console.log(payload);
-
-    try {
-
-        const response = await fetch(`${BASE_URL}/hq/mapping/save`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
-        });
-
-        console.log("Status =", response.status);
-
-        const data = await response.text();
-        console.log(data);
-
-        if (response.ok) {
-            alert("HQ Assigned");
-            loadMappings();
-        }
-
-    } catch (error) {
-        console.error(error);
-        alert(error);
-    }
-}
-    </script>
-    <!-- ================= Load Mapping Table================= -->
-    <script>
-      async function loadMappings() {
-        const response = await fetch(`${BASE_URL}/hq/mapping/all`);
-
-        const mappings = await response.json();
-
-        let table = document.getElementById("mappingTableBody");
-
-        table.innerHTML = "";
-
-        mappings.forEach((item) => {
-          table.innerHTML += `
-
-        <tr>
-
-            <td>${item.id}</td>
-
-            <td>
-                ${item.employeeName}
-            </td>
-
-            <td>
-                ${item.hqName}
-            </td>
-
-            <td>
-            <button
-             class="btn btn-danger btn-sm"
-              onclick="deleteMapping(${item.id})">
-               Delete
-               </button>
-
-            </td>
-
-        </tr>
-
-        `;
-        });
-
-      
-
-      }
-        async function deleteMapping(id) {
-
-    if (!confirm("Delete Mapping?")) {
-        return;
-    }
-
-    try {
-
-        const response = await fetch(
-            `${BASE_URL}/hq/mapping/delete/${id}`,
-            {
-                method: "DELETE"
-            }
-        );
-
-        if (response.ok) {
-
-            alert("Mapping Deleted Successfully");
-
-            loadMappings();
-
-        } else {
-
-            alert("Delete Failed");
-        }
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert("Error : " + error);
-    }
-}
-    </script>
-    <script>
-      async function getCoordinates() {
-        const city = document.getElementById("hqName").value.trim();
-
-        if (city === "") {
-          alert("Please Enter HQ Name");
-
+      async function deleteheadquarter(id) {
+        if (!confirm("Are you sure you want to delete this headquarter?")) {
           return;
         }
 
         try {
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?q=${city},India&format=json&limit=1`,
-          );
+          const response = await fetch(`${BASE_URL}/headquarter/delete/${id}`, {
+            method: "DELETE",
+          });
 
-          const data = await response.json();
-
-          if (data.length > 0) {
-            document.getElementById("latitude").value = data[0].lat;
-
-            document.getElementById("longitude").value = data[0].lon;
-
-            document.getElementById("locationPreview").innerHTML =
-              data[0].display_name;
-
-            alert("Coordinates Loaded");
+          if (response.ok) {
+            alert("headquarter Deleted Successfully");
+            loadheadquarters();
           } else {
-            alert("Location Not Found");
+            alert("Delete Failed");
           }
         } catch (error) {
           console.error(error);
-
-          alert("Error Loading Coordinates");
+          alert("Failed to delete headquarter");
         }
       }
+
+     async function toggleHQStatus(id) {
+  const response = await fetch(`${BASE_URL}/headquarter/toggle-status/${id}`, {
+    method: "PUT",
+  });
+
+  if (response.ok) {
+    loadheadquarters();
+  } else {
+    alert("Failed to update headquarter status");
+  }
+}
     </script>
   </body>
 </html>

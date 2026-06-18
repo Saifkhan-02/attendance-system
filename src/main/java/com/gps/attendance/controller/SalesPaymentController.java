@@ -40,4 +40,20 @@ public List<DoctorPaymentDetailsDTO> getDoctorPaymentDetails(
 ) {
     return salesPaymentService.getDoctorPaymentDetails(employeeId);
 }
+
+// @GetMapping("/sales-payment/distributor-summary/{employeeId}")
+// public Map<String, Object> getDistributorSalesSummary(
+//         @PathVariable Long employeeId
+// ) {
+//     return salesPaymentService.getDistributorSalesSummary(employeeId);
+// }
+
+// @GetMapping("/sales-payment/distributor-orders/{employeeId}")
+// public List<?> getDistributorOrders(
+//         @PathVariable Long employeeId,
+//         @RequestParam(defaultValue = "") String distributorName
+// ) {
+//     return salesPaymentService.getDistributorOrders(employeeId, distributorName);
+// }
+
 }

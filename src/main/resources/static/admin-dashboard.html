@@ -170,6 +170,47 @@
         gap: 10px;
         flex-wrap: wrap;
       }
+
+      /* Quick Actions */
+      .quick-action {
+  height: 105px;
+  border-radius: 18px;
+  color: white;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(0,0,0,.12);
+  transition: .25s;
+}
+
+.quick-action i {
+  font-size: 26px;
+}
+
+.quick-action:hover {
+  transform: translateY(-4px);
+  color: white;
+}
+
+.welcome-box {
+  background: linear-gradient(135deg, #0d4f9c, #3f7fe0);
+  color: white;
+  border-radius: 22px;
+  padding: 28px;
+  margin-bottom: 22px;
+  box-shadow: 0 10px 28px rgba(13,79,156,.25);
+}
+
+.dashboard-card {
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 10px 26px rgba(0,0,0,.08);
+  overflow: hidden;
+}
      
 
       /* Mobile */
@@ -237,7 +278,7 @@
 
         <img
           id="profileBtn"
-          src="/images/admin.jpg"
+          src="images/admin.jpg"
           width="40"
           height="40"
           class="rounded-circle border border-primary"
@@ -298,6 +339,27 @@
             HQ Management
           </a>
         </li>
+
+        <li class="nav-item">
+  <a href="AdminDistributor.html" class="nav-link">
+    <i class="fa-solid fa-truck-medical me-2"></i>
+    Distributors
+  </a>
+</li>
+
+<!-- <li class="nav-item">
+  <a href="AdminAddStock.html" class="nav-link">
+    <i class="fa-solid fa-boxes-stacked me-2"></i>
+    Distributor Stock
+  </a>
+</li> -->
+
+<li class="nav-item">
+  <a href="AdminStockDashboard.html" class="nav-link">
+    <i class="fa-solid fa-warehouse me-2"></i>
+    Stock Dashboard
+  </a>
+</li>
 
         <li class="nav-item">
           <a href="#" class="nav-link">
@@ -378,43 +440,76 @@
 
       <!-- ================= QUICK ACTIONS ================= -->
 
-      <div class="card dashboard-card mb-4">
-        <div class="card-header bg-primary text-white">
-          <h5 class="mb-0">Quick Actions</h5>
-        </div>
+<div class="card dashboard-card mb-4">
+  <div class="card-header bg-primary text-white">
+    <h5 class="mb-0">
+      <i class="fa-solid fa-bolt me-2"></i>
+      Quick Actions
+    </h5>
+  </div>
 
-        <div class="card-body">
-          <div class="row g-3">
-            <div class="col-md-3">
-              <a href="addEmployee.html" class="btn btn-primary w-100">
-                <i class="fas fa-user-plus"></i>
-                Add Employee
-              </a>
-            </div>
+  <div class="card-body">
+    <div class="row g-3">
 
-            <div class="col-md-3">
-              <a href="addDoctor.html" class="btn btn-success w-100">
-                <i class="fas fa-user-doctor"></i>
-                Add Doctor
-              </a>
-            </div>
-
-            <div class="col-md-3">
-              <button class="btn btn-warning w-100">
-                <i class="fas fa-location-dot"></i>
-                Track Employee
-              </button>
-            </div>
-
-            <div class="col-md-3">
-              <button class="btn btn-info w-100">
-                <i class="fas fa-chart-line"></i>
-                Reports
-              </button>
-            </div>
-          </div>
-        </div>
+      <div class="col-6 col-md-3">
+        <a href="addEmployee.html" class="quick-action bg-primary">
+          <i class="fas fa-user-plus"></i>
+          <span>Add Employee</span>
+        </a>
       </div>
+
+      <!-- <div class="col-6 col-md-3">
+        <a href="addDoctor.html" class="quick-action bg-success">
+          <i class="fas fa-user-doctor"></i>
+          <span>Add Doctor</span>
+        </a>
+      </div> -->
+
+      <div class="col-6 col-md-3">
+        <a href="AdminDistributor.html" class="quick-action bg-info">
+          <i class="fa-solid fa-truck-medical"></i>
+          <span>Manage Distributors</span>
+        </a>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <a href="AdminAddStock.html" class="quick-action bg-warning text-dark">
+          <i class="fa-solid fa-boxes-stacked"></i>
+          <span>Add Stock</span>
+        </a>
+      </div>
+
+      <!-- <div class="col-6 col-md-3">
+        <a href="AdminHQManagement.html" class="quick-action bg-secondary">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>HQ Management</span>
+        </a>
+      </div> -->
+
+      <div class="col-6 col-md-3">
+        <a href="admin-employeeTracking.html" class="quick-action bg-danger">
+          <i class="fas fa-location-dot"></i>
+          <span>Track Employee</span>
+        </a>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <a href="admin-orders.html" class="quick-action bg-dark">
+          <i class="fas fa-box"></i>
+          <span>Orders</span>
+        </a>
+      </div>
+
+      <div class="col-6 col-md-3">
+        <a href="AdminTourApproval.html" class="quick-action bg-primary">
+          <i class="fa-solid fa-route"></i>
+          <span>Tour Approval</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
       <!-- ================= Add Charts ================= -->
 
        <div class="row mt-4">
@@ -602,11 +697,12 @@
           </ul>
         </div>
       </div>
-    </di>
+    </div>
 
     <!-- ================= BOOTSTRAP JS ================= -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
 
     <!-- ================= SIDEBAR TOGGLE ================= -->
 
@@ -639,7 +735,7 @@
 
     <script>
       window.onload = function () {
-        fetch("/get-employees")
+        fetch(`${BASE_URL}/get-employees`)
           .then((response) => response.json())
 
           .then((employees) => {
@@ -647,7 +743,7 @@
               employees.length;
           });
 
-        fetch("/admin/get-doctors")
+        fetch(`${BASE_URL}/admin/get-doctors`)
           .then((response) => response.json())
 
           .then((doctors) => {
@@ -661,7 +757,7 @@
       <div class="profile-card">
         <span id="closeModal" class="close-btn">&times;</span>
 
-        <img src="/images/admin.jpg" class="profile-pic" />
+        <img src="images/admin.jpg" class="profile-pic" />
 
         <h3>Raqib Khan</h3>
 
@@ -715,7 +811,7 @@
     <script>
      async function loadDoctorVisitCount() {
     try {
-        const response = await fetch("/doctor-visit/count");
+        const response = await fetch(`${BASE_URL}/doctor-visit/count`);
 
         if (!response.ok) {
             throw new Error("API Error: " + response.status);
@@ -731,7 +827,7 @@
     }
 }
       async function loadDoctorVisits() {
-        const response = await fetch("/doctor-visit/top10");
+        const response = await fetch(`${BASE_URL}/doctor-visit/top10`);
 
         const visits = await response.json();
 
@@ -763,7 +859,7 @@
             return;
           }
 
-          const response = await fetch(`/doctor-visit/search/${keyword}`);
+          const response = await fetch(`${BASE_URL}/doctor-visit/search/${keyword}`);
 
           const visits = await response.json();
 
@@ -787,7 +883,7 @@
 
         let doctorVisitChart = null;
 
-      async function loadDoctorVisitChart(url = "/doctor-visit/chart-data") {
+      async function loadDoctorVisitChart(url =`${BASE_URL}/doctor-visit/chart-data`) {
         const response = await fetch(url);
 
         const chartData = await response.json();
@@ -872,16 +968,16 @@
         .getElementById("chartType")
         .addEventListener("change", function () {
           if (this.value === "daily") {
-            loadDoctorVisitChart("/doctor-visit/chart-data-daily");
+            loadDoctorVisitChart(`${BASE_URL}/doctor-visit/chart-data-daily`);
           } else {
-            loadDoctorVisitChart("/doctor-visit/chart-data");
+            loadDoctorVisitChart(`${BASE_URL}/doctor-visit/chart-data`);
           }
         });
 
         async function loadAttendanceChart() {
 
     const response =
-        await fetch('/attendance/chart-data');
+        await fetch(`${BASE_URL}/attendance/chart-data`);
 
     const data =
         await response.json();
@@ -945,7 +1041,7 @@ document.getElementById("leaveCount").innerText =
 async function loadExpenseChart() {
 
     const response =
-        await fetch('/expenses/chart-data');
+        await fetch(`${BASE_URL}/expenses/chart-data`);
 
     const data =
         await response.json();

@@ -2,6 +2,7 @@ package com.gps.attendance.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -136,6 +137,20 @@ public Employee uploadEmployeePhoto(
     String imageUrl = cloudinaryService.uploadProfileImage(file, id);
 
     employee.setProfileImage(imageUrl);
+
+    return repository.save(employee);
+}
+
+@PutMapping("/employee/assign-headquarter")
+public Employee assignHeadquarter(@RequestBody Map<String, Object> request) {
+
+    Long employeeId = Long.valueOf(request.get("employeeId").toString());
+    String headquarterName = request.get("headquarterName").toString();
+
+    Employee employee = repository.findById(employeeId)
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+    employee.setHeadquarters(headquarterName);
 
     return repository.save(employee);
 }

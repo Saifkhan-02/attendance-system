@@ -16,4 +16,10 @@ public interface DistributorRepository extends JpaRepository<Distributor, Long> 
 
     @Query("SELECT DISTINCT d.headquarters FROM Distributor d WHERE d.status = 'Active'")
 List<String> findDistinctActiveHeadquarters();
+
+List<Distributor> findByHeadquartersAndStatus(
+        String headquarters,
+        String status
+);
+
 }
