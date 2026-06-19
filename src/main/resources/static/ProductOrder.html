@@ -31,7 +31,18 @@
         border-radius: 0 0 25px 25px;
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
       }
+        .back-btn{
+  width:42px;
+  height:42px;
+  border:none;
+  border-radius:50%;
+  background:rgba(255,255,255,.2);
+  color:white;
+}
 
+.back-btn:hover{
+  background:rgba(255,255,255,.3);
+}
       .order-card,
       .history-card {
         border: none;
@@ -77,12 +88,23 @@
   </head>
 
   <body>
-    <div class="top-header text-center">
+  <div class="top-header">
+  <div class="d-flex align-items-center justify-content-between">
+
+    <button class="back-btn"
+            onclick="window.location.href='Dashboard.html'">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <div class="text-center flex-grow-1">
       <h2 class="fw-bold mb-1">Create Order</h2>
-      <p class="mb-0">
-        Place doctor orders and update your stock automatically
-      </p>
+      <p class="mb-0">Place doctor orders and update stock automatically</p>
     </div>
+
+    <div style="width:42px"></div>
+
+  </div>
+</div>
 
     <div class="container py-4">
       <div class="card order-card">
@@ -216,8 +238,8 @@
     <script>
 
       let distributorList = [];
-let distributorStockList = [];
-let employeeHeadquarters = "";
+      let distributorStockList = [];
+      let employeeHeadquarters = "";
 
       let stockList = [];
       let doctorTomSelect = null;
@@ -440,7 +462,6 @@ function calculateTotalOrderAmount() {
   calculateDueAmount();
 }
     
-
       function setDoctorName() {
         const select = document.getElementById("doctorId");
         const selected = select.options[select.selectedIndex];
@@ -448,9 +469,6 @@ function calculateTotalOrderAmount() {
         document.getElementById("doctorName").value =
           selected.getAttribute("data-name") || "";
       }
-
-      
-
     
      function placeOrder() {
   const doctorId = document.getElementById("doctorId").value;

@@ -33,13 +33,22 @@ public class TourPlanController {
     private TourPlanRepository repository;
 
     @PostMapping("/tour-plan/save")
-    public TourPlan saveTourPlan(
-            @RequestBody TourPlan tourPlan) {
+public TourPlan saveTourPlan(
+        @RequestBody TourPlan tourPlan) {
 
-        tourPlan.setStatus("PENDING");
-
-        return repository.save(tourPlan);
+    if (repository.existsByEmployeeIdAndTravelDate(
+            tourPlan.getEmployeeId(),
+            tourPlan.getTravelDate()
+    )) {
+        throw new RuntimeException("Tour already submitted for this date");
     }
+
+    if (tourPlan.getStatus() == null || tourPlan.getStatus().isBlank()) {
+        tourPlan.setStatus("PENDING");
+    }
+
+    return repository.save(tourPlan);
+}
 
     @GetMapping("/tour-plan/history/{employeeId}")
     public List<TourPlan> getTourHistory(
@@ -162,4 +171,40 @@ public Map<String, Object> getDashboardStats() {
     return result;
 }
 
+@PostMapping("/tour-plan/monthly/save")
+public List<TourPlan> saveMonthlyTourPlan(@RequestBody List<TourPlan> plans) {
+
+    if (plans == null || plans.isEmpty()) {
+        throw new RuntimeException("Tour plan is empty");
+    }
+
+    Long employeeId = plans.get(0).getEmployeeId();
+    String month = plans.get(0).getMonth();
+
+    boolean alreadyExists =
+            repository.existsByEmployeeIdAndMonth(employeeId, month);
+
+    if (alreadyExists) {
+        throw new RuntimeException("Tour plan for this month already submitted.");
+    }
+
+    for (TourPlan plan : plans) {
+       if (plan.getStatus() == null || plan.getStatus().isBlank()) {
+            plan.setStatus("PENDING");
+}
+
+        
+    }
+    
+
+    return repository.saveAll(plans);
+}
+
+@GetMapping("/tour-plan/monthly/history/{employeeId}/{month}")
+public List<TourPlan> getMonthlyTourPlan(
+        @PathVariable Long employeeId,
+        @PathVariable String month
+) {
+    return repository.findByEmployeeIdAndMonth(employeeId, month);
+}
 }

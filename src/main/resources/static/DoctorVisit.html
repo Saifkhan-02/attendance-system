@@ -27,7 +27,18 @@
         border-radius: 0 0 25px 25px;
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
       }
+        .back-btn{
+  width:42px;
+  height:42px;
+  border:none;
+  border-radius:50%;
+  background:rgba(255,255,255,.2);
+  color:white;
+}
 
+.back-btn:hover{
+  background:rgba(255,255,255,.3);
+}
       .visit-card,
       .history-card {
         border: none;
@@ -77,10 +88,23 @@
   </head>
 
   <body>
-    <div class="top-header text-center">
+   <div class="top-header">
+  <div class="d-flex align-items-center justify-content-between">
+
+    <button class="back-btn"
+            onclick="window.location.href='Dashboard.html'">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <div class="text-center flex-grow-1">
       <h2 class="fw-bold mb-1">Doctor Visit</h2>
-      <p class="mb-0">Submit and track your doctor visit reports</p>
+      <p class="mb-0">Submit your daily doctor visits</p>
     </div>
+
+    <div style="width:42px"></div>
+
+  </div>
+</div>
 
     <div class="container py-4">
       <!-- Doctor Visit Form -->

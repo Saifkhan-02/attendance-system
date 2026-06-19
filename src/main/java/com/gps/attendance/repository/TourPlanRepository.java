@@ -15,5 +15,13 @@ public interface TourPlanRepository
 
     long countByStatus(String status);
     
+    List<TourPlan> findByEmployeeIdAndMonth(Long employeeId, String month);
+
+boolean existsByEmployeeIdAndMonth(Long employeeId, String month);
+
+boolean existsByEmployeeIdAndTravelDate(
+        Long employeeId,
+        java.time.LocalDate travelDate
+);
 
 }

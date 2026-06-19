@@ -10,144 +10,176 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
-body{
-    background:#f4f6fb;
-}
+body{background:#f4f6fb}
 
 .top-header{
-    background:linear-gradient(135deg,#0d4f9c,#3f7fe0);
-    color:white;
-    padding:25px;
-    border-radius:0 0 25px 25px;
-    box-shadow:0 5px 20px rgba(0,0,0,.15);
+  background:linear-gradient(135deg,#0d4f9c,#3f7fe0);
+  color:white;
+  padding:22px;
+  border-radius:0 0 25px 25px;
+  box-shadow:0 5px 20px rgba(0,0,0,.15);
 }
 
-.expense-card,
-.history-card{
-    border:none;
-    border-radius:20px;
-    box-shadow:0 10px 30px rgba(0,0,0,.08);
+.back-btn{
+  width:42px;
+  height:42px;
+  border:none;
+  border-radius:50%;
+  background:rgba(255,255,255,.2);
+  color:white;
 }
 
-.form-control,
-.form-select{
-    border-radius:12px;
-    padding:12px;
+.summary-card,.history-card{
+  border:none;
+  border-radius:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
 }
 
-.btn-submit{
-    background:#0d6efd;
-    border:none;
-    border-radius:12px;
-    padding:12px 30px;
+.icon-box{
+  width:52px;
+  height:52px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  margin:auto;
 }
 
-.btn-submit:hover{
-    background:#0b5ed7;
+.bg-fare{background:#dcfce7;color:#16a34a}
+.bg-da{background:#ffedd5;color:#ea580c}
+.bg-other{background:#fee2e2;color:#dc2626}
+.bg-total{background:#dbeafe;color:#2563eb}
+
+.form-control{
+  border-radius:12px;
+  padding:11px;
 }
 
-.status-approved{
-    color:#198754;
-    font-weight:600;
+.amount-text{
+  font-weight:700;
+  color:#198754;
 }
 
-.status-pending{
-    color:#fd7e14;
-    font-weight:600;
-}
-
-.status-rejected{
-    color:#dc3545;
-    font-weight:600;
+th,td{
+  white-space:nowrap;
 }
 </style>
 </head>
 
 <body>
 
-<div class="top-header text-center">
-    <h2 class="fw-bold mb-1">Expenses</h2>
-    <p class="mb-0">Submit and track your expense claims</p>
+<div class="top-header">
+  <div class="d-flex align-items-center justify-content-between">
+    <button class="back-btn" onclick="window.location.href='Dashboard.html'">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <div class="text-center flex-grow-1">
+      <h2 class="fw-bold mb-1">Expenses</h2>
+      <p class="mb-0">Route wise monthly expense summary</p>
+    </div>
+
+    <div style="width:42px"></div>
+  </div>
 </div>
 
 <div class="container py-4">
 
-    <div class="card expense-card">
-        <div class="card-body p-4">
-
-            <h4 class="fw-bold mb-4">Submit Expense</h4>
-
-            <div class="row g-3">
-
-                <div class="col-md-6">
-                    <label class="form-label">Expense Type</label>
-                    <select class="form-select" id="expenseType">
-                        <option>Travel</option>
-                        <option>Food</option>
-                        <option>Hotel</option>
-                        <option>Fuel</option>
-                        <option>Medical Sample</option>
-                        <option>Other</option>
-                    </select>
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">Expense Date</label>
-                    <input type="date" id="expenseDate" class="form-control">
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">Amount</label>
-                    <input type="number" id="amount" class="form-control" placeholder="Enter amount">
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">Bill / Receipt</label>
-                    <input type="file" id="billFile" class="form-control" accept="image/*,.pdf">
-                </div>
-
-                <div class="col-md-12">
-                    <label class="form-label">Remarks</label>
-                    <textarea id="remarks" rows="4" class="form-control" placeholder="Enter remarks"></textarea>
-                </div>
-
-                <div class="col-md-12">
-                    <button class="btn btn-submit text-white" onclick="submitExpense()">
-                        <i class="fa-solid fa-paper-plane me-2"></i>
-                        Submit Expense
-                    </button>
-                </div>
-
-            </div>
-
-        </div>
+  <div class="row mb-3">
+    <div class="col-md-3 col-8">
+      <input type="month" id="expenseMonth" class="form-control">
     </div>
 
-    <div class="card history-card mt-4">
-        <div class="card-body">
-
-            <h4 class="fw-bold mb-4">Expense History</h4>
-
-            <div class="table-responsive">
-                <table class="table align-middle table-hover">
-                    <thead class="table-primary">
-                        <tr>
-                            <th>Type</th>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Remarks</th>
-                            <th>Bill</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="expenseHistoryTable">
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
+    <div class="col-md-2 col-4">
+      <button class="btn btn-primary w-100" onclick="loadExpenses()">
+        Filter
+      </button>
     </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+
+    <div class="col-md-3 col-6">
+      <div class="card summary-card">
+        <div class="card-body text-center">
+          <div class="icon-box bg-total mb-2">
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+          <h6>Total Expense</h6>
+          <h3 id="totalExpense">₹0</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-6">
+      <div class="card summary-card">
+        <div class="card-body text-center">
+          <div class="icon-box bg-fare mb-2">
+            <i class="fa-solid fa-money-bill-wave"></i>
+          </div>
+          <h6>Total Fare</h6>
+          <h3 id="totalFare">₹0</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-6">
+      <div class="card summary-card">
+        <div class="card-body text-center">
+          <div class="icon-box bg-da mb-2">
+            <i class="fa-solid fa-utensils"></i>
+          </div>
+          <h6>Total D.A</h6>
+          <h3 id="totalDa">₹0</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-6">
+      <div class="card summary-card">
+        <div class="card-body text-center">
+          <div class="icon-box bg-other mb-2">
+            <i class="fa-solid fa-receipt"></i>
+          </div>
+          <h6> Other</h6>
+          <h3 id="totalOther">₹0</h3>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card history-card">
+    <div class="card-body p-4">
+
+      <h4 class="fw-bold mb-3">
+        <i class="fa-solid fa-route me-2 text-primary"></i>
+        Route Wise Expense
+      </h4>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-primary">
+            <tr>
+              <th>Date</th>
+              
+              <th>Route</th>
+              <th>Visits</th>
+              <th>Total KM</th>
+              <th>Fare</th>
+              <th>D.A</th>
+              <th>Other</th>
+              <th>Total Expense</th>
+            </tr>
+          </thead>
+
+          <tbody id="expenseTable"></tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
 
 </div>
 
@@ -155,97 +187,111 @@ body{
 <script src="js/config.js"></script>
 
 <script>
-window.onload = loadExpenseHistory;
+window.onload = function () {
+  document.getElementById("expenseMonth").value =
+    new Date().toISOString().slice(0, 7);
 
-function submitExpense() {
+  loadExpenses();
+};
 
-    const expenseData = {
-        employeeId: localStorage.getItem("employeeId"),
-        employeeName: localStorage.getItem("employeeName"),
+function loadExpenses() {
+  const employeeId = localStorage.getItem("employeeId");
+  const month = document.getElementById("expenseMonth").value;
 
-        expenseType: document.getElementById("expenseType").value,
-        expenseDate: document.getElementById("expenseDate").value,
-        amount: document.getElementById("amount").value,
-        remarks: document.getElementById("remarks").value,
-        billUrl: "",
-        status: "Pending"
-    };
-
-    fetch(`${BASE_URL}/expense/submit`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(expenseData)
-    })
+  fetch(`${BASE_URL}/tour-plan/monthly/history/${employeeId}/${month}`)
     .then(response => response.json())
     .then(data => {
-        alert("Expense Submitted Successfully");
-
-        document.getElementById("expenseType").selectedIndex = 0;
-        document.getElementById("expenseDate").value = "";
-        document.getElementById("amount").value = "";
-        document.getElementById("billFile").value = "";
-        document.getElementById("remarks").value = "";
-
-        loadExpenseHistory();
+      renderExpenseSummary(data || []);
     })
     .catch(error => {
-        console.error(error);
-        alert("Failed to submit expense");
+      console.error(error);
+      alert("Failed to load expenses");
     });
 }
 
-function loadExpenseHistory() {
+function renderExpenseSummary(data) {
+  let totalFare = 0;
+  let totalDa = 0;
+  let totalOther = 0;
 
-    const employeeId = localStorage.getItem("employeeId");
+  const routeMap = {};
 
-    fetch(`${BASE_URL}/expense/history/${employeeId}`)
-    .then(response => response.json())
-    .then(data => {
+  data.forEach(item => {
+    const route = item.routeName || "Unknown";
 
-        const table = document.getElementById("expenseHistoryTable");
-        table.innerHTML = "";
+    const km = Number(item.travelKm || 0);
+    const fare = Number(item.fareAmount || 0);
+    const da = Number(item.daAmount || 0);
+    const other = Number(item.otherAmount || 0);
 
-        if (data.length === 0) {
-            table.innerHTML = `
-                <tr>
-                    <td colspan="6" class="text-center">
-                        No Expense Records Found
-                    </td>
-                </tr>
-            `;
-            return;
-        }
+    totalFare += fare;
+    totalDa += da;
+    totalOther += other;
 
-        data.forEach(expense => {
+    if (!routeMap[route]) {
+      routeMap[route] = {
+        visits: 0,
+        km: 0,
+        fare: 0,
+        da: 0,
+        other: 0,
+        dates: [],
+       
+      };
+    }
 
-            let statusClass = "status-pending";
+    routeMap[route].visits++;
+    routeMap[route].km += km;
+    routeMap[route].fare += fare;
+    routeMap[route].da += da;
+    routeMap[route].other += other;
 
-            if (expense.status === "Approved") {
-                statusClass = "status-approved";
-            }
+    routeMap[route].dates.push(item.travelDate || "-");
+   
+  });
 
-            if (expense.status === "Rejected") {
-                statusClass = "status-rejected";
-            }
+  document.getElementById("totalFare").innerText = formatRupees(totalFare);
+  document.getElementById("totalDa").innerText = formatRupees(totalDa);
+  document.getElementById("totalOther").innerText = formatRupees(totalOther);
+  document.getElementById("totalExpense").innerText =
+    formatRupees(totalFare + totalDa + totalOther);
 
-            table.innerHTML += `
-                <tr>
-                    <td>${expense.expenseType || "-"}</td>
-                    <td>${expense.expenseDate || "-"}</td>
-                    <td>₹${expense.amount || 0}</td>
-                    <td>${expense.remarks || "-"}</td>
-                    <td>${expense.billUrl ? `<a href="${expense.billUrl}" target="_blank">View</a>` : "-"}</td>
-                    <td>
-                        <span class="${statusClass}">
-                            ${expense.status || "Pending"}
-                        </span>
-                    </td>
-                </tr>
-            `;
-        });
-    });
+  const table = document.getElementById("expenseTable");
+  table.innerHTML = "";
+
+  const routes = Object.keys(routeMap);
+
+  if (routes.length === 0) {
+    table.innerHTML = `
+      <tr>
+        <td colspan="7" class="text-center">No expense found</td>
+      </tr>
+    `;
+    return;
+  }
+
+  routes.forEach(route => {
+    const item = routeMap[route];
+    const total = item.fare + item.da + item.other;
+
+    table.innerHTML += `
+      <tr>
+        <td>${item.dates.join(", ")}</td>
+        
+        <td class="fw-semibold">${route}</td>
+        <td>${item.visits}</td>
+        <td>${item.km}</td>
+        <td>${formatRupees(item.fare)}</td>
+        <td>${formatRupees(item.da)}</td>
+        <td>${formatRupees(item.other)}</td>
+        <td class="amount-text">${formatRupees(total)}</td>
+      </tr>
+    `;
+  });
+}
+
+function formatRupees(amount) {
+  return "₹" + Number(amount || 0).toLocaleString("en-IN");
 }
 </script>
 
