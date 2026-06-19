@@ -6,9 +6,8 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -135,6 +134,15 @@ public List<DoctorVisit> getTodayDoctorVisitHistory(
 
         return repository.getDailyVisitStats();
     }
+    @GetMapping("/doctor-visit/chart-data-weekly")
+public List<Object[]> getWeeklyChartData() {
+
+    return repository
+            .getWeeklyVisitStats()
+            .stream()
+            .limit(7)
+            .toList();
+}
 
     @GetMapping("/attendance/chart-data")
 public Map<String, Long> getAttendanceChartData() {
