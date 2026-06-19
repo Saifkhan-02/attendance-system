@@ -90,6 +90,8 @@
           <h4 class="fw-bold mb-4">Order Details</h4>
 
           <div class="row g-3">
+
+            
             <div class="col-md-6">
               <label class="form-label">Select Doctor</label>
               <select
@@ -104,58 +106,29 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">Product</label>
-              <select
-                id="productId"
-                class="form-select"
-                onchange="setProductDetails()"
-              >
-                <option value="">Select Product</option>
-              </select>
+  <label class="form-label">Select Distributor</label>
+  <select id="distributorId" class="form-select" onchange="loadDistributorProducts()">
+    <option value="">Select Distributor</option>
+  </select>
+  <input type="hidden" id="distributorName">
+  <input type="hidden" id="headquarters">
+</div>
 
-              <input type="hidden" id="productName" />
-            </div>
+<div class="col-md-12">
+  <label class="form-label fw-bold">Products</label>
 
-            <div class="col-md-6">
-              <label class="form-label">Available Stock</label>
-              <div class="stock-box" id="availableStock">0 Units</div>
-            </div>
+  <div id="productItems"></div>
 
-            <div class="col-md-6">
-              <label class="form-label">Order Quantity</label>
-              <input
-                type="number"
-                id="orderQuantity"
-                class="form-control"
-                placeholder="Enter order quantity"
-                oninput="calculateOrderAmount()"
-              />
-            </div>
-            <div class="col-md-3">
-              <label class="form-label">Selling Price</label>
-              <input
-                type="number"
-                id="sellingPrice"
-                class="form-control"
-                placeholder="Enter selling price"
-                oninput="calculateOrderAmount()"
-              />
-            </div>
+  <button type="button" class="btn btn-outline-primary mt-2" onclick="addProductRow()">
+    <i class="fa-solid fa-plus me-2"></i>
+    Add Product
+  </button>
+</div>
 
-            <div class="col-md-6">
-              <label class="form-label">Order Date</label>
-              <input type="date" id="orderDate" class="form-control" />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Order Amount</label>
-              <input
-                type="number"
-                id="orderAmount"
-                class="form-control"
-                readonly
-              />
-            </div>
+<div class="col-md-6">
+  <label class="form-label">Total Order Amount</label>
+  <input type="number" id="orderAmount" class="form-control" readonly />
+</div>
             <!-- Add due amount and payment mode -->
             <div class="col-md-6">
               <label class="form-label">Paid Amount</label>
@@ -218,6 +191,7 @@
               <thead class="table-primary">
                 <tr>
                   <th>Doctor</th>
+                  <th>Distributor</th>
                   <th>Product</th>
                   <th>Quantity</th>
                   <th>Amount</th>
@@ -240,17 +214,30 @@
     <script src="js/config.js"></script>
 
     <script>
+
+      let distributorList = [];
+let distributorStockList = [];
+let employeeHeadquarters = "";
+
       let stockList = [];
       let doctorTomSelect = null;
       let productTomSelect = null;
+      let productRowIndex = 0;
+
       window.onload = function () {
         loadAssignedDoctors();
-        loadGlobalProducts();
+        loadEmployeeAndDistributors();
         loadOrderHistory();
 
-        document.getElementById("orderDate").value = new Date()
-          .toISOString()
-          .split("T")[0];
+      const orderDateInput = document.getElementById("orderDate");
+
+if (orderDateInput) {
+  orderDateInput.value = new Date().toISOString().split("T")[0];
+}
+
+          setTimeout(() => {
+  addProductRow();
+}, 500);
       };
 
       function loadAssignedDoctors() {
@@ -291,41 +278,168 @@
           });
       }
 
-      function loadGlobalProducts() {
-        fetch(`${BASE_URL}/stock/global/products`)
-          .then((response) => response.json())
-          .then((data) => {
-            stockList = data || [];
+      function loadEmployeeAndDistributors() {
+  const employeeId = localStorage.getItem("employeeId");
 
-            const dropdown = document.getElementById("productId");
+  fetch(`${BASE_URL}/employee/${employeeId}`)
+    .then(response => response.json())
+    .then(employee => {
+      employeeHeadquarters =
+        employee.headquarters || employee.headQuarters || employee.headQuarter || "";
 
-            dropdown.innerHTML = `
-            <option value="">Select Product</option>
+      document.getElementById("headquarters").value = employeeHeadquarters;
+
+      return fetch(`${BASE_URL}/distributor/by-headquarter/${encodeURIComponent(employeeHeadquarters)}`);
+    })
+    .then(response => response.json())
+    .then(data => {
+      distributorList = data || [];
+
+      const dropdown = document.getElementById("distributorId");
+      dropdown.innerHTML = `<option value="">Select Distributor</option>`;
+
+      distributorList.forEach(d => {
+        dropdown.innerHTML += `
+          <option value="${d.id}" data-name="${d.distributorName}">
+            ${d.distributorName}
+          </option>
         `;
+      });
+    });
+}
 
-            stockList.forEach((product) => {
-              dropdown.innerHTML += `
-                <option value="${product.id}">
-                    ${product.productName} - (${product.availableUnits} units)
-                </option>
-            `;
-            });
+function loadDistributorProducts() {
+  const distributorId = document.getElementById("distributorId").value;
+  const selected = document.getElementById("distributorId").selectedOptions[0];
 
-            if (productTomSelect) {
-              productTomSelect.destroy();
-            }
+  document.getElementById("distributorName").value =
+    selected ? selected.getAttribute("data-name") : "";
 
-            productTomSelect = new TomSelect("#productId", {
-              create: false,
-              maxOptions: 100,
-              placeholder: "Search Product...",
-            });
-          })
-          .catch((error) => {
-            console.error(error);
-            alert("Failed to load products");
-          });
-      }
+  if (!distributorId) {
+    distributorStockList = [];
+    document.getElementById("productItems").innerHTML = "";
+    return;
+  }
+
+  fetch(`${BASE_URL}/distributor-stock/${distributorId}`)
+    .then(response => response.json())
+    .then(data => {
+
+       console.log("DISTRIBUTOR STOCK:", data);
+      distributorStockList = data || [];
+      stockList = distributorStockList;
+
+      document.getElementById("productItems").innerHTML = "";
+      productRowIndex = 0;
+      addProductRow();
+    });
+}
+      function getProductOptions() {
+  let options = `<option value="">Select Product</option>`;
+
+  stockList.forEach(product => {
+    options += `
+      <option value="${product.productId}">
+        ${product.productName} - (${product.availableUnits} units)
+      </option>
+    `;
+  });
+
+  return options;
+}
+
+function addProductRow() {
+  const container = document.getElementById("productItems");
+  const rowId = productRowIndex++;
+
+  container.insertAdjacentHTML("beforeend", `
+    <div class="row g-3 align-items-end product-row mb-3 border rounded-4 p-3" id="productRow${rowId}">
+
+      <div class="col-md-4">
+        <!-- <label class="form-label">Product</label> -->
+        <select class="form-select productSelect" onchange="setRowProductDetails(this)">
+          ${getProductOptions()}
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <label class="form-label">Available</label>
+        <input type="text" class="form-control availableStock" readonly value="0 Units">
+      </div>
+
+      <div class="col-md-2">
+        <label class="form-label">Quantity</label>
+        <input type="number" class="form-control orderQuantity" oninput="calculateRowAmount(this)">
+      </div>
+
+      <div class="col-md-2">
+        <label class="form-label">Selling Price</label>
+        <input type="number" class="form-control sellingPrice" oninput="calculateRowAmount(this)">
+      </div>
+
+      <div class="col-md-2">
+        <label class="form-label">Amount</label>
+        <input type="number" class="form-control rowAmount" readonly>
+      </div>
+
+      <div class="col-md-12 text-end">
+        <button type="button" class="btn btn-sm btn-danger" onclick="removeProductRow(${rowId})">
+          Remove
+        </button>
+      </div>
+
+    </div>
+  `);
+}
+
+function removeProductRow(rowId) {
+  document.getElementById("productRow" + rowId).remove();
+  calculateTotalOrderAmount();
+}
+
+function setRowProductDetails(selectElement) {
+  const row = selectElement.closest(".product-row");
+  const productId = selectElement.value;
+
+  const selectedProduct = stockList.find(
+    product => String(product.productId) === String(productId)
+  );
+
+  if (!selectedProduct) {
+    row.querySelector(".availableStock").value = "0 Units";
+    calculateTotalOrderAmount();
+    return;
+  }
+
+  row.querySelector(".availableStock").value =
+    selectedProduct.availableUnits + " Units";
+
+  calculateRowAmount(selectElement);
+}
+
+function calculateRowAmount(element) {
+  const row = element.closest(".product-row");
+
+  const qty = Number(row.querySelector(".orderQuantity").value || 0);
+  const price = Number(row.querySelector(".sellingPrice").value || 0);
+
+  row.querySelector(".rowAmount").value = qty * price;
+
+  calculateTotalOrderAmount();
+}
+
+function calculateTotalOrderAmount() {
+  let total = 0;
+
+  document.querySelectorAll(".rowAmount").forEach(input => {
+    total += Number(input.value || 0);
+  });
+
+  document.getElementById("orderAmount").value = total;
+
+  calculateDueAmount();
+}
+    
 
       function setDoctorName() {
         const select = document.getElementById("doctorId");
@@ -335,139 +449,133 @@
           selected.getAttribute("data-name") || "";
       }
 
-      function setProductDetails() {
-        const productId = document.getElementById("productId").value;
+      
 
-        const selectedProduct = stockList.find(
-          (product) => String(product.id) === String(productId),
-        );
+    
+     function placeOrder() {
+  const doctorId = document.getElementById("doctorId").value;
+  const doctorName = document.getElementById("doctorName").value;
 
-        if (!selectedProduct) {
-          document.getElementById("availableStock").innerText = "0 Units";
-          document.getElementById("sellingPriceBox").innerText = "₹0";
-          document.getElementById("sellingPrice").value = "";
-          document.getElementById("productName").value = "";
-          document.getElementById("orderAmount").innerText = "0";
-          return;
-        }
+  if (!doctorId) {
+    alert("Please select doctor");
+    return;
+  }
 
-        document.getElementById("availableStock").innerText =
-          selectedProduct.availableUnits + " Units";
+  const rows = document.querySelectorAll(".product-row");
 
-        document.getElementById("productName").value =
-          selectedProduct.productName;
+  if (rows.length === 0) {
+    alert("Please add at least one product");
+    return;
+  }
 
-        calculateOrderAmount();
+  let orders = [];
+
+  for (const row of rows) {
+    const productId = row.querySelector(".productSelect").value;
+    const orderQuantity = Number(row.querySelector(".orderQuantity").value || 0);
+    const sellingPrice = Number(row.querySelector(".sellingPrice").value || 0);
+    const orderAmount = Number(row.querySelector(".rowAmount").value || 0);
+
+    const selectedProduct = stockList.find(
+      product => String(product.productId) === String(productId)
+    );
+
+    if (!selectedProduct) {
+      alert("Please select product in all rows");
+      return;
+    }
+
+    if (orderQuantity <= 0) {
+      alert("Enter valid quantity for " + selectedProduct.productName);
+      return;
+    }
+
+    if (sellingPrice <= 0) {
+      alert("Enter selling price for " + selectedProduct.productName);
+      return;
+    }
+
+    if (orderQuantity > Number(selectedProduct.availableUnits)) {
+      alert("Quantity cannot be greater than stock for " + selectedProduct.productName);
+      return;
+    }
+    if (!document.getElementById("distributorId").value) {
+  alert("Please select distributor");
+  return;
+}
+
+    orders.push({
+      employeeId: localStorage.getItem("employeeId"),
+      employeeName: localStorage.getItem("employeeName"),
+
+      doctorId: Number(doctorId),
+      doctorName: doctorName,
+
+      productId: Number(productId),
+      productName: selectedProduct.productName,
+
+      orderQuantity: orderQuantity,
+      sellingPrice: sellingPrice,
+      orderAmount: orderAmount,
+
+      paidAmount: 0,
+      dueAmount: orderAmount,
+      paymentMode: document.getElementById("paymentMode")
+  ? document.getElementById("paymentMode").value
+  : "Pending",
+
+     orderDate: document.getElementById("orderDate")
+  ? document.getElementById("orderDate").value
+  : new Date().toISOString().split("T")[0],
+
+  distributorId: Number(document.getElementById("distributorId").value),
+distributorName: document.getElementById("distributorName").value,
+headquarters: document.getElementById("headquarters").value,
+
+    remarks: document.getElementById("remarks")
+  ? document.getElementById("remarks").value
+  : "",
+    });
+  }
+
+  fetch(`${BASE_URL}/order/place-multiple`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(orders),
+  })
+    .then(async (response) => {
+      const text = await response.text();
+
+      if (!response.ok) {
+        throw new Error(text);
       }
 
-      function calculateOrderAmount() {
-        const qty = Number(document.getElementById("orderQuantity").value || 0);
-        const price = Number(document.getElementById("sellingPrice").value || 0);
+      alert("Orders Placed Successfully");
 
-        document.getElementById("orderAmount").value = qty * price;
+      document.getElementById("productItems").innerHTML = "";
+      productRowIndex = 0;
+      addProductRow();
 
-        calculateDueAmount();
+      document.getElementById("orderAmount").value = "";
+      document.getElementById("paidAmount").value = "";
+      document.getElementById("dueAmount").value = "";
+      document.getElementById("remarks").value = "";
+
+      loadDistributorProducts();
+      loadOrderHistory();
+    })
+    .catch((error) => {
+      console.error("ORDER ERROR:", error);
+
+      if (error.message.includes("Insufficient stock")) {
+        alert(error.message);
+      } else {
+        alert("Failed to place order");
       }
-
-      function placeOrder() {
-        const productId = document.getElementById("productId").value;
-
-        const orderQuantity = Number(
-          document.getElementById("orderQuantity").value,
-        );
-
-        const selectedProduct = stockList.find((product) => String(product.id) === String(productId),);
-
-        const sellingPrice = Number(document.getElementById("sellingPrice").value,);
-        const paidAmount = Number(document.getElementById("paidAmount").value || 0);
-        const orderAmount = Number(document.getElementById("orderAmount").value || 0);
-
-        if (sellingPrice <= 0) {
-          alert("Please enter selling price");
-          return;
-        }
-        if (!selectedProduct) {
-          alert("Please select product");
-          return;
-        }
-
-        if (orderQuantity <= 0) {
-          alert("Enter valid order quantity");
-          return;
-        }
-
-        if (orderQuantity > Number(selectedProduct.availableUnits)) {
-          alert("Order quantity cannot be greater than available stock");
-          return;
-        }
-
-        const orderData = {
-          employeeId: localStorage.getItem("employeeId"),
-          employeeName: localStorage.getItem("employeeName"),
-
-          doctorId: document.getElementById("doctorId").value,
-          doctorName: document.getElementById("doctorName").value,
-
-          productId: Number(productId),
-          productName: document.getElementById("productName").value,
-
-          orderQuantity: orderQuantity,
-          sellingPrice: document.getElementById("sellingPrice").value,
-          orderAmount: document.getElementById("orderAmount").value,
-          paidAmount: document.getElementById("paidAmount").value || 0,
-          dueAmount: document.getElementById("dueAmount").value || 0,
-          paymentMode: document.getElementById("paymentMode").value,
-          orderDate: document.getElementById("orderDate").value,
-          remarks: document.getElementById("remarks").value,
-        };
-        console.log("ORDER DATA:", orderData);
-        console.log("SELECTED PRODUCT:", selectedProduct);
-
-        fetch(`${BASE_URL}/order/place`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(orderData),
-        })
-          .then(async (response) => {
-            const text = await response.text();
-
-            console.log("STATUS:", response.status);
-            console.log("RESPONSE:", text);
-
-            if (!response.ok) {
-              throw new Error(text);
-            }
-
-            alert("Order Placed Successfully");
-
-            document.getElementById("productId").selectedIndex = 0;
-            document.getElementById("availableStock").innerText = "0 Units";
-            document.getElementById("productName").value = "";
-            document.getElementById("orderQuantity").value = "";
-            document.getElementById("sellingPrice").value = "";
-            document.getElementById("orderAmount").value = "";
-            document.getElementById("remarks").value = "";
-
-            loadGlobalProducts();
-
-            try {
-              loadOrderHistory();
-            } catch (e) {
-              console.error("History reload failed:", e);
-            }
-          })
-          .catch((error) => {
-            console.error("ORDER ERROR:", error);
-
-            if (error.message.includes("Insufficient stock")) {
-              alert("Available stock kam hai. Please quantity kam karo.");
-            } else {
-              alert("Failed to place order");
-            }
-          });
-      }
+    });
+}
 
       function calculateDueAmount() {
         const orderAmount = Number(
@@ -502,7 +610,7 @@
             if (data.length === 0) {
               table.innerHTML = `
                 <tr>
-                    <td colspan="6" class="text-center">
+                    <td colspan="7" class="text-center">
                         No Orders Found
                     </td>
                 </tr>
@@ -514,6 +622,7 @@
               table.innerHTML += `
                 <tr>
                     <td>${order.doctorName || "-"}</td>
+                    <td>${order.distributorName || "-"}</td>
                     <td>${order.productName || "-"}</td>
                     <td>${order.orderQuantity || 0}</td>
                     <td>₹${order.orderAmount || 0}</td>

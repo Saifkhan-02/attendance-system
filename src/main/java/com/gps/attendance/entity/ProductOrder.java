@@ -33,6 +33,11 @@ public class ProductOrder {
 
     private Double paidAmount = 0.0;
     private Double dueAmount = 0.0;
+
+    private Long distributorId;
+private String distributorName;
+private String headquarters;
+
     private String paymentMode = "Pending";
     @Column(length = 1000)
     private String remarks;
@@ -141,6 +146,30 @@ public Double getDueAmount() {
 
 public void setDueAmount(Double dueAmount) {
     this.dueAmount = dueAmount;
+}
+
+public Long getDistributorId() {
+    return distributorId;
+}
+
+public void setDistributorId(Long distributorId) {
+    this.distributorId = distributorId;
+}
+
+public String getDistributorName() {
+    return distributorName;
+}
+
+public void setDistributorName(String distributorName) {
+    this.distributorName = distributorName;
+}
+
+public String getHeadquarters() {
+    return headquarters;
+}
+
+public void setHeadquarters(String headquarters) {
+    this.headquarters = headquarters;
 }
 
 public String getPaymentMode() {

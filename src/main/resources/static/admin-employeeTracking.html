@@ -154,7 +154,7 @@
         </div>
 
         <img
-          src="/images/admin.jpg"
+          src="images/admin.jpg"
           width="40"
           height="40"
           class="rounded-circle border border-primary"
@@ -338,111 +338,119 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <script src="js/config.js"></script>
+
     <!-- Sidebar Toggle -->
 
     <script>
-      function toggleSidebar() {
-        let sidebar = document.getElementById("sidebar");
+  window.onload = function () {
+    updateTime();
+    setInterval(updateTime, 1000);
 
-        let main = document.getElementById("mainContent");
+    loadEmployeeTracking();
 
-        if (window.innerWidth <= 768) {
-          sidebar.classList.toggle("show");
-        } else {
-          sidebar.classList.toggle("hide");
+    document
+      .getElementById("searchEmployee")
+      .addEventListener("keyup", filterEmployeeRows);
+  };
 
-          main.classList.toggle("full");
-        }
-      }
-    </script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    const main = document.getElementById("mainContent");
 
-    <!-- Date & Time -->
+    if (window.innerWidth <= 768) {
+      sidebar.classList.toggle("show");
+    } else {
+      sidebar.classList.toggle("hide");
+      main.classList.toggle("full");
+    }
+  }
 
-    <script>
-      function updateTime() {
-        document.getElementById("datetime").innerHTML =
-          new Date().toLocaleString();
-      }
+  function updateTime() {
+    document.getElementById("datetime").innerHTML =
+      new Date().toLocaleString();
+  }
 
-      setInterval(updateTime, 1000);
+  function loadEmployeeTracking() {
+    fetch(`${BASE_URL}/get-employees`)
+      .then((response) => response.json())
+      .then((employees) => {
+        document.getElementById("totalEmployees").innerText =
+          employees.length;
+      })
+      .catch((error) => {
+        console.error("Employees Load Error:", error);
+      });
 
-      updateTime();
-    </script>
+    fetch(`${BASE_URL}/attendance-list`)
+      .then((response) => response.json())
+      .then((attendances) => {
+        document.getElementById("activeEmployees").innerText =
+          attendances.length;
 
-    <!-- Employee Data Load -->
+        document.getElementById("doctorVisits").innerText =
+          attendances.length;
 
-    <script>
-      window.onload = function () {
-        fetch("/get-employees")
-          .then((response) => response.json())
-          .then((employees) => {
-            document.getElementById("totalEmployees").innerText =
-              employees.length;
-          });
+        document.getElementById("todayVisits").innerText =
+          attendances.length;
 
-        fetch("/attendance-list")
-          .then((response) => response.json())
+        renderEmployeeTrackingTable(attendances);
+      })
+      .catch((error) => {
+        console.error("Attendance Load Error:", error);
+      });
+  }
 
-          .then((attendances) => {
-            document.getElementById("activeEmployees").innerText =
-              attendances.length;
+  function renderEmployeeTrackingTable(attendances) {
+    const table = document.getElementById("employeeTrackingTable");
+    table.innerHTML = "";
 
-            document.getElementById("doctorVisits").innerText =
-              attendances.length;
+    if (!attendances || attendances.length === 0) {
+      table.innerHTML = `
+        <tr>
+          <td colspan="7" class="text-center">No tracking data found</td>
+        </tr>
+      `;
+      return;
+    }
 
-            document.getElementById("todayVisits").innerText =
-              attendances.length;
+    attendances.forEach((attendance) => {
+      table.innerHTML += `
+        <tr>
+          <td>${attendance.id || "-"}</td>
+          <td>${attendance.employeeName || "-"}</td>
+          <td>${attendance.attendanceTime || "-"}</td>
+          <td>${attendance.attendanceDate || "-"}</td>
+          <td>${attendance.latitude || "-"}</td>
+          <td>${attendance.longitude || "-"}</td>
+          <td>
+            <a
+              href="https://www.google.com/maps?q=${attendance.latitude},${attendance.longitude}"
+              target="_blank"
+              class="btn btn-primary btn-sm">
+              View Map
+            </a>
+          </td>
+        </tr>
+      `;
+    });
+  }
 
-            let table = document.getElementById("employeeTrackingTable");
+  function filterEmployeeRows() {
+    const searchValue = this.value.toLowerCase();
+    const rows = document.querySelectorAll("#employeeTrackingTable tr");
 
-            table.innerHTML = "";
+    rows.forEach((row) => {
+      if (!row.cells[1]) return;
 
-            attendances.forEach((attendance) => {
-              table.innerHTML += `
-<tr>
-    <td>${attendance.id}</td>
-    <td>${attendance.employeeName}</td>
-    <td>${attendance.attendanceTime}</td>
-    <td>${attendance.attendanceDate}</td>
-    <td>${attendance.latitude}</td>
-    <td>${attendance.longitude}</td>
-    <td>
-        <a
-          href="https://www.google.com/maps?q=${attendance.latitude},${attendance.longitude}"
-          target="_blank"
-          class="btn btn-primary btn-sm">
-          View Map
-        </a>
-    </td>
-</tr>
-`;
-            });
-          })
+      const employeeName = row.cells[1].innerText.toLowerCase();
 
-          .catch((error) => {
-            console.log(error);
-          });
-      };
-    </script>
-
-    <script>
-      document
-        .getElementById("searchEmployee")
-        .addEventListener("keyup", function () {
-          let searchValue = this.value.toLowerCase();
-
-          let rows = document.querySelectorAll("#employeeTrackingTable tr");
-
-          rows.forEach((row) => {
-            let employeeName = row.cells[1].innerText.toLowerCase();
-
-            if (employeeName.includes(searchValue)) {
-              row.style.display = "";
-            } else {
-              row.style.display = "none";
-            }
-          });
-        });
+      row.style.display = employeeName.includes(searchValue)
+        ? ""
+        : "none";
+    });
+  }
+</script>
     </script>
   </body>
 </html>

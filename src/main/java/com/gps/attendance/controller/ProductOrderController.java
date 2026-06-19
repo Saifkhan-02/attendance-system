@@ -1,10 +1,16 @@
 package com.gps.attendance.controller;
 
+import java.awt.Color;
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,34 +20,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gps.attendance.entity.DistributorStock;
 import com.gps.attendance.entity.GlobalStock;
 import com.gps.attendance.entity.ProductOrder;
+import com.gps.attendance.repository.DistributorStockRepository;
 import com.gps.attendance.repository.GlobalStockRepository;
 import com.gps.attendance.repository.ProductOrderRepository;
-
-
-import java.io.ByteArrayOutputStream;
-
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-
 import com.lowagie.text.Document;
-import com.lowagie.text.pdf.PdfWriter;
-
-import java.awt.Color;
-import java.util.ArrayList;
-
-import com.lowagie.text.Image;
 import com.lowagie.text.Font;
-import com.lowagie.text.Paragraph;
-
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfPCell;
-
-import com.lowagie.text.Rectangle;
+import com.lowagie.text.Image;
 import com.lowagie.text.PageSize;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 
 @RestController
 @RequestMapping("/order")
@@ -49,12 +43,15 @@ import com.lowagie.text.pdf.PdfContentByte;
 public class ProductOrderController {
 
     private final ProductOrderRepository orderRepository;
+    private final DistributorStockRepository distributorStockRepository;
     private final GlobalStockRepository globalStockRepository;
 
     public ProductOrderController(ProductOrderRepository orderRepository,
-            GlobalStockRepository globalStockRepository) {
+            GlobalStockRepository globalStockRepository, DistributorStockRepository distributorStockRepository) {
         this.orderRepository = orderRepository;
         this.globalStockRepository = globalStockRepository;
+        this.distributorStockRepository = distributorStockRepository;
+        
     }
 
     @PostMapping("/place")
@@ -127,7 +124,7 @@ public Map<String, Object> getSummary(
        List<ProductOrder> allOrders
         = orderRepository.findAll();
 
-List<ProductOrder> orders
+       List<ProductOrder> orders
         = new ArrayList<>();
 
 for (ProductOrder order : allOrders) {
@@ -418,49 +415,40 @@ for (ProductOrder order : allOrders) {
                 .body(out.toByteArray());
     }
 
-}
-// package com.gps.attendance.controller;
+ @PostMapping("/place-multiple")
+public List<ProductOrder> placeMultipleOrders(@RequestBody List<ProductOrder> orders) {
 
-// import java.util.List;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.web.bind.annotation.CrossOrigin;
-// import org.springframework.web.bind.annotation.GetMapping;
-// import org.springframework.web.bind.annotation.PathVariable;
-// import org.springframework.web.bind.annotation.PostMapping;
-// import org.springframework.web.bind.annotation.RequestBody;
-// import org.springframework.web.bind.annotation.RestController;
-// import com.gps.attendance.entity.ProductOrder;
-// import com.gps.attendance.entity.GlobalStock;
-// import com.gps.attendance.repository.ProductOrderRepository;
-// import com.gps.attendance.repository.GlobalStockRepository;
-// @RestController
-// @CrossOrigin("*")
-// public class ProductOrderController {
-//     @Autowired
-//     private ProductOrderRepository orderRepository;
-//     @Autowired
-//     private GlobalStockRepository stockRepository;
-//     @PostMapping("/order/place")
-//     public ProductOrder placeOrder(@RequestBody ProductOrder order) {
-//         GlobalStock stock =
-//                 stockRepository.findById(order.getStockId())
-//                         .orElse(null);
-//         if (stock == null) {
-//             throw new RuntimeException("Stock not found");
-//         }
-//         if (stock.getQuantity() < order.getOrderQuantity()) {
-//             throw new RuntimeException("Insufficient stock");
-//         }
-//         stock.setQuantity(
-//                 stock.getQuantity() - order.getOrderQuantity()
-//         );
-//         stockRepository.save(stock);
-//         order.setStatus("Placed");
-//         return orderRepository.save(order);
-//     }
-//     @GetMapping("/order/history/{employeeId}")
-//     public List<ProductOrder> getOrderHistory(
-//             @PathVariable Long employeeId) {
-//         return orderRepository.findByEmployeeId(employeeId);
-//     }
-// }
+    for (ProductOrder order : orders) {
+
+        DistributorStock stock = distributorStockRepository
+                .findByDistributorIdAndProductId(
+                        order.getDistributorId(),
+                        order.getProductId()
+                )
+                .orElseThrow(() -> new RuntimeException("Distributor stock not found for " + order.getProductName()));
+
+        Integer availableUnits = stock.getAvailableUnits() == null ? 0 : stock.getAvailableUnits();
+
+        if (order.getOrderQuantity() > availableUnits) {
+            throw new RuntimeException("Insufficient stock for " + order.getProductName());
+        }
+    }
+
+    for (ProductOrder order : orders) {
+
+        DistributorStock stock = distributorStockRepository
+                .findByDistributorIdAndProductId(
+                        order.getDistributorId(),
+                        order.getProductId()
+                )
+                .orElseThrow(() -> new RuntimeException("Distributor stock not found"));
+
+        stock.setAvailableUnits(stock.getAvailableUnits() - order.getOrderQuantity());
+        distributorStockRepository.save(stock);
+
+        order.setStatus("Placed");
+    }
+
+    return orderRepository.saveAll(orders);
+}
+}

@@ -79,27 +79,27 @@
         padding: 15px;
       }
 
-      .selfie-preview {
+      /*.selfie-preview {
         width: 140px;
         height: 140px;
         border-radius: 15px;
         object-fit: cover;
         border: 2px dashed #2463eb;
-      }
+      }*/
 
       @media (max-width: 768px) {
         .top-header {
           text-align: center;
         }
 
-        .selfie-preview {
+        /*.selfie-preview {
           width: 100%;
           height: 220px;
           border: 2px dashed #2463eb;
           border-radius: 15px;
           object-fit: cover;
           margin: auto;
-        }
+        }*/
       }
     </style>
   </head>
@@ -170,12 +170,12 @@
 
             <!-- Selfie -->
 
-            <div class="col-lg-6">
+            <!-- <div class="col-lg-6">
               <div class="text-center">
-                <img id="preview" src="" class="selfie-preview mb-3 d-none" />
+                <img id="preview" src="" class="selfie-preview mb-3 d-none" /> -->
 
                 <!-- Placeholder -->
-                <div
+                <!-- <div
                   id="placeholder"
                   class="selfie-preview mb-3 d-flex align-items-center justify-content-center"
                 >
@@ -199,7 +199,7 @@
                   Remove Image
                 </button>
               </div>
-            </div>
+            </div> -->
 
             <!-- Remarks -->
 
@@ -234,37 +234,7 @@
     <script src="js/config.js"></script>
 
     <script>
-      function previewImage(event) {
-        const file = event.target.files[0];
-
-        if (!file) return;
-
-        document.getElementById("removeBtn").classList.remove("d-none");
-
-        const reader = new FileReader();
-
-        reader.onload = function () {
-          document.getElementById("preview").src = reader.result;
-
-          document.getElementById("preview").classList.remove("d-none");
-          document.getElementById("placeholder").classList.add("d-none");
-        };
-
-        reader.readAsDataURL(file);
-      }
-
-      function removeImage() {
-        //console.log("Remove Clicked");
-
-        document.getElementById("imageInput").value = "";
-
-        document.getElementById("preview").src = "";
-
-        document.getElementById("preview").classList.add("d-none");
-        document.getElementById("placeholder").classList.remove("d-none");
-      }
-
-      window.onload = getLocation;
+           window.onload = getLocation;
 
       function getLocation() {
         if (navigator.geolocation) {
@@ -392,42 +362,36 @@
 <!-- 
 
     function previewImage(event) {
+        const file = event.target.files[0];
 
-    const file = event.target.files[0];
+        if (!file) return;
 
-    if (!file) return;
+        document.getElementById("removeBtn").classList.remove("d-none");
 
-    const reader = new FileReader();
-
-    reader.onload = function () {
-
-        document.getElementById("preview").src =
-            reader.result;
-
-    };
-
-    reader.readAsDataURL(file);
-}
-
-function removeImage() {
-
-    // file input clear
-    document.getElementById("imageInput").value = "";
-
-    // default image restore
-    document.getElementById("preview").src =
-    "https://dummyimage.com/200x200/e9ecef/6c757d&text=No+Image";
-}
-
-      function previewImage(event) {
         const reader = new FileReader();
 
         reader.onload = function () {
           document.getElementById("preview").src = reader.result;
+
+          document.getElementById("preview").classList.remove("d-none");
+          document.getElementById("placeholder").classList.add("d-none");
         };
 
-        reader.readAsDataURL(event.target.files[0]);
-      } -->
+        reader.readAsDataURL(file);
+      }
+
+      function removeImage() {
+        //console.log("Remove Clicked");
+
+        document.getElementById("imageInput").value = "";
+
+        document.getElementById("preview").src = "";
+
+        document.getElementById("preview").classList.add("d-none");
+        document.getElementById("placeholder").classList.remove("d-none");
+      }
+
+ -->
 
 <!-- <!DOCTYPE html>
 <html>

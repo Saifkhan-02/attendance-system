@@ -41,5 +41,50 @@ List<ProductOrder> findByEmployeeIdAndOrderDateStartingWithOrderByIdDesc(
                     String employeeName,
                     String doctorName
             );
+
+            @Query("""
+SELECT COALESCE(SUM(p.orderAmount), 0)
+FROM ProductOrder p
+WHERE p.employeeId = :employeeId
+""")
+Double getTotalSalesByEmployee(@Param("employeeId") Long employeeId);
+
+@Query("""
+SELECT COALESCE(SUM(p.paidAmount), 0)
+FROM ProductOrder p
+WHERE p.employeeId = :employeeId
+""")
+Double getTotalCollectionByEmployee(@Param("employeeId") Long employeeId);
+
+@Query("""
+SELECT COALESCE(SUM(p.dueAmount), 0)
+FROM ProductOrder p
+WHERE p.employeeId = :employeeId
+""")
+Double getTotalDueByEmployee(@Param("employeeId") Long employeeId);
+
+@Query("""
+SELECT p.distributorName,
+       COALESCE(SUM(p.orderAmount), 0),
+       COALESCE(SUM(p.paidAmount), 0),
+       COALESCE(SUM(p.dueAmount), 0)
+FROM ProductOrder p
+WHERE p.employeeId = :employeeId
+GROUP BY p.distributorName
+""")
+List<Object[]> getDistributorWiseSales(@Param("employeeId") Long employeeId);
+
+@Query("""
+SELECT p
+FROM ProductOrder p
+WHERE p.employeeId = :employeeId
+AND (:distributorName = '' OR p.distributorName = :distributorName)
+ORDER BY p.id DESC
+""")
+List<ProductOrder> getOrdersByEmployeeAndDistributor(
+        @Param("employeeId") Long employeeId,
+        @Param("distributorName") String distributorName
+);
+
    
 }

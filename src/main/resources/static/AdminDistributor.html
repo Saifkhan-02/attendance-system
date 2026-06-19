@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Distributor Management</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <style>
+      body {
+        background: #f4f6fb;
+      }
+
+      .top-header {
+        background: linear-gradient(135deg, #0d4f9c, #3f7fe0);
+        color: white;
+        padding: 25px;
+        border-radius: 0 0 25px 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .back-btn {
+        width: 42px;
+        height: 42px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+
+      .admin-card,
+      .summary-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      }
+
+      .form-control,
+      .form-select {
+        border-radius: 12px;
+        padding: 12px;
+      }
+
+      .summary-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+        font-size: 21px;
+      }
+
+      .icon-blue {
+        background: #e9f2ff;
+        color: #0d6efd;
+      }
+      .icon-green {
+        background: #eafaf1;
+        color: #198754;
+      }
+      .icon-orange {
+        background: #fff4e5;
+        color: #fd7e14;
+      }
+
+      .section-title {
+        font-weight: 800;
+      }
+
+      .status-active {
+        color: #198754;
+        font-weight: 700;
+      }
+      .status-inactive {
+        color: #dc3545;
+        font-weight: 700;
+      }
+
+      .table td {
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="top-header">
+      <div class="d-flex align-items-center">
+        <button
+          class="back-btn"
+          onclick="window.location.href = 'admin-dashboard.html'"
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <div class="ms-3">
+          <h3 class="fw-bold mb-0">Distributor Management</h3>
+          <small>Manage headquarters and distributors</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="container py-4">
+      <div class="row g-3 mb-4">
+        <div class="col-md-4 col-6">
+          <div class="card summary-card">
+            <div class="card-body text-center">
+              <div class="summary-icon icon-blue mb-2">
+                <i class="fa-solid fa-location-dot"></i>
+              </div>
+              <h6 class="text-muted">Headquarters</h6>
+              <h3 class="fw-bold" id="totalHeadquarters">0</h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-6">
+          <div class="card summary-card">
+            <div class="card-body text-center">
+              <div class="summary-icon icon-green mb-2">
+                <i class="fa-solid fa-truck-medical"></i>
+              </div>
+              <h6 class="text-muted">Distributors</h6>
+              <h3 class="fw-bold" id="totalDistributors">0</h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-12">
+          <div class="card summary-card">
+            <div class="card-body text-center">
+              <div class="summary-icon icon-orange mb-2">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <h6 class="text-muted">Active</h6>
+              <h3 class="fw-bold" id="activeDistributors">0</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card admin-card">
+        <div class="card-body p-4">
+          <h5 class="section-title mb-3">
+            <i class="fa-solid fa-plus me-2 text-primary"></i>
+            Add / Edit Distributor
+          </h5>
+
+          <input type="hidden" id="editDistributorId" />
+
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Select Existing Headquarter</label>
+              <select id="headquarterSelect" class="form-select">
+                <option value="">Select Headquarter</option>
+              </select>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Distributor Name</label>
+              <input
+                type="text"
+                id="distributorName"
+                class="form-control"
+                placeholder="Distributor name"
+              />
+            </div>
+
+            <!-- <div class="col-md-4">
+          <label class="form-label">Contact Person</label>
+          <input type="text" id="contactPerson" class="form-control" placeholder="Contact person">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Mobile</label>
+          <input type="text" id="mobile" class="form-control" placeholder="Mobile number">
+        </div> -->
+
+            <div class="col-md-4">
+              <label class="form-label">Status</label>
+              <select id="status" class="form-select">
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+
+            <div class="col-md-12">
+              <label class="form-label">Address</label>
+              <textarea
+                id="address"
+                rows="3"
+                class="form-control"
+                placeholder="Distributor address"
+              ></textarea>
+            </div>
+
+            <div class="col-md-12 d-flex gap-2 flex-wrap">
+              <button class="btn btn-primary px-4" onclick="saveDistributor()">
+                <i class="fa-solid fa-floppy-disk me-2"></i>
+                Save Distributor
+              </button>
+
+              <button class="btn btn-secondary px-4" onclick="clearForm()">
+                <i class="fa-solid fa-rotate-left me-2"></i>
+                Clear
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card admin-card mt-4">
+        <div class="card-body p-4">
+          <div
+            class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3"
+          >
+            <h5 class="section-title mb-0">
+              <i class="fa-solid fa-list me-2 text-primary"></i>
+              Distributor List
+            </h5>
+
+            <input
+              type="text"
+              id="searchDistributor"
+              class="form-control w-auto"
+              placeholder="Search distributor..."
+              oninput="renderDistributorTable()"
+            />
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-primary">
+                <tr>
+                  <th>Headquarter</th>
+                  <th>Distributor</th>
+                  <!-- <th>Contact Person</th>
+              <th>Mobile</th> -->
+                  <th>Address</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+
+              <tbody id="distributorTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
+
+    <script>
+      let headquarters = [];
+      let distributors = [];
+
+      window.onload = function () {
+        loadHeadquarters();
+        loadDistributors();
+      };
+
+      function loadHeadquarters() {
+        fetch(`${BASE_URL}/headquarter/active`)
+          .then((res) => res.json())
+          .then((data) => {
+            headquarters = data || [];
+
+            const dropdown = document.getElementById("headquarterSelect");
+            dropdown.innerHTML = `<option value="">Select Headquarter</option>`;
+
+            headquarters.forEach((hq) => {
+              dropdown.innerHTML += `
+          <option value="${hq.headquarterName}">
+            ${hq.headquarterName}
+          </option>
+        `;
+            });
+
+            document.getElementById("totalHeadquarters").innerText =
+              headquarters.length;
+          })
+          .catch((err) => {
+            console.error(err);
+            alert("Failed to load headquarters");
+          });
+      }
+
+      function loadDistributors() {
+        fetch(`${BASE_URL}/distributor/all`)
+          .then((res) => res.json())
+          .then((data) => {
+            distributors = data || [];
+            renderDistributorTable();
+            updateSummary();
+          })
+          .catch((err) => {
+            console.error(err);
+            alert("Failed to load distributors");
+          });
+      }
+
+      function saveDistributor() {
+        const editId = document.getElementById("editDistributorId").value;
+
+        const finalHQ = document.getElementById("headquarterSelect").value;
+        const distributorName = document
+          .getElementById("distributorName")
+          .value.trim();
+        const address = document.getElementById("address").value.trim();
+        const status = document.getElementById("status").value;
+
+        if (!finalHQ) {
+          alert("Please select headquarter");
+          return;
+        }
+
+        if (!distributorName) {
+          alert("Please enter distributor name");
+          return;
+        }
+
+        const payload = {
+          distributorName: distributorName,
+          headquarters: finalHQ,
+          address: address,
+          status: status,
+        };
+
+        const url = editId
+          ? `${BASE_URL}/distributor/update/${editId}`
+          : `${BASE_URL}/distributor/save`;
+
+        const method = editId ? "PUT" : "POST";
+
+        fetch(url, {
+          method: method,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        })
+          .then(async (response) => {
+            const text = await response.text();
+
+            if (!response.ok) {
+              throw new Error(text);
+            }
+
+            alert(
+              editId
+                ? "Distributor Updated Successfully"
+                : "Distributor Added Successfully",
+            );
+
+            clearForm();
+            loadDistributors();
+          })
+          .catch((error) => {
+            console.error(error);
+            alert("Failed to save distributor");
+          });
+      }
+
+      function renderDistributorTable() {
+        const table = document.getElementById("distributorTable");
+        const search = document
+          .getElementById("searchDistributor")
+          .value.toLowerCase()
+          .trim();
+
+        table.innerHTML = "";
+
+        let filtered = distributors.filter((d) => {
+          return (
+            !search ||
+            (d.distributorName || "").toLowerCase().includes(search) ||
+            (d.headquarters || "").toLowerCase().includes(search) ||
+            (d.mobile || "").toLowerCase().includes(search)
+          );
+        });
+
+        if (filtered.length === 0) {
+          table.innerHTML = `
+      <tr>
+        <td colspan="7" class="text-center">No distributors found</td>
+      </tr>
+    `;
+          return;
+        }
+
+        filtered.forEach((d) => {
+          const statusClass =
+            d.status === "Inactive" ? "status-inactive" : "status-active";
+
+          table.innerHTML += `
+      <tr>
+        <td>${d.headquarters || "-"}</td>
+        <td class="fw-semibold">${d.distributorName || "-"}</td>
+        
+        <td>${d.address || "-"}</td>
+        <td><span class="${statusClass}">${d.status || "Active"}</span></td>
+        <td>
+          <button class="btn btn-sm btn-primary me-1"
+                  onclick='editDistributor(${JSON.stringify(d)})'>
+            <i class="fa-solid fa-pen"></i>
+          </button>
+
+          <button class="btn btn-sm ${
+            d.status === "Active" ? "btn-danger" : "btn-success"
+          }"
+onclick="toggleDistributorStatus(${d.id})">
+
+  <i class="fa-solid ${d.status === "Active" ? "fa-ban" : "fa-check"}"></i>
+
+</button>
+        </td>
+      </tr>
+    `;
+        });
+      }
+
+      function editDistributor(d) {
+        document.getElementById("editDistributorId").value = d.id;
+        document.getElementById("headquarterSelect").value =
+          d.headquarters || "";
+        document.getElementById("newHeadquarter").value = "";
+        document.getElementById("distributorName").value =
+          d.distributorName || "";
+        document.getElementById("address").value = d.address || "";
+        // document.getElementById("contactPerson").value = d.contactPerson || "";
+        // document.getElementById("mobile").value = d.mobile || "";
+        document.getElementById("status").value = d.status || "Active";
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function toggleDistributorStatus(id) {
+        fetch(`${BASE_URL}/distributor/toggle-status/${id}`, {
+          method: "PUT",
+        })
+          .then((response) => response.json())
+          .then(() => {
+            loadDistributors();
+          })
+          .catch((error) => {
+            console.error(error);
+            alert("Failed to update status");
+          });
+      }
+
+      function clearForm() {
+        document.getElementById("editDistributorId").value = "";
+        document.getElementById("headquarterSelect").value = "";
+        document.getElementById("distributorName").value = "";
+        document.getElementById("address").value = "";
+        //document.getElementById("contactPerson").value = "";
+        //document.getElementById("mobile").value = "";
+        document.getElementById("status").value = "Active";
+      }
+
+      function updateSummary() {
+        document.getElementById("totalDistributors").innerText =
+          distributors.length;
+
+        const activeCount = distributors.filter(
+          (d) => (d.status || "Active") === "Active",
+        ).length;
+        document.getElementById("activeDistributors").innerText = activeCount;
+      }
+    </script>
+  </body>
+</html>

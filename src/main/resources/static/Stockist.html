@@ -107,9 +107,15 @@ body{
     <div class="card stock-card">
         <div class="card-body p-4">
 
-            <h4 class="fw-bold mb-4">Check Product Stock</h4>
+            <h4 class="fw-bold mb-4">Check Distributor Stock</h4>
 
             <div class="row g-3">
+                <div class="col-md-6">
+    <label class="form-label">Select Distributor</label>
+    <select id="distributorId" class="form-select" onchange="loadDistributorStock()">
+        <option value="">Select Distributor</option>
+    </select>
+</div>
 
                 <div class="col-md-6">
                     <label class="form-label">Select Product</label>
@@ -123,10 +129,10 @@ body{
                     <div class="stock-box" id="selectedAvailableUnits">0</div>
                 </div>
 
-                <div class="col-md-3">
+                <!-- <div class="col-md-3">
                     <label class="form-label">Selling Price</label>
                     <div class="stock-box" id="selectedSellingPrice">₹0</div>
-                </div>
+                </div> -->
 
             </div>
 
@@ -139,7 +145,7 @@ body{
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                 <h4 class="fw-bold mb-0">Product Stock List</h4>
 
-                <button class="btn btn-outline-primary" onclick="loadGlobalStock()">
+                <button class="btn btn-outline-primary" onclick="loadDistributorStock()">
                     <i class="fa-solid fa-rotate-right me-2"></i>
                     Refresh
                 </button>
@@ -169,17 +175,93 @@ body{
 <script src="js/config.js"></script>
 
 <script>
-let globalStockList = [];
+let distributorStockList = [];
+let employeeHeadquarters = "";
 
 window.onload = function () {
-    loadGlobalStock();
+    loadEmployeeAndDistributors();
 };
 
-function loadGlobalStock() {
-    fetch(`${BASE_URL}/stock/global/products`)
+function loadEmployeeAndDistributors() {
+    const employeeId = localStorage.getItem("employeeId");
+
+    fetch(`${BASE_URL}/employee/${employeeId}`)
+        .then(response => response.json())
+        .then(employee => {
+            employeeHeadquarters =
+                employee.headquarters || employee.headQuarters || employee.headQuarter || "";
+
+            if (!employeeHeadquarters) {
+                alert("Employee headquarter not found");
+                return;
+            }
+
+            loadDistributors(employeeHeadquarters);
+        })
+        .catch(error => {
+            console.error(error);
+            alert("Failed to load employee details");
+        });
+}
+
+function loadDistributors(headquarters) {
+    fetch(`${BASE_URL}/distributor/by-headquarter/${encodeURIComponent(headquarters)}`)
         .then(response => response.json())
         .then(data => {
-            globalStockList = data;
+            const dropdown = document.getElementById("distributorId");
+
+            dropdown.innerHTML = `<option value="">Select Distributor</option>`;
+
+            if (!data || data.length === 0) {
+                alert("No distributors found for " + headquarters);
+                updateSummary(0, 0, 0);
+                document.getElementById("stockTable").innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center">
+                            No Distributors Found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            data.forEach(distributor => {
+                dropdown.innerHTML += `
+                    <option value="${distributor.id}">
+                        ${distributor.distributorName}
+                    </option>
+                `;
+            });
+        })
+        .catch(error => {
+            console.error(error);
+            alert("Failed to load distributors");
+        });
+}
+
+function loadDistributorStock() {
+    const distributorId = document.getElementById("distributorId").value;
+
+    if (!distributorId) {
+        distributorStockList = [];
+        updateSummary(0, 0, 0);
+        document.getElementById("productId").innerHTML =
+            `<option value="">Select Product</option>`;
+        document.getElementById("stockTable").innerHTML = `
+            <tr>
+                <td colspan="4" class="text-center">
+                    Please select distributor
+                </td>
+            </tr>
+        `;
+        clearSelectedProductBox();
+        return;
+    }
+
+    fetch(`${BASE_URL}/distributor-stock/${distributorId}`)
+        .then(response => response.json())
+        .then(data => {
+            distributorStockList = data || [];
 
             const dropdown = document.getElementById("productId");
             const table = document.getElementById("stockTable");
@@ -187,24 +269,25 @@ function loadGlobalStock() {
             dropdown.innerHTML = `<option value="">Select Product</option>`;
             table.innerHTML = "";
 
-            let totalProducts = data.length;
+            let totalProducts = distributorStockList.length;
             let totalUnits = 0;
             let lowStockCount = 0;
 
-            if (data.length === 0) {
+            if (distributorStockList.length === 0) {
                 table.innerHTML = `
                     <tr>
                         <td colspan="4" class="text-center">
-                            No Stock Found
+                            No Stock Found For This Distributor
                         </td>
                     </tr>
                 `;
 
                 updateSummary(0, 0, 0);
+                clearSelectedProductBox();
                 return;
             }
 
-            data.forEach(product => {
+            distributorStockList.forEach(product => {
                 const availableUnits = Number(product.availableUnits || 0);
                 const sellingPrice = Number(product.sellingPrice || 0);
 
@@ -243,23 +326,23 @@ function loadGlobalStock() {
             });
 
             updateSummary(totalProducts, totalUnits, lowStockCount);
+            clearSelectedProductBox();
         })
         .catch(error => {
             console.error(error);
-            alert("Failed to load stock");
+            alert("Failed to load distributor stock");
         });
 }
 
 function showProductStock() {
-    const productId = document.getElementById("productId").value;
+    const stockId = document.getElementById("productId").value;
 
-    const product = globalStockList.find(
-        item => String(item.id) === String(productId)
+    const product = distributorStockList.find(
+        item => String(item.id) === String(stockId)
     );
 
     if (!product) {
-        document.getElementById("selectedAvailableUnits").innerText = "0";
-        document.getElementById("selectedSellingPrice").innerText = "₹0";
+        clearSelectedProductBox();
         return;
     }
 
@@ -268,6 +351,11 @@ function showProductStock() {
 
     document.getElementById("selectedSellingPrice").innerText =
         "₹" + (product.sellingPrice || 0);
+}
+
+function clearSelectedProductBox() {
+    document.getElementById("selectedAvailableUnits").innerText = "0";
+    document.getElementById("selectedSellingPrice").innerText = "₹0";
 }
 
 function updateSummary(totalProducts, totalUnits, lowStockCount) {
