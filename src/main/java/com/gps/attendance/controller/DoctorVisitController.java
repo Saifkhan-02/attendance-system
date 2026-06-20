@@ -35,8 +35,9 @@ import com.gps.attendance.service.CloudinaryService;
 @CrossOrigin("*")
 public class DoctorVisitController {
 
-    @Autowired
+         @Autowired
     private DoctorVisitRepository repository;
+
 
     @Autowired
 private AttendanceRepository attendanceRepository;
@@ -231,5 +232,9 @@ public DoctorVisit updateDoctorVisit(
     visit.setLandmark(updatedVisit.getLandmark());
 
     return repository.save(visit);
+}
+@GetMapping("/employee/{id}/visit-count")
+public Long getVisitCount(@PathVariable Long id) {
+    return repository.countByEmployeeId(id);
 }
 }

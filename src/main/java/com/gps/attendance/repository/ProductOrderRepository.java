@@ -86,5 +86,6 @@ List<ProductOrder> getOrdersByEmployeeAndDistributor(
         @Param("distributorName") String distributorName
 );
 
-   
+   @Query("SELECT COUNT(p) FROM ProductOrder p WHERE p.employeeId = :employeeId")
+long countOrdersByEmployeeId(@Param("employeeId") Long employeeId);
 }

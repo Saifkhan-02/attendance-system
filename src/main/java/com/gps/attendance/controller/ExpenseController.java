@@ -43,4 +43,8 @@ public class ExpenseController {
         return expenseRepository
                 .getMonthlyExpenseStats();
     }
+    @GetMapping("/employee/{id}/expense-total")
+public Double getExpenseTotal(@PathVariable Long id) {
+    return repository.getTotalExpenseByEmployee(id);
+}
 }

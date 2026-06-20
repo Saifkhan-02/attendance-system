@@ -451,4 +451,8 @@ public List<ProductOrder> placeMultipleOrders(@RequestBody List<ProductOrder> or
 
     return orderRepository.saveAll(orders);
 }
+@GetMapping("/employee/{id}/order-count")
+public Long getOrderCount(@PathVariable Long id) {
+    return orderRepository.countOrdersByEmployeeId(id);
+}
 }
