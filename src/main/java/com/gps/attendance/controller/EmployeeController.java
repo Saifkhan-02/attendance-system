@@ -22,7 +22,7 @@ import com.gps.attendance.entity.Employee;
 import com.gps.attendance.repository.EmployeeRepository;
 import com.gps.attendance.service.CloudinaryService;
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(origins="*")
 public class EmployeeController {
 
     @Autowired
