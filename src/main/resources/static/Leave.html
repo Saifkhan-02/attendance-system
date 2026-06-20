@@ -24,7 +24,18 @@ body{
     border-radius:0 0 25px 25px;
     box-shadow:0 5px 20px rgba(0,0,0,.15);
 }
+.back-btn{
+  width:42px;
+  height:42px;
+  border:none;
+  border-radius:50%;
+  background:rgba(255,255,255,.2);
+  color:white;
+}
 
+.back-btn:hover{
+  background:rgba(255,255,255,.3);
+}
 .leave-card{
     border:none;
     border-radius:20px;
@@ -74,22 +85,27 @@ body{
 </head>
 <body>
 
-<div class="top-header text-center">
+<div class="top-header">
+  <div class="d-flex align-items-center justify-content-between">
 
-    <h2 class="fw-bold mb-1">
-        Leave Request
-    </h2>
+    <button class="back-btn"
+            onclick="window.location.href='Dashboard.html'">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
 
-    <p class="mb-0">
-        Apply and track your leaves
-    </p>
+    <div class="text-center flex-grow-1">
+      <h2 class="fw-bold mb-1">Leave Request</h2>
+      <p class="mb-0">Apply for leave</p>
+    </div>
 
+    <div style="width:42px"></div>
+
+  </div>
 </div>
 
 <div class="container py-4">
 
     <!-- Leave Form -->
-
     <div class="card leave-card">
 
         <div class="card-body p-4">
@@ -99,7 +115,6 @@ body{
             </h4>
 
             <div class="row g-3">
-
                 <!-- Leave Type -->
                 <div class="col-md-6">
 
@@ -206,7 +221,6 @@ body{
     </div>
 
     <!-- Leave History -->
-
     <div class="card history-card mt-4">
 
         <div class="card-body">
@@ -218,32 +232,21 @@ body{
             <div class="table-responsive">
 
                 <table class="table align-middle">
-
                     <thead>
-
-                        <tr>
-                            
+                        <tr>                           
                             <th>Type</th>
                             <th>From</th>
                             <th>To</th>
                             <th>Reason</th>
                             <th>Status</th>
                             <th>Status</th>
-
                         </tr>
-
                     </thead>
-
                     <tbody id="leaveHistoryTable">
-
                     </tbody>
-
                 </table>
-
             </div>
-
         </div>
-
     </div>
 
 </div>

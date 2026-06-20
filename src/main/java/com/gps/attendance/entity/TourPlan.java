@@ -38,6 +38,18 @@ public class TourPlan {
     @Column(name = "to_hq")
     private String toHq;
 
+    @Column(name = "headquarter")
+private String headquarter;
+
+@Column(name = "month")
+private String month;
+
+@Column(name = "route_name")
+private String routeName;
+
+@Column(name = "week_day")
+private String weekDay;
+
     @Column(name = "travel_km")
     private Double travelKm;
 
@@ -136,6 +148,38 @@ public class TourPlan {
     public void setToHq(String toHq) {
         this.toHq = toHq;
     }
+
+    public String getHeadquarter() {
+    return headquarter;
+}
+
+public void setHeadquarter(String headquarter) {
+    this.headquarter = headquarter;
+}
+
+public String getMonth() {
+    return month;
+}
+
+public void setMonth(String month) {
+    this.month = month;
+}
+
+public String getRouteName() {
+    return routeName;
+}
+
+public void setRouteName(String routeName) {
+    this.routeName = routeName;
+}
+
+public String getWeekDay() {
+    return weekDay;
+}
+
+public void setWeekDay(String weekDay) {
+    this.weekDay = weekDay;
+}
 
     public Double getTravelKm() {
         return travelKm;

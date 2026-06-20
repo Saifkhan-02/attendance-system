@@ -27,6 +27,18 @@
         border-radius: 18px;
         margin-bottom: 25px;
       }
+      .back-btn{
+  width:42px;
+  height:42px;
+  border:none;
+  border-radius:50%;
+  background:rgba(255,255,255,.2);
+  color:white;
+}
+
+.back-btn:hover{
+  background:rgba(255,255,255,.3);
+}
 
       .summary-card {
         border: none;
@@ -86,10 +98,22 @@
       <!-- Header -->
 
       <div class="page-header">
-        <h2 class="fw-bold mb-2">Attendance History</h2>
+  <div class="d-flex align-items-center justify-content-between">
 
-        <p class="mb-0">View your attendance records and visit history</p>
-      </div>
+    <button class="back-btn"
+            onclick="window.location.href='Dashboard.html'">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <div class="text-center flex-grow-1">
+      <h2 class="fw-bold mb-1">Attendance History</h2>
+      <p class="mb-0">View your attendance history</p>
+    </div>
+
+    <div style="width:42px"></div>
+
+  </div>
+</div>
 
       <!-- Summary Cards -->
 
@@ -209,7 +233,6 @@
                   <td>Lucknow, UP</td>
                   <td>26.8467</td>
                   <td>80.9462</td>
-
                   <td>
                     <span class="badge badge-present"> Present </span>
                   </td>
@@ -222,12 +245,10 @@
                   <td>Sitapur, UP</td>
                   <td>27.5619</td>
                   <td>80.6826</td>
-
                   <td>
                     <span class="badge badge-late"> Late </span>
                   </td>
                 </tr>
-
                 <tr>
                   <td>13-07-2025</td>
                   <td>-</td>
@@ -235,7 +256,6 @@
                   <td>-</td>
                   <td>-</td>
                   <td>-</td>
-
                   <td>
                     <span class="badge badge-absent"> Absent </span>
                   </td>
@@ -260,13 +280,11 @@ function loadAttendanceHistory() {
 console.log("History Employee ID:", employeeId);
 console.log(localStorage.getItem("employeeId"));
   
-
     if (!employeeId) {
 
         alert("Employee ID not found. Please login again.");
         return;
     }
-
     const table =
         document.getElementById("historyTable");
 
@@ -277,9 +295,6 @@ console.log(localStorage.getItem("employeeId"));
             </td>
         </tr>
     `;
-
-   
-
     fetch(`${BASE_URL}/attendance/history/${employeeId}`)
 
     .then(response => {
@@ -287,21 +302,17 @@ console.log(localStorage.getItem("employeeId"));
         if (!response.ok) {
             throw new Error("Failed to load attendance history");
         }
-
         return response.json();
     })
 
     .then(data => {
-
         table.innerHTML = "";
 
         let total = 0;
         let present = 0;
         let late = 0;
         let absent = 0;
-
         if (data.length === 0) {
-
             table.innerHTML = `
                 <tr>
                     <td colspan="7" class="text-center">
@@ -312,7 +323,6 @@ console.log(localStorage.getItem("employeeId"));
 
             return;
         }
-
         data.forEach(attendance => {
 
             total++;
@@ -336,10 +346,8 @@ console.log(localStorage.getItem("employeeId"));
             if (attendance.status === "Absent") {
                 badgeClass = "bg-danger";
             }
-
             table.innerHTML += `
                 <tr>
-
                     <td>${attendance.attendanceDate || "-"}</td>
 
                     <td>${attendance.attendanceTime || "-"}</td>
@@ -357,17 +365,14 @@ console.log(localStorage.getItem("employeeId"));
                             ${attendance.status || "-"}
                         </span>
                     </td>
-
                 </tr>
             `;
         });
-
         document.getElementById("totalAttendance").innerText = total;
         document.getElementById("presentCount").innerText = present;
         document.getElementById("lateCount").innerText = late;
         document.getElementById("absentCount").innerText = absent;
     })
-
     .catch(error => {
 
         console.error(error);
@@ -381,7 +386,6 @@ console.log(localStorage.getItem("employeeId"));
         `;
     });
 }
-
 </script>
   </body>
 </html>

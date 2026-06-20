@@ -27,7 +27,18 @@
         border-radius: 0 0 25px 25px;
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
       }
+      .back-btn{
+  width:42px;
+  height:42px;
+  border:none;
+  border-radius:50%;
+  background:rgba(255,255,255,.2);
+  color:white;
+}
 
+.back-btn:hover{
+  background:rgba(255,255,255,.3);
+}
       .doctor-card {
         border: none;
         border-radius: 20px;
@@ -77,18 +88,23 @@
   </head>
 
   <body>
-    <div class="d-flex align-items-center justify-content-between flex-wrap top-header text-center">
-      
-      <button class="btn btn-light" onclick="window.location.href='Summary.html'">
-        <i class="fa-solid fa-arrow-left me-2"></i>
-        
-      </button>
-      
-      <div class="text-center flex-grow-1">
-         <h2 class="fw-bold mb-1">Doctor Calls</h2>
-      <p class="mb-0">View assigned doctors and call directly</p>
-      </div>
+<div class="top-header">
+  <div class="d-flex align-items-center justify-content-between">
+
+    <button class="back-btn"
+            onclick="window.location.href='Dashboard.html'">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <div class="text-center flex-grow-1">
+      <h2 class="fw-bold mb-1">Doctor's List</h2>
+      <p class="mb-0">List of all doctors you have visited</p>
     </div>
+
+    <div style="width:42px"></div>
+
+  </div>
+</div>
 
     <div class="container py-4">
       <div class="row g-3 mb-4">

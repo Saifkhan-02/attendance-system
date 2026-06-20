@@ -21,6 +21,18 @@ body{
     border-radius:0 0 25px 25px;
     box-shadow:0 5px 20px rgba(0,0,0,.15);
 }
+.back-btn{
+  width:42px;
+  height:42px;
+  border:none;
+  border-radius:50%;
+  background:rgba(255,255,255,.2);
+  color:white;
+}
+
+.back-btn:hover{
+  background:rgba(255,255,255,.3);
+}
 
 .summary-card,
 .stock-card{
@@ -63,9 +75,22 @@ body{
 
 <body>
 
-<div class="top-header text-center">
-    <h2 class="fw-bold mb-1">Available Stock</h2>
-    <p class="mb-0">View product stock and selling price</p>
+<div class="top-header">
+  <div class="d-flex align-items-center justify-content-between">
+
+    <button class="back-btn"
+            onclick="window.location.href='Dashboard.html'">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <div class="text-center flex-grow-1">
+      <h2 class="fw-bold mb-1">Available Stock</h2>
+      <p class="mb-0">View Stock Distributor wise</p>
+    </div>
+
+    <div style="width:42px"></div>
+
+  </div>
 </div>
 
 <div class="container py-4">
