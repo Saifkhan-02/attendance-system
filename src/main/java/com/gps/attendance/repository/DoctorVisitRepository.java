@@ -6,9 +6,9 @@ import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.gps.attendance.entity.DoctorVisit;
-
 public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> {
 
     List<DoctorVisit> findByEmployeeId(Long employeeId);
@@ -18,6 +18,7 @@ public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> 
     List<DoctorVisit> findByEmployeeNameContainingIgnoreCase(String keyword);
 
     long countByEmployeeIdAndVisitDate(Long employeeId, String visitDate);
+
     long countByEmployeeIdAndVisitDateStartingWith(Long employeeId, String month);
 
     @Query("""
@@ -35,6 +36,7 @@ public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> 
         ORDER BY d.visitDate DESC
         LIMIT 7
     """)
+
     List<Object[]> getDailyVisitStats();
 
     // Count distinct doctors by employee and month
@@ -44,28 +46,35 @@ public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> 
     WHERE d.employeeId = :employeeId
     AND d.visitDate LIKE CONCAT(:month, '%')
 """)
-long countDistinctDoctorByEmployeeAndMonth(Long employeeId, String month);
+
+    long countDistinctDoctorByEmployeeAndMonth(Long employeeId, String month);
+
+    @Query("SELECT COUNT(d) FROM DoctorVisit d WHERE d.employeeId = :employeeId")
+long countByEmployeeId(@Param("employeeId") Long employeeId);
 
 // Duplicate protection
-Optional<DoctorVisit> findFirstByEmployeeIdAndDoctorNameIgnoreCaseAndVisitDate(
-        Long employeeId,
-        String doctorName,
-        String visitDate
-);
-List<DoctorVisit> findByEmployeeIdAndVisitDateOrderByIdDesc(
-        Long employeeId,
-        String visitDate
-);
-List<DoctorVisit> findByEmployeeIdAndVisitDateOrderByVisitTimeDesc(
-        Long employeeId,
-        String visitDate
-);
-@Query("""
+    Optional<DoctorVisit> findFirstByEmployeeIdAndDoctorNameIgnoreCaseAndVisitDate(
+            Long employeeId,
+            String doctorName,
+            String visitDate
+    );
+
+    List<DoctorVisit> findByEmployeeIdAndVisitDateOrderByIdDesc(
+            Long employeeId,
+            String visitDate
+    );
+
+    List<DoctorVisit> findByEmployeeIdAndVisitDateOrderByVisitTimeDesc(
+            Long employeeId,
+            String visitDate
+    );
+
+    @Query("""
     SELECT d.visitDate, COUNT(d)
     FROM DoctorVisit d
     GROUP BY d.visitDate
     ORDER BY d.visitDate DESC
 """)
-List<Object[]> getWeeklyVisitStats();
+    List<Object[]> getWeeklyVisitStats();
 
 }

@@ -235,7 +235,7 @@
         background-color: #2563eb;
         color: white;
       }
-      <!------EmployeeDetails----- > 
+      /*EmployeeDetails*/
         .employee-avatar {
         width: 120px;
         height: 120px;
@@ -572,9 +572,8 @@
         <div class="col-6 col-md-6 col-lg-3">
           <div
             class="card dashboard-card"
-            onclick="showEmployees()"
-            style="cursor: pointer"
-          >
+            onclick="window.location.href='employee-directory.html'"
+            style="cursor: pointer;">
             <div class="card-body text-center">
               <i class="fas fa-users fa-2x text-primary mb-3"></i>
 
@@ -672,13 +671,6 @@
                 <span>Add Stock</span>
               </a>
             </div>
-
-            <!-- <div class="col-6 col-md-3">
-        <a href="AdminHQManagement.html" class="quick-action bg-secondary">
-          <i class="fas fa-map-marker-alt"></i>
-          <span>HQ Management</span>
-        </a>
-      </div> -->
 
             <div class="col-6 col-md-3">
               <a
@@ -882,263 +874,6 @@
       </div>
     </div>
 
-    <!-- Profile Popup -->
-    <div id="profileModal" class="profile-modal">
-      <div class="profile-card">
-        <span id="closeModal" class="close-btn">&times;</span>
-
-        <img src="images/admin.jpg" class="profile-pic" />
-
-        <h3>Raqib Khan</h3>
-
-        <h6 class="online-status">🟢 Online</h6>
-
-        <h5 class="text-primary">Owner & Administrator</h5>
-
-        <hr />
-
-        <p>
-          <strong>Email:</strong>
-          admin@inflixpharma.com
-        </p>
-
-        <p>
-          <strong>Mobile:</strong>
-          +91 XXXXX XXXXX
-        </p>
-
-        <hr />
-
-        <div class="profile-actions">
-          <button class="btn btn-primary">Edit Profile</button>
-
-          <button class="btn btn-warning">Change Password</button>
-
-          <a href="index.html" class="btn btn-danger"> Logout </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Employee List Modal -->
-
-    <div class="modal fade" id="employeeModal">
-      <div class="model-dialog">
-        <div
-          class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down modal-lg"
-        >
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Employee List</h5>
-
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-              ></button>
-            </div>
-
-            <div class="modal-body">
-              <div class="table-responsive">
-                <table class="table table-hover">
-                  <thead class="table-light">
-                    <tr>
-                      <th>Id</th>
-                      <th>Employee Name</th>
-                      <th>Designation</th>
-                      <th>HQ</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-
-                  <tbody id="employeeListBody"></tbody>
-                </table>
-              </div>
-            </div>
-            <div class="p-3 border-top">
-              <strong> Total Employees : </strong>
-
-              <span id="employeeCount"> 0 </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Employee Details Modal -->
-    <div class="modal fade" id="employeeDetailsModal">
-      <div class="model-dialog">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-          <div class="modal-content">
-            <div
-              class="modal-header border-0 bg-white">
-              <h4 class="mb-0 fw-bold">👥 Employee Directory</h4>
-
-              <button
-                type="button"
-                class="btn-close btn-close-white"
-                data-bs-dismiss="modal"
-              ></button>
-            </div>
-
-            <div class="modal-body">
-              <div class="employee-profile text-center">
-                <div class="employee-avatar ">👨‍💼</div>
-                <h2 id="empName" class="employee-name mt-3"></h2>
-                <span class="badge bg-success px-3 py-2" id="empStatus"></span>
-              </div>
-
-              <hr />
-
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <div class="info-box">
-                    <small>📧 Email</small>
-                    <div id="empEmail"></div>
-                  </div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                  <div class="info-box">
-                    <small>📱 Mobile</small>
-                    <div id="empMobile"></div>
-                  </div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                  <div class="info-box">
-                    <small>💼 Designation</small>
-                    <div id="empDesignation"></div>
-                  </div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                  <div class="info-box">
-                    <small>🏢 Headquarters</small>
-                    <div id="empHQ"></div>
-                  </div>
-                </div>
-
-                <div class="col-12">
-                  <div class="info-box">
-                    <small>📅 Joining Date</small>
-                    <div id="empJoining"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Doctor List Modal -->
-
-    <div class="modal fade" id="doctorModal">
-      <div class="model-dialog">
-        <div
-          class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down modal-lg"
-        >
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Doctor List</h5>
-
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-              ></button>
-            </div>
-
-            <div class="modal-body">
-              <div class="table-responsive">
-                <table class="table table-hover">
-                  <thead class="table-light">
-                    <tr>
-                      <th>Id</th>
-                      <th>Doctor Name</th>
-                      <th>Clinic Name</th>
-                      <th>City</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-
-                  <tbody id="doctorListBody"></tbody>
-                </table>
-              </div>
-            </div>
-            <div class="p-3 border-top">
-              <strong> Total Doctor : </strong>
-
-              <span id="doctorCount"> 0 </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Doctor Details Modal -->
-
-    <div class="modal fade" id="doctorDetailsModal">
-      <div class="model-dialog">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header bg-white">
-              <h5 class="modal-title text-dark">👨‍⚕️ Doctor Profile</h5>
-
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-              ></button>
-            </div>
-
-            <div class="modal-body">
-              <div class="doctor-profile text-center">
-                <div class="doctor-avatar">👨‍⚕️</div>
-
-                <h2 id="dName" class="doctor-name mt-3"></h2>
-
-                <div class="doctor-specialization">
-                  <span id="dSpecialization"></span>
-                </div>
-
-                <div class="doctor-status mt-2">
-                  <span class="badge bg-success" id="dStatus"></span>
-                </div>
-              </div>
-
-              <hr />
-
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <strong>📞 Phone</strong>
-                  <div id="dPhone"></div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                  <strong>📍 City</strong>
-                  <div id="dCity"></div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                  <strong>🏥 Clinic Name</strong>
-                  <div id="dClinic"></div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                  <strong>👤 Added By Employee</strong>
-                  <div id="dEmployee"></div>
-                </div>
-
-                <div class="col-12">
-                  <strong>📍 Address</strong>
-                  <div id="dAddress"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
     <!-- ================= BOOTSTRAP JS ================= -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -1173,18 +908,33 @@
       window.onload = function () {
         fetch(`${BASE_URL}/get-employees`)
           .then((response) => response.json())
+   
 
-          .then((employees) => {
-            document.getElementById("totalEmployees").innerText =
-              employees.length;
-          });
+    // ================= DASHBOARD COUNTS ================= -->
 
-        fetch(`${BASE_URL}/admin/get-doctors`)
-          .then((response) => response.json())
+   
+     window.onload = function () {
 
-          .then((doctors) => {
-            document.getElementById("totalDoctors").innerText = doctors.length;
-          });
+  fetch(`${BASE_URL}/get-employees`)
+    .then((response) => response.json())
+    .then((employees) => {
+      document.getElementById("totalEmployees").innerText =
+        employees.length;
+    });
+
+  fetch(`${BASE_URL}/admin/get-doctors`)
+    .then((response) => response.json())
+    .then((doctors) => {
+      document.getElementById("totalDoctors").innerText =
+        doctors.length;
+    });
+
+       
+  loadDoctorVisitCount();
+  loadDoctorVisits();
+  loadAdminTotalSale();
+};
+   
 
         loadDoctorVisitCount();
         loadDoctorVisits();
@@ -1378,15 +1128,19 @@
         });
       }
 
-      document
-        .getElementById("chartType")
-        .addEventListener("change", function () {
-          if (this.value === "daily") {
-            loadDoctorVisitChart(`${BASE_URL}/doctor-visit/chart-data-daily`);
-          } else {
-            loadDoctorVisitChart(`${BASE_URL}/doctor-visit/chart-data`);
-          }
-        });
+    const chartType = document.getElementById("chartType");
+
+if (chartType) {
+  chartType.addEventListener("change", function () {
+    if (this.value === "daily") {
+      loadDoctorVisitChart(`${BASE_URL}/doctor-visit/chart-data-weekly`);
+    } else {
+      loadDoctorVisitChart(
+        `${BASE_URL}/doctor-visit/chart-data`
+      );
+    }
+  });
+}
 
       async function loadAttendanceChart() {
         const response = await fetch(`${BASE_URL}/attendance/chart-data`);

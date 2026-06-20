@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Admin Dashboard</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        background: #f4f6f9;
+        overflow-x: hidden;
+      }
+
+      /* Navbar */
+
+      .top-navbar {
+        min-height: 80px;
+        background: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1050;
+      }
+      .navbar-logo {
+        width: 90px;
+        height: 85px;
+        object-fit: contain;
+      }
+
+      /* Sidebar */
+
+      .sidebar {
+        position: fixed;
+        top: 90px;
+        left: 0;
+        width: 250px;
+        height: 100vh;
+        background: #0f172a;
+        transition: 0.3s;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+
+      .sidebar.hide {
+        margin-left: -250px;
+      }
+
+      .sidebar .nav-link {
+        color: #fff;
+        padding: 12px 20px;
+        margin: 5px 10px;
+        border-radius: 8px;
+      }
+      .sidebar .nav-link:hover {
+        background: #1e293b;
+      }
+
+      .sidebar .nav-link.active {
+        background: #0d6efd;
+      }
+
+      /* Main Content */
+
+      .main-content {
+        position: relative;
+        margin-left: 250px;
+        margin-top: 100px;
+        padding: 20px;
+        transition: 0.3s;
+        z-index: 1;
+      }
+
+      .main-content.full {
+        margin-left: 0;
+      }
+
+      .profile-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        margin-top: 20px;
+      }
+
+      .profile-img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #0d6efd;
+      }
+
+      .employee-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 10px;
+      }
+
+      .employee-info span {
+        background: #eef4ff;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: 500;
+      }
+
+      .summary-row {
+        width: 100%;
+        margin: 20px 0 0 0;
+      }
+
+      .summary-row .card {
+        height: 100%;
+      }
+
+      .dashboard-card {
+        background: #fff;
+        border-radius: 15px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transition: 0.3s;
+        height: 100px;
+      }
+
+      .dashboard-card:hover {
+        transform: translateY(-3px);
+      }
+
+      .card-icon {
+        font-size: 35px;
+        color: #0d6efd;
+      }
+
+      .dashboard-card h6 {
+        margin: 0;
+        color: #6c757d;
+      }
+
+      .dashboard-card h3 {
+        margin: 5px 0 0;
+        font-weight: 700;
+      }
+
+      /* Mobile */
+
+      @media (max-width: 768px) {
+        .sidebar {
+          margin-left: -250px;
+        }
+
+        .sidebar.show {
+          margin-left: 0;
+        }
+
+        .main-content {
+          margin-left: 0;
+        }
+
+        .navbar-logo {
+          width: 80px;
+          height: 75px;
+        }
+        .dashboard-card{
+        padding:12px;
+        height:85px;
+        gap:10px;
+    }
+
+    .card-icon{
+        font-size:22px;
+    }
+
+    .dashboard-card h6{
+        font-size:11px;
+    }
+
+    .dashboard-card h3{
+        font-size:18px;
+    }
+      }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  </head>
+  <body>
+    <!-- NAVBAR -->
+
+    <nav class="navbar top-navbar px-3">
+      <div class="d-flex align-items-center">
+        <button class="btn btn-light me-3" onclick="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <img
+          src="images/Inflix-logo-web.png"
+          alt="Logo"
+          class="navbar-logo me-2"
+        />
+      </div>
+
+      <div class="d-flex align-items-center ms-auto">
+        <div class="text-end me-2 admin-info">
+          <div class="fw-bold">Admin</div>
+
+          <div class="small text-muted">Raqib Khan</div>
+
+          <div id="datetime" class="small text-secondary"></div>
+        </div>
+
+        <img
+          id="profileBtn"
+          src="images/admin.jpg"
+          width="40"
+          height="40"
+          class="rounded-circle border border-primary"
+          style="cursor: pointer"
+        />
+      </div>
+    </nav>
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar" id="sidebar">
+      <ul class="nav flex-column mt-3">
+        <li class="nav-item">
+          <a href="admin-dashboard.html" class="nav-link active">
+            <i class="fas fa-home me-2"></i>
+            Dashboard
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="admin-employeeTracking.html" class="nav-link">
+            <i class="fas fa-location-dot me-2"></i>
+            Employee Tracking
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="employeeList.html" class="nav-link">
+            <i class="fas fa-users me-2"></i>
+            Employees
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="doctorList.html" class="nav-link">
+            <i class="fas fa-user-doctor me-2"></i>
+            Doctors
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="admin-orders.html" class="nav-link">
+            <i class="fas fa-box me-2"></i>
+            Orders
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="AdminTourApproval.html" class="nav-link">
+            <i class="fa-solid fa-route"></i>
+            Tour Approval
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="AdminHQManagement.html" class="nav-link">
+            <i class="fas fa-map-marker-alt me-2"></i>
+            HQ Management
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="AdminDistributor.html" class="nav-link">
+            <i class="fa-solid fa-truck-medical me-2"></i>
+            Distributors
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="AdminStockDashboard.html" class="nav-link">
+            <i class="fa-solid fa-warehouse me-2"></i>
+            Stock Dashboard
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="fas fa-chart-line me-2"></i>
+            Reports
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- MAIN CONTENT -->
+
+    <div class="main-content" id="mainContent">
+      <div class="welcome-box">
+        <h2>Employee Profile</h2>
+
+        <div class="profile-card">
+          <div class="profile-left">
+            <i
+              id="defaultIcon"
+              class="fas fa-user-circle"
+              style="font-size: 120px; color: #0d6efd"
+            ></i>
+
+            <img id="profileImage" class="profile-img" style="display: none" />
+          </div>
+
+          <div class="profile-right">
+            <h2 id="employeeName">Loading...</h2>
+
+            <div class="employee-info">
+              <span id="designation">MR</span>
+
+              <span id="hq">HQ</span>
+
+              <span id="mobile">Mobile</span>
+
+              <span id="status">Active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-------Summary Cards Section--------->
+      <div class="row mt-4 g-3">
+        <div class="col-6 col-md-6 col-lg-3">
+          <div class="dashboard-card">
+            <i class="fas fa-user-doctor card-icon"></i>
+            <div>
+              <h6>Total Doctors</h6>
+              <h3 id="totalDoctors">0</h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-6 col-lg-3">
+          <div class="dashboard-card">
+            <i class="fas fa-stethoscope card-icon"></i>
+            <div>
+              <h6>Total Visits</h6>
+              <h3 id="totalVisits">0</h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-6 col-lg-3">
+          <div class="dashboard-card">
+            <i class="fas fa-cart-shopping card-icon"></i>
+            <div>
+              <h6>Total Orders</h6>
+              <h3 id="totalOrders">0</h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-6 col-md-6 col-lg-3">
+          <div class="dashboard-card">
+            <i class="fas fa-indian-rupee-sign card-icon"></i>
+            <div>
+              <h6>Total Expenses</h6>
+              <h3 id="totalExpenses">₹0</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+     <div class="row mt-4">
+
+    <!-- Doctor Visits -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                Recent Doctor Visits
+            </div>
+
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Doctor</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="doctorVisitTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-success text-white">
+                Recent Orders
+            </div>
+
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="ordersTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Expenses Full Width -->
+<!--<div class="row">--->
+
+  <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning">
+                Recent Expenses
+            </div>
+
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Expense Type</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="expenseTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+    </div>
+    <script>
+      //toggle Sidebar
+
+      function toggleSidebar() {
+        let sidebar = document.getElementById("sidebar");
+
+        let main = document.getElementById("mainContent");
+
+        if (window.innerWidth <= 768) {
+          sidebar.classList.toggle("show");
+        } else {
+          sidebar.classList.toggle("hide");
+
+          main.classList.toggle("full");
+        }
+      }
+
+      function updateTime() {
+
+       
+
+        document.getElementById("datetime").innerHTML =
+          new Date().toLocaleString();
+      }
+
+      setInterval(updateTime, 1000);
+
+      updateTime();
+
+      const employeeId = new URLSearchParams(window.location.search).get("id");
+
+      console.log(employeeId);
+
+      async function loadEmployee() {
+
+         const API_BASE = "https://2-ij3y.onrender.com";
+         
+        const employeeId = new URLSearchParams(window.location.search).get(
+          "id",
+        );
+
+       const response = await fetch(`${API_BASE}/get-employees`);
+
+        const employees = await response.json();
+
+        const employee = employees.find((e) => e.id == employeeId);
+
+        console.log("Employee ID =", employeeId);
+        console.log("Employee Found =", employee);
+
+        if (!employee) {
+          document.getElementById("employeeName").innerText =
+            "Employee Not Found";
+          return;
+        }
+
+        document.getElementById("employeeName").innerText =
+          employee.name || "N/A";
+
+        document.getElementById("designation").innerText =
+          employee.designation || "Not Assigned";
+
+        document.getElementById("hq").innerText =
+          employee.headquarters || "No HQ";
+
+        document.getElementById("mobile").innerText =
+          employee.mobile || "No Mobile";
+
+        document.getElementById("status").innerText =
+          employee.status || "Pending";
+
+
+ const orderResponse = await fetch(
+`${API_BASE}/order/employee/${employeeId}/order-count`
+);
+
+const visitResponse = await fetch(
+`${API_BASE}/employee/${employeeId}/visit-count`
+);
+
+const totalVisits = await visitResponse.json();
+
+document.getElementById("totalVisits").innerText = totalVisits;
+
+
+const totalOrders = await orderResponse.json();
+
+document.getElementById("totalOrders").innerText = totalOrders;
+
+const expenseResponse = await fetch(
+`${API_BASE}/employee/${employeeId}/expense-total`
+);
+
+const totalExpense = await expenseResponse.json();
+
+document.getElementById("totalExpenses").innerText =
+  "₹" + totalExpense;
+
+
+        if (employee.profileImage) {
+          document.getElementById("profileImage").src = employee.profileImage;
+        }
+
+        if (employee.profileImage && employee.profileImage.trim() !== "") {
+          document.getElementById("profileImage").src = employee.profileImage;
+
+          document.getElementById("profileImage").style.display = "block";
+
+          document.getElementById("defaultIcon").style.display = "none";
+        }
+        
+      }
+      loadEmployee();
+
+   
+    </script>
+  </body>
+</html>

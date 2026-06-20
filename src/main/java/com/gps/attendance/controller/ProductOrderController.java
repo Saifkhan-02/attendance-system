@@ -512,4 +512,8 @@ public Map<String, Object> getEmployeeSales(
     return result;
 }
 
+@GetMapping("/employee/{id}/order-count")
+public Long getOrderCount(@PathVariable Long id) {
+    return orderRepository.countOrdersByEmployeeId(id);
+}
 }

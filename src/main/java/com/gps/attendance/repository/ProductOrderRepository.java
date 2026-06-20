@@ -103,4 +103,6 @@ FROM ProductOrder p
 """)
 Double getTotalDue();
    
+   @Query("SELECT COUNT(p) FROM ProductOrder p WHERE p.employeeId = :employeeId")
+long countOrdersByEmployeeId(@Param("employeeId") Long employeeId);
 }
