@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.gps.attendance.dto.ChangePasswordRequest;
 import com.gps.attendance.entity.Employee;
 import com.gps.attendance.repository.EmployeeRepository;
 import com.gps.attendance.service.CloudinaryService;
-
 @RestController
 @CrossOrigin("*")
 public class EmployeeController {
@@ -34,14 +34,6 @@ public class EmployeeController {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    @PostMapping("/register")
-    public String registerEmployee(
-            @RequestBody Employee employee) {
-
-        repository.save(employee);
-
-        return "Employee Registered Successfully";
-    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(
@@ -142,19 +134,19 @@ public class EmployeeController {
         return repository.save(employee);
     }
 
-    @PutMapping("/employee/assign-headquarter")
-    public Employee assignHeadquarter(@RequestBody Map<String, Object> request) {
+    // @PutMapping("/employee/assign-headquarter")
+    // public Employee assignHeadquarter(@RequestBody Map<String, Object> request) {
 
-        Long employeeId = Long.valueOf(request.get("employeeId").toString());
-        String headquarterName = request.get("headquarterName").toString();
+    //     Long employeeId = Long.valueOf(request.get("employeeId").toString());
+    //     String headquarterName = request.get("headquarterName").toString();
 
-        Employee employee = repository.findById(employeeId)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+    //     Employee employee = repository.findById(employeeId)
+    //             .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        employee.setHeadquarters(headquarterName);
+    //     employee.setHeadquarters(headquarterName);
 
-        return repository.save(employee);
-    }
+    //     return repository.save(employee);
+    // }
 
     @GetMapping("/admin/employees")
     @ResponseBody
@@ -170,4 +162,54 @@ public class EmployeeController {
                 .findById(id)
                 .orElse(null);
     }
+
+
+@PutMapping("/employee/assign-headquarter")
+public Employee assignHeadquarter(@RequestBody Map<String, Object> request) {
+
+    Long employeeId = Long.valueOf(request.get("employeeId").toString());
+    String headquarterName = request.get("headquarterName").toString();
+
+    Employee employee = repository.findById(employeeId)
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+    employee.setHeadquarters(headquarterName);
+
+    return repository.save(employee);
+}
+
+@PutMapping("/employee/change-password")
+public String changePassword(@RequestBody ChangePasswordRequest request) {
+
+    Employee employee = repository.findById(request.getEmployeeId())
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+    if (!employee.getPassword().equals(request.getCurrentPassword())) {
+        throw new RuntimeException("Current password is incorrect");
+    }
+
+    String newPassword = request.getNewPassword();
+
+    if (newPassword == null || newPassword.length() < 6) {
+        throw new RuntimeException("Password must be at least 6 characters");
+    }
+
+    if (!newPassword.matches(".*\\d.*")) {
+        throw new RuntimeException("Password must contain at least 1 number");
+    }
+
+    if (!newPassword.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+        throw new RuntimeException("Password must contain at least 1 special character");
+    }
+
+    if (employee.getPassword().equals(newPassword)) {
+        throw new RuntimeException("New password cannot be same as current password");
+    }
+
+    employee.setPassword(newPassword);
+        repository.save(employee);
+
+    return "Password changed successfully";
+}
+
 }

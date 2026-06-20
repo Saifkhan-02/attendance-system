@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 
+
 @Service
 public class CloudinaryService {
 
@@ -17,10 +18,10 @@ public class CloudinaryService {
     public CloudinaryService(Cloudinary cloudinary) {
         this.cloudinary = cloudinary;
     }
-
+@SuppressWarnings("unchecked")
     public String uploadProfileImage(MultipartFile file, Long employeeId) throws IOException {
 
-        Map uploadResult = cloudinary.uploader().upload(
+        Map<String, Object> uploadResult = cloudinary.uploader().upload(
                 file.getBytes(),
                 ObjectUtils.asMap(
                         "folder", "gps-attendance/profile",
@@ -32,12 +33,12 @@ public class CloudinaryService {
 
         return uploadResult.get("secure_url").toString();
     }
-
+@SuppressWarnings("unchecked")
    public String uploadDoctorVisitImage(MultipartFile file, Long employeeId) throws IOException {
 
     String uniqueName = "employee_" + employeeId + "_" + System.currentTimeMillis();
 
-    Map uploadResult = cloudinary.uploader().upload(
+    Map<String, Object> uploadResult = cloudinary.uploader().upload(
             file.getBytes(),
             ObjectUtils.asMap(
                     "folder", "gps-attendance/doctor-visits",
