@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.gps.attendance.dto.ChangePasswordRequest;
 import com.gps.attendance.entity.Employee;
 import com.gps.attendance.repository.EmployeeRepository;
 import com.gps.attendance.service.CloudinaryService;
-
-import com.gps.attendance.dto.ChangePasswordRequest;
 @RestController
 @CrossOrigin("*")
 public class EmployeeController {
@@ -29,30 +29,22 @@ public class EmployeeController {
     private EmployeeRepository repository;
 
     @Autowired
-private CloudinaryService cloudinaryService;
+    private CloudinaryService cloudinaryService;
 
-//     @PostMapping("/register")
-//     public String registerEmployee(
-//             @RequestBody Employee employee) {
-                
-                
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
-
-//         repository.save(employee);
-
-//         return "Employee Registered Successfully";
-//     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(
             @RequestBody Employee employee) {
 
-        Employee emp =
-                repository.findByUsernameAndPassword(
+        Employee emp
+                = repository.findByUsernameAndPassword(
                         employee.getUsername(),
                         employee.getPassword());
 
-        if(emp != null){
+        if (emp != null) {
 
             return ResponseEntity.ok(emp);
 
@@ -64,82 +56,113 @@ private CloudinaryService cloudinaryService;
     }
 
     @GetMapping("/employee/{id}")
-public ResponseEntity<?> getEmployeeById(
-        @PathVariable Long id) {
+    public ResponseEntity<?> getEmployeeById(
+            @PathVariable Long id) {
 
-    Employee employee =
-            repository.findById(id)
-                    .orElse(null);
+        Employee employee
+                = repository.findById(id)
+                        .orElse(null);
 
-    if(employee == null) {
+        if (employee == null) {
 
-        return ResponseEntity
-                .badRequest()
-                .body("Employee Not Found");
+            return ResponseEntity
+                    .badRequest()
+                    .body("Employee Not Found");
+        }
+
+        return ResponseEntity.ok(employee);
     }
-
-    return ResponseEntity.ok(employee);
-}
 
     @GetMapping("/get-employees")
     public List<Employee> getEmployees() {
-          return repository.findAll();
-          }
-    @PutMapping("/employee/update-photo/{id}")
-public ResponseEntity<?> updateProfilePhoto(
-        @PathVariable Long id,
-        @RequestBody Employee request) {
-
-    Employee employee =
-            repository.findById(id).orElse(null);
-
-    if (employee == null) {
-        return ResponseEntity.badRequest()
-                .body("Employee Not Found");
+        return repository.findAll();
     }
 
-    employee.setProfileImage(request.getProfileImage());
+    @PutMapping("/employee/update-photo/{id}")
+    public ResponseEntity<?> updateProfilePhoto(
+            @PathVariable Long id,
+            @RequestBody Employee request) {
 
-    repository.save(employee);
+        Employee employee
+                = repository.findById(id).orElse(null);
 
-    return ResponseEntity.ok(employee);
-}
+        if (employee == null) {
+            return ResponseEntity.badRequest()
+                    .body("Employee Not Found");
+        }
 
-@PutMapping("/employee/update-profile/{id}")
-public Employee updateEmployeeProfile(
-        @PathVariable Long id,
-        @RequestBody Employee updatedEmployee
-) {
-    Employee employee = repository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Employee not found"));
+        employee.setProfileImage(request.getProfileImage());
 
-    employee.setEmail(updatedEmployee.getEmail());
-    employee.setMobile(updatedEmployee.getMobile());
-    employee.setHeadquarters(updatedEmployee.getHeadquarters());
+        repository.save(employee);
 
-    return repository.save(employee);
-}
+        return ResponseEntity.ok(employee);
+    }
 
-@PutMapping("/employee/upload-photo/{id}")
-public Employee uploadEmployeePhoto(
-        @PathVariable Long id,
-        @RequestParam("file") MultipartFile file
-) throws IOException {
+    @PutMapping("/employee/update-profile/{id}")
+    public Employee updateEmployeeProfile(
+            @PathVariable Long id,
+            @RequestBody Employee updatedEmployee
+    ) {
+        Employee employee = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        employee.setEmail(updatedEmployee.getEmail());
+        employee.setMobile(updatedEmployee.getMobile());
+        employee.setHeadquarters(updatedEmployee.getHeadquarters());
+
+        return repository.save(employee);
+    }
+
+    @PutMapping("/employee/upload-photo/{id}")
+    public Employee uploadEmployeePhoto(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file
+    ) throws IOException {
 
         System.out.println("Upload API Hit");
-    System.out.println("Employee ID = " + id);
-    System.out.println("File empty = " + file.isEmpty());
-    System.out.println("File size = " + file.getSize());
-    
-    Employee employee = repository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Employee not found"));
+        System.out.println("Employee ID = " + id);
+        System.out.println("File empty = " + file.isEmpty());
+        System.out.println("File size = " + file.getSize());
 
-    String imageUrl = cloudinaryService.uploadProfileImage(file, id);
+        Employee employee = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-    employee.setProfileImage(imageUrl);
+        String imageUrl = cloudinaryService.uploadProfileImage(file, id);
 
-    return repository.save(employee);
-}
+        employee.setProfileImage(imageUrl);
+
+        return repository.save(employee);
+    }
+
+    // @PutMapping("/employee/assign-headquarter")
+    // public Employee assignHeadquarter(@RequestBody Map<String, Object> request) {
+
+    //     Long employeeId = Long.valueOf(request.get("employeeId").toString());
+    //     String headquarterName = request.get("headquarterName").toString();
+
+    //     Employee employee = repository.findById(employeeId)
+    //             .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+    //     employee.setHeadquarters(headquarterName);
+
+    //     return repository.save(employee);
+    // }
+
+    @GetMapping("/admin/employees")
+    @ResponseBody
+    public List<Employee> getAllEmployees() {
+        return employeeRepository.findAll();
+    }
+
+    @GetMapping("/admin/employee/{id}")
+    @ResponseBody
+    public Employee getEmployee(@PathVariable Long id) {
+
+        return employeeRepository
+                .findById(id)
+                .orElse(null);
+    }
+
 
 @PutMapping("/employee/assign-headquarter")
 public Employee assignHeadquarter(@RequestBody Map<String, Object> request) {

@@ -74,7 +74,7 @@
 
       /* Main Content */
 
-      .main-content  {
+      .main-content {
         position: relative;
         margin-left: 250px;
         margin-top: 100px;
@@ -173,45 +173,197 @@
 
       /* Quick Actions */
       .quick-action {
-  height: 105px;
-  border-radius: 18px;
-  color: white;
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  font-weight: 700;
-  box-shadow: 0 8px 20px rgba(0,0,0,.12);
-  transition: .25s;
-}
+        height: 105px;
+        border-radius: 18px;
+        color: white;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        font-weight: 700;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        transition: 0.25s;
+      }
 
-.quick-action i {
-  font-size: 26px;
-}
+      .quick-action i {
+        font-size: 26px;
+      }
 
-.quick-action:hover {
-  transform: translateY(-4px);
-  color: white;
-}
+      .quick-action:hover {
+        transform: translateY(-4px);
+        color: white;
+      }
 
-.welcome-box {
-  background: linear-gradient(135deg, #0d4f9c, #3f7fe0);
-  color: white;
-  border-radius: 22px;
-  padding: 28px;
-  margin-bottom: 22px;
-  box-shadow: 0 10px 28px rgba(13,79,156,.25);
-}
+      .welcome-box {
+        background: linear-gradient(135deg, #0d4f9c, #3f7fe0);
+        color: white;
+        border-radius: 22px;
+        padding: 28px;
+        margin-bottom: 22px;
+        box-shadow: 0 10px 28px rgba(13, 79, 156, 0.25);
+      }
 
-.dashboard-card {
-  border: none;
-  border-radius: 20px;
-  box-shadow: 0 10px 26px rgba(0,0,0,.08);
-  overflow: hidden;
-}
-     
+      .dashboard-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+      }
+
+      .employee-row {
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .employee-row:hover {
+        background: #eff6ff !important;
+        transform: scale(1.01);
+      }
+
+      .modal-content {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+      }
+
+      .table td {
+        vertical-align: middle;
+      }
+      .table thead {
+        background-color: #2563eb;
+        color: white;
+      }
+      <!------EmployeeDetails----- > 
+        .employee-avatar {
+        width: 120px;
+        height: 120px;
+        margin: auto;
+        border-radius: 50%;
+        background: #f3f6ff;
+        border: 3px solid #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 42px;
+      }
+
+      .employee-name {
+        font-size: 28px;
+        font-weight: 700;
+      }
+
+      .info-box {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .info-box small {
+        color: #6b7280;
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .info-box div {
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      #employeeDetailsModal .modal-content {
+        border-radius: 18px;
+        overflow: hidden;
+      }
+      #employeeDetailsModal .modal-dialog{
+        max-width: 700px;
+      }
+       #employeeDetailsModal .modal-header{
+        background-color: white !important;
+        color: #222 !important;
+        border-bottom: 1px solid #e5e7eb;
+      }
+       #employeeDetailsModal .modal-title{
+        color: #222 !important;
+        font-size: 700;
+      }
+       #employeeDetailsModal .btn-close{
+        filter: none;
+      }
+
+      @media (max-width: 768px) {
+        .employee-avatar {
+          width: 70px;
+          height: 70px;
+          font-size: 32px;
+        }
+
+        .employee-name {
+          font-size: 22px;
+        }
+      }
+
+      .doctor-row {
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .doctor-row:hover {
+        background: #eff6ff !important;
+        transform: scale(1.01);
+      }
+
+      .modal-header {
+        cursor: move;
+        user-select: none;
+      }
+
+      .doctor-avatar {
+        width: 90px;
+        height: 90px;
+        margin: auto;
+        border-radius: 50%;
+        background: #f0f4ff;
+        border: 3px solid #0d6efd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 45px;
+      }
+
+      .doctor-name {
+        font-size: 30px;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+
+      .doctor-specialization {
+        font-size: 18px;
+        color: #6c757d;
+      }
+
+      .modal-body strong {
+        color: #0d6efd;
+      }
+
+      .modal-body .row div {
+        font-size: 16px;
+      }
+
+      #dPhone,
+      #dCity,
+      #dClinic,
+      #dEmployee,
+      #dAddress {
+        margin-top: 5px;
+        color: #333;
+        font-weight: 500;
+      }
+      .modal-dialog {
+        cursor: move;
+      }
 
       /* Mobile */
 
@@ -244,7 +396,19 @@
           width: 80px;
           height: 75px;
         }
-        
+        .doctor-avatar {
+          width: 70px;
+          height: 70px;
+          font-size: 35px;
+        }
+
+        .doctor-name {
+          font-size: 22px;
+        }
+
+        .doctor-specialization {
+          font-size: 15px;
+        }
       }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -333,7 +497,7 @@
           </a>
         </li>
 
-         <li class="nav-item">
+        <li class="nav-item">
           <a href="AdminHQManagement.html" class="nav-link">
             <i class="fas fa-map-marker-alt me-2"></i>
             HQ Management
@@ -341,25 +505,25 @@
         </li>
 
         <li class="nav-item">
-  <a href="AdminDistributor.html" class="nav-link">
-    <i class="fa-solid fa-truck-medical me-2"></i>
-    Distributors
-  </a>
-</li>
+          <a href="AdminDistributor.html" class="nav-link">
+            <i class="fa-solid fa-truck-medical me-2"></i>
+            Distributors
+          </a>
+        </li>
 
-<!-- <li class="nav-item">
+        <!-- <li class="nav-item">
   <a href="AdminAddStock.html" class="nav-link">
     <i class="fa-solid fa-boxes-stacked me-2"></i>
     Distributor Stock
   </a>
 </li> -->
 
-<li class="nav-item">
-  <a href="AdminStockDashboard.html" class="nav-link">
-    <i class="fa-solid fa-warehouse me-2"></i>
-    Stock Dashboard
-  </a>
-</li>
+        <li class="nav-item">
+          <a href="AdminStockDashboard.html" class="nav-link">
+            <i class="fa-solid fa-warehouse me-2"></i>
+            Stock Dashboard
+          </a>
+        </li>
 
         <li class="nav-item">
           <a href="#" class="nav-link">
@@ -384,7 +548,11 @@
         <!-- Total Employees -->
 
         <div class="col-6 col-md-6 col-lg-3">
-          <div class="card dashboard-card">
+          <div
+            class="card dashboard-card"
+            onclick="showEmployees()"
+            style="cursor: pointer"
+          >
             <div class="card-body text-center">
               <i class="fas fa-users fa-2x text-primary mb-3"></i>
 
@@ -398,7 +566,11 @@
         <!-- Total Doctors -->
 
         <div class="col-6 col-md-6 col-lg-3">
-          <div class="card dashboard-card">
+          <div
+            class="card dashboard-card"
+            onclick="showDoctors()"
+            style="cursor: pointer"
+          >
             <div class="card-body text-center">
               <i class="fas fa-user-doctor fa-2x text-success mb-3"></i>
 
@@ -440,88 +612,96 @@
 
       <!-- ================= QUICK ACTIONS ================= -->
 
-<div class="card dashboard-card mb-4">
-  <div class="card-header bg-primary text-white">
-    <h5 class="mb-0">
-      <i class="fa-solid fa-bolt me-2"></i>
-      Quick Actions
-    </h5>
-  </div>
+      <div class="card dashboard-card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="fa-solid fa-bolt me-2"></i>
+            Quick Actions
+          </h5>
+        </div>
 
-  <div class="card-body">
-    <div class="row g-3">
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-6 col-md-3">
+              <a href="addEmployee.html" class="quick-action bg-primary">
+                <i class="fas fa-user-plus"></i>
+                <span>Add Employee</span>
+              </a>
+            </div>
 
-      <div class="col-6 col-md-3">
-        <a href="addEmployee.html" class="quick-action bg-primary">
-          <i class="fas fa-user-plus"></i>
-          <span>Add Employee</span>
-        </a>
-      </div>
-
-      <!-- <div class="col-6 col-md-3">
+            <!-- <div class="col-6 col-md-3">
         <a href="addDoctor.html" class="quick-action bg-success">
           <i class="fas fa-user-doctor"></i>
           <span>Add Doctor</span>
         </a>
       </div> -->
 
-      <div class="col-6 col-md-3">
-        <a href="AdminDistributor.html" class="quick-action bg-info">
-          <i class="fa-solid fa-truck-medical"></i>
-          <span>Manage Distributors</span>
-        </a>
-      </div>
+            <div class="col-6 col-md-3">
+              <a href="AdminDistributor.html" class="quick-action bg-info">
+                <i class="fa-solid fa-truck-medical"></i>
+                <span>Manage Distributors</span>
+              </a>
+            </div>
 
-      <div class="col-6 col-md-3">
-        <a href="AdminAddStock.html" class="quick-action bg-warning text-dark">
-          <i class="fa-solid fa-boxes-stacked"></i>
-          <span>Add Stock</span>
-        </a>
-      </div>
+            <div class="col-6 col-md-3">
+              <a
+                href="AdminAddStock.html"
+                class="quick-action bg-warning text-dark"
+              >
+                <i class="fa-solid fa-boxes-stacked"></i>
+                <span>Add Stock</span>
+              </a>
+            </div>
 
-      <!-- <div class="col-6 col-md-3">
+            <!-- <div class="col-6 col-md-3">
         <a href="AdminHQManagement.html" class="quick-action bg-secondary">
           <i class="fas fa-map-marker-alt"></i>
           <span>HQ Management</span>
         </a>
       </div> -->
 
-      <div class="col-6 col-md-3">
-        <a href="admin-employeeTracking.html" class="quick-action bg-danger">
-          <i class="fas fa-location-dot"></i>
-          <span>Track Employee</span>
-        </a>
-      </div>
+            <div class="col-6 col-md-3">
+              <a
+                href="admin-employeeTracking.html"
+                class="quick-action bg-danger"
+              >
+                <i class="fas fa-location-dot"></i>
+                <span>Track Employee</span>
+              </a>
+            </div>
 
-      <div class="col-6 col-md-3">
-        <a href="admin-orders.html" class="quick-action bg-dark">
-          <i class="fas fa-box"></i>
-          <span>Orders</span>
-        </a>
-      </div>
+            <div class="col-6 col-md-3">
+              <a href="admin-orders.html" class="quick-action bg-dark">
+                <i class="fas fa-box"></i>
+                <span>Orders</span>
+              </a>
+            </div>
 
+            <div class="col-6 col-md-3">
+              <a href="AdminTourApproval.html" class="quick-action bg-primary">
+                <i class="fa-solid fa-route"></i>
+                <span>Tour Approval</span>
+              </a>
+            </div>
+          </div>
+        </div>
       <div class="col-6 col-md-3">
         <a href="AdminRouteManagement.html" class="quick-action bg-primary">
           <i class="fa-solid fa-route"></i>
           <span>Route Management</span>
         </a>
       </div>
-
-    </div>
-  </div>
-</div>
       <!-- ================= Add Charts ================= -->
 
-       <div class="row mt-4">
-
+      <div class="row mt-4">
         <div class="col-lg-5">
-      <div class="card shadow-sm mt-4 mb-4">
-        <div
-          class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
-        >
-          <span>Doctor Visits Trend (Last 7 Days)</span>
+          <div class="card shadow-sm mt-4 mb-4">
+            <div
+              class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+            >
+              <span>Doctor Visits Trend (Last 7 Days)</span>
 
-         <!----- <select
+              <!----- <select
             id="chartType"
             class="form-select form-select-sm"
             style="width: 120px"
@@ -530,64 +710,45 @@
 
             <option value="daily">Daily</option>
           </select>-->
+            </div>
+            <div class="card-body">
+              <div style="height: 350px">
+                <canvas id="doctorVisitChart"></canvas>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="card-body">
-          <div style="height: 350px">
-            <canvas id="doctorVisitChart"></canvas>
+
+        <div class="col-lg-3">
+          <div class="card shadow-sm mt-4 mb-4">
+            <div class="card-header bg-success text-white">
+              Attendance Status
+            </div>
+
+            <div class="card-body">
+              <canvas id="attendanceChart"></canvas>
+
+              <div class="mt-3 small text-center">
+                <div>Present: <span id="presentCount">0</span></div>
+                <div>Absent: <span id="absentCount">0</span></div>
+                <div>Leave: <span id="leaveCount">0</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="card shadow-sm mt-4 mb-4">
+            <div class="card-header bg-info text-white">Monthly Expenses</div>
+
+            <div class="card-body">
+              <div style="height: 350px">
+                <canvas id="expenseChart"></canvas>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-       </div>
-
-
-      <div class="col-lg-3">
-
-    <div class="card shadow-sm mt-4 mb-4">
-
-        <div class="card-header bg-success text-white">
-            Attendance Status
-        </div>
-
-        <div class="card-body">
-
-            <canvas id="attendanceChart"></canvas>
-
-            <div class="mt-3 small text-center">
-    <div>Present: <span id="presentCount">0</span></div>
-    <div>Absent: <span id="absentCount">0</span></div>
-    <div>Leave: <span id="leaveCount">0</span></div>
-</div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<div class="col-lg-4">
-
-    <div class="card shadow-sm mt-4 mb-4">
-
-        <div class="card-header bg-info text-white">
-            Monthly Expenses
-        </div>
-
-        <div class="card-body">
-
-            <div style="height:350px">
-                <canvas id="expenseChart"></canvas>
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-       
-      
-       </div>
-       
 
       <!-- ================= LIVE EMPLOYEE TRACKING ================= -->
 
@@ -699,6 +860,263 @@
       </div>
     </div>
 
+    <!-- Profile Popup -->
+    <div id="profileModal" class="profile-modal">
+      <div class="profile-card">
+        <span id="closeModal" class="close-btn">&times;</span>
+
+        <img src="images/admin.jpg" class="profile-pic" />
+
+        <h3>Raqib Khan</h3>
+
+        <h6 class="online-status">🟢 Online</h6>
+
+        <h5 class="text-primary">Owner & Administrator</h5>
+
+        <hr />
+
+        <p>
+          <strong>Email:</strong>
+          admin@inflixpharma.com
+        </p>
+
+        <p>
+          <strong>Mobile:</strong>
+          +91 XXXXX XXXXX
+        </p>
+
+        <hr />
+
+        <div class="profile-actions">
+          <button class="btn btn-primary">Edit Profile</button>
+
+          <button class="btn btn-warning">Change Password</button>
+
+          <a href="index.html" class="btn btn-danger"> Logout </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Employee List Modal -->
+
+    <div class="modal fade" id="employeeModal">
+      <div class="model-dialog">
+        <div
+          class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down modal-lg"
+        >
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Employee List</h5>
+
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+
+            <div class="modal-body">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Id</th>
+                      <th>Employee Name</th>
+                      <th>Designation</th>
+                      <th>HQ</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="employeeListBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="p-3 border-top">
+              <strong> Total Employees : </strong>
+
+              <span id="employeeCount"> 0 </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Employee Details Modal -->
+    <div class="modal fade" id="employeeDetailsModal">
+      <div class="model-dialog">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+          <div class="modal-content">
+            <div
+              class="modal-header border-0 bg-white">
+              <h4 class="mb-0 fw-bold">👥 Employee Directory</h4>
+
+              <button
+                type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+
+            <div class="modal-body">
+              <div class="employee-profile text-center">
+                <div class="employee-avatar ">👨‍💼</div>
+                <h2 id="empName" class="employee-name mt-3"></h2>
+                <span class="badge bg-success px-3 py-2" id="empStatus"></span>
+              </div>
+
+              <hr />
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <div class="info-box">
+                    <small>📧 Email</small>
+                    <div id="empEmail"></div>
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <div class="info-box">
+                    <small>📱 Mobile</small>
+                    <div id="empMobile"></div>
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <div class="info-box">
+                    <small>💼 Designation</small>
+                    <div id="empDesignation"></div>
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <div class="info-box">
+                    <small>🏢 Headquarters</small>
+                    <div id="empHQ"></div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="info-box">
+                    <small>📅 Joining Date</small>
+                    <div id="empJoining"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Doctor List Modal -->
+
+    <div class="modal fade" id="doctorModal">
+      <div class="model-dialog">
+        <div
+          class="modal-dialog modal-dialog-scrollable modal-fullscreen-sm-down modal-lg"
+        >
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Doctor List</h5>
+
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+
+            <div class="modal-body">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Id</th>
+                      <th>Doctor Name</th>
+                      <th>Clinic Name</th>
+                      <th>City</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+
+                  <tbody id="doctorListBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="p-3 border-top">
+              <strong> Total Doctor : </strong>
+
+              <span id="doctorCount"> 0 </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Doctor Details Modal -->
+
+    <div class="modal fade" id="doctorDetailsModal">
+      <div class="model-dialog">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header bg-white">
+              <h5 class="modal-title text-dark">👨‍⚕️ Doctor Profile</h5>
+
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+
+            <div class="modal-body">
+              <div class="doctor-profile text-center">
+                <div class="doctor-avatar">👨‍⚕️</div>
+
+                <h2 id="dName" class="doctor-name mt-3"></h2>
+
+                <div class="doctor-specialization">
+                  <span id="dSpecialization"></span>
+                </div>
+
+                <div class="doctor-status mt-2">
+                  <span class="badge bg-success" id="dStatus"></span>
+                </div>
+              </div>
+
+              <hr />
+
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <strong>📞 Phone</strong>
+                  <div id="dPhone"></div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <strong>📍 City</strong>
+                  <div id="dCity"></div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <strong>🏥 Clinic Name</strong>
+                  <div id="dClinic"></div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <strong>👤 Added By Employee</strong>
+                  <div id="dEmployee"></div>
+                </div>
+
+                <div class="col-12">
+                  <strong>📍 Address</strong>
+                  <div id="dAddress"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- ================= BOOTSTRAP JS ================= -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -752,43 +1170,6 @@
       };
     </script>
 
-    <!-- Profile Popup -->
-    <div id="profileModal" class="profile-modal">
-      <div class="profile-card">
-        <span id="closeModal" class="close-btn">&times;</span>
-
-        <img src="images/admin.jpg" class="profile-pic" />
-
-        <h3>Raqib Khan</h3>
-
-        <h6 class="online-status">🟢 Online</h6>
-
-        <h5 class="text-primary">Owner & Administrator</h5>
-
-        <hr />
-
-        <p>
-          <strong>Email:</strong>
-          admin@inflixpharma.com
-        </p>
-
-        <p>
-          <strong>Mobile:</strong>
-          +91 XXXXX XXXXX
-        </p>
-
-        <hr />
-
-        <div class="profile-actions">
-          <button class="btn btn-primary">Edit Profile</button>
-
-          <button class="btn btn-warning">Change Password</button>
-
-          <a href="index.html" class="btn btn-danger"> Logout </a>
-        </div>
-      </div>
-    </div>
-
     <script>
       const profileBtn = document.getElementById("profileBtn");
       const profileModal = document.getElementById("profileModal");
@@ -809,23 +1190,22 @@
       });
     </script>
     <script>
-     async function loadDoctorVisitCount() {
-    try {
-        const response = await fetch(`${BASE_URL}/doctor-visit/count`);
+      async function loadDoctorVisitCount() {
+        try {
+          const response = await fetch(`${BASE_URL}/doctor-visit/count`);
 
-        if (!response.ok) {
+          if (!response.ok) {
             throw new Error("API Error: " + response.status);
+          }
+
+          const count = await response.text();
+
+          document.getElementById("doctorVisitCount").innerText = count;
+        } catch (error) {
+          console.error("Doctor Visit Count Error:", error);
+          document.getElementById("doctorVisitCount").innerText = "0";
         }
-
-        const count = await response.text();
-
-        document.getElementById("doctorVisitCount").innerText = count;
-
-    } catch (error) {
-        console.error("Doctor Visit Count Error:", error);
-        document.getElementById("doctorVisitCount").innerText = "0";
-    }
-}
+      }
       async function loadDoctorVisits() {
         const response = await fetch(`${BASE_URL}/doctor-visit/top10`);
 
@@ -859,7 +1239,9 @@
             return;
           }
 
-          const response = await fetch(`${BASE_URL}/doctor-visit/search/${keyword}`);
+          const response = await fetch(
+            `${BASE_URL}/doctor-visit/search/${keyword}`,
+          );
 
           const visits = await response.json();
 
@@ -881,9 +1263,11 @@
           document.getElementById("doctorVisitTableBody").innerHTML = html;
         });
 
-        let doctorVisitChart = null;
+      let doctorVisitChart = null;
 
-      async function loadDoctorVisitChart(url =`${BASE_URL}/doctor-visit/chart-data`) {
+      async function loadDoctorVisitChart(
+        url = `${BASE_URL}/doctor-visit/chart-data`,
+      ) {
         const response = await fetch(url);
 
         const chartData = await response.json();
@@ -891,53 +1275,47 @@
         const labels = [];
         const data = [];
 
-    chartData.forEach((item) => {
+        chartData.forEach((item) => {
+          const value = item[0];
 
-    const value = item[0];
+          if (url.includes("daily")) {
+            const date = new Date(value);
 
-    if (url.includes("daily")) {
+            labels.push(
+              date.toLocaleDateString("en-IN", {
+                day: "2-digit",
+                month: "short",
+              }),
+            );
+          } else {
+            const parts = value.split("-");
 
-        const date = new Date(value);
+            const months = {
+              "01": "Jan",
+              "02": "Feb",
+              "03": "Mar",
+              "04": "Apr",
+              "05": "May",
+              "06": "Jun",
+              "07": "Jul",
+              "08": "Aug",
+              "09": "Sep",
+              10: "Oct",
+              11: "Nov",
+              12: "Dec",
+            };
 
-        labels.push(
-            date.toLocaleDateString('en-IN', {
-                day: '2-digit',
-                month: 'short'
-            })
-        );
-        
+            labels.push(months[parts[1]]);
+          }
 
-    } else {
-
-        const parts = value.split("-");
-
-        const months = {
-            "01":"Jan",
-            "02":"Feb",
-            "03":"Mar",
-            "04":"Apr",
-            "05":"May",
-            "06":"Jun",
-            "07":"Jul",
-            "08":"Aug",
-            "09":"Sep",
-            "10":"Oct",
-            "11":"Nov",
-            "12":"Dec"
-        };
-
-        labels.push(months[parts[1]]);
-    }
-
-    data.push(item[1]);
-
-});
+          data.push(item[1]);
+        });
 
         const ctx = document.getElementById("doctorVisitChart");
 
         if (doctorVisitChart) {
-    doctorVisitChart.destroy();
-   }
+          doctorVisitChart.destroy();
+        }
 
         doctorVisitChart = new Chart(ctx, {
           type: "line",
@@ -957,17 +1335,18 @@
 
                 fill: false,
               },
-            ],datasets: [
-{
-    label: "Doctor Visits",
-    data: data,
-    borderWidth: 3,
-    tension: 0.4,
-    fill: true,
-    pointRadius: 5,
-    pointHoverRadius: 7
-},
-],
+            ],
+            datasets: [
+              {
+                label: "Doctor Visits",
+                data: data,
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+              },
+            ],
           },
 
           options: {
@@ -988,172 +1367,334 @@
           }
         });
 
-        async function loadAttendanceChart() {
+      async function loadAttendanceChart() {
+        const response = await fetch(`${BASE_URL}/attendance/chart-data`);
 
-    const response =
-        await fetch(`${BASE_URL}/attendance/chart-data`);
+        const data = await response.json();
 
-    const data =
-        await response.json();
+        const ctx = document.getElementById("attendanceChart");
 
-    const ctx =
-        document.getElementById(
-            'attendanceChart'
-        ); 
+        new Chart(ctx, {
+          type: "doughnut",
 
-    new Chart(ctx, {
+          data: {
+            labels: ["Present", "Absent", "Leave"],
 
-        type: 'doughnut',
+            datasets: [
+              {
+                data: [data.present, data.absent, data.leave],
 
-        data: {
-
-            labels: [
-                'Present',
-                'Absent',
-                'Leave'
+                backgroundColor: ["#28a745", "#dc3545", "#ffc107"],
+              },
             ],
+          },
 
-            datasets: [{
-
-                data: [
-                    data.present,
-                    data.absent,
-                    data.leave
-                ],
-
-                backgroundColor: [
-                    '#28a745',
-                    '#dc3545',
-                    '#ffc107'
-                ]
-            }]
-        },
-
-        options: {
-
+          options: {
             responsive: true,
 
             plugins: {
+              legend: {
+                position: "bottom",
+              },
+            },
+          },
+        });
 
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
+        document.getElementById("presentCount").innerText = data.present;
 
-    document.getElementById("presentCount").innerText =
-    data.present;
+        document.getElementById("absentCount").innerText = data.absent;
 
-document.getElementById("absentCount").innerText =
-    data.absent;
+        document.getElementById("leaveCount").innerText = data.leave;
+      }
 
-document.getElementById("leaveCount").innerText =
-    data.leave;
-}
+      async function loadExpenseChart() {
+        const response = await fetch(`${BASE_URL}/expenses/chart-data`);
 
-async function loadExpenseChart() {
+        const data = await response.json();
 
-    const response =
-        await fetch(`${BASE_URL}/expenses/chart-data`);
+        const labels = data.map((item) => {
+          const month = item[0];
 
-    const data =
-        await response.json();
+          const months = {
+            "01": "Jan",
+            "02": "Feb",
+            "03": "Mar",
+            "04": "Apr",
+            "05": "May",
+            "06": "Jun",
+            "07": "Jul",
+            "08": "Aug",
+            "09": "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec",
+          };
 
-    const labels = data.map(item => {
+          const parts = month.split("-");
 
-    const month = item[0];
+          return months[parts[1]] + " " + parts[0];
+        });
 
-    const months = {
-        "01": "Jan",
-        "02": "Feb",
-        "03": "Mar",
-        "04": "Apr",
-        "05": "May",
-        "06": "Jun",
-        "07": "Jul",
-        "08": "Aug",
-        "09": "Sep",
-        "10": "Oct",
-        "11": "Nov",
-        "12": "Dec"
-    };
+        const amounts = data.map((item) => item[1]);
 
-    const parts = month.split("-");
+        Chart.register(ChartDataLabels);
 
-    return months[parts[1]] + " " + parts[0];
-});
+        const ctx = document.getElementById("expenseChart");
 
-    const amounts =
-        data.map(item => item[1]);
+        new Chart(ctx, {
+          type: "bar",
 
-      Chart.register(ChartDataLabels);
-
-    const ctx =
-        document.getElementById('expenseChart');
-
-    new Chart(ctx, {
-
-        type: 'bar',
-
-        data: {
-
+          data: {
             labels: labels,
 
-            datasets: [{
-
-                label: 'Expenses (₹)',
+            datasets: [
+              {
+                label: "Expenses (₹)",
 
                 data: amounts,
 
-                backgroundColor:
-                    '#36A2EB',
+                backgroundColor: "#36A2EB",
 
-              barPercentage:0.8,
-              categoryPercentage:0.9
-            }]
-        },
+                barPercentage: 0.8,
+                categoryPercentage: 0.9,
+              },
+            ],
+          },
 
-        options: {
-
+          options: {
             responsive: true,
-            maintainAspectRatio:false,
+            maintainAspectRatio: false,
 
             plugins: {
+              legend: {
+                display: true,
+              },
 
-    legend: {
-        display: true
-    },
-
-    datalabels: {
-        anchor: 'end',
-        align: 'top',
-        color: '#000',
-        font: {
-            weight: 'bold',
-            size: 12
-        },
-        formatter: function(value) {
-            return '₹' + value;
-        }
-    }
-},
+              datalabels: {
+                anchor: "end",
+                align: "top",
+                color: "#000",
+                font: {
+                  weight: "bold",
+                  size: 12,
+                },
+                formatter: function (value) {
+                  return "₹" + value;
+                },
+              },
+            },
 
             scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      }
 
-                y: {
-                    beginAtZero: true
-                }
-            }
+      loadDoctorVisitCount();
+      loadDoctorVisits();
+      loadDoctorVisitChart("/doctor-visit/chart-data-weekly");
+      loadAttendanceChart();
+      loadExpenseChart();
+
+      // show Employees
+
+      async function showEmployees() {
+        const response = await fetch("/admin/employees");
+
+        const employees = await response.json();
+
+        let html = "";
+
+        employees.forEach((emp) => {
+          html += `
+<tr class="employee-row"
+    onclick="showEmployeeDetails(${emp.id})">
+
+     <td>
+        <strong>${emp.id || "-"}</strong>
+    </td>
+
+    <td>
+        <strong>${emp.name || "-"}</strong>
+    </td>
+
+    <td>
+        ${emp.designation || "-"}
+    </td>
+
+    <td>
+        ${emp.headquarters || "-"}
+    </td>
+
+    <td>
+        <span class="badge bg-success">
+            ${emp.status || "Active"}
+        </span>
+    </td>
+
+</tr>
+`;
+        });
+
+        document.getElementById("employeeListBody").innerHTML = html;
+
+        document.getElementById("employeeCount").innerText = employees.length;
+
+        new bootstrap.Modal(document.getElementById("employeeModal")).show();
+      }
+
+      //show Employee Details
+      async function showEmployeeDetails(id) {
+        const response = await fetch(`/admin/employee/${id}`);
+
+        const emp = await response.json();
+
+        document.getElementById("empName").innerText = emp.name || "";
+
+        document.getElementById("empEmail").innerText = emp.email || "";
+
+        document.getElementById("empMobile").innerText = emp.mobile || "";
+
+        document.getElementById("empDesignation").innerText =
+          emp.designation || "";
+
+        document.getElementById("empHQ").innerText = emp.headquarters || "";
+
+        document.getElementById("empJoining").innerText = emp.joiningDate || "";
+
+        document.getElementById("empStatus").innerText = emp.status || "";
+
+        new bootstrap.Modal(
+          document.getElementById("employeeDetailsModal"),
+        ).show();
+      }
+
+      //show Doctors
+      async function showDoctors() {
+        const response = await fetch("/admin/doctors");
+
+        const doctors = await response.json();
+
+        let html = "";
+
+        doctors.forEach((doc) => {
+          html += `
+    <tr class="doctor-row"
+    onclick="showDoctorDetails(${doc.id})">
+
+     <td>
+        <strong>${doc.id || "-"}</strong>
+    </td>
+
+    <td>
+        <strong>${doc.doctorName || "-"}</strong>
+    </td>
+
+    <td>
+        ${doc.clinicName || "-"}
+    </td>
+
+    <td>
+        ${doc.city || "-"}
+    </td>
+
+    <td>
+        <span class="badge bg-success">
+            ${doc.status || "Active"}
+        </span>
+    </td>
+
+</tr>
+`;
+        });
+
+        document.getElementById("doctorListBody").innerHTML = html;
+
+        document.getElementById("doctorCount").innerText = doctors.length;
+
+        new bootstrap.Modal(document.getElementById("doctorModal")).show();
+      }
+
+      //show Doctor Details
+
+      async function showDoctorDetails(id) {
+        try {
+          const response = await fetch(`/admin/doctor/${id}`);
+
+          if (!response.ok) {
+            alert("Doctor details not found!");
+            return;
+          }
+
+          const doc = await response.json();
+
+          document.getElementById("dName").innerText = doc.doctorName || "-";
+
+          document.getElementById("dSpecialization").innerText =
+            doc.specialization || "-";
+
+          document.getElementById("dClinic").innerText = doc.clinicName || "-";
+
+          document.getElementById("dPhone").innerText = doc.phone || "-";
+
+          document.getElementById("dCity").innerText = doc.city || "-";
+
+          document.getElementById("dEmployee").innerText =
+            doc.employeeName || "-";
+
+          document.getElementById("dStatus").innerText = doc.status || "-";
+
+          document.getElementById("dAddress").innerText = doc.address || "-";
+
+          const modalElement = document.getElementById("doctorDetailsModal");
+
+          const modal = new bootstrap.Modal(modalElement);
+
+          modal.show();
+        } catch (error) {
+          console.error("Doctor Details Error:", error);
+
+          alert("Error loading doctor details");
         }
-    });
-}
+      }
+      // draggable code
+      document.querySelectorAll(".modal-dialog").forEach((dialog) => {
+        let isDragging = false;
+        let offsetX = 0;
+        let offsetY = 0;
 
-     loadDoctorVisitCount();  
-     loadDoctorVisits();
-     loadDoctorVisitChart("/doctor-visit/chart-data-weekly");
-     loadAttendanceChart();
-     loadExpenseChart();
+        dialog.style.cursor = "move";
+
+        dialog.addEventListener("mousedown", function (e) {
+          if (e.target.classList.contains("btn-close")) return;
+
+          isDragging = true;
+
+          const rect = dialog.getBoundingClientRect();
+
+          offsetX = e.clientX - rect.left;
+          offsetY = e.clientY - rect.top;
+
+          dialog.style.position = "fixed";
+          dialog.style.margin = "0";
+          dialog.style.transform = "none";
+          dialog.style.zIndex = "1055";
+        });
+
+        document.addEventListener("mousemove", function (e) {
+          if (!isDragging) return;
+
+          dialog.style.left = e.clientX - offsetX + "px";
+          dialog.style.top = e.clientY - offsetY + "px";
+        });
+
+        document.addEventListener("mouseup", function () {
+          isDragging = false;
+        });
+      });
     </script>
   </body>
 </html>
