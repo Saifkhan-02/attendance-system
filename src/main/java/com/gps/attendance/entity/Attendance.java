@@ -32,8 +32,6 @@ public class Attendance {
 
     private String remarks;
 
-    private String imagePath;
-
     private String status;
 
 
@@ -118,11 +116,5 @@ public class Attendance {
         this.remarks = remarks;
     }
 
-    public String getImagePath() {
-        return imagePath;
-    }
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
 
 }

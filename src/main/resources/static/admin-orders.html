@@ -197,7 +197,7 @@
 
         <img
           id="profileBtn"
-          src="/images/admin.jpg"
+          src="images/admin.jpg"
           width="40"
           height="40"
           class="rounded-circle border border-primary"
@@ -551,10 +551,15 @@
       <!-- ================= BOOTSTRAP JS ================= -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="js/config.js"></script>
     <!-- ================= SIDEBAR TOGGLE ================= -->
 
     <script>
+
+        window.onload = function () {
+            loadSummary();
+
+        };
       function toggleSidebar() {
         let sidebar = document.getElementById("sidebar");
 
@@ -577,20 +582,14 @@
       setInterval(updateTime, 1000);
 
       updateTime();
-    </script>
-
-    <script>
-
 async function loadOrders() {
 
     const response =
-        await fetch('/order/all');
-
+        await fetch(`${BASE_URL}/order/all`);
     const orders =
         await response.json();
 
     let html = '';
-
     orders.forEach(order => {
 
         html += `
@@ -622,13 +621,7 @@ async function loadOrders() {
         'ordersTableBody'
     ).innerHTML = html;
 }
-
-
 loadOrders();
-
-</script>
-
-<script>
 async function loadSummary() {
 
     const month =
@@ -642,8 +635,7 @@ async function loadSummary() {
         ).value;
 
     const response =
-        await fetch(
-            `/order/summary?month=${month}&year=${year}`
+        await fetch(`${BASE_URL}/order/summary?month=${month}&year=${year}`
         );
 
     const data =
@@ -678,9 +670,7 @@ async function searchOrders() {
         document.getElementById('doctorFilter').value;
 
     const response =
-        await fetch(
-            `/order/search?employeeName=${employeeName}&doctorName=${doctorName}`
-        );
+        await fetch(`${BASE_URL}/order/search?employeeName=${employeeName}&doctorName=${doctorName}`);
 
     const orders = await response.json();
 
@@ -717,12 +707,6 @@ async function searchOrders() {
     ).innerHTML = html;
 }
 
-window.onload = function () {
-
-    loadSummary();
-
-};
-
 function downloadBill(orderId) {
     window.open(
         `/order/bill/${orderId}`,
@@ -751,7 +735,6 @@ function resetFilters() {
     loadOrders();
 }
 
-loadSummary();
 </script>
 
 

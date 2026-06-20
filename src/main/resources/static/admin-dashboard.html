@@ -364,6 +364,7 @@
       .modal-dialog {
         cursor: move;
       }
+      
 
       /* Mobile */
 
@@ -431,6 +432,7 @@
   text-align: center;
   word-break: break-word;
 }
+
       }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -457,7 +459,7 @@
         <div class="text-end me-2 admin-info">
           <div class="fw-bold">Admin</div>
 
-          <div class="small text-muted">Raqib Khan</div>
+          <div class="small text-muted"></div>
 
           <div id="datetime" class="small text-secondary"></div>
         </div>
@@ -505,12 +507,12 @@
           </a>
         </li>
 
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a href="admin-orders.html" class="nav-link">
             <i class="fas fa-box me-2"></i>
             Orders
           </a>
-        </li>
+        </li> -->
 
         <li class="nav-item">
           <a href="AdminTourApproval.html" class="nav-link">
@@ -533,17 +535,17 @@
           </a>
         </li>
 
-        <!-- <li class="nav-item">
-  <a href="AdminAddStock.html" class="nav-link">
+        <li class="nav-item">
+  <a href="AdminLeaveRequest.html" class="nav-link">
     <i class="fa-solid fa-boxes-stacked me-2"></i>
-    Distributor Stock
+    Leave Requests
   </a>
-</li> -->
+</li>
 
         <li class="nav-item">
-          <a href="AdminStockDashboard.html" class="nav-link">
+          <a href="AdminAttendanceHistory.html" class="nav-link">
             <i class="fa-solid fa-warehouse me-2"></i>
-            Stock Dashboard
+            Attendance History
           </a>
         </li>
 
@@ -905,12 +907,6 @@
 
       updateTime();
   // ================= DASHBOARD COUNTS ================= 
-      window.onload = function () {
-        fetch(`${BASE_URL}/get-employees`)
-          .then((response) => response.json())
-   
-
-    // ================= DASHBOARD COUNTS ================= -->
 
    
      window.onload = function () {
@@ -929,17 +925,13 @@
         doctors.length;
     });
 
-       
-  loadDoctorVisitCount();
-  loadDoctorVisits();
-  loadAdminTotalSale();
-};
-   
-
         loadDoctorVisitCount();
         loadDoctorVisits();
         loadAdminTotalSale();
-      };
+};
+   
+
+      
 
     
       const profileBtn = document.getElementById("profileBtn");

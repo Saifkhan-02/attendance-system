@@ -134,19 +134,11 @@ public class EmployeeController {
         return repository.save(employee);
     }
 
-    // @PutMapping("/employee/assign-headquarter")
-    // public Employee assignHeadquarter(@RequestBody Map<String, Object> request) {
-
-    //     Long employeeId = Long.valueOf(request.get("employeeId").toString());
-    //     String headquarterName = request.get("headquarterName").toString();
-
-    //     Employee employee = repository.findById(employeeId)
-    //             .orElseThrow(() -> new RuntimeException("Employee not found"));
-
-    //     employee.setHeadquarters(headquarterName);
-
-    //     return repository.save(employee);
-    // }
+    @PostMapping("/register")
+public String registerEmployee(@RequestBody Employee employee) {
+    repository.save(employee);
+    return "Employee Registered Successfully";
+}
 
     @GetMapping("/admin/employees")
     @ResponseBody
