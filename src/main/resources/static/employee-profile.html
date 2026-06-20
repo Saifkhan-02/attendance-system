@@ -488,6 +488,9 @@
       }
 
       function updateTime() {
+
+       
+
         document.getElementById("datetime").innerHTML =
           new Date().toLocaleString();
       }
@@ -501,11 +504,14 @@
       console.log(employeeId);
 
       async function loadEmployee() {
+
+         const API_BASE = "https://2-ij3y.onrender.com";
+         
         const employeeId = new URLSearchParams(window.location.search).get(
           "id",
         );
 
-        const response = await fetch("http://localhost:8080/get-employees");
+       const response = await fetch(`${API_BASE}/get-employees`);
 
         const employees = await response.json();
 
@@ -536,12 +542,12 @@
           employee.status || "Pending";
 
 
-          const orderResponse = await fetch(
-  `http://localhost:8080/order/employee/${employeeId}/order-count`
+ const orderResponse = await fetch(
+`${API_BASE}/order/employee/${employeeId}/order-count`
 );
 
 const visitResponse = await fetch(
-  `http://localhost:8080/employee/${employeeId}/visit-count`
+`${API_BASE}/employee/${employeeId}/visit-count`
 );
 
 const totalVisits = await visitResponse.json();
@@ -554,14 +560,14 @@ const totalOrders = await orderResponse.json();
 document.getElementById("totalOrders").innerText = totalOrders;
 
 const expenseResponse = await fetch(
-  `http://localhost:8080/employee/${employeeId}/expense-total`
+`${API_BASE}/employee/${employeeId}/expense-total`
 );
 
 const totalExpense = await expenseResponse.json();
 
 document.getElementById("totalExpenses").innerText =
   "₹" + totalExpense;
-  
+
 
         if (employee.profileImage) {
           document.getElementById("profileImage").src = employee.profileImage;
