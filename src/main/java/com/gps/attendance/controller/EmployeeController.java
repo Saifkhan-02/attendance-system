@@ -20,7 +20,7 @@ import com.gps.attendance.entity.Employee;
 import com.gps.attendance.repository.EmployeeRepository;
 import com.gps.attendance.service.CloudinaryService;
 
-
+import com.gps.attendance.dto.ChangePasswordRequest;
 @RestController
 @CrossOrigin("*")
 public class EmployeeController {
@@ -31,17 +31,17 @@ public class EmployeeController {
     @Autowired
 private CloudinaryService cloudinaryService;
 
-    @PostMapping("/register")
-    public String registerEmployee(
-            @RequestBody Employee employee) {
+//     @PostMapping("/register")
+//     public String registerEmployee(
+//             @RequestBody Employee employee) {
                 
                 
 
 
-        repository.save(employee);
+//         repository.save(employee);
 
-        return "Employee Registered Successfully";
-    }
+//         return "Employee Registered Successfully";
+//     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(
@@ -154,4 +154,39 @@ public Employee assignHeadquarter(@RequestBody Map<String, Object> request) {
 
     return repository.save(employee);
 }
+
+@PutMapping("/employee/change-password")
+public String changePassword(@RequestBody ChangePasswordRequest request) {
+
+    Employee employee = repository.findById(request.getEmployeeId())
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+    if (!employee.getPassword().equals(request.getCurrentPassword())) {
+        throw new RuntimeException("Current password is incorrect");
+    }
+
+    String newPassword = request.getNewPassword();
+
+    if (newPassword == null || newPassword.length() < 6) {
+        throw new RuntimeException("Password must be at least 6 characters");
+    }
+
+    if (!newPassword.matches(".*\\d.*")) {
+        throw new RuntimeException("Password must contain at least 1 number");
+    }
+
+    if (!newPassword.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+        throw new RuntimeException("Password must contain at least 1 special character");
+    }
+
+    if (employee.getPassword().equals(newPassword)) {
+        throw new RuntimeException("New password cannot be same as current password");
+    }
+
+    employee.setPassword(newPassword);
+        repository.save(employee);
+
+    return "Password changed successfully";
+}
+
 }
