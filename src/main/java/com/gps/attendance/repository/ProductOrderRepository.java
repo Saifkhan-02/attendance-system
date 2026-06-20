@@ -85,6 +85,22 @@ List<ProductOrder> getOrdersByEmployeeAndDistributor(
         @Param("employeeId") Long employeeId,
         @Param("distributorName") String distributorName
 );
+@Query("""
+SELECT COALESCE(SUM(p.orderAmount),0)
+FROM ProductOrder p
+""")
+Double getTotalSale();
 
+@Query("""
+SELECT COALESCE(SUM(p.paidAmount),0)
+FROM ProductOrder p
+""")
+Double getTotalCollection();
+
+@Query("""
+SELECT COALESCE(SUM(p.dueAmount),0)
+FROM ProductOrder p
+""")
+Double getTotalDue();
    
 }

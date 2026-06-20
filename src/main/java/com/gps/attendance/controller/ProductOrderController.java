@@ -451,4 +451,65 @@ public List<ProductOrder> placeMultipleOrders(@RequestBody List<ProductOrder> or
 
     return orderRepository.saveAll(orders);
 }
+
+@GetMapping("/admin/all")
+public List<ProductOrder> getAllOrdersForAdmin() {
+    return orderRepository.findAll();
+}
+@GetMapping("/admin/sales-payment/summary")
+public Map<String, Object> getSalesSummary() {
+
+    Map<String, Object> result = new HashMap<>();
+
+    result.put("totalSale",
+            orderRepository.getTotalSale());
+
+    result.put("totalCollection",
+            orderRepository.getTotalCollection());
+
+    result.put("totalDue",
+            orderRepository.getTotalDue());
+
+    result.put("totalOrders",
+            orderRepository.count());
+
+    return result;
+}
+
+@GetMapping("/admin/sales-payment/employee/{employeeId}")
+public Map<String, Object> getEmployeeSales(
+        @PathVariable Long employeeId) {
+
+    List<ProductOrder> orders =
+            orderRepository.findByEmployeeId(employeeId);
+
+    double sale = 0;
+    double collection = 0;
+    double due = 0;
+
+    for (ProductOrder order : orders) {
+
+        sale += order.getOrderAmount() == null
+                ? 0
+                : order.getOrderAmount();
+
+        collection += order.getPaidAmount() == null
+                ? 0
+                : order.getPaidAmount();
+
+        due += order.getDueAmount() == null
+                ? 0
+                : order.getDueAmount();
+    }
+
+    Map<String, Object> result = new HashMap<>();
+
+    result.put("sale", sale);
+    result.put("collection", collection);
+    result.put("due", due);
+    result.put("orders", orders.size());
+
+    return result;
+}
+
 }

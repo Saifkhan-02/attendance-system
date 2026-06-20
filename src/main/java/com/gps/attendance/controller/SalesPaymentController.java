@@ -41,19 +41,16 @@ public List<DoctorPaymentDetailsDTO> getDoctorPaymentDetails(
     return salesPaymentService.getDoctorPaymentDetails(employeeId);
 }
 
-// @GetMapping("/sales-payment/distributor-summary/{employeeId}")
-// public Map<String, Object> getDistributorSalesSummary(
-//         @PathVariable Long employeeId
-// ) {
-//     return salesPaymentService.getDistributorSalesSummary(employeeId);
-// }
+@GetMapping("/admin/sales-payment/total-sale")
+public double getAdminTotalSale() {
 
-// @GetMapping("/sales-payment/distributor-orders/{employeeId}")
-// public List<?> getDistributorOrders(
-//         @PathVariable Long employeeId,
-//         @RequestParam(defaultValue = "") String distributorName
-// ) {
-//     return salesPaymentService.getDistributorOrders(employeeId, distributorName);
-// }
+    return salesPaymentService.getAdminTotalSale();
+}
+
+@GetMapping("/admin/sales-payment/employee-sale")
+public double getEmployeeSale(@RequestParam Long employeeId) {
+
+    return salesPaymentService.getEmployeeSale(employeeId);
+}
 
 }

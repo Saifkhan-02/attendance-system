@@ -148,4 +148,23 @@ public List<DoctorPaymentDetailsDTO> getDoctorPaymentDetails(Long employeeId) {
             })
             .toList();
 }
+
+public double getAdminTotalSale() {
+
+    List<ProductOrder> orders = orderRepository.findAll();
+
+    return orders.stream()
+            .mapToDouble(o -> o.getOrderAmount() == null ? 0 : o.getOrderAmount())
+            .sum();
+}
+
+public double getEmployeeSale(Long employeeId) {
+
+    List<ProductOrder> orders = orderRepository.findByEmployeeId(employeeId);
+
+    return orders.stream()
+            .mapToDouble(o -> o.getOrderAmount() == null ? 0 : o.getOrderAmount())
+            .sum();
+}
+
 }

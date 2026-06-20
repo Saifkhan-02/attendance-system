@@ -19,11 +19,18 @@
       box-shadow:0 5px 20px rgba(0,0,0,0.15);
     }
 
-    .top-header .btn-light {
-      border-radius:12px;
-      font-weight:600;
-      padding:8px 16px;
-    }
+     .back-btn{
+  width:42px;
+  height:42px;
+  border:none;
+  border-radius:50%;
+  background:rgba(255,255,255,.2);
+  color:white;
+}
+
+.back-btn:hover{
+  background:rgba(255,255,255,.3);
+}
 
     .filter-card,
     .history-card,
@@ -75,7 +82,7 @@
 
 <div class="top-header">
   <div class="d-flex align-items-center justify-content-between flex-wrap">
-    <button class="btn btn-light" onclick="window.location.href='Summary.html'">
+    <button class="btn back-btn" onclick="window.location.href='Summary.html'">
       <i class="fa-solid fa-arrow-left me-2"></i>
       
     </button>

@@ -387,7 +387,7 @@
           height: 100%;
         }
         .dashboard-card .card-body {
-          min-height: 180px;
+          min-height: auto;
           display: flex;
           flex-direction: column;
           justify-content: center;
@@ -409,6 +409,28 @@
         .doctor-specialization {
           font-size: 15px;
         }
+        .quick-actions .card-body {
+  padding: 12px !important;
+}
+
+.quick-actions h5,
+.quick-actions h6 {
+  font-size: 15px !important;
+  line-height: 1.2 !important;
+  margin-bottom: 0 !important;
+}
+
+.quick-actions i{
+  font-size: 28px !important;
+  margin-bottom: 8px !important;
+}
+
+.quick-action span {
+  font-size: 14px !important;
+  line-height: 1.2 !important;
+  text-align: center;
+  word-break: break-word;
+}
       }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -582,7 +604,6 @@
         </div>
 
         <!-- doctors Visits -->
-
         <div class="col-6 col-md-6 col-lg-3">
           <div class="card dashboard-card">
             <div class="card-body text-center">
@@ -594,26 +615,25 @@
             </div>
           </div>
         </div>
-
-        <!-- Pending Payments -->
-
+        <!-- Sales & Payments -->
         <div class="col-6 col-md-6 col-lg-3">
-          <div class="card dashboard-card">
-            <div class="card-body text-center">
-              <i class="fas fa-money-bill-wave fa-2x text-danger mb-3"></i>
-
-              <h6 class="text-muted">Pending Payments</h6>
-
-              <div class="count text-danger">₹75K</div>
+          <div class="card dashboard-card" >
+             <a href="AdminSalesPayment.html" class="text-decoration-none">       
+               <div class="card-body text-center">               
+                 <i class="fa-solid fa-chart-line fa-2x text-success mb-3"></i>
+                 <h6 class="text-dark">Sales & Payment</h6>
+                 <h3 id="adminTotalSale" class="fw-bold text-success">
+                   ₹0
+                 </h3>
+               </div>
+             </a>
             </div>
-          </div>
         </div>
-      </div>
 
       <!-- ================= QUICK ACTIONS ================= -->
 
-      <div class="card dashboard-card mb-4">
-        <div class="card-header bg-primary text-white">
+      <div class="card dashboard-card mb-4 text-center">
+        <div class="card-header bg-primary text-white ">
           <h5 class="mb-0">
             <i class="fa-solid fa-bolt me-2"></i>
             Quick Actions
@@ -677,20 +697,22 @@
               </a>
             </div>
 
-            <div class="col-6 col-md-3">
+            <!-- <div class="col-6 col-md-3">
               <a href="AdminTourApproval.html" class="quick-action bg-primary">
                 <i class="fa-solid fa-route"></i>
                 <span>Tour Approval</span>
               </a>
-            </div>
-          </div>
-        </div>
-      <div class="col-6 col-md-3">
+            </div> -->
+
+               <div class="col-6 col-md-3">
         <a href="AdminRouteManagement.html" class="quick-action bg-primary">
           <i class="fa-solid fa-route"></i>
           <span>Route Management</span>
         </a>
       </div>
+          </div>
+        </div>
+   
       <!-- ================= Add Charts ================= -->
 
       <div class="row mt-4">
@@ -1147,11 +1169,7 @@
       setInterval(updateTime, 1000);
 
       updateTime();
-    </script>
-
-    <!-- ================= DASHBOARD COUNTS ================= -->
-
-    <script>
+  // ================= DASHBOARD COUNTS ================= 
       window.onload = function () {
         fetch(`${BASE_URL}/get-employees`)
           .then((response) => response.json())
@@ -1167,10 +1185,13 @@
           .then((doctors) => {
             document.getElementById("totalDoctors").innerText = doctors.length;
           });
-      };
-    </script>
 
-    <script>
+        loadDoctorVisitCount();
+        loadDoctorVisits();
+        loadAdminTotalSale();
+      };
+
+    
       const profileBtn = document.getElementById("profileBtn");
       const profileModal = document.getElementById("profileModal");
       const closeModal = document.getElementById("closeModal");
@@ -1188,8 +1209,8 @@
           profileModal.style.display = "none";
         }
       });
-    </script>
-    <script>
+  
+
       async function loadDoctorVisitCount() {
         try {
           const response = await fetch(`${BASE_URL}/doctor-visit/count`);
@@ -1617,9 +1638,7 @@
 
         new bootstrap.Modal(document.getElementById("doctorModal")).show();
       }
-
       //show Doctor Details
-
       async function showDoctorDetails(id) {
         try {
           const response = await fetch(`/admin/doctor/${id}`);
@@ -1695,6 +1714,18 @@
           isDragging = false;
         });
       });
+    
+      function loadAdminTotalSale() {
+  fetch(`${BASE_URL}/order/admin/sales-payment/summary`)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("adminTotalSale").innerText =
+        "₹" + Number(data.totalSale || 0).toLocaleString("en-IN");
+    })
+    .catch(error => {
+      console.error("Admin total sale error:", error);
+    });
+}
     </script>
   </body>
 </html>
