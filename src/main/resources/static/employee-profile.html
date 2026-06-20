@@ -471,6 +471,12 @@
 </div>
     </div>
     <script>
+
+      const API_BASE =
+    window.location.hostname === "localhost"
+        ? "http://localhost:8080"
+        : "https://2-ij3y.onrender.com";
+        
       //toggle Sidebar
 
       function toggleSidebar() {
@@ -505,17 +511,22 @@
 
       async function loadEmployee() {
 
-         const API_BASE = "https://2-ij3y.onrender.com";
-         
         const employeeId = new URLSearchParams(window.location.search).get(
           "id",
         );
 
-       const response = await fetch(`${API_BASE}/get-employees`);
+    const response = await fetch(
+    `${API_BASE}/employee/${employeeId}`
+);
 
-        const employees = await response.json();
+if (!response.ok) {
+    document.getElementById("employeeName").innerText =
+        "Employee Not Found";
+    return;
+}
 
-        const employee = employees.find((e) => e.id == employeeId);
+const employee = await response.json();
+
 
         console.log("Employee ID =", employeeId);
         console.log("Employee Found =", employee);
@@ -542,12 +553,12 @@
           employee.status || "Pending";
 
 
- const orderResponse = await fetch(
-`${API_BASE}/order/employee/${employeeId}/order-count`
+const visitResponse = await fetch(
+    `${API_BASE}/employee/${employeeId}/visit-count`
 );
 
-const visitResponse = await fetch(
-`${API_BASE}/employee/${employeeId}/visit-count`
+const orderResponse = await fetch(
+    `${API_BASE}/order/employee/${employeeId}/order-count`
 );
 
 const totalVisits = await visitResponse.json();
