@@ -405,7 +405,7 @@
                         <tr>
                             <th>Doctor</th>
                             <th>Date</th>
-                            <th>Time</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
 
@@ -468,8 +468,64 @@
         </div>
     </div>
 
-</div>
+  
+   
+    <!------ target bar -->
+
+  <div class="card shadow-sm border-0 mt-4">
+    <div class="card-header bg-primary text-white">
+        <i class="fas fa-bullseye"></i>
+         Target Progress
     </div>
+
+    <div class="card-body">
+
+        <div class="row text-center mb-3">
+
+            <div class="col-3">
+                <h5 id="targetCount">25</h5>
+                <small class="text-muted">Target</small>
+            </div>
+
+            <div class="col-3">
+                <h5 id="achievementCount">0</h5>
+                <small class="text-muted">Achievement</small>
+            </div>
+
+            <div class="col-3">
+                <h5 id="remainingCount">25</h5>
+                <small class="text-muted">Remaining</small>
+            </div>
+
+            <div class="col-3">
+                <h5 id="progressPercent">0%</h5>
+                <small class="text-muted">Progress</small>
+            </div>
+
+        </div>
+
+        <div class="progress" style="height: 30px; border-radius: 15px;">
+
+            <div id="targetProgressBar"
+                 class="progress-bar fw-bold"
+                 role="progressbar"
+                 style="width: 0%; border-radius: 15px;">
+                 0%
+            </div>
+
+        </div>
+
+        <div class="text-center mt-2">
+            <small id="targetText"
+                   class="text-secondary">
+                Achievement : 0 / 25
+            </small>
+        </div>
+
+    </div>
+</div>
+ </div>
+ </div>
     <script>
 
       const API_BASE =
@@ -515,8 +571,7 @@
           "id",
         );
 
-    const response = await fetch(
-    `${API_BASE}/employee/${employeeId}`
+    const response = await fetch( `${API_BASE}/employee/${employeeId}`
 );
 
 if (!response.ok) {
@@ -556,15 +611,13 @@ const employee = await response.json();
 const visitResponse = await fetch(
     `${API_BASE}/employee/${employeeId}/visit-count`
 );
-
-const orderResponse = await fetch(
-    `${API_BASE}/order/employee/${employeeId}/order-count`
-);
-
 const totalVisits = await visitResponse.json();
 
 document.getElementById("totalVisits").innerText = totalVisits;
 
+const orderResponse = await fetch(
+    `${API_BASE}/order/employee/${employeeId}/order-count`
+);
 
 const totalOrders = await orderResponse.json();
 
@@ -578,6 +631,14 @@ const totalExpense = await expenseResponse.json();
 
 document.getElementById("totalExpenses").innerText =
   "₹" + totalExpense;
+
+  const doctorResponse = await fetch(
+`${API_BASE}/employee/${employeeId}/doctor-count`
+);
+
+const totalDoctors = await doctorResponse.json();
+
+document.getElementById("totalDoctors").innerText =totalDoctors;
 
 
         if (employee.profileImage) {
@@ -593,7 +654,152 @@ document.getElementById("totalExpenses").innerText =
         }
         
       }
+      //load doctor visits table
+
+      async function loadDoctorVisits() {
+
+    const employeeId =
+        new URLSearchParams(window.location.search).get("id");
+
+    const response = await fetch(
+        `${API_BASE}/doctor-visit/history/${employeeId}`
+    );
+
+    const visits = await response.json();
+
+    const table =
+        document.getElementById("doctorVisitTable");
+
+    table.innerHTML = "";
+
+    visits.slice(0, 5).forEach(visit => {
+
+        table.innerHTML += `
+            <tr>
+                <td>${visit.doctorName || "-"}</td>
+                <td>${visit.visitDate || "-"}</td>
+                <td>${visit.status || "-"}</td>
+            </tr>
+        `;
+    });
+}
+//load orders table
+
+async function loadOrders() {
+
+    const employeeId =
+        new URLSearchParams(window.location.search).get("id");
+
+    const response = await fetch(
+        `${API_BASE}/order/history/${employeeId}`
+    );
+
+    const orders = await response.json();
+
+    const table =
+        document.getElementById("ordersTable");
+
+    table.innerHTML = "";
+
+    orders.slice(0, 5).forEach(o => {
+
+        table.innerHTML += `
+            <tr>
+                <td>${o.productName || "-"}</td>
+                <td>${o.orderQuantity || 0}</td>
+                <td>₹${o.orderAmount || 0}</td>
+            </tr>
+        `;
+    });
+}
+//load Expenses table 
+
+async function loadExpenses() {
+
+    const employeeId =
+        new URLSearchParams(window.location.search).get("id");
+
+    const response = await fetch(
+        `${API_BASE}/expense/history/${employeeId}`
+    );
+
+    const expenses = await response.json();
+
+    const table =
+        document.getElementById("expenseTable");
+
+    table.innerHTML = "";
+
+    expenses.slice(0, 5).forEach(e => {
+
+        table.innerHTML += `
+            <tr>
+                <td>${e.expenseType || "-"}</td>
+                <td>₹${e.amount || 0}</td>
+                <td>${e.expenseDate || "-"}</td>
+            </tr>
+        `;
+    });
+}
+//load target bar
+async function loadTarget() {
+
+    const employeeId =
+        new URLSearchParams(window.location.search)
+        .get("id");
+
+    const response = await fetch(
+        `${API_BASE}/doctor-visit/daily-target/${employeeId}`
+    );
+
+    const data = await response.json();
+
+    document.getElementById("targetCount").innerText =
+    data.target;
+
+document.getElementById("achievementCount").innerText =
+    data.achievement;
+
+document.getElementById("remainingCount").innerText =
+    data.target - data.achievement;
+
+document.getElementById("progressPercent").innerText =
+    data.progress + "%";
+
+    const progress = data.progress || 0;
+
+    const progressBar =
+        document.getElementById("targetProgressBar");
+
+    progressBar.style.width =
+        data.progress + "%";
+
+    progressBar.innerText =
+        data.progress + "%";
+
+    if (progress <= 30) {
+    progressBar.style.background =
+        "linear-gradient(90deg,#dc2626,#ef4444)";
+}
+else if (progress <= 70) {
+    progressBar.style.background =
+        "linear-gradient(90deg,#d97706,#f59e0b)";
+}
+else {
+    progressBar.style.background =
+        "linear-gradient(90deg,#16a34a,#22c55e)";
+}
+
+    document.getElementById("targetText")
+        .innerText =
+        `Achievement : ${data.achievement} / ${data.target}`;
+}
+
       loadEmployee();
+      loadDoctorVisits();
+      loadOrders();
+      loadExpenses();
+      loadTarget();
 
    
     </script>

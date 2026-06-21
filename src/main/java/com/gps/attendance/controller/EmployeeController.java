@@ -19,8 +19,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.gps.attendance.dto.ChangePasswordRequest;
 import com.gps.attendance.entity.Employee;
+import com.gps.attendance.repository.DoctorVisitRepository;
 import com.gps.attendance.repository.EmployeeRepository;
 import com.gps.attendance.service.CloudinaryService;
+
 @RestController
 @CrossOrigin(origins="*")
 public class EmployeeController {
@@ -33,6 +35,9 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private DoctorVisitRepository doctorVisitRepository;
 
 
     @PostMapping("/login")
@@ -202,6 +207,12 @@ public String changePassword(@RequestBody ChangePasswordRequest request) {
         repository.save(employee);
 
     return "Password changed successfully";
+}
+@GetMapping("/employee/{id}/doctor-count")
+public Long getDoctorCount(@PathVariable Long id) {
+
+    return doctorVisitRepository.countByEmployeeId(id);
+
 }
 
 }
