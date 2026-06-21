@@ -92,7 +92,7 @@
         box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
       }
 
-      .doctor-count {
+      .employee-count {
         font-size: 38px;
         font-weight: bold;
         color: #0d6efd;
@@ -153,7 +153,6 @@
   <body>
     <!-- ================= NAVBAR ================= -->
 
-
 <nav class="navbar top-navbar px-3">
 
     <!-- Left Side -->
@@ -171,40 +170,17 @@
 
     </div>
 
-
-  <!-- Right Side -->
-
 <div class="d-flex align-items-center ms-auto">
 
     <!-- Admin Name Desktop Only -->
 
-     <div class="text-end me-2 admin-info">
+    <div class="text-end admin-info">
+          <div class="fw-bold">Admin</div>
 
-            <div class="fw-bold">
-                Admin
-            </div>
+          <div id="adminName" class="small text-muted">Loading...</div>
 
-            <div class="small text-muted">
-                Raqib Khan
-            </div>
-
-            <div id="datetime"
-                 class="small text-secondary">
-            </div>
-
+          <div id="datetime" class="small text-secondary"></div>
         </div>
-
-    <!-- Profile -->
-
-    <div class="text-center">
-
-        <img
-            src="/images/admin.jpg"
-            width="38"
-            height="38"
-            class="rounded-circle border border-primary"
-            alt="Admin"
-        >
 
         <div id="datetime"
              class="small text-secondary mt-1">
@@ -297,7 +273,7 @@
             <div class="card-body">
               <h6 class="text-muted">Total Employees</h6>
 
-              <div id="totalEmployees">0</div>
+              <div class="employee-count" id="totalEmployees">0</div>
             </div>
           </div>
         </div>
@@ -458,6 +434,12 @@
 
       setInterval(updateTime, 1000);
 
+         function loadAdminInfo() {
+
+    document.getElementById("adminName").innerText =
+        localStorage.getItem("adminName") || "Admin";
+      }
+      loadAdminInfo();
       updateTime();
     </script>
 

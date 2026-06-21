@@ -219,22 +219,13 @@
       </div>
 
       <div class="d-flex align-items-center ms-auto">
-        <div class="text-end me-2 admin-info">
+       <div class="text-end admin-info">
           <div class="fw-bold">Admin</div>
 
-          <div class="small text-muted">Raqib Khan</div>
+          <div id="adminName" class="small text-muted">Loading...</div>
 
           <div id="datetime" class="small text-secondary"></div>
         </div>
-
-        <img
-          id="profileBtn"
-          src="images/admin.jpg"
-          width="40"
-          height="40"
-          class="rounded-circle border border-primary"
-          style="cursor: pointer"
-        />
       </div>
     </nav>
 
@@ -547,14 +538,16 @@
 
       function updateTime() {
 
-       
-
         document.getElementById("datetime").innerHTML =
           new Date().toLocaleString();
       }
-
       setInterval(updateTime, 1000);
 
+       function loadAdminInfo() {
+    document.getElementById("adminName").innerText =
+        localStorage.getItem("adminName") || "Admin";
+      }
+      loadAdminInfo();
       updateTime();
 
       const employeeId = new URLSearchParams(window.location.search).get("id");

@@ -182,6 +182,48 @@
           width: 80px;
           height: 75px;
         }
+        .employee-card {
+          background: #fff !important;
+          border-radius: 16px !important;
+          padding: 12px !important;
+          margin-bottom: 12px !important;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+          min-height: auto !important;
+        }
+
+        .employee-card img {
+          width: 55px !important;
+          height: 55px !important;
+          border-radius: 50% !important;
+          object-fit: cover;
+        }
+
+        .employee-card h4,
+        .employee-card .employee-name {
+          font-size: 17px !important;
+          font-weight: 600 !important;
+          margin-bottom: 6px !important;
+        }
+
+        .employee-card p,
+        .employee-card span {
+          font-size: 13px !important;
+          line-height: 1.4 !important;
+        }
+
+        .employee-card .btn,
+        .employee-card button {
+          height: 36px !important;
+          padding: 0 12px !important;
+          border-radius: 10px !important;
+          font-size: 13px !important;
+        }
+
+        /* Card ke andar extra gap hatao */
+        .employee-card * {
+          margin-top: 2px;
+          margin-bottom: 2px;
+        }
       }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -204,22 +246,13 @@
       </div>
 
       <div class="d-flex align-items-center ms-auto">
-        <div class="text-end me-2 admin-info">
+        <div class="text-end admin-info">
           <div class="fw-bold">Admin</div>
 
-          <div class="small text-muted">Raqib Khan</div>
+          <div id="adminName" class="small text-muted">Loading...</div>
 
           <div id="datetime" class="small text-secondary"></div>
         </div>
-
-        <img
-          id="profileBtn"
-          src="images/admin.jpg"
-          width="40"
-          height="40"
-          class="rounded-circle border border-primary"
-          style="cursor: pointer"
-        />
       </div>
     </nav>
 
@@ -358,6 +391,14 @@
 
       setInterval(updateTime, 1000);
 
+     function loadAdminInfo() {
+
+    document.getElementById("adminName").innerText =
+        localStorage.getItem("adminName") || "Admin";
+
+}
+
+      loadAdminInfo();
       updateTime();
 
       //load Employees details
@@ -379,18 +420,18 @@
       <div class="employee-card"
        onclick="openEmployeeProfile(${emp.id})">
 
-        <div class="row align-items-center">
+        <div class="row align-items-center g-3">
 
           <div class="col-md-1 text-center">
 
             <div class="employee-avatar">
 
-              ${
-                emp.profile_image
-                  ? `<img src="${emp.profile_image}"
-                         style="width:70px;height:70px;border-radius:50%;object-fit:cover;">`
-                  : `<i class="fas fa-user"></i>`
-              }
+             ${
+               emp.profileImage || emp.profile_image
+                 ? `<img src="${emp.profileImage || emp.profile_image}"
+                     style="width:70px;height:70px;border-radius:50%;object-fit:cover;">`
+                 : `<i class="fas fa-user"></i>`
+             }
 
             </div>
 
@@ -424,9 +465,11 @@
             <div class="col-md-2">
 
             <div class="col-md-2">
-                <div> 🟢 <strong>Status</strong></div>
-                <small class="text-muted">
-                     ${emp.status || "Pending"}</small>
+                <div><strong>Status</strong></div>
+
+               <span class="badge ${emp.status === "Active" ? "bg-success" : "bg-secondary"}">
+               ${emp.status || "Pending"}
+               </span>
                 </div>
                 </div> 
                 <div class="col-md-1 text-end">
@@ -451,8 +494,25 @@
       }
 
       function openEmployeeProfile(employeeId) {
-        window.location.href =`employee-profile.html?id=${employeeId}`;
-    }
+        window.location.href = `employee-profile.html?id=${employeeId}`;
+      }
+      document
+        .getElementById("employeeSearch")
+        .addEventListener("keyup", function () {
+          const searchText = this.value.toLowerCase();
+
+          const cards = document.querySelectorAll(".employee-card");
+
+          cards.forEach((card) => {
+            const text = card.innerText.toLowerCase();
+
+            if (text.includes(searchText)) {
+              card.style.display = "";
+            } else {
+              card.style.display = "none";
+            }
+          });
+        });
 
       loadEmployees();
     </script>

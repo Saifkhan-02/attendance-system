@@ -515,6 +515,7 @@ function loginAdmin() {
     .then(data => {
         localStorage.setItem("adminId", data.id);
         localStorage.setItem("adminName", data.name);
+        localStorage.setItem("adminUsername", data.username);
 
         window.location.href = "admin-dashboard.html";
     })
