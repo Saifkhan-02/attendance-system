@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,15 +26,18 @@ public class AttendanceController {
     
 
 @PostMapping("/mark-attendance")
-public String markAttendance(@RequestBody Attendance attendance) {
+public ResponseEntity<?> markAttendance(
+        @RequestBody Attendance attendance) {
 
     LocalDate today = LocalDate.now();
 
     if (repository.existsByEmployeeIdAndAttendanceDate(
             attendance.getEmployeeId(),
-            today
-    )) {
-        throw new RuntimeException("Attendance already marked for today");
+            today)) {
+
+        return ResponseEntity
+                .badRequest()
+                .body("Attendance already marked for today");
     }
 
     attendance.setAttendanceDate(today);
@@ -41,20 +45,15 @@ public String markAttendance(@RequestBody Attendance attendance) {
 
     repository.save(attendance);
 
-    return "Attendance Marked Successfully";
+    return ResponseEntity.ok("Attendance Marked Successfully");
 }
-
     @GetMapping("/attendance/history/{employeeId}")
     public List<Attendance> getAttendanceHistory(
         @PathVariable Long employeeId){
 
               System.out.println("History API Hit : " + employeeId);
     return repository.findByEmployeeId(employeeId);
-    }
-
-
-    
-
+    }    
     @GetMapping("/attendance-list")
     public List<Attendance> getAllAttendance() {
         return repository.findAll();
