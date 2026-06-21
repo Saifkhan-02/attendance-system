@@ -564,48 +564,45 @@
       const employeeId = new URLSearchParams(window.location.search).get("id");
 
       console.log(employeeId);
+async function loadEmployee() {
 
-      async function loadEmployee() {
+    const employeeId =
+        new URLSearchParams(window.location.search).get("id");
 
-        const employeeId = new URLSearchParams(window.location.search).get(
-          "id",
-        );
+    const response = await fetch(
+        `${API_BASE}/get-employees`
+    );
 
-    const response = await fetch( `${API_BASE}/employee/${employeeId}`
-);
+    const employees = await response.json();
 
-if (!response.ok) {
-    document.getElementById("employeeName").innerText =
-        "Employee Not Found";
-    return;
-}
+    const employee = employees.find(
+        emp => String(emp.id) === String(employeeId)
+    );
 
-const employee = await response.json();
+    console.log("Employee ID =", employeeId);
+    console.log("Employee =", employee);
 
-
-        console.log("Employee ID =", employeeId);
-        console.log("Employee Found =", employee);
-
-        if (!employee) {
-          document.getElementById("employeeName").innerText =
-            "Employee Not Found";
-          return;
-        }
-
+    if (!employee) {
         document.getElementById("employeeName").innerText =
-          employee.name || "N/A";
+            "Employee Not Found";
+        return;
+    }
 
-        document.getElementById("designation").innerText =
-          employee.designation || "Not Assigned";
+    document.getElementById("employeeName").innerText =
+        employee.name || "N/A";
 
-        document.getElementById("hq").innerText =
-          employee.headquarters || "No HQ";
+    document.getElementById("designation").innerText =
+        employee.designation || "Not Assigned";
 
-        document.getElementById("mobile").innerText =
-          employee.mobile || "No Mobile";
+    document.getElementById("hq").innerText =
+        employee.headquarters || "No HQ";
 
-        document.getElementById("status").innerText =
-          employee.status || "Pending";
+    document.getElementById("mobile").innerText =
+        employee.mobile || "No Mobile";
+
+    document.getElementById("status").innerText =
+        employee.status || "Pending";
+
 
 
 const visitResponse = await fetch(
