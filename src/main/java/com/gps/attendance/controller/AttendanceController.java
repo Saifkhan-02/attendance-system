@@ -24,18 +24,25 @@ public class AttendanceController {
 
     
 
-    @PostMapping("/mark-attendance")
-    public String markAttendance(
-        @RequestBody Attendance attendance){
+@PostMapping("/mark-attendance")
+public String markAttendance(@RequestBody Attendance attendance) {
 
-       attendance.setAttendanceDate(LocalDate.now());
+    LocalDate today = LocalDate.now();
 
-       attendance.setAttendanceTime(LocalTime.now());
-        
-        repository.save(attendance);
-
-        return "Attendance Marked Successfully";
+    if (repository.existsByEmployeeIdAndAttendanceDate(
+            attendance.getEmployeeId(),
+            today
+    )) {
+        throw new RuntimeException("Attendance already marked for today");
     }
+
+    attendance.setAttendanceDate(today);
+    attendance.setAttendanceTime(LocalTime.now());
+
+    repository.save(attendance);
+
+    return "Attendance Marked Successfully";
+}
 
     @GetMapping("/attendance/history/{employeeId}")
     public List<Attendance> getAttendanceHistory(

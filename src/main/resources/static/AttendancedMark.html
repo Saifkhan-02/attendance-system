@@ -339,44 +339,39 @@
         }
       }
 
-      function markAttendance() {
-        const attendanceData = {
-          employeeId: localStorage.getItem("employeeId"),
+   function markAttendance() {
+  const attendanceData = {
+    employeeId: localStorage.getItem("employeeId"),
+    employeeName: localStorage.getItem("employeeName"),
+    latitude: document.getElementById("latitude").value,
+    longitude: document.getElementById("longitude").value,
+    location: document.getElementById("locationName").value,
+    remarks: document.getElementById("remarks").value,
+    status: "Present",
+  };
 
-          employeeName: localStorage.getItem("employeeName"),
+  fetch(`${BASE_URL}/mark-attendance`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(attendanceData),
+  })
+    .then(async (response) => {
+      const text = await response.text();
 
-          latitude: document.getElementById("latitude").value,
-
-          longitude: document.getElementById("longitude").value,
-
-          location: document.getElementById("locationName").value,
-
-          remarks: document.getElementById("remarks").value,
-
-          status: "Present",
-        };
-
-        fetch(`${BASE_URL}/mark-attendance`, {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json",
-          },
-
-          body: JSON.stringify(attendanceData),
-        })
-          .then((response) => response.text())
-
-          .then((data) => {
-            alert(data);
-          })
-
-          .catch((error) => {
-            console.error(error);
-
-            alert("Failed to mark attendance");
-          });
+      if (!response.ok) {
+        throw new Error(text);
       }
+
+      alert(text);
+      document.getElementById("remarks").value = "";
+    })
+    .catch((error) => {
+      console.error(error);
+      alert(error.message || "Failed to mark attendance");
+    });
+}
     </script>
   </body>
 </html>

@@ -16,4 +16,9 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
         LocalDate startDate,
         LocalDate endDate
     );
+
+    boolean existsByEmployeeIdAndAttendanceDate(
+        Long employeeId,
+        java.time.LocalDate attendanceDate
+);
 }
