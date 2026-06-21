@@ -174,13 +174,14 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">Payment Mode</label>
+              <label class="form-label required">Payment Mode</label>
               <select id="paymentMode" class="form-select">
+                <option value="">Select Payment Mode</option>
                 <option value="Pending">Pending</option>
                 <option value="Cash">Cash</option>
                 <option value="UPI">UPI</option>
                 <option value="Bank Transfer">Bank Transfer</option>
-                <option value="Cheque">Cheque</option>
+                <!-- <option value="Cheque">Cheque</option> -->
               </select>
             </div>
 
@@ -195,7 +196,7 @@
             </div>
 
             <div class="col-md-12">
-              <button class="btn btn-submit text-white" onclick="placeOrder()">
+              <button class="btn btn-submit text-white" id="placeOrderBtn" onclick="placeOrder()">
                 <i class="fa-solid fa-cart-shopping me-2"></i>
                 Place Order
               </button>
@@ -470,12 +471,26 @@ function calculateTotalOrderAmount() {
           selected.getAttribute("data-name") || "";
       }
     
-     function placeOrder() {
+function placeOrder() {
   const doctorId = document.getElementById("doctorId").value;
   const doctorName = document.getElementById("doctorName").value;
+  const distributorId = document.getElementById("distributorId").value;
+  const distributorName = document.getElementById("distributorName").value;
+  const headquarters = document.getElementById("headquarters").value;
+  const paymentMode = document.getElementById("paymentMode").value;
 
   if (!doctorId) {
     alert("Please select doctor");
+    return;
+  }
+
+  if (!distributorId) {
+    alert("Please select distributor");
+    return;
+  }
+
+  if (!paymentMode) {
+    alert("Please select payment mode");
     return;
   }
 
@@ -486,6 +501,32 @@ function calculateTotalOrderAmount() {
     return;
   }
 
+  const totalOrderAmount = Number(document.getElementById("orderAmount").value || 0);
+  const totalPaidAmount = Number(document.getElementById("paidAmount").value || 0);
+
+  const paidAmountInput =
+  document.getElementById("paidAmount").value.trim();
+
+if (paidAmountInput === "") {
+  alert("Please enter paid amount (enter 0 if no payment received)");
+  return;
+}
+  if (totalOrderAmount <= 0) {
+    alert("Please select product and enter quantity/price");
+    return;
+  }
+
+  if (totalPaidAmount < 0) {
+    alert("Paid amount cannot be negative");
+    return;
+  }
+
+  if (totalPaidAmount > totalOrderAmount) {
+    alert("Paid amount cannot be greater than total order amount");
+    return;
+  }
+
+  let remainingPaidAmount = totalPaidAmount;
   let orders = [];
 
   for (const row of rows) {
@@ -513,17 +554,27 @@ function calculateTotalOrderAmount() {
       return;
     }
 
-    if (orderQuantity > Number(selectedProduct.availableUnits)) {
+    if (orderAmount <= 0) {
+      alert("Invalid amount for " + selectedProduct.productName);
+      return;
+    }
+
+    if (orderQuantity > Number(selectedProduct.availableUnits || 0)) {
       alert("Quantity cannot be greater than stock for " + selectedProduct.productName);
       return;
     }
-    if (!document.getElementById("distributorId").value) {
-  alert("Please select distributor");
-  return;
-}
+
+    let rowPaidAmount = 0;
+
+    if (remainingPaidAmount > 0) {
+      rowPaidAmount = Math.min(remainingPaidAmount, orderAmount);
+      remainingPaidAmount -= rowPaidAmount;
+    }
+
+    const dueAmount = orderAmount - rowPaidAmount;
 
     orders.push({
-      employeeId: localStorage.getItem("employeeId"),
+      employeeId: Number(localStorage.getItem("employeeId")),
       employeeName: localStorage.getItem("employeeName"),
 
       doctorId: Number(doctorId),
@@ -536,25 +587,33 @@ function calculateTotalOrderAmount() {
       sellingPrice: sellingPrice,
       orderAmount: orderAmount,
 
-      paidAmount: 0,
-      dueAmount: orderAmount,
-      paymentMode: document.getElementById("paymentMode")
-  ? document.getElementById("paymentMode").value
-  : "Pending",
+      paidAmount: rowPaidAmount,
+      dueAmount: dueAmount,
+      paymentMode: paymentMode,
 
-     orderDate: document.getElementById("orderDate")
-  ? document.getElementById("orderDate").value
-  : new Date().toISOString().split("T")[0],
+      orderDate: document.getElementById("orderDate")
+        ? document.getElementById("orderDate").value
+        : new Date().toISOString().split("T")[0],
 
-  distributorId: Number(document.getElementById("distributorId").value),
-distributorName: document.getElementById("distributorName").value,
-headquarters: document.getElementById("headquarters").value,
+      distributorId: Number(distributorId),
+      distributorName: distributorName,
+      headquarters: headquarters,
 
-    remarks: document.getElementById("remarks")
-  ? document.getElementById("remarks").value
-  : "",
+      remarks: document.getElementById("remarks")
+        ? document.getElementById("remarks").value
+        : "",
     });
   }
+
+  const placeBtn = document.getElementById("placeOrderBtn");
+
+  if (placeBtn.disabled) {
+    return;
+  }
+
+  placeBtn.disabled = true;
+  placeBtn.innerHTML =
+    '<i class="fa-solid fa-spinner fa-spin me-2"></i>Order Placing...';
 
   fetch(`${BASE_URL}/order/place-multiple`, {
     method: "POST",
@@ -572,6 +631,10 @@ headquarters: document.getElementById("headquarters").value,
 
       alert("Orders Placed Successfully");
 
+      placeBtn.disabled = false;
+      placeBtn.innerHTML =
+        '<i class="fa-solid fa-cart-shopping me-2"></i>Place Order';
+
       document.getElementById("productItems").innerHTML = "";
       productRowIndex = 0;
       addProductRow();
@@ -585,6 +648,10 @@ headquarters: document.getElementById("headquarters").value,
       loadOrderHistory();
     })
     .catch((error) => {
+      placeBtn.disabled = false;
+      placeBtn.innerHTML =
+        '<i class="fa-solid fa-cart-shopping me-2"></i>Place Order';
+
       console.error("ORDER ERROR:", error);
 
       if (error.message.includes("Insufficient stock")) {

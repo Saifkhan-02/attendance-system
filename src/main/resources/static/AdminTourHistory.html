@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin Tour History</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+body{background:#f4f6fb}
+
+.top-header{
+  background:linear-gradient(135deg,#0d4f9c,#3f7fe0);
+  color:white;
+  padding:22px;
+  border-radius:0 0 25px 25px;
+  box-shadow:0 5px 20px rgba(0,0,0,.15);
+}
+
+.back-btn{
+  width:42px;height:42px;border:none;border-radius:50%;
+  background:rgba(255,255,255,.2);color:white;
+}
+
+.summary-card,.main-card{
+  border:none;border-radius:22px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.icon-box{
+  width:52px;height:52px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  margin:auto;font-size:23px;
+}
+
+.bg-tour{background:#dbeafe;color:#2563eb}
+.bg-km{background:#dcfce7;color:#16a34a}
+.bg-exp{background:#fff4e5;color:#f59e0b}
+.bg-emp{background:#fee2e2;color:#dc2626}
+
+.form-control,.form-select{
+  border-radius:12px;
+  padding:11px;
+}
+
+.table-scroll{
+  max-height:430px;
+  overflow:auto;
+}
+
+.table-scroll thead th{
+  position:sticky;
+  top:0;
+  z-index:5;
+  background:#0d6efd!important;
+  color:white!important;
+}
+
+th,td{white-space:nowrap;vertical-align:middle}
+
+.status-completed{color:#198754;font-weight:800}
+.status-pending{color:#f59e0b;font-weight:800}
+.amount-text{font-weight:800;color:#198754}
+
+@media(max-width:768px){
+  h2{font-size:22px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="top-header">
+  <div class="d-flex align-items-center justify-content-between">
+    <button class="back-btn" onclick="window.location.href='admin-dashboard.html'">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <div class="text-center flex-grow-1">
+      <h2 class="fw-bold mb-1">Tour History</h2>
+      <p class="mb-0">Today tours and employee-wise monthly tour records</p>
+    </div>
+
+    <div style="width:42px"></div>
+  </div>
+</div>
+
+<div class="container py-4">
+
+  <div class="row g-3 mb-4">
+
+    <div class="card main-card mb-4">
+  <div class="card-body p-3">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label fw-bold">Summary Month</label>
+        <input type="month" id="summaryMonth" class="form-control">
+      </div>
+
+      <div class="col-md-2">
+        <button class="btn btn-primary w-100" onclick="applySummaryFilter()">
+          Show Summary
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    <div class="col-md-3 col-6">
+      <div class="card summary-card">
+        <div class="card-body text-center">
+          <div class="icon-box bg-tour mb-2">
+            <i class="fa-solid fa-route"></i>
+          </div>
+          <h6>Total Tours</h6>
+          <h3 id="totalTours">0</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-6">
+      <div class="card summary-card">
+        <div class="card-body text-center">
+          <div class="icon-box bg-emp mb-2">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <h6>Employees</h6>
+          <h3 id="totalEmployees">0</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-6">
+      <div class="card summary-card">
+        <div class="card-body text-center">
+          <div class="icon-box bg-km mb-2">
+            <i class="fa-solid fa-road"></i>
+          </div>
+          <h6>Total KM</h6>
+          <h3 id="totalKm">0</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-6">
+      <div class="card summary-card">
+        <div class="card-body text-center">
+          <div class="icon-box bg-exp mb-2">
+            <i class="fa-solid fa-indian-rupee-sign"></i>
+          </div>
+          <h6>Total Expense</h6>
+          <h3 id="totalExpense">₹0</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card main-card mb-4">
+    <div class="card-body p-4">
+      <h4 class="fw-bold mb-3">
+        <i class="fa-solid fa-calendar-day me-2 text-primary"></i>
+        Today's Tours
+      </h4>
+
+      <div class="table-scroll">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Employee</th>
+              <th>Date</th>
+              <th>Day</th>
+              <th>Headquarter</th>
+              <th>Route</th>
+              <th>KM</th>
+              <th>Fare</th>
+              <th>D.A</th>
+              <th>Other</th>
+              <th>Total</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="todayTourTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card main-card mb-4">
+    <div class="card-body p-4">
+      <h4 class="fw-bold mb-3">
+        <i class="fa-solid fa-filter me-2 text-primary"></i>
+        Employee Monthly Tour
+      </h4>
+
+      <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label">Employee</label>
+          <select id="filterEmployee" class="form-select">
+            <option value="">All Employees</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">Month</label>
+          <input type="month" id="filterMonth" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">Status</label>
+          <select id="filterStatus" class="form-select">
+            <option value="">All Status</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="PENDING">Pending</option>
+            <option value="ASSIGNED">Assigned</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <button class="btn btn-primary w-100" onclick="applyFilters()">
+            Filter
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card main-card">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <h4 class="fw-bold mb-0">
+          <i class="fa-solid fa-list me-2 text-primary"></i>
+          Monthly Tour Records
+        </h4>
+
+        <button class="btn btn-outline-primary btn-sm" onclick="loadTours()">
+          <i class="fa-solid fa-rotate-right me-2"></i>
+          Refresh
+        </button>
+      </div>
+
+      <div class="table-scroll">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Employee</th>
+              <th>Date</th>
+              <th>Day</th>
+              <th>Headquarter</th>
+              <th>Route</th>
+              <th>KM</th>
+              <th>Fare</th>
+              <th>D.A</th>
+              <th>Other</th>
+              <th>Total Expense</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody id="monthlyTourTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/config.js"></script>
+
+<script>
+let allTours = [];
+
+window.onload = function () {
+  const currentMonth =
+    new Date().toISOString().slice(0,7);
+
+  document.getElementById("filterMonth").value =
+    currentMonth;
+
+  document.getElementById("summaryMonth").value =
+    currentMonth;
+
+  loadTours();
+};
+function applySummaryFilter() {
+  const month = document.getElementById("summaryMonth").value;
+
+  const filtered = allTours.filter(t =>
+    !month || (t.month || "").startsWith(month) ||
+    (t.travelDate || "").startsWith(month)
+  );
+
+  renderSummary(filtered);
+  
+}
+function loadTours() {
+  fetch(`${BASE_URL}/admin/tour-plans`)
+    .then(res => res.json())
+    .then(data => {
+      allTours = data || [];
+      loadEmployeeDropdown();
+      renderTodayTours();
+      applySummaryFilter();
+      applyFilters();
+    })
+    .catch(error => {
+      console.error(error);
+      alert("Failed to load tour history");
+    });
+}
+
+function loadEmployeeDropdown() {
+  const dropdown = document.getElementById("filterEmployee");
+  const currentValue = dropdown.value;
+
+  const empMap = {};
+
+  allTours.forEach(t => {
+    if (t.employeeId) {
+      empMap[t.employeeId] = t.employeeName || "Unknown";
+    }
+  });
+
+  dropdown.innerHTML = `<option value="">All Employees</option>`;
+
+  Object.keys(empMap).forEach(id => {
+    dropdown.innerHTML += `
+      <option value="${id}">
+        ${empMap[id]}
+      </option>
+    `;
+  });
+
+  dropdown.value = currentValue;
+}
+
+function renderTodayTours() {
+  const today = new Date().toISOString().split("T")[0];
+
+  const todayTours = allTours.filter(t =>
+    t.travelDate === today
+  );
+
+  renderTable(todayTours, "todayTourTable");
+}
+
+function applyFilters() {
+  const employeeId = document.getElementById("filterEmployee").value;
+  const month = document.getElementById("filterMonth").value;
+  const status = document.getElementById("filterStatus").value;
+
+  const filtered = allTours.filter(t => {
+    const empMatch =
+      !employeeId || String(t.employeeId) === String(employeeId);
+
+    const monthMatch =
+      !month || (t.month || "").startsWith(month) ||
+      (t.travelDate || "").startsWith(month);
+
+    const statusMatch =
+      !status || (t.status || "").toUpperCase() === status;
+
+    return empMatch && monthMatch && statusMatch;
+  });
+
+  renderSummary(filtered);
+  renderTable(filtered, "monthlyTourTable");
+}
+
+function renderSummary(data) {
+  const empSet = new Set(data.map(t => t.employeeId).filter(Boolean));
+
+  let totalKm = 0;
+  let totalExpense = 0;
+
+  data.forEach(t => {
+    const km = Number(t.travelKm || 0);
+    const fare = Number(t.fareAmount || 0);
+    const da = Number(t.daAmount || 0);
+    const other = Number(t.otherAmount || 0);
+
+    totalKm += km;
+    totalExpense += fare + da + other;
+  });
+
+  document.getElementById("totalTours").innerText = data.length;
+  document.getElementById("totalEmployees").innerText = empSet.size;
+  document.getElementById("totalKm").innerText = totalKm;
+  document.getElementById("totalExpense").innerText = formatRupees(totalExpense);
+}
+
+function renderTable(data, tableId) {
+  const table = document.getElementById(tableId);
+  table.innerHTML = "";
+
+  if (!data || data.length === 0) {
+    table.innerHTML = `
+      <tr>
+        <td colspan="11" class="text-center">No tour records found</td>
+      </tr>
+    `;
+    return;
+  }
+
+  data.forEach(t => {
+    const fare = Number(t.fareAmount || 0);
+    const da = Number(t.daAmount || 0);
+    const other = Number(t.otherAmount || 0);
+    const total = fare + da + other;
+
+    const status = (t.status || "PENDING").toUpperCase();
+    const statusClass =
+      status === "COMPLETED"
+        ? "status-completed"
+        : "status-pending";
+
+    table.innerHTML += `
+      <tr>
+        <td class="fw-semibold">${t.employeeName || "-"}</td>
+        <td>${t.travelDate || "-"}</td>
+        <td>${t.weekDay || "-"}</td>
+        <td>${t.headquarter || "-"}</td>
+        <td>${t.routeName || "-"}</td>
+        <td>${t.travelKm || 0}</td>
+        <td>${formatRupees(fare)}</td>
+        <td>${formatRupees(da)}</td>
+        <td>${formatRupees(other)}</td>
+        <td class="amount-text">${formatRupees(total)}</td>
+        <td><span class="${statusClass}">${status}</span></td>
+      </tr>
+    `;
+  });
+}
+
+function formatRupees(amount) {
+  return "₹" + Number(amount || 0).toLocaleString("en-IN");
+}
+</script>
+
+</body>
+</html>
