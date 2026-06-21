@@ -565,9 +565,7 @@ async function loadEmployee() {
     const employeeId =
         new URLSearchParams(window.location.search).get("id");
 
-    const response = await fetch(
-        `${BASE_URL}/get-employees`
-    );
+    const response = await fetch( `${BASE_URL}/get-employees` );
 
     const employees = await response.json();
 
@@ -655,8 +653,7 @@ document.getElementById("totalDoctors").innerText =totalDoctors;
         new URLSearchParams(window.location.search).get("id");
 
     const response = await fetch(
-        `${BASE_URL}/doctor-visit/history/${employeeId}`
-    );
+        `${BASE_URL}/doctor-visit/history/${employeeId}`);
 
     const visits = await response.json();
 
@@ -783,18 +780,21 @@ else {
         "linear-gradient(90deg,#16a34a,#22c55e)";
 }
 
-    document.getElementById("targetText")
-        .innerText =
-        `Achievement : ${data.achievement} / ${data.target}`;
+document.getElementById("targetText")
+    .innerText =
+    `Achievement : ${data.achievement} / ${data.target}`;
 }
 
-      loadEmployee();
-      loadDoctorVisits();
-      loadOrders();
-      loadExpenses();
-      loadTarget();
+try {
+    loadEmployee();
+    loadDoctorVisits();
+    loadOrders();
+    loadExpenses();
+    loadTarget();
+} catch (err) {
+    console.error("Page Load Error:", err);
+}
 
-   
-    </script>
+</script>
   </body>
 </html>
