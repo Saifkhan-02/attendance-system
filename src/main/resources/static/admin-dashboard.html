@@ -544,10 +544,11 @@
         </li>
 
         <li class="nav-item">
-          <a href="#" class="nav-link">
-            <i class="fas fa-chart-line me-2"></i>
-            Reports
-          </a>
+          <a href="index.html" class="nav-link text-danger" id="logoutBtn">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            Logout
+           </a>
+          </li>
         </li>
       </ul>
     </div>
@@ -931,28 +932,27 @@
         loadAdminTotalSale();
 };
    
+const profileBtn = document.getElementById("profileBtn");
+const profileModal = document.getElementById("profileModal");
+const closeModal = document.getElementById("closeModal");
 
-      
+if(profileBtn && profileModal && closeModal){
 
-    
-      const profileBtn = document.getElementById("profileBtn");
-      const profileModal = document.getElementById("profileModal");
-      const closeModal = document.getElementById("closeModal");
-
-      profileBtn.addEventListener("click", function () {
+    profileBtn.addEventListener("click", function () {
         profileModal.style.display = "block";
-      });
+    });
 
-      closeModal.addEventListener("click", function () {
+    closeModal.addEventListener("click", function () {
         profileModal.style.display = "none";
-      });
+    });
 
-      window.addEventListener("click", function (event) {
+    window.addEventListener("click", function (event) {
         if (event.target === profileModal) {
-          profileModal.style.display = "none";
+            profileModal.style.display = "none";
         }
-      });
-  
+    });
+
+}
 
       async function loadDoctorVisitCount() {
         try {
@@ -1042,7 +1042,7 @@
         chartData.forEach((item) => {
           const value = item[0];
 
-          if (url.includes("daily")) {
+          if (url.includes("daily") || url.includes("weekly")) {
             const date = new Date(value);
 
             labels.push(
@@ -1090,27 +1090,14 @@
             datasets: [
               {
                 label: "Doctor Visits",
-
-                data: data,
-
-                borderWidth: 3,
-
-                tension: 0.4,
-
-                fill: false,
-              },
-            ],
-            datasets: [
-              {
-                label: "Doctor Visits",
-                data: data,
-                borderWidth: 3,
-                tension: 0.4,
-                fill: true,
-                pointRadius: 5,
-                pointHoverRadius: 7,
-              },
-            ],
+                 data: data,
+                 borderWidth: 3,
+                 tension: 0.4,
+                 fill: true,
+                 pointRadius: 5,
+                 pointHoverRadius: 7,
+                },
+              ],
           },
 
           options: {
@@ -1263,7 +1250,7 @@ if (chartType) {
 
       loadDoctorVisitCount();
       loadDoctorVisits();
-      loadDoctorVisitChart("/doctor-visit/chart-data-weekly");
+      loadDoctorVisitChart(`${BASE_URL}/doctor-visit/chart-data-weekly`);
       loadAttendanceChart();
       loadExpenseChart();
 
@@ -1473,6 +1460,25 @@ if (chartType) {
       console.error("Admin total sale error:", error);
     });
 }
+
+const adminId = localStorage.getItem("adminId");
+
+if (!adminId) {
+    window.location.replace("index.html");
+}
+
+document.getElementById("logoutBtn")
+.addEventListener("click", function(e){
+
+    console.log("Logout clicked");
+
+    e.preventDefault();
+
+    if(confirm("Are you sure you want to logout?")){
+        localStorage.clear();
+        window.location.replace("index.html");
+    }
+});
     </script>
   </body>
 </html>

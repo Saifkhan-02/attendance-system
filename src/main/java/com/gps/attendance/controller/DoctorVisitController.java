@@ -135,23 +135,33 @@ public List<DoctorVisit> getTodayDoctorVisitHistory(
 
         return repository.getDailyVisitStats();
     }
-    @GetMapping("/doctor-visit/chart-data-weekly")
+   @GetMapping("/doctor-visit/chart-data-weekly")
 public List<Object[]> getWeeklyChartData() {
 
-    return repository
+    List<Object[]> data = repository
             .getWeeklyVisitStats()
             .stream()
             .limit(7)
-            .toList();
+            .collect(java.util.stream.Collectors.toList());
+
+    java.util.Collections.reverse(data);
+
+    return data;
 }
 
-    @GetMapping("/attendance/chart-data")
+   @GetMapping("/attendance/chart-data")
 public Map<String, Long> getAttendanceChartData() {
+
+    LocalDate today = LocalDate.now();
 
     long totalEmployees = employeeRepository.count();
 
     long present =
-            attendanceRepository.countByStatus("Present");
+            attendanceRepository
+                    .countByAttendanceDateAndStatus(
+                            today,
+                            "Present"
+                    );
 
     long leave =
             leaveRequestRepository.countByStatus("Approved");
