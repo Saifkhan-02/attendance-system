@@ -173,18 +173,13 @@
       </div>
 
       <div class="d-flex align-items-center ms-auto">
-        <div class="text-end me-2 admin-info">
+        <div class="text-end admin-info">
           <div class="fw-bold">Admin</div>
-          <div class="small text-muted">Admin</div>
+
+          <div id="adminName" class="small text-muted">Loading...</div>
+
           <div id="datetime" class="small text-secondary"></div>
         </div>
-
-        <img
-          src="images/admin.jpg"
-          width="40"
-          height="40"
-          class="rounded-circle border border-primary"
-        />
       </div>
     </nav>
 
@@ -192,56 +187,80 @@
       <ul class="nav flex-column mt-3">
         <li class="nav-item">
           <a href="admin-dashboard.html" class="nav-link">
-            <i class="fas fa-home me-2"></i>Dashboard
+            <i class="fas fa-home me-2"></i>
+            Dashboard
           </a>
         </li>
 
         <li class="nav-item">
           <a href="admin-employeeTracking.html" class="nav-link">
-            <i class="fas fa-location-dot me-2"></i>Employee Tracking
+            <i class="fas fa-location-dot me-2"></i>
+            Employee Tracking
           </a>
         </li>
 
         <li class="nav-item">
           <a href="employeeList.html" class="nav-link">
-            <i class="fas fa-users me-2"></i>Employees
+            <i class="fas fa-users me-2"></i>
+            Employees
           </a>
         </li>
 
         <li class="nav-item">
           <a href="doctorList.html" class="nav-link">
-            <i class="fas fa-user-doctor me-2"></i>Doctors
+            <i class="fas fa-user-doctor me-2"></i>
+            Doctors
           </a>
         </li>
 
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a href="admin-orders.html" class="nav-link">
-            <i class="fas fa-box me-2"></i>Orders
+            <i class="fas fa-box me-2"></i>
+            Orders
           </a>
-        </li>
+        </li> -->
 
         <li class="nav-item">
           <a href="AdminTourApproval.html" class="nav-link">
-            <i class="fa-solid fa-route me-2"></i>Tour Approval
+            <i class="fa-solid fa-route"></i>
+            Tour Approval
           </a>
         </li>
 
         <li class="nav-item">
-          <a href="AdminheadquarterManagement.html" class="nav-link active">
-            <i class="fas fa-map-marker-alt me-2"></i>headquarter Management
+          <a href="AdminHQManagement.html" class="nav-link active">
+            <i class="fas fa-map-marker-alt me-2"></i>
+            HQ Management
           </a>
         </li>
 
         <li class="nav-item">
           <a href="AdminDistributor.html" class="nav-link">
-            <i class="fa-solid fa-truck-medical me-2"></i>Distributors
+            <i class="fa-solid fa-truck-medical me-2"></i>
+            Distributors
           </a>
         </li>
 
         <li class="nav-item">
-          <a href="AdminStockDashboard.html" class="nav-link">
-            <i class="fa-solid fa-warehouse me-2"></i>Stock Dashboard
+  <a href="AdminLeaveRequest.html" class="nav-link">
+    <i class="fa-solid fa-boxes-stacked me-2"></i>
+    Leave Requests
+  </a>
+</li>
+
+        <li class="nav-item">
+          <a href="AdminAttendanceHistory.html" class="nav-link">
+            <i class="fa-solid fa-warehouse me-2"></i>
+            Attendance History
           </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="index.html" class="nav-link text-danger" id="logoutBtn">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            Logout
+           </a>
+          </li>
         </li>
       </ul>
     </div>
@@ -437,9 +456,18 @@
       }
 
       function updateTime() {
+
         document.getElementById("datetime").innerHTML =
           new Date().toLocaleString();
       }
+      setInterval(updateTime, 1000);
+
+       function loadAdminInfo() {
+    document.getElementById("adminName").innerText =
+        localStorage.getItem("adminName") || "Admin";
+      }
+      loadAdminInfo();
+      updateTime();
 
       async function loadheadquarters() {
         try {

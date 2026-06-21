@@ -187,22 +187,13 @@
       </div>
 
       <div class="d-flex align-items-center ms-auto">
-        <div class="text-end me-2 admin-info">
+       <div class="text-end admin-info">
           <div class="fw-bold">Admin</div>
 
-          <div class="small text-muted">Raqib Khan</div>
+          <div id="adminName" class="small text-muted">Loading...</div>
 
           <div id="datetime" class="small text-secondary"></div>
         </div>
-
-        <img
-          id="profileBtn"
-          src="images/admin.jpg"
-          width="40"
-          height="40"
-          class="rounded-circle border border-primary"
-          style="cursor: pointer"
-        />
       </div>
     </nav>
 
@@ -257,12 +248,12 @@
           </a>
         </li>
 
-        <li class="nav-item">
-          <a href="#" class="nav-link">
-            <i class="fas fa-chart-line me-2"></i>
-            Reports
-          </a>
-        </li>
+       <li class="nav-item">
+          <a href="index.html" class="nav-link text-danger" id="logoutBtn">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            Logout
+           </a>
+          </li>
       </ul>
     </div>
 
@@ -580,8 +571,13 @@
       }
 
       setInterval(updateTime, 1000);
-
+       function loadAdminInfo() {
+    document.getElementById("adminName").innerText =
+        localStorage.getItem("adminName") || "Admin";
+      }
+      loadAdminInfo();
       updateTime();
+      
 async function loadOrders() {
 
     const response =
