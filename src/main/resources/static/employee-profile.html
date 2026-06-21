@@ -528,7 +528,7 @@
  </div>
     <script>
 
-      const API_BASE =
+      const BASE_URL =
     window.location.hostname === "localhost"
         ? "http://localhost:8080"
         : "https://2-ij3y.onrender.com";
@@ -570,7 +570,7 @@ async function loadEmployee() {
         new URLSearchParams(window.location.search).get("id");
 
     const response = await fetch(
-        `${API_BASE}/get-employees`
+        `${BASE_URL}/get-employees`
     );
 
     const employees = await response.json();
@@ -606,14 +606,14 @@ async function loadEmployee() {
 
 
 const visitResponse = await fetch(
-    `${API_BASE}/employee/${employeeId}/visit-count`
+    `${BASE_URL}/employee/${employeeId}/visit-count`
 );
 const totalVisits = await visitResponse.json();
 
 document.getElementById("totalVisits").innerText = totalVisits;
 
 const orderResponse = await fetch(
-    `${API_BASE}/order/employee/${employeeId}/order-count`
+    `${BASE_URL}/order/employee/${employeeId}/order-count`
 );
 
 const totalOrders = await orderResponse.json();
@@ -621,7 +621,7 @@ const totalOrders = await orderResponse.json();
 document.getElementById("totalOrders").innerText = totalOrders;
 
 const expenseResponse = await fetch(
-`${API_BASE}/employee/${employeeId}/expense-total`
+`${BASE_URL}/employee/${employeeId}/expense-total`
 );
 
 const totalExpense = await expenseResponse.json();
@@ -630,7 +630,7 @@ document.getElementById("totalExpenses").innerText =
   "₹" + totalExpense;
 
   const doctorResponse = await fetch(
-`${API_BASE}/employee/${employeeId}/doctor-count`
+`${BASE_URL}/employee/${employeeId}/doctor-count`
 );
 
 const totalDoctors = await doctorResponse.json();
@@ -659,7 +659,7 @@ document.getElementById("totalDoctors").innerText =totalDoctors;
         new URLSearchParams(window.location.search).get("id");
 
     const response = await fetch(
-        `${API_BASE}/doctor-visit/history/${employeeId}`
+        `${BASE_URL}/doctor-visit/history/${employeeId}`
     );
 
     const visits = await response.json();
@@ -688,7 +688,7 @@ async function loadOrders() {
         new URLSearchParams(window.location.search).get("id");
 
     const response = await fetch(
-        `${API_BASE}/order/history/${employeeId}`
+        `${BASE_URL}/order/history/${employeeId}`
     );
 
     const orders = await response.json();
@@ -717,7 +717,7 @@ async function loadExpenses() {
         new URLSearchParams(window.location.search).get("id");
 
     const response = await fetch(
-        `${API_BASE}/expense/history/${employeeId}`
+        `${BASE_URL}/expense/history/${employeeId}`
     );
 
     const expenses = await response.json();
@@ -746,7 +746,7 @@ async function loadTarget() {
         .get("id");
 
     const response = await fetch(
-        `${API_BASE}/doctor-visit/daily-target/${employeeId}`
+        `${BASE_URL}/doctor-visit/daily-target/${employeeId}`
     );
 
     const data = await response.json();
