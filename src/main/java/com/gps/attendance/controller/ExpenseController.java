@@ -40,11 +40,16 @@ public class ExpenseController {
     @GetMapping("/expenses/chart-data")
     public List<Object[]> getExpenseChartData() {
 
-        return expenseRepository
-                .getMonthlyExpenseStats();
+        List<Object[]> data
+                = expenseRepository.getLast7DaysExpenseStats();
+
+        java.util.Collections.reverse(data);
+
+        return data;
     }
+
     @GetMapping("/employee/{id}/expense-total")
-public Double getExpenseTotal(@PathVariable Long id) {
-    return repository.getTotalExpenseByEmployee(id);
-}
+    public Double getExpenseTotal(@PathVariable Long id) {
+        return repository.getTotalExpenseByEmployee(id);
+    }
 }

@@ -21,6 +21,17 @@ ORDER BY month
 """, nativeQuery = true)
     List<Object[]> getMonthlyExpenseStats();
 
+    @Query(value = """
+SELECT
+expense_date,
+SUM(amount)
+FROM expenses
+GROUP BY expense_date
+ORDER BY expense_date DESC
+LIMIT 7
+""", nativeQuery = true)
+List<Object[]> getLast7DaysExpenseStats();
+
     @Query("""
 SELECT COALESCE(SUM(e.amount),0)
 FROM Expense e

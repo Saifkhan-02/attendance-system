@@ -40,51 +40,15 @@
         object-fit: contain;
       }
 
-      /* Sidebar */
-
-      .sidebar {
-        position: fixed;
-        top: 90px;
-        left: 0;
-        width: 250px;
-        height: 100vh;
-        background: #0f172a;
-        transition: 0.3s;
-        overflow-y: auto;
-        z-index: 1000;
-      }
-
-      .sidebar.hide {
-        margin-left: -250px;
-      }
-
-      .sidebar .nav-link {
-        color: #fff;
-        padding: 12px 20px;
-        margin: 5px 10px;
-        border-radius: 8px;
-      }
-      .sidebar .nav-link:hover {
-        background: #1e293b;
-      }
-
-      .sidebar .nav-link.active {
-        background: #0d6efd;
-      }
 
       /* Main Content */
 
       .main-content {
         position: relative;
-        margin-left: 250px;
         margin-top: 100px;
         padding: 20px;
         transition: 0.3s;
         z-index: 1;
-      }
-
-      .main-content.full {
-        margin-left: 0;
       }
 
       .welcome-box {
@@ -166,17 +130,7 @@
       /* Mobile */
 
       @media (max-width: 768px) {
-        .sidebar {
-          margin-left: -250px;
-        }
-
-        .sidebar.show {
-          margin-left: 0;
-        }
-
-        .main-content {
-          margin-left: 0;
-        }
+      
 
         .navbar-logo {
           width: 80px;
@@ -234,8 +188,8 @@
 
     <nav class="navbar top-navbar px-3">
       <div class="d-flex align-items-center">
-        <button class="btn btn-light me-3" onclick="toggleSidebar()">
-          <i class="fas fa-bars"></i>
+        <button class="btn btn-light me-3" onclick="goBack()">
+          <i class="fas fa-arrow-left"></i>
         </button>
 
         <img
@@ -255,89 +209,6 @@
         </div>
       </div>
     </nav>
-
-    <!-- SIDEBAR -->
-
-    <div class="sidebar" id="sidebar">
-      <ul class="nav flex-column mt-3">
-        <li class="nav-item">
-          <a href="admin-dashboard.html" class="nav-link active">
-            <i class="fas fa-home me-2"></i>
-            Dashboard
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="admin-employeeTracking.html" class="nav-link">
-            <i class="fas fa-location-dot me-2"></i>
-            Employee Tracking
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="employeeList.html" class="nav-link">
-            <i class="fas fa-users me-2"></i>
-            Employees
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="doctorList.html" class="nav-link">
-            <i class="fas fa-user-doctor me-2"></i>
-            Doctors
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="admin-orders.html" class="nav-link">
-            <i class="fas fa-box me-2"></i>
-            Orders
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="AdminTourApproval.html" class="nav-link">
-            <i class="fa-solid fa-route"></i>
-            Tour Approval
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="AdminHQManagement.html" class="nav-link">
-            <i class="fas fa-map-marker-alt me-2"></i>
-            HQ Management
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="AdminDistributor.html" class="nav-link">
-            <i class="fa-solid fa-truck-medical me-2"></i>
-            Distributors
-          </a>
-        </li>
-
-        <!-- <li class="nav-item">
-  <a href="AdminAddStock.html" class="nav-link">
-    <i class="fa-solid fa-boxes-stacked me-2"></i>
-    Distributor Stock
-  </a>
-</li> -->
-
-        <li class="nav-item">
-          <a href="AdminStockDashboard.html" class="nav-link">
-            <i class="fa-solid fa-warehouse me-2"></i>
-            Stock Dashboard
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="#" class="nav-link">
-            <i class="fas fa-chart-line me-2"></i>
-            Reports
-          </a>
-        </li>
-      </ul>
-    </div>
 
     <!-- MAIN CONTENT -->
 
@@ -368,20 +239,9 @@
     <script src="js/config.js"></script>
 
     <script>
-      //toggle Sidebar
-
-      function toggleSidebar() {
-        let sidebar = document.getElementById("sidebar");
-
-        let main = document.getElementById("mainContent");
-
-        if (window.innerWidth <= 768) {
-          sidebar.classList.toggle("show");
-        } else {
-          sidebar.classList.toggle("hide");
-
-          main.classList.toggle("full");
-        }
+    
+      function goBack() {
+        window.location.replace("admin-dashboard.html");
       }
 
       function updateTime() {

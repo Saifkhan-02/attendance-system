@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Admin Dashboard</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        background: #f4f6f9;
+        overflow-x: hidden;
+      }
+
+      /* Navbar */
+
+      .top-navbar {
+        min-height: 80px;
+        background: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1050;
+      }
+      .navbar-logo {
+        width: 90px;
+        height: 85px;
+        object-fit: contain;
+      }
+
+      .main-content {
+        margin-top: 110px;
+        padding: 20px;
+      }
+
+      .visit-card {
+        border-radius: 20px;
+        border: none;
+        overflow: hidden;
+        margin-bottom: 20px;
+      }
+
+      .visit-header {
+        background: #fff;
+        padding: 30px;
+      }
+
+      .doctor-photo {
+        width: 120px;
+        height: 120px;
+        border-radius: 10%;
+        object-fit: cover;
+      }
+
+      .status-badge {
+        padding: 8px 15px;
+        border-radius: 30px;
+        font-size: 14px;
+        font-weight: 600;
+        background: #d4edda;
+        color: #198754;
+      }
+
+      .visit-details {
+        background: #fafafa;
+      }
+
+      .visit-details strong {
+        color: #333;
+      }
+
+      .visit-details hr {
+        margin: 15px 0;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  </head>
+
+  <body>
+    <!-- NAVBAR -->
+
+    <nav class="navbar top-navbar px-3">
+      <div class="d-flex align-items-center">
+        <button class="btn btn-light me-3" onclick="goBack()">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+
+        <img
+          src="images/Inflix-logo-web.png"
+          alt="Logo"
+          class="navbar-logo me-2"
+        />
+      </div>
+
+      <div class="d-flex align-items-center ms-auto">
+        <div class="text-end admin-info">
+          <div class="fw-bold">Admin</div>
+
+          <div id="adminName" class="small text-muted">Loading...</div>
+
+          <div id="datetime" class="small text-secondary"></div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+
+    <div class="container-fluid main-content">
+      <!-- Page Title -->
+
+      <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body">
+          <h2 class="fw-bold text-primary mb-1">Doctor Visit List</h2>
+
+          <p class="text-muted mb-0">
+            List of all doctor visits conducted by employees
+          </p>
+        </div>
+      </div>
+
+      <!-- Search + Filter -->
+
+      <div class="row mb-4">
+        <div class="col-lg-8 mb-2">
+          <input
+            type="text"
+            id="searchDoctor"
+            class="form-control form-control-lg"
+            placeholder="Search Doctor Name, Employee Name, Hospital..."
+          />
+        </div>
+
+        <div class="col-lg-4 mb-2">
+          <input
+            type="date"
+            id="visitDateFilter"
+            class="form-control form-control-lg"
+          />
+        </div>
+      </div>
+
+      <!-- Doctor Visit Cards -->
+
+      <div id="doctorVisitContainer"></div>
+    </div>
+
+    <!-- ================= BOOTSTRAP JS ================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/config.js"></script>
+
+    <script>
+      let allDoctorVisits = [];
+
+      function updateTime() {
+        document.getElementById("datetime").innerHTML =
+          new Date().toLocaleString();
+      }
+
+      setInterval(updateTime, 1000);
+
+      function loadAdminInfo() {
+        document.getElementById("adminName").innerText =
+          localStorage.getItem("adminName") || "Admin";
+      }
+
+      document
+        .getElementById("searchDoctor")
+        .addEventListener("keyup", function () {
+          const keyword = this.value.toLowerCase();
+
+          const filtered = allDoctorVisits.filter(
+            (v) =>
+              (v.doctorName || "").toLowerCase().includes(keyword) ||
+              (v.employeeName || "").toLowerCase().includes(keyword) ||
+              (v.hospitalName || "").toLowerCase().includes(keyword),
+          );
+
+          renderDoctorVisits(filtered);
+        });
+
+      document
+        .getElementById("visitDateFilter")
+        .addEventListener("change", function () {
+          const selectedDate = this.value;
+
+          if (!selectedDate) {
+            renderDoctorVisits(allDoctorVisits);
+            return;
+          }
+
+          const filtered = allDoctorVisits.filter(
+            (v) => v.visitDate === selectedDate,
+          );
+
+          renderDoctorVisits(filtered);
+        });
+
+      function renderDoctorVisits(data) {
+        const container = document.getElementById("doctorVisitContainer");
+
+        container.innerHTML = "";
+
+        data.sort((a, b) => {
+          const dateA = new Date(`${a.visitDate} ${a.visitTime}`);
+          const dateB = new Date(`${b.visitDate} ${b.visitTime}`);
+          return dateB - dateA;
+        });
+
+        data.forEach((visit) => {
+          container.innerHTML += `
+        
+        <div class="card visit-card shadow-sm">
+
+            <div class="visit-header">
+
+                <div class="row align-items-center">
+
+                    <div class="col-md-2 text-center">
+
+                        <img
+                            src="${visit.photo || "https://cdn-icons-png.flaticon.com/512/387/387561.png"}"
+                            class="doctor-photo"
+                        >
+                        <div class="mt-2">
+                            <span class="badge bg-secondary">
+                               Verification Image
+                               </span>
+                               </div>
+                        </div>
+
+                    <div class="col-md-7">
+
+                        <h4 class="fw-bold">
+                            ${visit.doctorName || "-"}
+                        </h4>
+                        <div class="mt-1"><span class="badge bg-primary"> ${visit.specialization || "Doctor"}</span></div>
+
+                        <div><strong>Employee :</strong> ${visit.employeeName || "-"}</div>
+
+                        <div><strong>Hospital :</strong> ${visit.hospitalName || "-"}</div>
+
+                        <div><strong>Location :</strong> ${visit.location || "-"}</div>
+
+                        <div><strong>Visit Date :</strong> ${visit.visitDate || "-"}</div>
+
+                    </div>
+                    <br>
+
+                    <div class="col-md-3 text-center">
+
+                       <button
+    class="btn btn-success rounded-pill"
+    onclick="openMap('${visit.latitude}','${visit.longitude}')"
+>
+    <i class="fas fa-map-marker-alt"></i>
+    View Map
+</button>
+                        <br>
+
+                        <button
+  class="btn btn-outline-primary rounded-pill mt-2"
+  onclick="toggleDetails(this)"
+>
+  More Details
+</button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+<div class="visit-details d-none p-4 border-top">
+
+    <div class="row">
+
+        <div class="col-md-6 mb-3">
+            <strong>Working With :</strong>
+            ${visit.workingWith || "-"}
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <strong>Working Person :</strong>
+            ${visit.workingPersonName || "-"}
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <strong>Doctor Response :</strong>
+
+            <span class="text-success fw-bold">
+                ${visit.doctorResponse || "-"}
+            </span>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <strong>Visit Time :</strong>
+            ${visit.visitTime || "-"}
+        </div>
+
+        <div class="col-md-12 mb-3">
+            <strong>Landmark :</strong>
+            ${visit.landmark || "-"}
+        </div>
+
+    </div>
+
+    <hr>
+
+    <h6 class="fw-bold text-primary">
+        Remarks
+    </h6>
+
+    <div class="alert alert-light border mb-0">
+        ${visit.remarks || "No Remarks"}
+    </div>
+
+</div>
+
+
+        </div>
+
+        `;
+        });
+      }
+
+      async function loadDoctorVisits() {
+        console.log("Function Called");
+
+        try {
+          console.log("BASE_URL =", BASE_URL);
+
+          const response = await fetch(BASE_URL + "/doctor-visit/directory");
+
+          console.log(response);
+
+          const data = await response.json();
+
+          allDoctorVisits = data;
+
+          console.log("Doctor Visits =", data);
+          renderDoctorVisits(data);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+      function goBack() {
+        window.location.replace("admin-dashboard.html");
+      }
+
+      function openMap(lat, lng) {
+        if (!lat || !lng) {
+          alert("Location not available");
+
+          return;
+        }
+
+        window.open(`https://www.google.com/maps?q=${lat},${lng}`, "_blank");
+      }
+      function toggleDetails(button) {
+        const details = button
+          .closest(".visit-card")
+          .querySelector(".visit-details");
+
+        details.classList.toggle("d-none");
+
+        if (details.classList.contains("d-none")) {
+          button.innerHTML = '<i class="fas fa-chevron-down"></i> More Details';
+        } else {
+          button.innerHTML = '<i class="fas fa-chevron-up"></i> Hide Details';
+        }
+      }
+
+      updateTime();
+      loadAdminInfo();
+      loadDoctorVisits();
+    </script>
+  </body>
+</html>

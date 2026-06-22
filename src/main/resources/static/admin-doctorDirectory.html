@@ -39,60 +39,22 @@
         height: 85px;
         object-fit: contain;
       }
-
-      /* Sidebar */
-
-      .sidebar {
-        position: fixed;
-        top: 90px;
-        left: 0;
-        width: 250px;
-        height: 100vh;
-        background: #0f172a;
-        transition: 0.3s;
-        overflow-y: auto;
-        z-index: 1000;
-      }
-
-      .sidebar.hide {
-        margin-left: -250px;
-      }
-
-      .sidebar .nav-link {
-        color: #fff;
-        padding: 12px 20px;
-        margin: 5px 10px;
-        border-radius: 8px;
-      }
-      .sidebar .nav-link:hover {
-        background: #1e293b;
-      }
-
-      .sidebar .nav-link.active {
-        background: #0d6efd;
-      }
-
       /* Main Content */
 
       .main-content {
         position: relative;
-        margin-left: 250px;
         margin-top: 100px;
         padding: 20px;
         transition: 0.3s;
         z-index: 1;
       }
-
-      .main-content.full {
-        margin-left: 0;
-      }
-
       .doctor-card {
         transition: 0.3s;
         cursor: pointer;
         border: none;
         border-radius: 25px;
         overflow: hidden;
+        min-height: 330px;
       }
 
       .doctor-card:hover {
@@ -103,6 +65,7 @@
         color: green;
         font-weight: bold;
       }
+  
 
       .directory-header {
         background: linear-gradient(135deg, #0d6efd, #2563eb);
@@ -121,7 +84,7 @@
       #searchDoctor {
         width: 240px;
         height: 45px;
-        border-radius: 10px;
+        border-radius: 12px;
       }
 
       .doctor-card {
@@ -149,37 +112,27 @@
       /* Mobile */
 
       @media (max-width: 768px) {
-        .sidebar {
-          margin-left: -250px;
-        }
-
-        .sidebar.show {
-          margin-left: 0;
-        }
-
-        .main-content {
-          margin-left: 0;
-        }
+       
 
         .navbar-logo {
           width: 80px;
           height: 75px;
         }
-         .directory-header .d-flex{
-        flex-direction:column;
-        gap:15px;
-        align-items:flex-start !important;
-    }
+        .directory-header .d-flex {
+          flex-direction: column;
+          gap: 15px;
+          align-items: flex-start !important;
+        }
 
-    #searchDoctor{
-        width:100%;
-        max-width:180px;
-        height:40px;
-    }
+        #searchDoctor {
+          width: 100%;
+          max-width: 180px;
+          height: 40px;
+        }
 
-    .directory-header h4{
-        font-size:22px;
-    }
+        .directory-header h4 {
+          font-size: 22px;
+        }
       }
     </style>
   </html>
@@ -188,8 +141,8 @@
 
     <nav class="navbar top-navbar px-3">
       <div class="d-flex align-items-center">
-        <button class="btn btn-light me-3" onclick="toggleSidebar()">
-          <i class="fas fa-bars"></i>
+         <button class="btn btn-light me-3" onclick="goBack()">
+          <i class="fas fa-arrow-left"></i>
         </button>
 
         <img
@@ -210,82 +163,7 @@
       </div>
     </nav>
 
-    <!-- SIDEBAR -->
-
-    <div class="sidebar" id="sidebar">
-      <ul class="nav flex-column mt-3">
-        <li class="nav-item">
-          <a href="admin-dashboard.html" class="nav-link active">
-            <i class="fas fa-home me-2"></i>
-            Dashboard
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="admin-employeeTracking.html" class="nav-link">
-            <i class="fas fa-location-dot me-2"></i>
-            Employee Tracking
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="employeeList.html" class="nav-link">
-            <i class="fas fa-users me-2"></i>
-            Employees
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="doctorList.html" class="nav-link">
-            <i class="fas fa-user-doctor me-2"></i>
-            Doctors
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="admin-orders.html" class="nav-link">
-            <i class="fas fa-box me-2"></i>
-            Orders
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="AdminTourApproval.html" class="nav-link">
-            <i class="fa-solid fa-route"></i>
-            Tour Approval
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="AdminHQManagement.html" class="nav-link">
-            <i class="fas fa-map-marker-alt me-2"></i>
-            HQ Management
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="AdminDistributor.html" class="nav-link">
-            <i class="fa-solid fa-truck-medical me-2"></i>
-            Distributors
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="AdminStockDashboard.html" class="nav-link">
-            <i class="fa-solid fa-warehouse me-2"></i>
-            Stock Dashboard
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="#" class="nav-link">
-            <i class="fas fa-chart-line me-2"></i>
-            Reports
-          </a>
-        </li>
-      </ul>
-    </div>
-
+    
     <!-- MAIN CONTENT -->
 
     <div class="main-content" id="mainContent">
@@ -313,20 +191,9 @@
 
     <script src="js/config.js"></script>
     <script>
-      //toggle Sidebar
 
-      function toggleSidebar() {
-        let sidebar = document.getElementById("sidebar");
-
-        let main = document.getElementById("mainContent");
-
-        if (window.innerWidth <= 768) {
-          sidebar.classList.toggle("show");
-        } else {
-          sidebar.classList.toggle("hide");
-
-          main.classList.toggle("full");
-        }
+       function goBack() {
+        window.location.replace("admin-dashboard.html");
       }
 
       function updateTime() {
@@ -345,7 +212,7 @@
 
       async function loadDoctors() {
         try {
-          const response = await fetch(BASE_URL + "/admin/doctors");
+          const response = await fetch(BASE_URL + "/doctor-visit/directory");
 
           const doctors = await response.json();
 
@@ -354,10 +221,10 @@
 
           let html = "";
 
-          doctors.forEach((doc) => {
-            html += `
+         doctors.forEach((doc) => {
+  html += `
         
-        <div class="col-lg-4 col-md-6">
+<div class="col-lg-4 col-md-6">
 
     <div class="card doctor-card shadow-sm h-100">
 
@@ -365,7 +232,7 @@
 
             <h5 class="fw-bold text-primary mb-3">
                 <i class="fas fa-user-doctor me-2"></i>
-                ${doc.doctorName}
+                ${doc.doctorName || "-"}
             </h5>
 
             <p>
@@ -374,23 +241,13 @@
             </p>
 
             <p>
-                <strong>Clinic:</strong>
-                ${doc.clinicName || "-"}
+                <strong>Hospital:</strong>
+                ${doc.hospitalName || "-"}
             </p>
 
             <p>
-                <strong>City:</strong>
-                ${doc.city || "-"}
-            </p>
-
-            <p>
-                <strong>Phone:</strong>
-                ${doc.phone || "-"}
-            </p>
-
-            <p>
-                <strong>Address:</strong>
-                ${doc.address || "-"}
+                <strong>Location:</strong>
+                ${doc.location?.split(",") || "-"}
             </p>
 
             <p>
@@ -399,26 +256,24 @@
             </p>
 
             <p>
+                <strong>Visit Date:</strong>
+                ${doc.visitDate || "-"}
+            </p>
+
+            <p>
                 <strong>Status:</strong>
                 <span class="status-active">
-                    ${doc.status || "Active"}
+                    ${doc.status || "Completed"}
                 </span>
             </p>
 
-            <button
-                class="btn btn-primary w-100 mt-2"
-                onclick="viewDoctor(${doc.id})">
-
-                View Details
-
-            </button>
 
         </div>
 
     </div>
 
 </div>`;
-          });
+});
 
           document.getElementById("doctorContainer").innerHTML = html;
         } catch (error) {

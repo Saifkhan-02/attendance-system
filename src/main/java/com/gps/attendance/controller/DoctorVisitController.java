@@ -29,52 +29,49 @@ import com.gps.attendance.repository.EmployeeRepository;
 import com.gps.attendance.repository.LeaveRequestRepository;
 import com.gps.attendance.service.CloudinaryService;
 
-
-
 @RestController
 @CrossOrigin("*")
 public class DoctorVisitController {
 
-         @Autowired
+    @Autowired
     private DoctorVisitRepository repository;
 
+    @Autowired
+    private AttendanceRepository attendanceRepository;
 
     @Autowired
-private AttendanceRepository attendanceRepository;
+    private LeaveRequestRepository leaveRequestRepository;
 
-@Autowired
-private LeaveRequestRepository leaveRequestRepository;
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
-@Autowired
-private EmployeeRepository employeeRepository;
-
-@Autowired
-private CloudinaryService cloudinaryService;
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     @PostMapping("/doctor-visit/save")
     public ResponseEntity<?> saveDoctorVisit(
             @RequestBody DoctorVisit visit) {
 
-   String doctorName = visit.getDoctorName().trim();
+        String doctorName = visit.getDoctorName().trim();
 
-Optional<DoctorVisit> existingVisit =
-        repository.findFirstByEmployeeIdAndDoctorNameIgnoreCaseAndVisitDate(
-                visit.getEmployeeId(),
-                doctorName,
-                visit.getVisitDate()
-        );
+        Optional<DoctorVisit> existingVisit
+                = repository.findFirstByEmployeeIdAndDoctorNameIgnoreCaseAndVisitDate(
+                        visit.getEmployeeId(),
+                        doctorName,
+                        visit.getVisitDate()
+                );
 
-if (existingVisit.isPresent()) {
-    return ResponseEntity
-            .badRequest()
-            .body("This doctor visit is already submitted today.");
-}
+        if (existingVisit.isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("This doctor visit is already submitted today.");
+        }
 
         visit.setDoctorName(doctorName);
         visit.setVisitTime(LocalTime.now());
         visit.setStatus("Completed");
 
-         DoctorVisit savedVisit = repository.save(visit);
+        DoctorVisit savedVisit = repository.save(visit);
 
         return ResponseEntity.ok(savedVisit);
     }
@@ -87,26 +84,26 @@ if (existingVisit.isPresent()) {
     }
 
     @GetMapping("/doctor-visit/history/today/{employeeId}")
-public List<DoctorVisit> getTodayDoctorVisitHistory(
-        @PathVariable Long employeeId
-) {
-    String today = LocalDate.now().toString();
+    public List<DoctorVisit> getTodayDoctorVisitHistory(
+            @PathVariable Long employeeId
+    ) {
+        String today = LocalDate.now().toString();
 
-    return repository.findByEmployeeIdAndVisitDateOrderByIdDesc(
-            employeeId,
-            today
-    );
-}
+        return repository.findByEmployeeIdAndVisitDateOrderByIdDesc(
+                employeeId,
+                today
+        );
+    }
 
     @GetMapping("/doctor-visit/count")
     public long getDoctorVisitCount() {
         return repository.count();
     }
 
-    @GetMapping("/doctor-visit/all")
-    public List<DoctorVisit> getAllDoctorVisits() {
-        return repository.findAll();
-    }
+    @GetMapping("/doctor-visit/monthly-count")
+public long getMonthlyVisitCount() {
+    return repository.getCurrentMonthVisitCount();
+}
 
     @GetMapping("/doctor-visit/top10")
     public List<DoctorVisit> getTop10DoctorVisits() {
@@ -135,116 +132,141 @@ public List<DoctorVisit> getTodayDoctorVisitHistory(
 
         return repository.getDailyVisitStats();
     }
-   @GetMapping("/doctor-visit/chart-data-weekly")
-public List<Object[]> getWeeklyChartData() {
 
-    List<Object[]> data = repository
-            .getWeeklyVisitStats()
-            .stream()
-            .limit(7)
-            .collect(java.util.stream.Collectors.toList());
+    @GetMapping("/doctor-visit/chart-data-weekly")
+    public List<Object[]> getWeeklyChartData() {
 
-    java.util.Collections.reverse(data);
+        List<Object[]> data = repository
+                .getWeeklyVisitStats()
+                .stream()
+                .limit(7)
+                .collect(java.util.stream.Collectors.toList());
 
-    return data;
-}
+        java.util.Collections.reverse(data);
 
-   @GetMapping("/attendance/chart-data")
-public Map<String, Long> getAttendanceChartData() {
+        return data;
+    }
 
-    LocalDate today = LocalDate.now();
+    @GetMapping("/attendance/chart-data")
+    public Map<String, Long> getAttendanceChartData() {
 
-    long totalEmployees = employeeRepository.count();
+        LocalDate today = LocalDate.now();
 
-    long present =
-            attendanceRepository
-                    .countByAttendanceDateAndStatus(
-                            today,
-                            "Present"
-                    );
+        long totalEmployees = employeeRepository.count();
 
-    long leave =
-            leaveRequestRepository.countByStatus("Approved");
+        long present
+                = attendanceRepository
+                        .countByAttendanceDateAndStatus(
+                                today,
+                                "Present"
+                        );
 
-    long absent =
-            totalEmployees - present - leave;
+        long leave
+                = leaveRequestRepository
+                        .countByFromDateAndStatus(
+                                today,
+                                "Approved"
+                        );
 
-    Map<String, Long> data =
-            new HashMap<>();
+        long absent
+                = Math.max(0, totalEmployees - present - leave);
 
-    data.put("present", present);
-    data.put("absent", absent);
-    data.put("leave", leave);
+        Map<String, Long> data
+                = new HashMap<>();
 
-    return data;
-}
-@GetMapping("/doctor-visit/unique-doctors/{employeeId}")
-public List<DoctorVisit> getUniqueDoctors(@PathVariable Long employeeId) {
-    return repository.findByEmployeeId(employeeId)
-            .stream()
-            .filter(v -> v.getDoctorName() != null && !v.getDoctorName().isBlank())
-            .collect(Collectors.toMap(
-                    DoctorVisit::getDoctorName,
-                    v -> v,
-                    (oldValue, newValue) -> newValue
-            ))
-            .values()
-            .stream()
-            .toList();
-}
+        data.put("present", present);
+        data.put("absent", absent);
+        data.put("leave", leave);
 
-@GetMapping("/doctor-visit/daily-target/{employeeId}")
-public Map<String, Object> getDailyTarget(@PathVariable Long employeeId) {
+        return data;
+    }
 
-    String today = java.time.LocalDate.now().toString();
+    @GetMapping("/doctor-visit/unique-doctors/{employeeId}")
+    public List<DoctorVisit> getUniqueDoctors(@PathVariable Long employeeId) {
+        return repository.findByEmployeeId(employeeId)
+                .stream()
+                .filter(v -> v.getDoctorName() != null && !v.getDoctorName().isBlank())
+                .collect(Collectors.toMap(
+                        DoctorVisit::getDoctorName,
+                        v -> v,
+                        (oldValue, newValue) -> newValue
+                ))
+                .values()
+                .stream()
+                .toList();
+    }
 
-    long achievement =
-            repository.countByEmployeeIdAndVisitDate(employeeId, today);
+    @GetMapping("/doctor-visit/directory")
+    public List<DoctorVisit> getDoctorDirectory() {
 
-    int target = 25;
+        return repository.findAll()
+                .stream()
+                .filter(v -> v.getDoctorName() != null
+                && !v.getDoctorName().isBlank())
+                .collect(Collectors.toMap(
+                        DoctorVisit::getDoctorName,
+                        v -> v,
+                        (oldValue, newValue) -> newValue
+                ))
+                .values()
+                .stream()
+                .toList();
+    }
 
-    int progress =
-            (int) Math.min((achievement * 100) / target, 100);
+    @GetMapping("/doctor-visit/daily-target/{employeeId}")
+    public Map<String, Object> getDailyTarget(@PathVariable Long employeeId) {
 
-    System.out.println("EMPLOYEE ID: " + employeeId);
-    System.out.println("TODAY: " + today);
-    System.out.println("ACHIEVEMENT: " + achievement);
+        String today = java.time.LocalDate.now().toString();
 
-    Map<String, Object> data = new HashMap<>();
+        long achievement
+                = repository.countByEmployeeIdAndVisitDate(employeeId, today);
 
-    data.put("target", target);
-    data.put("achievement", achievement);
-    data.put("progress", progress);
-    data.put("date", today);
+        int target = 25;
 
-    return data;
-}
-@PostMapping("/doctor-visit/upload-photo/{employeeId}")
-public String uploadDoctorVisitPhoto(
-        @PathVariable Long employeeId,
-        @RequestParam("file") MultipartFile file
-) throws IOException {
+        int progress
+                = (int) Math.min((achievement * 100) / target, 100);
 
-    return cloudinaryService.uploadDoctorVisitImage(file, employeeId);
-}
+        System.out.println("EMPLOYEE ID: " + employeeId);
+        System.out.println("TODAY: " + today);
+        System.out.println("ACHIEVEMENT: " + achievement);
 
-@PutMapping("/doctor-visit/update/{id}")
-public DoctorVisit updateDoctorVisit(
-        @PathVariable Long id,
-        @RequestBody DoctorVisit updatedVisit
-) {
-    DoctorVisit visit = repository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Visit not found"));
+        Map<String, Object> data = new HashMap<>();
 
-    visit.setWorkingWith(updatedVisit.getWorkingWith());
-    visit.setWorkingPersonName(updatedVisit.getWorkingPersonName());
-    visit.setRemarks(updatedVisit.getRemarks());
-    visit.setLandmark(updatedVisit.getLandmark());
+        data.put("target", target);
+        data.put("achievement", achievement);
+        data.put("progress", progress);
+        data.put("date", today);
 
-    return repository.save(visit);
-}
-@GetMapping("/employee/{id}/visit-count")
-public Long getVisitCount(@PathVariable Long id) {
-    return repository.countByEmployeeId(id);
-}
+        return data;
+    }
+
+    @PostMapping("/doctor-visit/upload-photo/{employeeId}")
+    public String uploadDoctorVisitPhoto(
+            @PathVariable Long employeeId,
+            @RequestParam("file") MultipartFile file
+    ) throws IOException {
+
+        return cloudinaryService.uploadDoctorVisitImage(file, employeeId);
+    }
+
+    @PutMapping("/doctor-visit/update/{id}")
+    public DoctorVisit updateDoctorVisit(
+            @PathVariable Long id,
+            @RequestBody DoctorVisit updatedVisit
+    ) {
+        DoctorVisit visit = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Visit not found"));
+
+        visit.setWorkingWith(updatedVisit.getWorkingWith());
+        visit.setWorkingPersonName(updatedVisit.getWorkingPersonName());
+        visit.setRemarks(updatedVisit.getRemarks());
+        visit.setLandmark(updatedVisit.getLandmark());
+
+        return repository.save(visit);
+    }
+
+    @GetMapping("/employee/{id}/visit-count")
+    public Long getVisitCount(@PathVariable Long id) {
+        return repository.countByEmployeeId(id);
+    }
 }
