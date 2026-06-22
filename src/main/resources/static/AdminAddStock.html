@@ -576,7 +576,7 @@
       }
 
       function loadProducts() {
-        fetch(`${BASE_URL}/stock/global/admin/all`)
+        fetch(`${BASE_URL}/products`)
           .then((response) => response.json())
           .then((data) => {
             stockList = data || [];

@@ -21,12 +21,25 @@ body{
     box-shadow:0 3px 15px rgba(0,0,0,0.1);
 }
 
-.page-header{
-    background:linear-gradient(135deg,#0d6efd,#4f8dfd);
-    color:white;
-    border-radius:15px;
-    padding:20px;
-    margin-bottom:20px;
+.top-header{
+  background:linear-gradient(135deg,#0d4f9c,#3f7fe0);
+  color:white;
+  padding:22px;
+  border-radius:0 0 25px 25px;
+  box-shadow:0 5px 20px rgba(0,0,0,.15);
+}
+
+.back-btn{
+  width:42px;
+  height:42px;
+  border:none;
+  border-radius:50%;
+  background:rgba(255,255,255,.2);
+  color:white;
+}
+
+.back-btn:hover{
+  background:rgba(255,255,255,.3);
 }
 
 .form-control,
@@ -49,17 +62,29 @@ body{
 
 <body>
 
-<div class="container mt-4">
 
-    <div class="page-header">
-        <h2>
-            <i class="fas fa-pills"></i>
-            Add Product
-        </h2>
-        <p class="mb-0">
-            Create and manage product master records
-        </p>
+<div class="top-header">
+  <div class="d-flex align-items-center justify-content-between flext-wrap gap-3">
+
+    <button class="back-btn"
+            onclick="window.location.href='admin-dashboard.html'">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <div class="text-center flex-grow-1">
+      <h2 class="fw-bold mb-1">
+        <i class="fas fa-pills me-2"></i>
+        Add Product
+      </h2>
+      <p class="mb-0">Create and manage product master records</p>
     </div>
+
+    <div style="width:42px"></div>
+
+  </div>
+</div>
+
+<div class="container py-4">
 
     <div class="card form-card">
         <div class="card-body p-4">
@@ -69,6 +94,7 @@ body{
             <div class="row g-3">
 
                 <div class="col-md-6">
+                    <input type="hidden" id="productId">
                     <label class="form-label">Product Name</label>
                     <input type="text"
                            id="productName"
@@ -140,9 +166,10 @@ body{
 
                     <thead class="table-primary">
                         <tr>
-                            <th>ID</th>
+                            <th>S.No</th>
                             <th>Company's Product</th>    
                             <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
 
@@ -166,21 +193,31 @@ window.onload = loadProducts;
 
 function saveProduct(){
 
+    const productId =
+        document.getElementById("productId").value;
+
     const productData = {
-        productName: document.getElementById("productName").value,
+        productName: document.getElementById("productName").value.trim(),
         status: document.getElementById("status").value
     };
 
-    fetch(`${BASE_URL}/admin/save-product`, {
-        method:"POST",
+    const url = productId
+        ? `${BASE_URL}/admin/update-product/${productId}`
+        : `${BASE_URL}/admin/save-product`;
+
+    const method = productId ? "PUT" : "POST";
+
+    fetch(url,{
+        method: method,
         headers:{
             "Content-Type":"application/json"
         },
         body:JSON.stringify(productData)
     })
+ 
     .then(response => response.json())
     .then(data => {
-        alert("Product Saved Successfully");
+        alert(productId ? "Product Updated Successfully" : "Product Saved Successfully");
         clearForm();
         loadProducts();
     })
@@ -205,7 +242,7 @@ function loadProducts(){
 
             table.innerHTML = `
                 <tr>
-                    <td colspan="3" class="text-center">
+                    <td colspan="4" class="text-center">
                         No Products Found
                     </td>
                 </tr>
@@ -214,35 +251,78 @@ function loadProducts(){
             return;
         }
 
-        data.forEach(product => {
+       data.forEach((product, index) => {
 
-            const statusClass =
-                product.status === "Active"
-                    ? "status-active"
-                    : "status-inactive";
+  const statusClass =
+    product.status === "Active"
+      ? "status-active"
+      : "status-inactive";
 
-            table.innerHTML += `
-                <tr>
-                    <td>${product.id}</td>
-                    <td>${product.productName}</td>
-                    <td>
-                        <span class="${statusClass}">
-                            ${product.status}
-                        </span>
-                    </td>
-                </tr>
-            `;
-        });
-    })
+  table.innerHTML += `
+    <tr>
+      <td>${index + 1}</td>
+      <td>${product.productName}</td>
+      <td>
+        <span class="${statusClass}">
+          ${product.status || "Active"}
+        </span>
+      </td>
+      <td>
+        <button class="btn btn-sm btn-warning me-1"
+          onclick="editProduct(${product.id}, '${product.productName}', '${product.status || "Active"}')">
+          <i class="fa-solid fa-pen"></i>
+        </button>
+
+        <button class="btn btn-sm btn-danger"
+          onclick="deleteProduct(${product.id})">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </td>
+    </tr>
+  `;
+});    })
     .catch(error => {
         console.error(error);
     });
 }
 
+function editProduct(id, name, status){
+
+    document.getElementById("productId").value = id;
+    document.getElementById("productName").value = name;
+    document.getElementById("status").value = status || "Active";
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+function deleteProduct(id){
+
+    if(!confirm("Are you sure you want to delete this product?")){
+        return;
+    }
+
+    fetch(`${BASE_URL}/admin/delete-product/${id}`,{
+        method:"DELETE"
+    })
+    .then(response => response.text())
+    .then(data => {
+        alert(data);
+        loadProducts();
+    })
+    .catch(error => {
+        console.error(error);
+        alert("Failed to delete product");
+    });
+}
+
 function clearForm(){
 
+    document.getElementById("productId").value = "";
     document.getElementById("productName").value = "";
-    document.getElementById("status").selectedIndex = 0;
+    document.getElementById("status").value = "Active";
 }
 
 </script>
