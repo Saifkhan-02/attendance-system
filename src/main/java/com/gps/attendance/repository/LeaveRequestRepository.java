@@ -12,4 +12,10 @@ public interface LeaveRequestRepository
     List<LeaveRequest> findByEmployeeId(Long employeeId);
 
     long countByStatus(String status);
+
+    long countByFromDateAndStatus(
+            java.time.LocalDate fromDate,
+            String status
+    );
+
 }

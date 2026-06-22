@@ -599,7 +599,9 @@
         </div>
 
         <!-- doctors Visits -->
-        <div class="col-6 col-md-6 col-lg-3">
+        <div class="col-6 col-md-6 col-lg-3"
+         onclick="window.location.href='doctor-visit-details.html'"
+          style="cursor:pointer;">
           <div class="card dashboard-card">
             <div class="card-body text-center">
               <i class="fas fa-hospital fa-2x text-info mb-3"></i>
@@ -749,7 +751,7 @@
 
         <div class="col-lg-4">
           <div class="card shadow-sm mt-4 mb-4">
-            <div class="card-header bg-info text-white">Monthly Expenses</div>
+            <div class="card-header bg-info text-white">Last 7 days Expenses</div>
 
             <div class="card-body">
               <div style="height: 350px">
@@ -920,12 +922,16 @@
         employees.length;
     });
 
-  fetch(`${BASE_URL}/admin/get-doctors`)
-    .then((response) => response.json())
-    .then((doctors) => {
-      document.getElementById("totalDoctors").innerText =
-        doctors.length;
-    });
+ fetch(`${BASE_URL}/doctor-visit/directory`)
+  .then((response) => response.json())
+  .then((doctors) => {
+    document.getElementById("totalDoctors").innerText =
+      doctors.length;
+  })
+  .catch((error) => {
+    console.error("Doctor Count Error:", error);
+    document.getElementById("totalDoctors").innerText = "0";
+  });
 
         loadDoctorVisitCount();
         loadDoctorVisits();
@@ -956,7 +962,7 @@ if(profileBtn && profileModal && closeModal){
 
       async function loadDoctorVisitCount() {
         try {
-          const response = await fetch(`${BASE_URL}/doctor-visit/count`);
+          const response = await fetch(`${BASE_URL}/doctor-visit/monthly-count`);
 
           if (!response.ok) {
             throw new Error("API Error: " + response.status);
@@ -1167,28 +1173,14 @@ if (chartType) {
 
         const data = await response.json();
 
-        const labels = data.map((item) => {
-          const month = item[0];
+       const labels = data.map((item) => {
+  const date = new Date(item[0]);
 
-          const months = {
-            "01": "Jan",
-            "02": "Feb",
-            "03": "Mar",
-            "04": "Apr",
-            "05": "May",
-            "06": "Jun",
-            "07": "Jul",
-            "08": "Aug",
-            "09": "Sep",
-            10: "Oct",
-            11: "Nov",
-            12: "Dec",
-          };
-
-          const parts = month.split("-");
-
-          return months[parts[1]] + " " + parts[0];
-        });
+  return date.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+  });
+});
 
         const amounts = data.map((item) => item[1]);
 

@@ -93,6 +93,7 @@
         border: none;
         border-radius: 25px;
         overflow: hidden;
+        min-height: 330px;
       }
 
       .doctor-card:hover {
@@ -103,6 +104,7 @@
         color: green;
         font-weight: bold;
       }
+  
 
       .directory-header {
         background: linear-gradient(135deg, #0d6efd, #2563eb);
@@ -121,7 +123,7 @@
       #searchDoctor {
         width: 240px;
         height: 45px;
-        border-radius: 10px;
+        border-radius: 12px;
       }
 
       .doctor-card {
@@ -165,21 +167,21 @@
           width: 80px;
           height: 75px;
         }
-         .directory-header .d-flex{
-        flex-direction:column;
-        gap:15px;
-        align-items:flex-start !important;
-    }
+        .directory-header .d-flex {
+          flex-direction: column;
+          gap: 15px;
+          align-items: flex-start !important;
+        }
 
-    #searchDoctor{
-        width:100%;
-        max-width:180px;
-        height:40px;
-    }
+        #searchDoctor {
+          width: 100%;
+          max-width: 180px;
+          height: 40px;
+        }
 
-    .directory-header h4{
-        font-size:22px;
-    }
+        .directory-header h4 {
+          font-size: 22px;
+        }
       }
     </style>
   </html>
@@ -345,7 +347,7 @@
 
       async function loadDoctors() {
         try {
-          const response = await fetch(BASE_URL + "/admin/doctors");
+          const response = await fetch(BASE_URL + "/doctor-visit/directory");
 
           const doctors = await response.json();
 
@@ -354,10 +356,10 @@
 
           let html = "";
 
-          doctors.forEach((doc) => {
-            html += `
+         doctors.forEach((doc) => {
+  html += `
         
-        <div class="col-lg-4 col-md-6">
+<div class="col-lg-4 col-md-6">
 
     <div class="card doctor-card shadow-sm h-100">
 
@@ -365,7 +367,7 @@
 
             <h5 class="fw-bold text-primary mb-3">
                 <i class="fas fa-user-doctor me-2"></i>
-                ${doc.doctorName}
+                ${doc.doctorName || "-"}
             </h5>
 
             <p>
@@ -374,23 +376,13 @@
             </p>
 
             <p>
-                <strong>Clinic:</strong>
-                ${doc.clinicName || "-"}
+                <strong>Hospital:</strong>
+                ${doc.hospitalName || "-"}
             </p>
 
             <p>
-                <strong>City:</strong>
-                ${doc.city || "-"}
-            </p>
-
-            <p>
-                <strong>Phone:</strong>
-                ${doc.phone || "-"}
-            </p>
-
-            <p>
-                <strong>Address:</strong>
-                ${doc.address || "-"}
+                <strong>Location:</strong>
+                ${doc.location?.split(",") || "-"}
             </p>
 
             <p>
@@ -399,26 +391,24 @@
             </p>
 
             <p>
+                <strong>Visit Date:</strong>
+                ${doc.visitDate || "-"}
+            </p>
+
+            <p>
                 <strong>Status:</strong>
                 <span class="status-active">
-                    ${doc.status || "Active"}
+                    ${doc.status || "Completed"}
                 </span>
             </p>
 
-            <button
-                class="btn btn-primary w-100 mt-2"
-                onclick="viewDoctor(${doc.id})">
-
-                View Details
-
-            </button>
 
         </div>
 
     </div>
 
 </div>`;
-          });
+});
 
           document.getElementById("doctorContainer").innerHTML = html;
         } catch (error) {

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.gps.attendance.entity.DoctorVisit;
+
 public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> {
 
     List<DoctorVisit> findByEmployeeId(Long employeeId);
@@ -50,7 +51,7 @@ public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> 
     long countDistinctDoctorByEmployeeAndMonth(Long employeeId, String month);
 
     @Query("SELECT COUNT(d) FROM DoctorVisit d WHERE d.employeeId = :employeeId")
-long countByEmployeeId(@Param("employeeId") Long employeeId);
+    long countByEmployeeId(@Param("employeeId") Long employeeId);
 
 // Duplicate protection
     Optional<DoctorVisit> findFirstByEmployeeIdAndDoctorNameIgnoreCaseAndVisitDate(
@@ -76,5 +77,18 @@ long countByEmployeeId(@Param("employeeId") Long employeeId);
     ORDER BY d.visitDate DESC
 """)
     List<Object[]> getWeeklyVisitStats();
+
+    @Query(
+            value = """
+    SELECT COUNT(*)
+    FROM doctor_visit
+    WHERE visit_date LIKE CONCAT(
+        TO_CHAR(CURRENT_DATE,'YYYY-MM'),
+        '%'
+    )
+    """,
+            nativeQuery = true
+    )
+    long getCurrentMonthVisitCount();
 
 }
