@@ -185,13 +185,14 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">Payment Mode</label>
+              <label class="form-label required">Payment Mode</label>
               <select id="paymentMode" class="form-select">
+                <option value="">Select Payment Mode</option>
                 <option value="Pending">Pending</option>
                 <option value="Cash">Cash</option>
                 <option value="UPI">UPI</option>
                 <option value="Bank Transfer">Bank Transfer</option>
-                <option value="Cheque">Cheque</option>
+                <!-- <option value="Cheque">Cheque</option> -->
               </select>
             </div>
 
@@ -206,7 +207,7 @@
             </div>
 
             <div class="col-md-12">
-              <button class="btn btn-submit text-white" onclick="placeOrder()">
+              <button class="btn btn-submit text-white" id="placeOrderBtn" onclick="placeOrder()">
                 <i class="fa-solid fa-cart-shopping me-2"></i>
                 Place Order
               </button>
@@ -489,142 +490,197 @@
         document.getElementById("doctorName").value =
           selected.getAttribute("data-name") || "";
       }
+    
+function placeOrder() {
+  const doctorId = document.getElementById("doctorId").value;
+  const doctorName = document.getElementById("doctorName").value;
+  const distributorId = document.getElementById("distributorId").value;
+  const distributorName = document.getElementById("distributorName").value;
+  const headquarters = document.getElementById("headquarters").value;
+  const paymentMode = document.getElementById("paymentMode").value;
 
-      function placeOrder() {
-        const doctorId = document.getElementById("doctorId").value;
-        const doctorName = document.getElementById("doctorName").value;
+  if (!doctorId) {
+    alert("Please select doctor");
+    return;
+  }
 
-        if (!doctorId) {
-          alert("Please select doctor");
-          return;
-        }
+  if (!distributorId) {
+    alert("Please select distributor");
+    return;
+  }
 
-        const rows = document.querySelectorAll(".product-row");
+  if (!paymentMode) {
+    alert("Please select payment mode");
+    return;
+  }
 
-        if (rows.length === 0) {
-          alert("Please add at least one product");
-          return;
-        }
+  const rows = document.querySelectorAll(".product-row");
 
-        let orders = [];
+  if (rows.length === 0) {
+    alert("Please add at least one product");
+    return;
+  }
 
-        for (const row of rows) {
-          const productId = row.querySelector(".productSelect").value;
-          const orderQuantity = Number(
-            row.querySelector(".orderQuantity").value || 0,
-          );
-          const sellingPrice = Number(
-            row.querySelector(".sellingPrice").value || 0,
-          );
-          const orderAmount = Number(
-            row.querySelector(".rowAmount").value || 0,
-          );
+  const paidAmountInput = document.getElementById("paidAmount").value.trim();
 
-          const selectedProduct = stockList.find(
-            (product) => String(product.productId) === String(productId),
-          );
+  if (paidAmountInput === "") {
+    alert("Please enter paid amount (enter 0 if no payment received)");
+    return;
+  }
 
-          if (!selectedProduct) {
-            alert("Please select product in all rows");
-            return;
-          }
+  const totalOrderAmount = Number(document.getElementById("orderAmount").value || 0);
+  const totalPaidAmount = Number(paidAmountInput || 0);
 
-          if (orderQuantity <= 0) {
-            alert("Enter valid quantity for " + selectedProduct.productName);
-            return;
-          }
+  if (totalOrderAmount <= 0) {
+    alert("Please select product and enter quantity/price");
+    return;
+  }
 
-          if (sellingPrice <= 0) {
-            alert("Enter selling price for " + selectedProduct.productName);
-            return;
-          }
+  if (totalPaidAmount < 0) {
+    alert("Paid amount cannot be negative");
+    return;
+  }
 
-          if (orderQuantity > Number(selectedProduct.availableUnits)) {
-            alert(
-              "Quantity cannot be greater than stock for " +
-                selectedProduct.productName,
-            );
-            return;
-          }
-          if (!document.getElementById("distributorId").value) {
-            alert("Please select distributor");
-            return;
-          }
+  if (totalPaidAmount > totalOrderAmount) {
+    alert("Paid amount cannot be greater than total order amount");
+    return;
+  }
 
-          orders.push({
-            employeeId: localStorage.getItem("employeeId"),
-            employeeName: localStorage.getItem("employeeName"),
+  let remainingPaidAmount = totalPaidAmount;
+  const orders = [];
 
-            doctorId: Number(doctorId),
-            doctorName: doctorName,
+  for (const row of rows) {
+    const productId = row.querySelector(".productSelect").value;
+    const orderQuantity = Number(row.querySelector(".orderQuantity").value || 0);
+    const sellingPrice = Number(row.querySelector(".sellingPrice").value || 0);
+    const orderAmount = Number(row.querySelector(".rowAmount").value || 0);
 
-            productId: Number(productId),
-            productName: selectedProduct.productName,
+    const selectedProduct = stockList.find(
+      product => String(product.productId) === String(productId)
+    );
 
-            orderQuantity: orderQuantity,
-            sellingPrice: sellingPrice,
-            orderAmount: orderAmount,
+    if (!selectedProduct) {
+      alert("Please select product in all rows");
+      return;
+    }
 
-            paidAmount: 0,
-            dueAmount: orderAmount,
-            paymentMode: document.getElementById("paymentMode")
-              ? document.getElementById("paymentMode").value
-              : "Pending",
+    if (orderQuantity <= 0) {
+      alert("Enter valid quantity for " + selectedProduct.productName);
+      return;
+    }
 
-            orderDate: document.getElementById("orderDate")
-              ? document.getElementById("orderDate").value
-              : new Date().toISOString().split("T")[0],
+    if (sellingPrice <= 0) {
+      alert("Enter selling price for " + selectedProduct.productName);
+      return;
+    }
 
-            distributorId: Number(
-              document.getElementById("distributorId").value,
-            ),
-            distributorName: document.getElementById("distributorName").value,
-            headquarters: document.getElementById("headquarters").value,
+    if (orderAmount <= 0) {
+      alert("Invalid amount for " + selectedProduct.productName);
+      return;
+    }
 
-            remarks: document.getElementById("remarks")
-              ? document.getElementById("remarks").value
-              : "",
-          });
-        }
+    if (orderQuantity > Number(selectedProduct.availableUnits || 0)) {
+      alert("Quantity cannot be greater than stock for " + selectedProduct.productName);
+      return;
+    }
 
-        fetch(`${BASE_URL}/order/place-multiple`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(orders),
-        })
-          .then(async (response) => {
-            const text = await response.text();
+    let rowPaidAmount = 0;
 
-            if (!response.ok) {
-              throw new Error(text);
-            }
+    if (remainingPaidAmount > 0) {
+      rowPaidAmount = Math.min(remainingPaidAmount, orderAmount);
+      remainingPaidAmount -= rowPaidAmount;
+    }
 
-            alert("Orders Placed Successfully");
+    const dueAmount = orderAmount - rowPaidAmount;
 
-            document.getElementById("productItems").innerHTML = "";
-            productRowIndex = 0;
-            addProductRow();
+    orders.push({
+      employeeId: Number(localStorage.getItem("employeeId")),
+      employeeName: localStorage.getItem("employeeName"),
 
-            document.getElementById("orderAmount").value = "";
-            document.getElementById("paidAmount").value = "";
-            document.getElementById("dueAmount").value = "";
-            document.getElementById("remarks").value = "";
+      doctorId: Number(doctorId),
+      doctorName: doctorName,
 
-            loadDistributorProducts();
-            loadOrderHistory();
-          })
-          .catch((error) => {
-            console.error("ORDER ERROR:", error);
+      productId: Number(productId),
+      productName: selectedProduct.productName,
 
-            if (error.message.includes("Insufficient stock")) {
-              alert(error.message);
-            } else {
-              alert("Failed to place order");
-            }
-          });
+      orderQuantity: orderQuantity,
+      sellingPrice: sellingPrice,
+      orderAmount: orderAmount,
+
+      paidAmount: rowPaidAmount,
+      dueAmount: dueAmount,
+      paymentMode: paymentMode,
+
+      orderDate: document.getElementById("orderDate")
+        ? document.getElementById("orderDate").value
+        : new Date().toISOString().split("T")[0],
+
+      distributorId: Number(distributorId),
+      distributorName: distributorName,
+      headquarters: headquarters,
+
+      remarks: document.getElementById("remarks")
+        ? document.getElementById("remarks").value
+        : "",
+    });
+  }
+
+  const placeBtn = document.getElementById("placeOrderBtn");
+
+  if (placeBtn.disabled) {
+    return;
+  }
+
+  placeBtn.disabled = true;
+  placeBtn.innerHTML =
+    '<i class="fa-solid fa-spinner fa-spin me-2"></i>Order Placing...';
+
+  fetch(`${BASE_URL}/order/place-multiple`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(orders),
+  })
+    .then(async (response) => {
+      const text = await response.text();
+
+      if (!response.ok) {
+        throw new Error(text);
       }
+
+      alert("Orders Placed Successfully");
+
+      placeBtn.disabled = false;
+      placeBtn.innerHTML =
+        '<i class="fa-solid fa-cart-shopping me-2"></i>Place Order';
+
+      document.getElementById("productItems").innerHTML = "";
+      productRowIndex = 0;
+      addProductRow();
+
+      document.getElementById("orderAmount").value = "";
+      document.getElementById("paidAmount").value = "";
+      document.getElementById("dueAmount").value = "";
+      document.getElementById("remarks").value = "";
+
+      loadDistributorProducts();
+      loadOrderHistory();
+    })
+    .catch((error) => {
+      placeBtn.disabled = false;
+      placeBtn.innerHTML =
+        '<i class="fa-solid fa-cart-shopping me-2"></i>Place Order';
+
+      console.error("ORDER ERROR:", error);
+
+      if (error.message.includes("Insufficient stock")) {
+        alert(error.message);
+      } else {
+        alert("Failed to place order");
+      }
+    });
+}
 
       function calculateDueAmount() {
         const orderAmount = Number(

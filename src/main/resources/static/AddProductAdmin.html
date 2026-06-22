@@ -76,7 +76,7 @@ body{
                            placeholder="Enter product name">
                 </div>
 
-                <div class="col-md-6">
+                <!-- <div class="col-md-6">
                     <label class="form-label">Product Code</label>
                     <input type="text"
                            id="productCode"
@@ -90,7 +90,7 @@ body{
                            id="mrp"
                            class="form-control"
                            placeholder="Enter MRP">
-                </div>
+                </div> -->
 
                 <div class="col-md-6">
                     <label class="form-label">Status</label>
@@ -141,9 +141,7 @@ body{
                     <thead class="table-primary">
                         <tr>
                             <th>ID</th>
-                            <th>Product Name</th>
-                            <th>Code</th>
-                            <th>MRP</th>
+                            <th>Company's Product</th>    
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -170,8 +168,6 @@ function saveProduct(){
 
     const productData = {
         productName: document.getElementById("productName").value,
-        productCode: document.getElementById("productCode").value,
-        mrp: document.getElementById("mrp").value,
         status: document.getElementById("status").value
     };
 
@@ -209,7 +205,7 @@ function loadProducts(){
 
             table.innerHTML = `
                 <tr>
-                    <td colspan="5" class="text-center">
+                    <td colspan="3" class="text-center">
                         No Products Found
                     </td>
                 </tr>
@@ -229,8 +225,6 @@ function loadProducts(){
                 <tr>
                     <td>${product.id}</td>
                     <td>${product.productName}</td>
-                    <td>${product.productCode || "-"}</td>
-                    <td>₹${product.mrp || 0}</td>
                     <td>
                         <span class="${statusClass}">
                             ${product.status}
@@ -248,8 +242,6 @@ function loadProducts(){
 function clearForm(){
 
     document.getElementById("productName").value = "";
-    document.getElementById("productCode").value = "";
-    document.getElementById("mrp").value = "";
     document.getElementById("status").selectedIndex = 0;
 }
 

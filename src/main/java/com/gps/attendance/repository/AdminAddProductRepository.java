@@ -3,9 +3,9 @@ package com.gps.attendance.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.gps.attendance.entity.Product;
+import com.gps.attendance.entity.AdminAddProduct;
 
 @Repository
-public interface ProductRepository
-        extends JpaRepository<Product, Long> {
+public interface AdminAddProductRepository
+        extends JpaRepository<AdminAddProduct, Long> {
 }
