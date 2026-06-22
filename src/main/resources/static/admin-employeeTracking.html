@@ -42,53 +42,13 @@
       }
 
 
-      /* Sidebar */
-      .sidebar {
-        position: fixed;
-        top: 90px;
-        left: 0;
-        width: 250px;
-        height: 100vh;
-        background: #0f172a;
-        transition: 0.3s;
-        overflow-y: auto;
-        z-index: 1000;
-      }
-
-      .sidebar.hide {
-        margin-left: -250px;
-      }
-
-      .sidebar .nav-link {
-        color: #fff;
-        padding: 12px 20px;
-        margin: 5px 10px;
-        border-radius: 8px;
-      }
-
-      .sidebar .nav-link:hover {
-        background: #1e293b;
-      }
-
-      .sidebar .nav-link.active {
-        background: #0d6efd;
-        color: #fff;
-      }
-
-
       /* Main Content */
 
       .main-content {
         margin-top: 100px;
-        margin-left: 250px;
         padding: 20px;
         transition: 0.3s;
       }
-
-      .main-content.full {
-        margin-left: 0;
-      }
-
       /* Welcome Banner */
 
       .welcome-banner {
@@ -114,24 +74,13 @@
         }
         .top-navbar {
           height: 90px;
-        }
-        .sidebar {
-          top: 90px;
-        }
-        .main-content {
-          margin-left: 0;
-        }
-        .sidebar {
-          margin-left: -250px;
-        }
-        .sidebar.show {
-          margin-left: 0;
-        }
+       
          .navbar-logo{
           width: 80px;
           height: 75px;
         }
       }
+    }
     </style>
   </head>
 
@@ -140,8 +89,8 @@
 
     <nav class="navbar top-navbar px-3">
       <div class="d-flex align-items-center">
-        <button class="btn btn-light me-3" onclick="toggleSidebar()">
-          <i class="fas fa-bars"></i>
+         <button class="btn btn-light me-3" onclick="goBack()">
+          <i class="fas fa-arrow-left"></i>
         </button>
 
         <img src="images/Inflix-logo-web.png" alt="Logo" class="navbar-logo me-2">
@@ -158,91 +107,7 @@
 
       </div>
     </nav>
-    <!-- ================= SIDEBAR ================= -->
-
-    
-    <div class="sidebar" id="sidebar">
-      <ul class="nav flex-column mt-3">
-        <li class="nav-item">
-          <a href="admin-dashboard.html" class="nav-link">
-            <i class="fas fa-home me-2"></i>
-            Dashboard
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="admin-employeeTracking.html" class="nav-link active">
-            <i class="fas fa-location-dot me-2"></i>
-            Employee Tracking
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="employeeList.html" class="nav-link">
-            <i class="fas fa-users me-2"></i>
-            Employees
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="doctorList.html" class="nav-link">
-            <i class="fas fa-user-doctor me-2"></i>
-            Doctors
-          </a>
-        </li>
-
-        <!-- <li class="nav-item">
-          <a href="admin-orders.html" class="nav-link">
-            <i class="fas fa-box me-2"></i>
-            Orders
-          </a>
-        </li> -->
-
-        <li class="nav-item">
-          <a href="AdminTourApproval.html" class="nav-link">
-            <i class="fa-solid fa-route"></i>
-            Tour Approval
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="AdminHQManagement.html" class="nav-link">
-            <i class="fas fa-map-marker-alt me-2"></i>
-            HQ Management
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="AdminDistributor.html" class="nav-link">
-            <i class="fa-solid fa-truck-medical me-2"></i>
-            Distributors
-          </a>
-        </li>
-
-        <li class="nav-item">
-  <a href="AdminLeaveRequest.html" class="nav-link">
-    <i class="fa-solid fa-boxes-stacked me-2"></i>
-    Leave Requests
-  </a>
-</li>
-
-        <li class="nav-item">
-          <a href="AdminAttendanceHistory.html" class="nav-link">
-            <i class="fa-solid fa-warehouse me-2"></i>
-            Attendance History
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="index.html" class="nav-link text-danger" id="logoutBtn">
-            <i class="fas fa-sign-out-alt me-2"></i>
-            Logout
-           </a>
-          </li>
-        </li>
-      </ul>
-    </div>
-
+   
     <!-- Main Content Start -->
 
     <div class="main-content" id="mainContent">
@@ -360,7 +225,6 @@
 
     <script src="js/config.js"></script>
 
-    <!-- Sidebar Toggle -->
 
     <script>
   window.onload = function () {
@@ -374,17 +238,9 @@
       .addEventListener("keyup", filterEmployeeRows);
   };
 
-  function toggleSidebar() {
-    const sidebar = document.getElementById("sidebar");
-    const main = document.getElementById("mainContent");
-
-    if (window.innerWidth <= 768) {
-      sidebar.classList.toggle("show");
-    } else {
-      sidebar.classList.toggle("hide");
-      main.classList.toggle("full");
-    }
-  }
+   function goBack() {
+        window.location.replace("admin-dashboard.html");
+      }
 
   function updateTime() {
     document.getElementById("datetime").innerHTML =
@@ -398,7 +254,7 @@
 
 }
    loadAdminInfo();
-      updateTime() 
+      updateTime();
 
   function loadEmployeeTracking() {
     fetch(`${BASE_URL}/get-employees`)
