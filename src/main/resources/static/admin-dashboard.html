@@ -414,8 +414,8 @@
           font-size: 15px;
         }
         .quick-actions .card-body {
-  padding: 12px !important;
-}
+          padding: 12px !important;
+        }
 
 .quick-actions h5,
 .quick-actions h6 {
@@ -487,27 +487,6 @@
           </a>
         </li>
 
-        <!-- <li class="nav-item">
-          <a href="employeeList.html" class="nav-link">
-            <i class="fas fa-users me-2"></i>
-            Employees
-          </a>
-        </li> -->
-
-        <!-- <li class="nav-item">
-          <a href="doctorList.html" class="nav-link">
-            <i class="fas fa-user-doctor me-2"></i>
-            Doctors
-          </a>
-        </li> -->
-
-        <!-- <li class="nav-item">
-          <a href="admin-orders.html" class="nav-link">
-            <i class="fas fa-box me-2"></i>
-            Orders
-          </a>
-        </li> -->
-
         <li class="nav-item">
           <a href="AdminTourHistory.html" class="nav-link">
             <i class="fa-solid fa-route"></i>
@@ -549,6 +528,13 @@
             Attendance History
           </a>
         </li>
+
+        <li class="nav-item">
+    <a href="Admin-change-password.html" class="nav-link">
+        <i class="fas fa-key"></i>
+        Change Password
+    </a>
+</li>
 
         <li class="nav-item">
           <a href="index.html" class="nav-link text-danger" id="logoutBtn">
@@ -694,12 +680,7 @@
               </a>
             </div>
 
-            <!-- <div class="col-6 col-md-3">
-              <a href="AdminTourApproval.html" class="quick-action bg-primary">
-                <i class="fa-solid fa-route"></i>
-                <span>Tour Approval</span>
-              </a>
-            </div> -->
+            
 
                <div class="col-6 col-md-3">
         <a href="AdminRouteManagement.html" class="quick-action bg-primary">
@@ -769,59 +750,7 @@
         </div>
       </div>
 
-      <!-- ================= LIVE EMPLOYEE TRACKING ================= -->
-
-      <div class="card dashboard-card mb-4">
-        <div class="card-header bg-success text-white">
-          <h5 class="mb-0">Live Employee Tracking</h5>
-        </div>
-
-        <div class="card-body">
-          <div class="table-responsive">
-            <table
-              class="table table-bordered table-hover align-middle text-center"
-            >
-              <thead class="table-success">
-                <tr>
-                  <th>Employee</th>
-
-                  <th>Doctor</th>
-
-                  <th>Location</th>
-
-                  <th>Status</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr>
-                  <td>Raqib Khan</td>
-
-                  <td>Dr Sharma</td>
-
-                  <td>Lucknow</td>
-
-                  <td>
-                    <span class="badge bg-success"> Verified </span>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>Aman Verma</td>
-
-                  <td>Dr Khan</td>
-
-                  <td>Sitapur</td>
-
-                  <td>
-                    <span class="badge bg-warning text-dark"> Pending </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+    
       <!-- ================= doctor visit table  ================= -->
 
       <div class="card shadow-sm mt-4 mb-4">
@@ -887,6 +816,20 @@
     <!-- ================= SIDEBAR TOGGLE ================= -->
 
     <script>
+
+      function updateTime() {
+        document.getElementById("datetime").innerHTML =
+          new Date().toLocaleString();
+      }
+      setInterval(updateTime, 1000);
+
+      function loadAdminInfo() {
+        document.getElementById("adminName").innerText =
+          localStorage.getItem("adminName") || "Admin";
+      }
+      loadAdminInfo();
+      updateTime();
+
       function toggleSidebar() {
         let sidebar = document.getElementById("sidebar");
 
@@ -901,22 +844,31 @@
         }
       }
 
-      function updateTime() {
-        document.getElementById("datetime").innerHTML =
-          new Date().toLocaleString();
-      }
+      window.onload = function () {
+    updateTime();
+    setInterval(updateTime, 1000);
 
-      setInterval(updateTime, 1000);
-      
+    loadEmployeeTracking();
+
+    document
+      .getElementById("searchEmployee")
+      .addEventListener("keyup", filterEmployeeRows);
+  };
+
+  function updateTime() {
+    document.getElementById("datetime").innerHTML =
+      new Date().toLocaleString();
+       }
+       setInterval(updateTime, 1000);
+
        function loadAdminInfo() {
-
     document.getElementById("adminName").innerText =
         localStorage.getItem("adminName") || "Admin";
 
 }
-
-      loadAdminInfo();
+   loadAdminInfo();
       updateTime();
+
   // ================= DASHBOARD COUNTS ================= 
 
    

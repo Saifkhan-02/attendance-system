@@ -512,13 +512,20 @@ function loginAdmin() {
         }
         return response.json();
     })
-    .then(data => {
-        localStorage.setItem("adminId", data.id);
-        localStorage.setItem("adminName", data.name);
-        localStorage.setItem("adminUsername", data.username);
+   .then(data => {
 
-        window.location.href = "admin-dashboard.html";
-    })
+    console.log("LOGIN RESPONSE =", data);
+
+    console.log("Login Data =", data);
+
+    localStorage.setItem("adminId", data.id);
+    localStorage.setItem("adminName", data.name);
+    localStorage.setItem("adminUsername", data.username);
+
+    console.log("Saved Admin ID =", localStorage.getItem("adminId"));
+
+    window.location.href = "admin-dashboard.html";
+})
     .catch(error => {
         alert(error.message);
     });
