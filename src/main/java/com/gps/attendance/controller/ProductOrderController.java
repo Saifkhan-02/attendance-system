@@ -51,7 +51,7 @@ public class ProductOrderController {
         this.orderRepository = orderRepository;
         this.globalStockRepository = globalStockRepository;
         this.distributorStockRepository = distributorStockRepository;
-        
+
     }
 
     @PostMapping("/place")
@@ -69,37 +69,37 @@ public class ProductOrderController {
             availableUnits = stock.getAvailableUnits();
         }
 
-    System.out.println("STOCK PRODUCT: " + stock.getProductName());
-    System.out.println("AVAILABLE UNITS: " + availableUnits);
+        System.out.println("STOCK PRODUCT: " + stock.getProductName());
+        System.out.println("AVAILABLE UNITS: " + availableUnits);
 
-    if (order.getOrderQuantity() > availableUnits) {
-        throw new RuntimeException("Insufficient stock");
+        if (order.getOrderQuantity() > availableUnits) {
+            throw new RuntimeException("Insufficient stock");
+        }
+
+        stock.setAvailableUnits(availableUnits - order.getOrderQuantity());
+        globalStockRepository.save(stock);
+
+        order.setStatus("Placed");
+
+        return orderRepository.save(order);
     }
 
-    stock.setAvailableUnits(availableUnits - order.getOrderQuantity());
-    globalStockRepository.save(stock);
-
-    order.setStatus("Placed");
-
-    return orderRepository.save(order);
-}
-
     @GetMapping("/history/today/{employeeId}")
-public List<ProductOrder> getTodayOrders(@PathVariable Long employeeId) {
-    String today = LocalDate.now().toString();
+    public List<ProductOrder> getTodayOrders(@PathVariable Long employeeId) {
+        String today = LocalDate.now().toString();
 
-    return orderRepository
-            .findByEmployeeIdAndOrderDateOrderByIdDesc(employeeId, today);
-}
+        return orderRepository
+                .findByEmployeeIdAndOrderDateOrderByIdDesc(employeeId, today);
+    }
 
-@GetMapping("/history/monthly/{employeeId}")
-public List<ProductOrder> getMonthlyOrders(
-        @PathVariable Long employeeId,
-        @RequestParam String month
-) {
-    return orderRepository
-            .findByEmployeeIdAndOrderDateStartingWithOrderByIdDesc(employeeId, month);
-}
+    @GetMapping("/history/monthly/{employeeId}")
+    public List<ProductOrder> getMonthlyOrders(
+            @PathVariable Long employeeId,
+            @RequestParam String month
+    ) {
+        return orderRepository
+                .findByEmployeeIdAndOrderDateStartingWithOrderByIdDesc(employeeId, month);
+    }
 
     @GetMapping("/history/{employeeId}")
     public List<ProductOrder> getOrderHistory(@PathVariable Long employeeId) {
@@ -114,41 +114,38 @@ public List<ProductOrder> getMonthlyOrders(
     }
 
     @GetMapping("/summary")
-public Map<String, Object> getSummary(
+    public Map<String, Object> getSummary(
+            @RequestParam String month,
+            @RequestParam String year
+    ) {
 
-        @RequestParam String month,
-        @RequestParam String year
+        List<ProductOrder> allOrders
+                = orderRepository.findAll();
 
-) {
+        List<ProductOrder> orders
+                = new ArrayList<>();
 
-       List<ProductOrder> allOrders
-        = orderRepository.findAll();
+        for (ProductOrder order : allOrders) {
 
-       List<ProductOrder> orders
-        = new ArrayList<>();
+            if (order.getOrderDate() != null) {
 
-for (ProductOrder order : allOrders) {
+                String[] parts
+                        = order.getOrderDate().split("-");
 
-    if (order.getOrderDate() != null) {
+                if (parts.length == 3) {
 
-        String[] parts =
-                order.getOrderDate().split("-");
+                    String orderYear = parts[0];
+                    String orderMonth = parts[1];
 
-        if (parts.length == 3) {
+                    if (orderMonth.equals(month)
+                            && orderYear.equals(year)) {
 
-           
-            String orderYear = parts[0];
-            String orderMonth = parts[1];
+                        orders.add(order);
 
-            if (orderMonth.equals(month)
-                    && orderYear.equals(year)) {
-
-                orders.add(order);
-
+                    }
+                }
             }
         }
-    }
-}
 
         double totalAmount = 0.0;
         double paidAmount = 0.0;
@@ -415,105 +412,106 @@ for (ProductOrder order : allOrders) {
                 .body(out.toByteArray());
     }
 
- @PostMapping("/place-multiple")
-public List<ProductOrder> placeMultipleOrders(@RequestBody List<ProductOrder> orders) {
+    @PostMapping("/place-multiple")
+    public List<ProductOrder> placeMultipleOrders(@RequestBody List<ProductOrder> orders) {
 
-    for (ProductOrder order : orders) {
+        for (ProductOrder order : orders) {
 
-        DistributorStock stock = distributorStockRepository
-                .findByDistributorIdAndProductId(
-                        order.getDistributorId(),
-                        order.getProductId()
-                )
-                .orElseThrow(() -> new RuntimeException("Distributor stock not found for " + order.getProductName()));
+            DistributorStock stock = distributorStockRepository
+                    .findByDistributorIdAndProductId(
+                            order.getDistributorId(),
+                            order.getProductId()
+                    )
+                    .orElseThrow(() -> new RuntimeException("Distributor stock not found for " + order.getProductName()));
 
-        Integer availableUnits = stock.getAvailableUnits() == null ? 0 : stock.getAvailableUnits();
+            Integer availableUnits = stock.getAvailableUnits() == null ? 0 : stock.getAvailableUnits();
 
-        if (order.getOrderQuantity() > availableUnits) {
-            throw new RuntimeException("Insufficient stock for " + order.getProductName());
+            if (order.getOrderQuantity() > availableUnits) {
+                throw new RuntimeException("Insufficient stock for " + order.getProductName());
+            }
         }
+
+        for (ProductOrder order : orders) {
+
+            DistributorStock stock = distributorStockRepository
+                    .findByDistributorIdAndProductId(
+                            order.getDistributorId(),
+                            order.getProductId()
+                    )
+                    .orElseThrow(() -> new RuntimeException("Distributor stock not found"));
+
+            stock.setAvailableUnits(stock.getAvailableUnits() - order.getOrderQuantity());
+            distributorStockRepository.save(stock);
+
+            order.setStatus("Placed");
+        }
+
+        return orderRepository.saveAll(orders);
     }
 
-    for (ProductOrder order : orders) {
-
-        DistributorStock stock = distributorStockRepository
-                .findByDistributorIdAndProductId(
-                        order.getDistributorId(),
-                        order.getProductId()
-                )
-                .orElseThrow(() -> new RuntimeException("Distributor stock not found"));
-
-        stock.setAvailableUnits(stock.getAvailableUnits() - order.getOrderQuantity());
-        distributorStockRepository.save(stock);
-
-        order.setStatus("Placed");
+    @GetMapping("/admin/all")
+    public List<ProductOrder> getAllOrdersForAdmin() {
+        return orderRepository.findAll();
     }
 
-    return orderRepository.saveAll(orders);
-}
+    @GetMapping("/admin/sales-payment/summary")
+    public Map<String, Object> getSalesSummary() {
 
-@GetMapping("/admin/all")
-public List<ProductOrder> getAllOrdersForAdmin() {
-    return orderRepository.findAll();
-}
-@GetMapping("/admin/sales-payment/summary")
-public Map<String, Object> getSalesSummary() {
+        Map<String, Object> result = new HashMap<>();
 
-    Map<String, Object> result = new HashMap<>();
+        result.put("totalSale",
+                orderRepository.getTotalSale());
 
-    result.put("totalSale",
-            orderRepository.getTotalSale());
+        result.put("totalCollection",
+                orderRepository.getTotalCollection());
 
-    result.put("totalCollection",
-            orderRepository.getTotalCollection());
+        result.put("totalDue",
+                orderRepository.getTotalDue());
 
-    result.put("totalDue",
-            orderRepository.getTotalDue());
+        result.put("totalOrders",
+                orderRepository.count());
 
-    result.put("totalOrders",
-            orderRepository.count());
-
-    return result;
-}
-
-@GetMapping("/admin/sales-payment/employee/{employeeId}")
-public Map<String, Object> getEmployeeSales(
-        @PathVariable Long employeeId) {
-
-    List<ProductOrder> orders =
-            orderRepository.findByEmployeeId(employeeId);
-
-    double sale = 0;
-    double collection = 0;
-    double due = 0;
-
-    for (ProductOrder order : orders) {
-
-        sale += order.getOrderAmount() == null
-                ? 0
-                : order.getOrderAmount();
-
-        collection += order.getPaidAmount() == null
-                ? 0
-                : order.getPaidAmount();
-
-        due += order.getDueAmount() == null
-                ? 0
-                : order.getDueAmount();
+        return result;
     }
 
-    Map<String, Object> result = new HashMap<>();
+    @GetMapping("/admin/sales-payment/employee/{employeeId}")
+    public Map<String, Object> getEmployeeSales(
+            @PathVariable Long employeeId) {
 
-    result.put("sale", sale);
-    result.put("collection", collection);
-    result.put("due", due);
-    result.put("orders", orders.size());
+        List<ProductOrder> orders
+                = orderRepository.findByEmployeeId(employeeId);
 
-    return result;
-}
+        double sale = 0;
+        double collection = 0;
+        double due = 0;
 
-@GetMapping("/employee/{id}/order-count")
-public Long getOrderCount(@PathVariable Long id) {
-    return orderRepository.countOrdersByEmployeeId(id);
-}
+        for (ProductOrder order : orders) {
+
+            sale += order.getOrderAmount() == null
+                    ? 0
+                    : order.getOrderAmount();
+
+            collection += order.getPaidAmount() == null
+                    ? 0
+                    : order.getPaidAmount();
+
+            due += order.getDueAmount() == null
+                    ? 0
+                    : order.getDueAmount();
+        }
+
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("sale", sale);
+        result.put("collection", collection);
+        result.put("due", due);
+        result.put("orders", orders.size());
+
+        return result;
+    }
+
+    @GetMapping("/employee/{id}/order-count")
+    public Long getOrderCount(@PathVariable Long id) {
+        return orderRepository.countOrdersByEmployeeId(id);
+    }
 }

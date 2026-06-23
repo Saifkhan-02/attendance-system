@@ -11,12 +11,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gps.attendance.entity.AdminAddProduct;
 import com.gps.attendance.entity.Distributor;
 import com.gps.attendance.entity.DistributorStock;
-import com.gps.attendance.entity.GlobalStock;
+import com.gps.attendance.repository.AdminAddProductRepository;
 import com.gps.attendance.repository.DistributorRepository;
 import com.gps.attendance.repository.DistributorStockRepository;
-import com.gps.attendance.repository.GlobalStockRepository;
+
 
 @RestController
 @CrossOrigin("*")
@@ -24,16 +25,16 @@ public class DistributorStockController {
 
     private final DistributorStockRepository distributorStockRepository;
     private final DistributorRepository distributorRepository;
-    private final GlobalStockRepository globalStockRepository;
+   private final AdminAddProductRepository adminAddProductRepository;
 
     public DistributorStockController(
             DistributorStockRepository distributorStockRepository,
             DistributorRepository distributorRepository,
-            GlobalStockRepository globalStockRepository
+            AdminAddProductRepository adminAddProductRepository
     ) {
         this.distributorStockRepository = distributorStockRepository;
         this.distributorRepository = distributorRepository;
-        this.globalStockRepository = globalStockRepository;
+        this.adminAddProductRepository = adminAddProductRepository;
     }
 
     @GetMapping("/distributor-stock/{distributorId}")
@@ -54,8 +55,8 @@ public class DistributorStockController {
             Distributor distributor = distributorRepository.findById(distributorId)
                 .orElseThrow(() -> new RuntimeException("Distributor not found"));
 
-        GlobalStock product = globalStockRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+       AdminAddProduct product = adminAddProductRepository.findById(productId)
+        .orElseThrow(() -> new RuntimeException("Product not found"));
 
         Optional<DistributorStock> existingStock =
                 distributorStockRepository.findByDistributorIdAndProductId(
