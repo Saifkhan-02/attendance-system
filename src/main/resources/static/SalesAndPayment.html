@@ -142,13 +142,62 @@
           min-width: 720px;
         }
       }
+     .payment-update-card{
+  min-height:115px;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  padding:26px;
+  cursor:pointer;
+  background:linear-gradient(135deg,#0ea5e9,#2563eb);
+  color:#fff;
+  transition:.3s;
+}
+
+.payment-update-card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 14px 35px rgba(37,99,235,.25);
+}
+
+.payment-update-icon{
+  width:58px;
+  height:58px;
+  min-width:58px;
+  border-radius:18px;
+  background:rgba(255,255,255,.22);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+}
+
+.payment-arrow{
+  font-size:30px;
+}
+
+@media(max-width:768px){
+  .payment-update-card{
+    min-height:100px;
+    padding:20px;
+  }
+
+  .payment-update-card h4{
+    font-size:20px;
+  }
+
+  .payment-update-card p{
+    font-size:14px;
+  }
+}
     </style>
   </head>
 
   <body>
     <header class="top-header">
       <div class="d-flex align-items-center gap-3">
-        <button class="back-btn" onclick="history.back()">
+        <button class="back-btn" onclick="window.location.href='Dashboard.html'">
           <i class="fa-solid fa-arrow-left"></i>
         </button>
 
@@ -160,77 +209,88 @@
     </header>
 
     <div class="container py-4">
-      <div class="filter-box mb-4">
-        <div class="row g-3">
-          <div class="col-md-4">
-            <label class="form-label fw-bold">From Date</label>
-            <input type="date" class="form-control" id="fromDate" />
-          </div>
+     <div class="filter-box mb-4">
+  <div class="row g-3">
 
-          <div class="col-md-4">
-            <label class="form-label fw-bold">To Date</label>
-            <input type="date" class="form-control" id="toDate" />
-          </div>
+    <div class="col-6 col-md-6">
+      <label class="form-label fw-bold">From Date</label>
+      <input type="date" class="form-control" id="fromDate">
+    </div>
 
-          <div class="col-md-4">
-  <label class="form-label fw-bold">Distributor</label>
-  <select
-    class="form-select"
-    id="distributorFilter"
-    onchange="applySalesFilter()"
-  >
-    <option value="all">All Distributors</option>
-  </select>
+    <div class="col-6 col-md-6">
+      <label class="form-label fw-bold">To Date</label>
+      <input type="date" class="form-control" id="toDate">
+    </div>
+
+    <div class="col-6 col-md-6">
+      <label class="form-label fw-bold">Distributor</label>
+      <select class="form-select" id="distributorFilter" onchange="applySalesFilter()">
+        <option value="all">All Distributors</option>
+      </select>
+    </div>
+
+    <div class="col-6 col-md-6">
+      <label class="form-label fw-bold">Doctor</label>
+      <select class="form-select" id="doctorFilter" onchange="applySalesFilter()">
+        <option value="all">All Doctors</option>
+      </select>
+    </div>
+
+  </div>
 </div>
 
-          <!-- Doctors access -->
+<div class="row g-3 mb-4">
 
-          <div class="col-md-4">
-            <label class="form-label fw-bold">Doctor</label>
-            <select
-              class="form-select"
-              id="doctorFilter"
-              onchange="applySalesFilter()"
-            >
-              <option value="all">All Doctors</option>
-            </select>
-          </div>
-        </div>
+  <div class="col-6 col-md-3">
+    <div class="summary-card bg-sale">
+      <i class="fa-solid fa-chart-line"></i>
+      <p class="mb-0 mt-2">Today Sale</p>
+      <h4 id="todaySale">₹0</h4>
+    </div>
+  </div>
+
+  <div class="col-6 col-md-3">
+    <div class="summary-card bg-doctor">
+      <i class="fa-solid fa-calendar-days"></i>
+      <p class="mb-0 mt-2">Monthly Sale</p>
+      <h4 id="monthlySale">₹0</h4>
+    </div>
+  </div>
+
+  <div class="col-6 col-md-3">
+    <div class="summary-card bg-paid">
+      <i class="fa-solid fa-circle-check"></i>
+      <p class="mb-0 mt-2">Payment Received</p>
+      <h4 id="paymentReceived">₹0</h4>
+    </div>
+  </div>
+
+  <div class="col-6 col-md-3">
+    <div class="summary-card bg-due">
+      <i class="fa-solid fa-clock"></i>
+      <p class="mb-0 mt-2">Payment Due</p>
+      <h4 id="paymentDue">₹0</h4>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="summary-card payment-update-card"
+         onclick="window.location.href='PaymentCollection.html'">
+
+      <div class="payment-update-icon">
+        <i class="fa-solid fa-money-bill-transfer"></i>
       </div>
 
-      <div class="row g-3 mb-4">
-        <div class="col-6 col-md-3">
-          <div class="summary-card bg-sale">
-            <i class="fa-solid fa-chart-line"></i>
-            <p class="mb-0 mt-2">Today Sale</p>
-            <h4 id="todaySale">₹0</h4>
-          </div>
-        </div>
-
-        <div class="col-6 col-md-3">
-          <div class="summary-card bg-doctor">
-            <i class="fa-solid fa-calendar-days"></i>
-            <p class="mb-0 mt-2">Monthly Sale</p>
-            <h4 id="monthlySale">₹0</h4>
-          </div>
-        </div>
-
-        <div class="col-6 col-md-3">
-          <div class="summary-card bg-paid">
-            <i class="fa-solid fa-circle-check"></i>
-            <p class="mb-0 mt-2">Payment Received</p>
-            <h4 id="paymentReceived">₹0</h4>
-          </div>
-        </div>
-
-        <div class="col-6 col-md-3">
-          <div class="summary-card bg-due">
-            <i class="fa-solid fa-clock"></i>
-            <p class="mb-0 mt-2">Payment Due</p>
-            <h4 id="paymentDue">₹0</h4>
-          </div>
-        </div>
+      <div>
+        <h4 class="mb-1">Payment Update</h4>
+        <p class="mb-0">Collect due payments from doctors</p>
       </div>
+
+      <i class="fa-solid fa-arrow-right payment-arrow"></i>
+    </div>
+  </div>
+
+</div>
 
       <div class="row g-4">
         <div class="col-lg-6">
@@ -274,9 +334,7 @@
               </tr>
             </thead>
 
-            <tbody id="doctorPaymentTable">
-        
-            </tbody>
+            <tbody id="doctorPaymentTable"></tbody>
           </table>
         </div>
       </div>
@@ -302,9 +360,7 @@
               </tr>
             </thead>
 
-            <tbody id="dailySalesTable">
-             
-            </tbody>
+            <tbody id="dailySalesTable"></tbody>
           </table>
         </div>
       </div>
@@ -316,106 +372,126 @@
     <script>
       let salesChart;
       let paymentChart;
-function applySalesFilter() {
-  loadFilteredSalesData();
-}
-     window.onload = function () {
-  loadDistributorsForFilter();
-  loadDoctorsForFilter();
-  loadFilteredSalesData();
-};
+      function applySalesFilter() {
+        loadFilteredSalesData();
+      }
+      window.onload = function () {
+        loadDistributorsForFilter();
+        loadDoctorsForFilter();
+        loadFilteredSalesData();
+      };
 
-function loadDistributorsForFilter() {
-  const employeeId = localStorage.getItem("employeeId");
+      function loadDistributorsForFilter() {
+        const employeeId = localStorage.getItem("employeeId");
 
-  fetch(`${BASE_URL}/employee/${employeeId}`)
-    .then(response => response.json())
-    .then(employee => {
-      const headquarters =
-        employee.headquarters || employee.headQuarters || employee.headQuarter || "";
+        fetch(`${BASE_URL}/employee/${employeeId}`)
+          .then((response) => response.json())
+          .then((employee) => {
+            const headquarters =
+              employee.headquarters ||
+              employee.headQuarters ||
+              employee.headQuarter ||
+              "";
 
-      return fetch(`${BASE_URL}/distributor/by-headquarter/${encodeURIComponent(headquarters)}`);
-    })
-    .then(response => response.json())
-    .then(data => {
-      const dropdown = document.getElementById("distributorFilter");
+            return fetch(
+              `${BASE_URL}/distributor/by-headquarter/${encodeURIComponent(headquarters)}`,
+            );
+          })
+          .then((response) => response.json())
+          .then((data) => {
+            const dropdown = document.getElementById("distributorFilter");
 
-      dropdown.innerHTML = `<option value="all">All Distributors</option>`;
+            dropdown.innerHTML = `<option value="all">All Distributors</option>`;
 
-      data.forEach(distributor => {
-        dropdown.innerHTML += `
+            data.forEach((distributor) => {
+              dropdown.innerHTML += `
           <option value="${distributor.distributorName}">
             ${distributor.distributorName}
           </option>
         `;
-      });
-    })
-    .catch(error => {
-      console.error("DISTRIBUTOR FILTER ERROR:", error);
-    });
-}
+            });
+          })
+          .catch((error) => {
+            console.error("DISTRIBUTOR FILTER ERROR:", error);
+          });
+      }
 
       function loadFilteredSalesData() {
-  const employeeId = localStorage.getItem("employeeId");
-  const doctorId = document.getElementById("doctorFilter").value;
-  const distributorName = document.getElementById("distributorFilter").value;
+        const employeeId = localStorage.getItem("employeeId");
+        const doctorId = document.getElementById("doctorFilter").value;
+        const distributorName =
+          document.getElementById("distributorFilter").value;
 
-  fetch(`${BASE_URL}/order/history/${employeeId}`)
-    .then(response => response.json())
-    .then(data => {
-      let filtered = data || [];
+        fetch(`${BASE_URL}/order/history/${employeeId}`)
+          .then((response) => response.json())
+          .then((data) => {
+            let filtered = data || [];
 
-      if (doctorId !== "all" && doctorId !== "") {
-        filtered = filtered.filter(order => String(order.doctorId) === String(doctorId));
+            if (doctorId !== "all" && doctorId !== "") {
+              filtered = filtered.filter(
+                (order) => String(order.doctorId) === String(doctorId),
+              );
+            }
+
+            if (distributorName !== "all" && distributorName !== "") {
+              filtered = filtered.filter(
+                (order) => order.distributorName === distributorName,
+              );
+            }
+
+            renderSummaryFromOrders(filtered);
+            renderDailySalesTable(filtered);
+            renderDoctorPaymentTableFromOrders(filtered);
+            renderChartsFromOrders(filtered);
+          });
       }
 
-      if (distributorName !== "all" && distributorName !== "") {
-        filtered = filtered.filter(order => order.distributorName === distributorName);
+      function renderSummaryFromOrders(orders) {
+        const today = new Date().toISOString().split("T")[0];
+        const currentMonth = new Date().toISOString().slice(0, 7);
+
+        const todaySale = orders
+          .filter((o) => o.orderDate === today)
+          .reduce((sum, o) => sum + Number(o.orderAmount || 0), 0);
+
+        const monthlySale = orders
+          .filter((o) => o.orderDate && o.orderDate.startsWith(currentMonth))
+          .reduce((sum, o) => sum + Number(o.orderAmount || 0), 0);
+
+        const paid = orders.reduce(
+          (sum, o) => sum + Number(o.paidAmount || 0),
+          0,
+        );
+        const due = orders.reduce(
+          (sum, o) => sum + Number(o.dueAmount || 0),
+          0,
+        );
+
+        document.getElementById("todaySale").innerText =
+          "₹" + todaySale.toLocaleString("en-IN");
+        document.getElementById("monthlySale").innerText =
+          "₹" + monthlySale.toLocaleString("en-IN");
+        document.getElementById("paymentReceived").innerText =
+          "₹" + paid.toLocaleString("en-IN");
+        document.getElementById("paymentDue").innerText =
+          "₹" + due.toLocaleString("en-IN");
       }
 
-      renderSummaryFromOrders(filtered);
-      renderDailySalesTable(filtered);
-      renderDoctorPaymentTableFromOrders(filtered);
-      renderChartsFromOrders(filtered);
-    });
-}
+      function renderDailySalesTable(orders) {
+        const table = document.getElementById("dailySalesTable");
+        table.innerHTML = "";
 
-function renderSummaryFromOrders(orders) {
-  const today = new Date().toISOString().split("T")[0];
-  const currentMonth = new Date().toISOString().slice(0, 7);
-
-  const todaySale = orders
-    .filter(o => o.orderDate === today)
-    .reduce((sum, o) => sum + Number(o.orderAmount || 0), 0);
-
-  const monthlySale = orders
-    .filter(o => o.orderDate && o.orderDate.startsWith(currentMonth))
-    .reduce((sum, o) => sum + Number(o.orderAmount || 0), 0);
-
-  const paid = orders.reduce((sum, o) => sum + Number(o.paidAmount || 0), 0);
-  const due = orders.reduce((sum, o) => sum + Number(o.dueAmount || 0), 0);
-
-  document.getElementById("todaySale").innerText = "₹" + todaySale.toLocaleString("en-IN");
-  document.getElementById("monthlySale").innerText = "₹" + monthlySale.toLocaleString("en-IN");
-  document.getElementById("paymentReceived").innerText = "₹" + paid.toLocaleString("en-IN");
-  document.getElementById("paymentDue").innerText = "₹" + due.toLocaleString("en-IN");
-}
-
-function renderDailySalesTable(orders) {
-  const table = document.getElementById("dailySalesTable");
-  table.innerHTML = "";
-
-  if (!orders || orders.length === 0) {
-    table.innerHTML = `
+        if (!orders || orders.length === 0) {
+          table.innerHTML = `
       <tr>
         <td colspan="7" class="text-center">No records found</td>
       </tr>
     `;
-    return;
-  }
+          return;
+        }
 
-  orders.forEach(order => {
-    table.innerHTML += `
+        orders.forEach((order) => {
+          table.innerHTML += `
       <tr>
         <td>${order.orderDate || "-"}</td>
         <td>${order.distributorName || "-"}</td>
@@ -426,55 +502,55 @@ function renderDailySalesTable(orders) {
         <td>${order.paymentMode || "Pending"}</td>
       </tr>
     `;
-  });
-}
+        });
+      }
 
-function renderDoctorPaymentTableFromOrders(orders) {
-  const table = document.getElementById("doctorPaymentTable");
-  table.innerHTML = "";
+      function renderDoctorPaymentTableFromOrders(orders) {
+        const table = document.getElementById("doctorPaymentTable");
+        table.innerHTML = "";
 
-  if (!orders || orders.length === 0) {
-    table.innerHTML = `
+        if (!orders || orders.length === 0) {
+          table.innerHTML = `
       <tr>
         <td colspan="5" class="text-center">No data found</td>
       </tr>
     `;
-    return;
-  }
+          return;
+        }
 
-  const grouped = {};
+        const grouped = {};
 
-  orders.forEach(order => {
-    const doctor = order.doctorName || "-";
+        orders.forEach((order) => {
+          const doctor = order.doctorName || "-";
 
-    if (!grouped[doctor]) {
-      grouped[doctor] = {
-        totalSale: 0,
-        paymentReceived: 0,
-        paymentDue: 0
-      };
-    }
+          if (!grouped[doctor]) {
+            grouped[doctor] = {
+              totalSale: 0,
+              paymentReceived: 0,
+              paymentDue: 0,
+            };
+          }
 
-    grouped[doctor].totalSale += Number(order.orderAmount || 0);
-    grouped[doctor].paymentReceived += Number(order.paidAmount || 0);
-    grouped[doctor].paymentDue += Number(order.dueAmount || 0);
-  });
+          grouped[doctor].totalSale += Number(order.orderAmount || 0);
+          grouped[doctor].paymentReceived += Number(order.paidAmount || 0);
+          grouped[doctor].paymentDue += Number(order.dueAmount || 0);
+        });
 
-  Object.keys(grouped).forEach(doctor => {
-    const item = grouped[doctor];
+        Object.keys(grouped).forEach((doctor) => {
+          const item = grouped[doctor];
 
-    let status = "Paid";
-    let badgeClass = "badge-paid";
+          let status = "Paid";
+          let badgeClass = "badge-paid";
 
-    if (item.paymentDue > 0 && item.paymentReceived > 0) {
-      status = "Partial";
-      badgeClass = "badge-partial";
-    } else if (item.paymentDue > 0) {
-      status = "Due";
-      badgeClass = "badge-due";
-    }
+          if (item.paymentDue > 0 && item.paymentReceived > 0) {
+            status = "Partial";
+            badgeClass = "badge-partial";
+          } else if (item.paymentDue > 0) {
+            status = "Due";
+            badgeClass = "badge-due";
+          }
 
-    table.innerHTML += `
+          table.innerHTML += `
       <tr>
         <td>${doctor}</td>
         <td>₹${item.totalSale}</td>
@@ -483,79 +559,82 @@ function renderDoctorPaymentTableFromOrders(orders) {
         <td><span class="${badgeClass}">${status}</span></td>
       </tr>
     `;
-  });
-}
-
-function renderChartsFromOrders(orders) {
-  const grouped = {};
-
-  orders.forEach(order => {
-    const date = order.orderDate || "-";
-
-    if (!grouped[date]) {
-      grouped[date] = {
-        sale: 0,
-        paid: 0,
-        due: 0
-      };
-    }
-
-    grouped[date].sale += Number(order.orderAmount || 0);
-    grouped[date].paid += Number(order.paidAmount || 0);
-    grouped[date].due += Number(order.dueAmount || 0);
-  });
-
-  const labels = Object.keys(grouped).sort();
-  const sales = labels.map(date => grouped[date].sale);
-  const paid = labels.map(date => grouped[date].paid);
-  const due = labels.map(date => grouped[date].due);
-
-  if (salesChart) {
-    salesChart.destroy();
-  }
-
-  salesChart = new Chart(document.getElementById("salesChart"), {
-    type: "bar",
-    data: {
-      labels: labels,
-      datasets: [{
-        label: "Daily Sale",
-        data: sales,
-        backgroundColor: "#2b8fc6",
-        borderRadius: 8
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false }
+        });
       }
-    }
-  });
 
-  const totalPaid = paid.reduce((a, b) => a + b, 0);
-  const totalDue = due.reduce((a, b) => a + b, 0);
+      function renderChartsFromOrders(orders) {
+        const grouped = {};
 
-  if (paymentChart) {
-    paymentChart.destroy();
-  }
+        orders.forEach((order) => {
+          const date = order.orderDate || "-";
 
-  paymentChart = new Chart(document.getElementById("paymentChart"), {
-    type: "doughnut",
-    data: {
-      labels: ["Received", "Due"],
-      datasets: [{
-        data: [totalPaid, totalDue],
-        backgroundColor: ["#22c55e", "#ef4444"]
-      }]
-    },
-    options: {
-      responsive: true
-    }
-  });
-}
+          if (!grouped[date]) {
+            grouped[date] = {
+              sale: 0,
+              paid: 0,
+              due: 0,
+            };
+          }
 
-     
+          grouped[date].sale += Number(order.orderAmount || 0);
+          grouped[date].paid += Number(order.paidAmount || 0);
+          grouped[date].due += Number(order.dueAmount || 0);
+        });
+
+        const labels = Object.keys(grouped).sort();
+        const sales = labels.map((date) => grouped[date].sale);
+        const paid = labels.map((date) => grouped[date].paid);
+        const due = labels.map((date) => grouped[date].due);
+
+        if (salesChart) {
+          salesChart.destroy();
+        }
+
+        salesChart = new Chart(document.getElementById("salesChart"), {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Daily Sale",
+                data: sales,
+                backgroundColor: "#2b8fc6",
+                borderRadius: 8,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+            },
+          },
+        });
+
+        const totalPaid = paid.reduce((a, b) => a + b, 0);
+        const totalDue = due.reduce((a, b) => a + b, 0);
+
+        if (paymentChart) {
+          paymentChart.destroy();
+        }
+
+        paymentChart = new Chart(document.getElementById("paymentChart"), {
+          type: "doughnut",
+          data: {
+            labels: ["Received", "Due"],
+            datasets: [
+              {
+                data: [totalPaid, totalDue],
+                backgroundColor: ["#22c55e", "#ef4444"],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+          },
+        });
+      }
+
       function loadDoctorsForFilter() {
         const employeeId = localStorage.getItem("employeeId");
 
@@ -581,216 +660,230 @@ function renderChartsFromOrders(orders) {
             alert("Failed to load doctors");
           });
       }
-function loadSummary() {
-  const employeeId = localStorage.getItem("employeeId");
-  const doctorId = document.getElementById("doctorFilter").value;
-  const distributorName = document.getElementById("distributorFilter").value;
+      function loadSummary() {
+        const employeeId = localStorage.getItem("employeeId");
+        const doctorId = document.getElementById("doctorFilter").value;
+        const distributorName =
+          document.getElementById("distributorFilter").value;
 
-  fetch(`${BASE_URL}/order/history/${employeeId}`)
-    .then(response => response.json())
-    .then(data => {
-      let orders = data || [];
+        fetch(`${BASE_URL}/order/history/${employeeId}`)
+          .then((response) => response.json())
+          .then((data) => {
+            let orders = data || [];
 
-      if (distributorName !== "all") {
-        orders = orders.filter(order =>
-          order.distributorName === distributorName
-        );
+            if (distributorName !== "all") {
+              orders = orders.filter(
+                (order) => order.distributorName === distributorName,
+              );
+            }
+
+            if (doctorId !== "all" && doctorId !== "") {
+              orders = orders.filter(
+                (order) => String(order.doctorId) === String(doctorId),
+              );
+            }
+
+            const today = new Date().toISOString().split("T")[0];
+            const currentMonth = today.substring(0, 7);
+
+            const todaySale = orders
+              .filter((order) => order.orderDate === today)
+              .reduce((sum, order) => sum + Number(order.orderAmount || 0), 0);
+
+            const monthlySale = orders
+              .filter(
+                (order) =>
+                  order.orderDate && order.orderDate.startsWith(currentMonth),
+              )
+              .reduce((sum, order) => sum + Number(order.orderAmount || 0), 0);
+
+            const paymentReceived = orders.reduce(
+              (sum, order) => sum + Number(order.paidAmount || 0),
+              0,
+            );
+
+            const paymentDue = orders.reduce(
+              (sum, order) => sum + Number(order.dueAmount || 0),
+              0,
+            );
+
+            document.getElementById("todaySale").innerText = "₹" + todaySale;
+            document.getElementById("monthlySale").innerText =
+              "₹" + monthlySale;
+            document.getElementById("paymentReceived").innerText =
+              "₹" + paymentReceived;
+            document.getElementById("paymentDue").innerText = "₹" + paymentDue;
+          });
       }
 
-      if (doctorId !== "all" && doctorId !== "") {
-        orders = orders.filter(order =>
-          String(order.doctorId) === String(doctorId)
-        );
+      function loadCharts() {
+        const employeeId = localStorage.getItem("employeeId");
+        const doctorId = document.getElementById("doctorFilter").value;
+        const distributorName =
+          document.getElementById("distributorFilter").value;
+
+        fetch(`${BASE_URL}/order/history/${employeeId}`)
+          .then((response) => response.json())
+          .then((data) => {
+            let orders = data || [];
+
+            if (distributorName !== "all") {
+              orders = orders.filter(
+                (order) => order.distributorName === distributorName,
+              );
+            }
+
+            if (doctorId !== "all" && doctorId !== "") {
+              orders = orders.filter(
+                (order) => String(order.doctorId) === String(doctorId),
+              );
+            }
+
+            const grouped = {};
+
+            orders.forEach((order) => {
+              if (!order.orderDate) return;
+
+              if (!grouped[order.orderDate]) {
+                grouped[order.orderDate] = {
+                  sale: 0,
+                  paid: 0,
+                  due: 0,
+                };
+              }
+
+              grouped[order.orderDate].sale += Number(order.orderAmount || 0);
+              grouped[order.orderDate].paid += Number(order.paidAmount || 0);
+              grouped[order.orderDate].due += Number(order.dueAmount || 0);
+            });
+
+            const labels = Object.keys(grouped).sort();
+            const sales = labels.map((date) => grouped[date].sale);
+            const paid = labels.map((date) => grouped[date].paid);
+            const due = labels.map((date) => grouped[date].due);
+
+            if (salesChart) {
+              salesChart.destroy();
+            }
+
+            salesChart = new Chart(document.getElementById("salesChart"), {
+              type: "bar",
+              data: {
+                labels: labels,
+                datasets: [
+                  {
+                    label: "Daily Sale",
+                    data: sales,
+                    backgroundColor: "#2b8fc6",
+                    borderRadius: 8,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                plugins: {
+                  legend: {
+                    display: false,
+                  },
+                },
+              },
+            });
+
+            const totalPaid = paid.reduce((a, b) => a + b, 0);
+            const totalDue = due.reduce((a, b) => a + b, 0);
+
+            if (paymentChart) {
+              paymentChart.destroy();
+            }
+
+            paymentChart = new Chart(document.getElementById("paymentChart"), {
+              type: "doughnut",
+              data: {
+                labels: ["Received", "Due"],
+                datasets: [
+                  {
+                    data: [totalPaid, totalDue],
+                    backgroundColor: ["#22c55e", "#ef4444"],
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+              },
+            });
+          });
       }
 
-      const today = new Date().toISOString().split("T")[0];
-      const currentMonth = today.substring(0, 7);
+      function loadDoctorPaymentDetails() {
+        const employeeId = localStorage.getItem("employeeId");
+        const doctorId = document.getElementById("doctorFilter").value;
+        const distributorName =
+          document.getElementById("distributorFilter").value;
 
-      const todaySale = orders
-        .filter(order => order.orderDate === today)
-        .reduce((sum, order) => sum + Number(order.orderAmount || 0), 0);
+        fetch(`${BASE_URL}/order/history/${employeeId}`)
+          .then((response) => response.json())
+          .then((data) => {
+            let orders = data || [];
 
-      const monthlySale = orders
-        .filter(order => order.orderDate && order.orderDate.startsWith(currentMonth))
-        .reduce((sum, order) => sum + Number(order.orderAmount || 0), 0);
+            if (distributorName !== "all") {
+              orders = orders.filter(
+                (order) => order.distributorName === distributorName,
+              );
+            }
 
-      const paymentReceived = orders
-        .reduce((sum, order) => sum + Number(order.paidAmount || 0), 0);
+            if (doctorId !== "all" && doctorId !== "") {
+              orders = orders.filter(
+                (order) => String(order.doctorId) === String(doctorId),
+              );
+            }
 
-      const paymentDue = orders
-        .reduce((sum, order) => sum + Number(order.dueAmount || 0), 0);
+            const grouped = {};
 
-      document.getElementById("todaySale").innerText = "₹" + todaySale;
-      document.getElementById("monthlySale").innerText = "₹" + monthlySale;
-      document.getElementById("paymentReceived").innerText = "₹" + paymentReceived;
-      document.getElementById("paymentDue").innerText = "₹" + paymentDue;
-    });
-}
+            orders.forEach((order) => {
+              const doctorName = order.doctorName || "-";
 
-    function loadCharts() {
-  const employeeId = localStorage.getItem("employeeId");
-  const doctorId = document.getElementById("doctorFilter").value;
-  const distributorName = document.getElementById("distributorFilter").value;
+              if (!grouped[doctorName]) {
+                grouped[doctorName] = {
+                  totalSale: 0,
+                  paymentReceived: 0,
+                  paymentDue: 0,
+                };
+              }
 
-  fetch(`${BASE_URL}/order/history/${employeeId}`)
-    .then(response => response.json())
-    .then(data => {
-      let orders = data || [];
+              grouped[doctorName].totalSale += Number(order.orderAmount || 0);
+              grouped[doctorName].paymentReceived += Number(
+                order.paidAmount || 0,
+              );
+              grouped[doctorName].paymentDue += Number(order.dueAmount || 0);
+            });
 
-      if (distributorName !== "all") {
-        orders = orders.filter(order =>
-          order.distributorName === distributorName
-        );
-      }
+            const table = document.getElementById("doctorPaymentTable");
+            table.innerHTML = "";
 
-      if (doctorId !== "all" && doctorId !== "") {
-        orders = orders.filter(order =>
-          String(order.doctorId) === String(doctorId)
-        );
-      }
+            const entries = Object.entries(grouped);
 
-      const grouped = {};
-
-      orders.forEach(order => {
-        if (!order.orderDate) return;
-
-        if (!grouped[order.orderDate]) {
-          grouped[order.orderDate] = {
-            sale: 0,
-            paid: 0,
-            due: 0
-          };
-        }
-
-        grouped[order.orderDate].sale += Number(order.orderAmount || 0);
-        grouped[order.orderDate].paid += Number(order.paidAmount || 0);
-        grouped[order.orderDate].due += Number(order.dueAmount || 0);
-      });
-
-      const labels = Object.keys(grouped).sort();
-      const sales = labels.map(date => grouped[date].sale);
-      const paid = labels.map(date => grouped[date].paid);
-      const due = labels.map(date => grouped[date].due);
-
-      if (salesChart) {
-        salesChart.destroy();
-      }
-
-      salesChart = new Chart(document.getElementById("salesChart"), {
-        type: "bar",
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: "Daily Sale",
-              data: sales,
-              backgroundColor: "#2b8fc6",
-              borderRadius: 8,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-        },
-      });
-
-      const totalPaid = paid.reduce((a, b) => a + b, 0);
-      const totalDue = due.reduce((a, b) => a + b, 0);
-
-      if (paymentChart) {
-        paymentChart.destroy();
-      }
-
-      paymentChart = new Chart(document.getElementById("paymentChart"), {
-        type: "doughnut",
-        data: {
-          labels: ["Received", "Due"],
-          datasets: [
-            {
-              data: [totalPaid, totalDue],
-              backgroundColor: ["#22c55e", "#ef4444"],
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-        },
-      });
-    });
-}
-    
-     function loadDoctorPaymentDetails() {
-  const employeeId = localStorage.getItem("employeeId");
-  const doctorId = document.getElementById("doctorFilter").value;
-  const distributorName = document.getElementById("distributorFilter").value;
-
-  fetch(`${BASE_URL}/order/history/${employeeId}`)
-    .then(response => response.json())
-    .then(data => {
-      let orders = data || [];
-
-      if (distributorName !== "all") {
-        orders = orders.filter(order =>
-          order.distributorName === distributorName
-        );
-      }
-
-      if (doctorId !== "all" && doctorId !== "") {
-        orders = orders.filter(order =>
-          String(order.doctorId) === String(doctorId)
-        );
-      }
-
-      const grouped = {};
-
-      orders.forEach(order => {
-        const doctorName = order.doctorName || "-";
-
-        if (!grouped[doctorName]) {
-          grouped[doctorName] = {
-            totalSale: 0,
-            paymentReceived: 0,
-            paymentDue: 0
-          };
-        }
-
-        grouped[doctorName].totalSale += Number(order.orderAmount || 0);
-        grouped[doctorName].paymentReceived += Number(order.paidAmount || 0);
-        grouped[doctorName].paymentDue += Number(order.dueAmount || 0);
-      });
-
-      const table = document.getElementById("doctorPaymentTable");
-      table.innerHTML = "";
-
-      const entries = Object.entries(grouped);
-
-      if (entries.length === 0) {
-        table.innerHTML = `
+            if (entries.length === 0) {
+              table.innerHTML = `
           <tr>
             <td colspan="5" class="text-center">No data found</td>
           </tr>
         `;
-        return;
-      }
+              return;
+            }
 
-      entries.forEach(([doctorName, item]) => {
-        let status = "Paid";
-        let badgeClass = "badge-paid";
+            entries.forEach(([doctorName, item]) => {
+              let status = "Paid";
+              let badgeClass = "badge-paid";
 
-        if (item.paymentDue > 0 && item.paymentReceived > 0) {
-          status = "Partial";
-          badgeClass = "badge-partial";
-        } else if (item.paymentDue > 0) {
-          status = "Due";
-          badgeClass = "badge-due";
-        }
+              if (item.paymentDue > 0 && item.paymentReceived > 0) {
+                status = "Partial";
+                badgeClass = "badge-partial";
+              } else if (item.paymentDue > 0) {
+                status = "Due";
+                badgeClass = "badge-due";
+              }
 
-        table.innerHTML += `
+              table.innerHTML += `
           <tr>
             <td>${doctorName}</td>
             <td>₹${item.totalSale}</td>
@@ -799,46 +892,47 @@ function loadSummary() {
             <td><span class="${badgeClass}">${status}</span></td>
           </tr>
         `;
-      });
-    });
-}
-
-function loadDailySalesRecords() {
-  const employeeId = localStorage.getItem("employeeId");
-  const doctorId = document.getElementById("doctorFilter").value;
-  const distributorName = document.getElementById("distributorFilter").value;
-
-  fetch(`${BASE_URL}/order/history/${employeeId}`)
-    .then(response => response.json())
-    .then(data => {
-      let orders = data || [];
-
-      if (distributorName !== "all") {
-        orders = orders.filter(order =>
-          order.distributorName === distributorName
-        );
+            });
+          });
       }
 
-      if (doctorId !== "all" && doctorId !== "") {
-        orders = orders.filter(order =>
-          String(order.doctorId) === String(doctorId)
-        );
-      }
+      function loadDailySalesRecords() {
+        const employeeId = localStorage.getItem("employeeId");
+        const doctorId = document.getElementById("doctorFilter").value;
+        const distributorName =
+          document.getElementById("distributorFilter").value;
 
-      const table = document.getElementById("dailySalesTable");
-      table.innerHTML = "";
+        fetch(`${BASE_URL}/order/history/${employeeId}`)
+          .then((response) => response.json())
+          .then((data) => {
+            let orders = data || [];
 
-      if (orders.length === 0) {
-        table.innerHTML = `
+            if (distributorName !== "all") {
+              orders = orders.filter(
+                (order) => order.distributorName === distributorName,
+              );
+            }
+
+            if (doctorId !== "all" && doctorId !== "") {
+              orders = orders.filter(
+                (order) => String(order.doctorId) === String(doctorId),
+              );
+            }
+
+            const table = document.getElementById("dailySalesTable");
+            table.innerHTML = "";
+
+            if (orders.length === 0) {
+              table.innerHTML = `
           <tr>
             <td colspan="7" class="text-center">No records found</td>
           </tr>
         `;
-        return;
-      }
+              return;
+            }
 
-      orders.forEach(order => {
-        table.innerHTML += `
+            orders.forEach((order) => {
+              table.innerHTML += `
           <tr>
             <td>${order.orderDate || "-"}</td>
             <td>${order.distributorName || "-"}</td>
@@ -849,9 +943,9 @@ function loadDailySalesRecords() {
             <td>${order.paymentMode || "Pending"}</td>
           </tr>
         `;
-      });
-    });
-}
+            });
+          });
+      }
     </script>
   </body>
 </html>
