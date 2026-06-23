@@ -172,10 +172,10 @@ th,td{white-space:nowrap}
       <div class="card summary-card">
         <div class="card-body text-center">
           <div class="icon-box bg-order mb-2">
-            <i class="fa-solid fa-box"></i>
+            <i class="fa-solid fa-receipt"></i>
           </div>
-          <h6>Total Orders</h6>
-          <h3 id="totalOrders">0</h3>
+          <h6>Total Expense</h6>
+          <h3 id="totalExpense">0</h3>
         </div>
       </div>
     </div>
@@ -253,6 +253,7 @@ th,td{white-space:nowrap}
               <th>Total Sale</th>
               <th>Collection</th>
               <th>Due</th>
+              <th>Expense</th>
             </tr>
           </thead>
           <tbody id="employeeSalesTable"></tbody>
@@ -294,6 +295,7 @@ th,td{white-space:nowrap}
 <script>
 let allOrders = [];
 let employeeList = [];
+let allExpenses = [];
 
 window.onload = function () {
   document.getElementById("salesMonth").value =
@@ -323,19 +325,29 @@ function loadEmployees() {
 }
 
 function loadAdminSalesPage() {
-  fetch(`${BASE_URL}/admin/tour-plans`)
-    .catch(() => {});
+  Promise.all([
+    fetch(`${BASE_URL}/order/admin/all`).then(res => res.json()),
+    fetch(`${BASE_URL}/admin/expenses`).then(res => res.json())
+  ])
+  .then(([orders, expenses]) => {
+    allOrders = orders || [];
+    allExpenses = expenses || [];
+    filterByMonthAndRender();
+  })
+  .catch(error => {
+    console.error(error);
+    alert("Failed to load sales or expense data");
+  });
+}
 
-  fetch(`${BASE_URL}/order/admin/all`)
+function loadAllExpenses() {
+  fetch(`${BASE_URL}/admin/expenses`)
     .then(res => res.json())
     .then(data => {
-      allOrders = data || [];
-      filterByMonthAndRender();
+      allExpenses = data || [];
+      applyFilters();
     })
-    .catch(error => {
-      console.error(error);
-      alert("Admin orders API missing: /order/admin/all");
-    });
+    .catch(err => console.error("Expense load error:", err));
 }
 
 function filterByMonthAndRender() {
@@ -355,11 +367,31 @@ function renderSummary(data) {
   const paid = data.reduce((sum,o) => sum + Number(o.paidAmount || 0), 0);
   const due = data.reduce((sum,o) => sum + Number(o.dueAmount || 0), 0);
 
+  const month = document.getElementById("salesMonth").value;
+
+  const monthExpenses = allExpenses.filter(exp =>
+    (exp.expenseDate || exp.travelDate || exp.date || "").startsWith(month)
+  );
+
+  const totalExpense = monthExpenses.reduce((sum, exp) => {
+    const amount =
+      Number(exp.totalExpense || 0) ||
+      (
+        Number(exp.fareAmount || 0) +
+        Number(exp.daAmount || 0) +
+        Number(exp.otherAmount || 0) +
+        Number(exp.amount || 0)
+      );
+
+    return sum + amount;
+  }, 0);
+
   document.getElementById("totalSale").innerText = formatRupees(sale);
   document.getElementById("totalCollection").innerText = formatRupees(paid);
   document.getElementById("totalDue").innerText = formatRupees(due);
-  document.getElementById("totalOrders").innerText = data.length;
+  document.getElementById("totalExpense").innerText = formatRupees(totalExpense);
 }
+
 
 function renderEmployeeSales(data) {
   const map = {};
@@ -370,11 +402,13 @@ function renderEmployeeSales(data) {
 
     if (!map[key]) {
       map[key] = {
+        employeeId: key,
         name,
         orders: 0,
         sale: 0,
         paid: 0,
-        due: 0
+        due: 0,
+        expense:0
       };
     }
 
@@ -392,13 +426,32 @@ function renderEmployeeSales(data) {
   if (rows.length === 0) {
     table.innerHTML = `
       <tr>
-        <td colspan="5" class="text-center">No sales found</td>
+        <td colspan="6" class="text-center">No sales found</td>
       </tr>
     `;
     return;
   }
 
   rows.forEach(item => {
+    const month = document.getElementById("salesMonth").value;
+
+const employeeExpense = allExpenses
+  .filter(exp =>
+    String(exp.employeeId) === String(item.employeeId || item.id || "") &&
+    (exp.expenseDate || exp.travelDate || exp.date || "").startsWith(month)
+  )
+  .reduce((sum, exp) => {
+    const amount =
+      Number(exp.totalExpense || 0) ||
+      (
+        Number(exp.fareAmount || 0) +
+        Number(exp.daAmount || 0) +
+        Number(exp.otherAmount || 0) +
+        Number(exp.amount || 0)
+      );
+
+    return sum + amount;
+  }, 0);
     table.innerHTML += `
       <tr>
         <td class="fw-semibold">${item.name}</td>
@@ -406,6 +459,7 @@ function renderEmployeeSales(data) {
         <td class="amount-success">${formatRupees(item.sale)}</td>
         <td>${formatRupees(item.paid)}</td>
         <td class="amount-danger">${formatRupees(item.due)}</td>
+         <td class="text-warning fw-bold">${formatRupees(employeeExpense)}</td>
       </tr>
     `;
   });

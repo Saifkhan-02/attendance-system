@@ -267,6 +267,7 @@
   }
 }
 
+
     </style>
   </head>
 
@@ -378,26 +379,23 @@
   <div class="card-body p-4">
     <h4 class="fw-bold mb-4">
       <i class="fa-solid fa-calendar-days me-2"></i>
-      Create Monthly Tour Plan
+      See Your Monthly Tour Plan
     </h4>
 
     <div class="row g-3 mb-4">
-      <div class="col-md-3">
-        <label class="form-label">Employee</label>
+      <div class="col-6 col-md-6">
+        <label class="form-label">Employee Name</label>
         <input type="text" id="employeeName" class="form-control" readonly>
       </div>
 
-      <div class="col-md-3">
-        <label class="form-label">Employee ID</label>
-        <input type="text" id="employeeId" class="form-control" readonly>
-      </div>
+      <input type="hidden" id="employeeId">
 
-      <div class="col-md-3">
+      <div class="col-6 col-md-6">
         <label class="form-label">Headquarter</label>
         <input type="text" id="employeeHeadquarter" class="form-control" readonly>
       </div>
 
-      <div class="col-md-3">
+      <div class="col-md-6">
         <label class="form-label">Select Month</label>
         <input type="month" id="planMonth" class="form-control" onchange="generateMonthlyRows()">
       </div>
