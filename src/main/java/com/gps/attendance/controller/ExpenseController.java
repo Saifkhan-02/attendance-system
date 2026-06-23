@@ -52,4 +52,9 @@ public class ExpenseController {
     public Double getExpenseTotal(@PathVariable Long id) {
         return repository.getTotalExpenseByEmployee(id);
     }
+
+    @GetMapping("/admin/expenses")
+public List<Expense> getAllExpenses() {
+    return repository.findAll();
+}
 }
