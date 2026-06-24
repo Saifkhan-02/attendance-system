@@ -449,6 +449,7 @@ body{
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/config.js"></script>
 
+
 <script>
 document.querySelectorAll('input[name="roleType"]').forEach(radio => {
     radio.addEventListener("change", function () {
@@ -487,6 +488,7 @@ function loginEmployee() {
         localStorage.setItem("employeeId", data.id);
         localStorage.setItem("employeeName", data.name);
         localStorage.setItem("employeeUsername", data.username);
+        localStorage.setItem("sessionToken", data.sessionToken);
 
         window.location.href = "Dashboard.html";
     })

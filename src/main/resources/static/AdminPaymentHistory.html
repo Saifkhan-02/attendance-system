@@ -116,55 +116,56 @@ th,td{
         Filter Payments
       </h4>
 
-      <div class="row g-3 align-items-end">
-        <div class="col-md-3">
-          <label class="form-label">Month</label>
-          <input type="month" id="filterMonth" class="form-control">
-        </div>
+      <div class="row g-3">
 
-       <div class="col-md-3">
-  <label class="form-label">Employee</label>
-  <select id="employeeFilter"
-          class="form-select"
-         >
-    <option value="">Select Employees</option>
-  </select>
-</div>
+  <div class="col-6 col-md-6">
+    <label class="form-label fw-bold">Employee</label>
+    <select id="employeeFilter" class="form-select">
+      <option value="">All Employees</option>
+    </select>
+  </div>
 
-        <div class="col-md-3">
-          <label class="form-label">Doctor</label>
-          <input type="text" id="doctorFilter" class="form-control" placeholder="Doctor name">
-        </div>
+  <div class="col-6 col-md-6">
+    <label class="form-label fw-bold">Month</label>
+    <input type="month" id="filterMonth" class="form-control">
+  </div>
 
-        <div class="col-md-3">
-          <label class="form-label">Payment Mode</label>
-          <select id="modeFilter" class="form-select">
-            <option value="">All Modes</option>
-            <option value="Cash">Cash</option>
-            <option value="UPI">UPI</option>
-            <option value="Cheque">Cheque</option>
-            <option value="Bank Transfer">Bank Transfer</option>
-            <option value="Card">Card</option>
-          </select>
-        </div>
+  <div class="col-6 col-md-6">
+    <label class="form-label fw-bold">Doctor</label>
+    <select id="doctorFilter" class="form-select">
+      <option value="">All Doctors</option>
+    </select>
+  </div>
 
-        <div class="col-md-6">
-          <button class="btn btn-primary w-100" onclick="applyFilters()">
-            <i class="fa-solid fa-magnifying-glass me-2"></i>
-            Search
-          </button>
-        </div>
+  <div class="col-6 col-md-6">
+    <label class="form-label fw-bold">Payment Mode</label>
+    <select id="modeFilter" class="form-select">
+      <option value="">All Modes</option>
+      <option value="Cash">Cash</option>
+      <option value="UPI">UPI</option>
+      <option value="Cheque">Cheque</option>
+      <option value="Bank Transfer">Bank Transfer</option>
+    </select>
+  </div>
 
-        <div class="col-md-6">
-          <button class="btn btn-secondary w-100" onclick="resetFilters()">
-            <i class="fa-solid fa-rotate-left me-2"></i>
-            Reset
-          </button>
-        </div>
+  <div class="col-6 col-md-6">
+    <button class="btn btn-primary w-100" onclick="applyFilters()">
+      Search
+    </button>
+  </div>
+
+  <div class="col-6 col-md-6">
+    <button class="btn btn-secondary w-100" onclick="resetFilters()">
+      Reset
+    </button>
+  </div>
+
       </div>
+ 
     </div>
   </div>
 
+  <!-- cards -->
   <div class="row g-3 mb-4">
     <div class="col-md-3 col-6">
       <div class="card summary-card">
@@ -172,8 +173,8 @@ th,td{
           <div class="icon-box bg-count mb-2">
             <i class="fa-solid fa-list"></i>
           </div>
-          <h6>Total Entries</h6>
-          <h3 id="totalEntries">0</h3>
+          <h6>Total Collection</h6>
+          <h3 id="totalReceived">0</h3>
         </div>
       </div>
     </div>
@@ -184,8 +185,8 @@ th,td{
           <div class="icon-box bg-pay mb-2">
             <i class="fa-solid fa-indian-rupee-sign"></i>
           </div>
-          <h6>Total Received</h6>
-          <h3 id="totalReceived">₹0</h3>
+          <h6>Total Due</h6>
+          <h3 id="totalDue">₹0</h3>
         </div>
       </div>
     </div>
@@ -208,8 +209,8 @@ th,td{
           <div class="icon-box bg-mode mb-2">
             <i class="fa-solid fa-wallet"></i>
           </div>
-          <h6>Modes Used</h6>
-          <h3 id="totalModes">0</h3>
+          <h6>Total Sale</h6>
+          <h3 id="totalSale">₹0</h3>
         </div>
       </div>
     </div>
@@ -235,12 +236,14 @@ th,td{
             <tr>
               <th>S.No</th>
               <th>Date</th>
-              <th>Order ID</th>
+              
               <th>Employee</th>
               <th>Doctor</th>
               <th>Amount</th>
-              <th>Mode</th>
-              <th>Remarks</th>
+              <th>Received</th>
+              <th>Due</th>
+              <th>Pay Mode</th>
+              <th>Status</th>
             </tr>
           </thead>
 
@@ -297,11 +300,14 @@ employeeChoices = new Choices("#employeeFilter", {
     });
 }
 function loadPaymentHistory() {
-  fetch(`${BASE_URL}/order/admin/payment-history`)
+  fetch(`${BASE_URL}/order/admin/all`)
     .then(res => res.json())
     .then(data => {
       allPayments = data || [];
+
+      loadDoctorDropdown(allPayments);
       applyFilters();
+      
     })
     .catch(error => {
       console.error(error);
@@ -309,6 +315,28 @@ function loadPaymentHistory() {
     });
 }
 
+function loadDoctorDropdown(data){
+
+  const doctorFilter =
+    document.getElementById("doctorFilter");
+
+  doctorFilter.innerHTML =
+    `<option value="">All Doctors</option>`;
+
+  const doctors =
+    [...new Set(
+      data.map(x => x.doctorName)
+    )];
+
+  doctors.forEach(doc => {
+
+    doctorFilter.innerHTML += `
+      <option value="${doc}">
+        ${doc}
+      </option>
+    `;
+  });
+}
 function applyFilters() {
   const month = document.getElementById("filterMonth").value;
   const employeeValue = document.getElementById("employeeFilter").value;
@@ -316,7 +344,7 @@ function applyFilters() {
   const mode = document.getElementById("modeFilter").value;
 
   const filtered = allPayments.filter(p => {
-    const paymentDate = p.paymentDate || "";
+    const paymentDate = p.orderDate || "";
 
     const monthMatch =
       !month || paymentDate.startsWith(month);
@@ -340,25 +368,36 @@ function applyFilters() {
   renderTable(filtered);
 }
 
-function renderSummary(data) {
-  const totalReceived = data.reduce(
-    (sum, p) => sum + Number(p.receivedAmount || 0),
-    0
-  );
+function renderSummary(data){
 
-  const doctorSet = new Set(
-    data.map(p => p.doctorName).filter(Boolean)
-  );
+  const totalSale =
+    data.reduce((sum,p) =>
+      sum + Number(p.orderAmount || 0), 0);
 
-  const modeSet = new Set(
-    data.map(p => p.paymentMode).filter(Boolean)
-  );
+  const totalReceived =
+    data.reduce((sum,p) =>
+      sum + Number(p.paidAmount || 0), 0);
 
-  document.getElementById("totalEntries").innerText = data.length;
-  document.getElementById("totalReceived").innerText = formatRupees(totalReceived);
-  document.getElementById("totalDoctors").innerText = doctorSet.size;
-  document.getElementById("totalModes").innerText = modeSet.size;
+  const totalDue =
+    data.reduce((sum,p) =>
+      sum + Number(p.dueAmount || 0), 0);
+
+  const doctorSet =
+    new Set(data.map(p => p.doctorName).filter(Boolean));
+
+  document.getElementById("totalSale").innerText =
+    formatRupees(totalSale);
+
+  document.getElementById("totalReceived").innerText =
+    formatRupees(totalReceived);
+
+  document.getElementById("totalDue").innerText =
+    formatRupees(totalDue);
+
+  document.getElementById("totalDoctors").innerText =
+    doctorSet.size;
 }
+
 
 function renderTable(data) {
   const table = document.getElementById("paymentHistoryTable");
@@ -376,18 +415,36 @@ function renderTable(data) {
   }
 
   data.forEach((item, index) => {
-    table.innerHTML += `
-      <tr>
-        <td>${index + 1}</td>
-        <td>${formatDate(item.paymentDate)}</td>
-        <td>#${item.orderId || "-"}</td>
-        <td class="fw-semibold">${item.employeeName || "-"}</td>
-        <td>${item.doctorName || "-"}</td>
-        <td class="amount-success">${formatRupees(item.receivedAmount)}</td>
-        <td>${item.paymentMode || "-"}</td>
-        <td>${item.remarks || "-"}</td>
-      </tr>
-    `;
+   table.innerHTML += `
+<tr>
+  <td>${index + 1}</td>
+  <td>${(item.orderDate || "").split("T")[0]}</td>
+  <td>${item.employeeName || "-"}</td>
+  <td>${item.doctorName || "-"}</td>
+
+  <td>
+    ${formatRupees(item.orderAmount)}
+  </td>
+
+  <td class="text-success fw-bold">
+    ${formatRupees(item.paidAmount)}
+  </td>
+
+  <td class="text-danger fw-bold">
+    ${formatRupees(item.dueAmount)}
+  </td>
+
+  <td>${item.paymentMode || "-"}</td>
+
+  <td>
+    ${
+      Number(item.dueAmount || 0) <= 0
+      ? '<span class="badge bg-success">Paid</span>'
+      : '<span class="badge bg-warning text-dark">Pending</span>'
+    }
+  </td>
+</tr>
+`;
   });
 }
 
@@ -405,6 +462,7 @@ function resetFilters() {
 function formatRupees(amount) {
   return "₹" + Number(amount || 0).toLocaleString("en-IN");
 }
+
 
 function formatDate(dateText) {
   if (!dateText) return "-";
