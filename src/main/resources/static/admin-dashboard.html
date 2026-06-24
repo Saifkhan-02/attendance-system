@@ -447,7 +447,7 @@
 
     <nav class="navbar top-navbar px-3">
       <div class="d-flex align-items-center">
-        <button class="btn btn-light me-3" onclick="toggleSidebar()">
+        <button id="menuBtn" class="btn btn-light me-3" onclick="toggleSidebar()">
           <i class="fas fa-bars"></i>
         </button>
 
@@ -817,19 +817,8 @@
 
     <script>
 
-      function updateTime() {
-        document.getElementById("datetime").innerHTML =
-          new Date().toLocaleString();
-      }
-      setInterval(updateTime, 1000);
 
-      function loadAdminInfo() {
-        document.getElementById("adminName").innerText =
-          localStorage.getItem("adminName") || "Admin";
-      }
-      loadAdminInfo();
-      updateTime();
-
+      
       function toggleSidebar() {
         let sidebar = document.getElementById("sidebar");
 
@@ -844,11 +833,49 @@
         }
       }
 
- window.onload = function () {
+      document.addEventListener("click", function (e) {
 
-  loadAdminInfo();
-  updateTime();
-  setInterval(updateTime, 1000);
+  const sidebar = document.getElementById("sidebar");
+  const main = document.getElementById("mainContent");
+  const menuBtn = document.getElementById("menuBtn");
+
+  // Menu button ya sidebar par click hua to kuch mat karo
+  if (
+  sidebar.contains(e.target) ||
+  (menuBtn && menuBtn.contains(e.target))
+) {
+  return;
+}
+
+  // Mobile
+  if (window.innerWidth <= 768) {
+    sidebar.classList.remove("show");
+  }
+
+  // Laptop/Desktop
+  else {
+    sidebar.classList.add("hide");
+    main.classList.add("full");
+  }
+
+});
+
+function updateTime() {
+        document.getElementById("datetime").innerHTML =
+          new Date().toLocaleString();
+      }
+
+      setInterval(updateTime, 1000);
+
+         function loadAdminInfo() {
+
+    document.getElementById("adminName").innerText =
+        localStorage.getItem("adminName") || "Admin";
+      }
+      loadAdminInfo();
+      updateTime();
+
+ window.onload = function () {
 
  fetch(`${BASE_URL}/get-employees`)
   .then((response) => response.json())
