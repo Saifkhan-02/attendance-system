@@ -3,6 +3,7 @@ package com.gps.attendance.controller;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,16 +16,17 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gps.attendance.entity.DistributorStock;
-import com.gps.attendance.entity.GlobalStock;
+import com.gps.attendance.entity.PaymentHistory;
 import com.gps.attendance.entity.ProductOrder;
 import com.gps.attendance.repository.DistributorStockRepository;
-import com.gps.attendance.repository.GlobalStockRepository;
+import com.gps.attendance.repository.PaymentHistoryRepository;
 import com.gps.attendance.repository.ProductOrderRepository;
 import com.lowagie.text.Document;
 import com.lowagie.text.Font;
@@ -44,60 +46,15 @@ public class ProductOrderController {
 
     private final ProductOrderRepository orderRepository;
     private final DistributorStockRepository distributorStockRepository;
-    private final GlobalStockRepository globalStockRepository;
+   private final PaymentHistoryRepository paymentHistoryRepository;
 
     public ProductOrderController(ProductOrderRepository orderRepository,
-            GlobalStockRepository globalStockRepository, DistributorStockRepository distributorStockRepository) {
+            DistributorStockRepository distributorStockRepository,
+            PaymentHistoryRepository paymentHistoryRepository) {
+
         this.orderRepository = orderRepository;
-        this.globalStockRepository = globalStockRepository;
         this.distributorStockRepository = distributorStockRepository;
-
-    }
-
-    @PostMapping("/place")
-    public ProductOrder placeOrder(@RequestBody ProductOrder order) {
-
-        if (order.getEmployeeId() == null) {
-            throw new RuntimeException("Employee ID is required");
-        }
-
-        if (order.getDoctorId() == null) {
-            throw new RuntimeException("Doctor ID is required");
-        }
-
-        if (order.getProductId() == null) {
-            throw new RuntimeException("Product ID is required");
-        }
-
-        if (order.getOrderQuantity() == null || order.getOrderQuantity() <= 0) {
-            throw new RuntimeException("Order quantity must be greater than 0");
-        }
-
-        System.out.println("ORDER PRODUCT ID: " + order.getProductId());
-        System.out.println("ORDER QTY: " + order.getOrderQuantity());
-
-        GlobalStock stock = globalStockRepository.findById(order.getProductId())
-                .orElseThrow(() -> new RuntimeException("Product not found"));
-
-        Integer availableUnits = 0;
-
-        if (stock.getAvailableUnits() != null) {
-            availableUnits = stock.getAvailableUnits();
-        }
-
-        System.out.println("STOCK PRODUCT: " + stock.getProductName());
-        System.out.println("AVAILABLE UNITS: " + availableUnits);
-
-        if (order.getOrderQuantity() > availableUnits) {
-            throw new RuntimeException("Insufficient stock");
-        }
-
-        stock.setAvailableUnits(availableUnits - order.getOrderQuantity());
-        globalStockRepository.save(stock);
-
-        order.setStatus("Placed");
-
-        return orderRepository.save(order);
+        this.paymentHistoryRepository = paymentHistoryRepository;
     }
 
     @GetMapping("/history/today/{employeeId}")
@@ -119,12 +76,14 @@ public class ProductOrderController {
 
     @GetMapping("/history/{employeeId}")
     public List<ProductOrder> getOrderHistory(@PathVariable Long employeeId) {
-        return orderRepository.findByEmployeeIdOrderByIdDesc(employeeId);
+        return orderRepository.findByEmployeeId(employeeId);
     }
 
     @GetMapping("/all")
     public List<ProductOrder> getAllOrders() {
-        return orderRepository.findAllByOrderByIdDesc();
+
+        return orderRepository.findAll();
+
     }
 
     @GetMapping("/summary")
@@ -465,7 +424,7 @@ public class ProductOrderController {
 
     @GetMapping("/admin/all")
     public List<ProductOrder> getAllOrdersForAdmin() {
-        return orderRepository.findAllByOrderByIdDesc();
+        return orderRepository.findAll();
     }
 
     @GetMapping("/admin/sales-payment/summary")
@@ -528,4 +487,77 @@ public class ProductOrderController {
     public Long getOrderCount(@PathVariable Long id) {
         return orderRepository.countOrdersByEmployeeId(id);
     }
+
+   @PutMapping("/collect-payment/{orderId}")
+public ProductOrder collectPayment(
+        @PathVariable Long orderId,
+        @RequestBody Map<String, Object> request) {
+
+    ProductOrder order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new RuntimeException("Order not found"));
+
+    Double receivedAmount =
+            Double.valueOf(request.get("receivedAmount").toString());
+
+    String paymentMode =
+            request.get("paymentMode") == null
+                    ? order.getPaymentMode()
+                    : request.get("paymentMode").toString();
+
+    if (receivedAmount <= 0) {
+        throw new RuntimeException("Received amount must be greater than 0");
+    }
+
+    Double currentDue = order.getDueAmount() == null ? 0.0 : order.getDueAmount();
+
+    if (receivedAmount > currentDue) {
+        throw new RuntimeException("Received amount cannot be greater than due amount");
+    }
+
+    double oldPaid =
+            order.getPaidAmount() == null ? 0 : order.getPaidAmount();
+
+    order.setPaidAmount(oldPaid + receivedAmount);
+    order.setDueAmount(currentDue - receivedAmount);
+    order.setPaymentMode(paymentMode);
+
+    if (order.getDueAmount() == 0) {
+        order.setStatus("PAID");
+    } else {
+        order.setStatus("PARTIAL");
+    }
+
+    PaymentHistory history = new PaymentHistory();
+
+history.setOrderId(order.getId());
+
+history.setEmployeeId(order.getEmployeeId());
+history.setEmployeeName(order.getEmployeeName());
+
+history.setDoctorId(order.getDoctorId());
+history.setDoctorName(order.getDoctorName());
+
+history.setReceivedAmount(receivedAmount);
+
+history.setPaymentMode(paymentMode);
+
+history.setRemarks(
+    request.get("remarks") == null
+        ? ""
+        : request.get("remarks").toString()
+);
+
+history.setPaymentDate(LocalDateTime.now());
+
+paymentHistoryRepository.save(history);
+
+    return orderRepository.save(order);
+}
+
+@GetMapping("/admin/payment-history")
+public List<PaymentHistory> getPaymentHistory() {
+
+    return paymentHistoryRepository
+            .findAllByOrderByPaymentDateDesc();
+}
 }
