@@ -26,6 +26,33 @@ public class ExpenseController {
     @PostMapping("/expense/submit")
     public Expense submitExpense(@RequestBody Expense expense) {
 
+        if (expense.getEmployeeId() == null) {
+            throw new RuntimeException("Employee ID is required");
+        }
+
+        if (expense.getAmount() == null || expense.getAmount() <= 0) {
+            throw new RuntimeException("Expense amount must be greater than 0");
+        }
+
+        if (expense.getExpenseDate() == null
+                || expense.getExpenseDate().trim().isEmpty()) {
+            throw new RuntimeException("Expense date is required");
+        }
+
+        if (expense.getExpenseType() == null
+                || expense.getExpenseType().trim().isEmpty()) {
+            throw new RuntimeException("Expense type is required");
+        }
+
+        if (repository.existsByEmployeeIdAndExpenseDateAndExpenseType(
+                expense.getEmployeeId(),
+                expense.getExpenseDate(),
+                expense.getExpenseType())) {
+
+            throw new RuntimeException(
+                    "Expense already submitted for this date and type");
+        }
+
         expense.setStatus("Pending");
 
         return repository.save(expense);
@@ -34,7 +61,7 @@ public class ExpenseController {
     @GetMapping("/expense/history/{employeeId}")
     public List<Expense> getExpenseHistory(@PathVariable Long employeeId) {
 
-        return repository.findByEmployeeId(employeeId);
+        return repository.findByEmployeeIdOrderByIdDesc(employeeId);
     }
 
     @GetMapping("/expenses/chart-data")
@@ -54,7 +81,7 @@ public class ExpenseController {
     }
 
     @GetMapping("/admin/expenses")
-public List<Expense> getAllExpenses() {
-    return repository.findAll();
-}
+    public List<Expense> getAllExpenses() {
+        return repository.findAllByOrderByIdDesc();
+    }
 }

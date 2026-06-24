@@ -22,9 +22,24 @@ public class AdminAddProductController {
     @Autowired
     private AdminAddProductRepository repository;
 
-    @PostMapping("/admin/save-product")
+    @PostMapping("/product/save")
     public AdminAddProduct saveProduct(
             @RequestBody AdminAddProduct product) {
+
+        if (product.getProductName() == null
+                || product.getProductName().trim().isEmpty()) {
+            throw new RuntimeException("Product name is required");
+        }
+
+        product.setProductName(
+                product.getProductName().trim());
+
+        if (repository.findByProductNameIgnoreCase(
+                product.getProductName()) != null) {
+
+            throw new RuntimeException(
+                    "Product already exists");
+        }
 
         return repository.save(product);
     }
@@ -32,28 +47,35 @@ public class AdminAddProductController {
     @GetMapping("/products")
     public List<AdminAddProduct> getProducts() {
 
-        return repository.findAll();
+        return repository.findAllByOrderByIdDesc();
     }
 
     @PutMapping("/admin/update-product/{id}")
-public AdminAddProduct updateProduct(
-        @PathVariable Long id,
-        @RequestBody AdminAddProduct request) {
+    public AdminAddProduct updateProduct(
+            @PathVariable Long id,
+            @RequestBody AdminAddProduct request) {
 
-    AdminAddProduct product = repository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Product not found"));
+        AdminAddProduct product = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
 
-    product.setProductName(request.getProductName());
-    product.setStatus(request.getStatus());
+        if (request.getProductName() == null
+                || request.getProductName().trim().isEmpty()) {
+            throw new RuntimeException("Product name is required");
+        }
 
-    return repository.save(product);
-}
+        product.setProductName(
+                request.getProductName().trim());
 
-@DeleteMapping("/admin/delete-product/{id}")
-public String deleteProduct(@PathVariable Long id) {
+        product.setStatus(request.getStatus());
 
-    repository.deleteById(id);
+        return repository.save(product);
+    }
 
-    return "Product Deleted Successfully";
-}
+    @DeleteMapping("/admin/delete-product/{id}")
+    public String deleteProduct(@PathVariable Long id) {
+
+        repository.deleteById(id);
+
+        return "Product Deleted Successfully";
+    }
 }

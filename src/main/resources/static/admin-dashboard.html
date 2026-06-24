@@ -722,7 +722,7 @@
         <div class="col-lg-3">
           <div class="card shadow-sm mt-4 mb-4">
             <div class="card-header bg-success text-white">
-              Attendance Status
+              Attendance Status Daily
             </div>
 
             <div class="card-body">
@@ -844,59 +844,39 @@
         }
       }
 
-      window.onload = function () {
-    updateTime();
-    setInterval(updateTime, 1000);
+ window.onload = function () {
 
-    loadEmployeeTracking();
+  loadAdminInfo();
+  updateTime();
+  setInterval(updateTime, 1000);
 
-    document
-      .getElementById("searchEmployee")
-      .addEventListener("keyup", filterEmployeeRows);
-  };
-
-  function updateTime() {
-    document.getElementById("datetime").innerHTML =
-      new Date().toLocaleString();
-       }
-       setInterval(updateTime, 1000);
-
-       function loadAdminInfo() {
-    document.getElementById("adminName").innerText =
-        localStorage.getItem("adminName") || "Admin";
-
-}
-   loadAdminInfo();
-      updateTime();
-
-  // ================= DASHBOARD COUNTS ================= 
-
-   
-     window.onload = function () {
-
-  fetch(`${BASE_URL}/get-employees`)
-    .then((response) => response.json())
-    .then((employees) => {
-      document.getElementById("totalEmployees").innerText =
-        employees.length;
-    });
-
- fetch(`${BASE_URL}/doctor-visit/directory`)
+ fetch(`${BASE_URL}/get-employees`)
   .then((response) => response.json())
-  .then((doctors) => {
-    document.getElementById("totalDoctors").innerText =
-      doctors.length;
+  .then((employees) => {
+    document.getElementById("totalEmployees").innerText =
+      employees.length;
   })
   .catch((error) => {
-    console.error("Doctor Count Error:", error);
-    document.getElementById("totalDoctors").innerText = "0";
+    console.error("Employee Count Error:", error);
+    document.getElementById("totalEmployees").innerText = "0";
   });
 
-        loadDoctorVisitCount();
-        loadDoctorVisits();
-        loadAdminTotalSale();
+  fetch(`${BASE_URL}/doctor-visit/directory`)
+    .then((response) => response.json())
+    .then((doctors) => {
+      document.getElementById("totalDoctors").innerText =
+        doctors.length;
+    })
+    .catch((error) => {
+      console.error("Doctor Count Error:", error);
+      document.getElementById("totalDoctors").innerText = "0";
+    });
+
+  loadDoctorVisitCount();
+  loadDoctorVisits();
+  loadAdminTotalSale();
 };
-   
+
 const profileBtn = document.getElementById("profileBtn");
 const profileModal = document.getElementById("profileModal");
 const closeModal = document.getElementById("closeModal");

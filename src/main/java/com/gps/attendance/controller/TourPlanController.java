@@ -54,15 +54,16 @@ public TourPlan saveTourPlan(
     public List<TourPlan> getTourHistory(
             @PathVariable Long employeeId) {
 
-        return repository.findByEmployeeId(employeeId);
+        return repository.findByEmployeeIdOrderByIdDesc(employeeId);
     }
 
     // Admin endpoint to view all tour plans
-    @GetMapping("/admin/tour-plans")
-    public List<TourPlan> getAllTourPlans() {
+    
+   @GetMapping("/admin/tour-plans")
+public List<TourPlan> getAllTourPlans() {
 
-        return repository.findAll();
-    }
+    return repository.findAllByOrderByIdDesc();
+}
 
     @PutMapping("/tour-plan/approve/{id}")
 public String approveTourPlan(
@@ -205,6 +206,8 @@ public List<TourPlan> getMonthlyTourPlan(
         @PathVariable Long employeeId,
         @PathVariable String month
 ) {
-    return repository.findByEmployeeIdAndMonth(employeeId, month);
+   return repository.findByEmployeeIdAndMonthOrderByIdDesc(
+        employeeId,
+        month);
 }
 }

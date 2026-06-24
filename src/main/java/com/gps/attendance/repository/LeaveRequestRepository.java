@@ -11,11 +11,14 @@ public interface LeaveRequestRepository
 
     List<LeaveRequest> findByEmployeeId(Long employeeId);
 
+    List<LeaveRequest> findByEmployeeIdOrderByIdDesc(Long employeeId);
+
+    List<LeaveRequest> findAllByOrderByIdDesc();
+
     long countByStatus(String status);
 
     long countByFromDateAndStatus(
             java.time.LocalDate fromDate,
             String status
     );
-
 }

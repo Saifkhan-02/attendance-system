@@ -24,7 +24,7 @@ import com.gps.attendance.repository.EmployeeRepository;
 import com.gps.attendance.service.CloudinaryService;
 
 @RestController
-@CrossOrigin(origins="*")
+@CrossOrigin(origins = "*")
 public class EmployeeController {
 
     @Autowired
@@ -38,7 +38,6 @@ public class EmployeeController {
 
     @Autowired
     private DoctorVisitRepository doctorVisitRepository;
-
 
     @PostMapping("/login")
     public ResponseEntity<?> login(
@@ -80,7 +79,7 @@ public class EmployeeController {
 
     @GetMapping("/get-employees")
     public List<Employee> getEmployees() {
-        return repository.findAll();
+        return repository.findAllByOrderByIdDesc();
     }
 
     @PutMapping("/employee/update-photo/{id}")
@@ -140,15 +139,40 @@ public class EmployeeController {
     }
 
     @PostMapping("/register")
-public String registerEmployee(@RequestBody Employee employee) {
-    repository.save(employee);
-    return "Employee Registered Successfully";
-}
+    public String registerEmployee(@RequestBody Employee employee) {
+
+        if (employee.getUsername() == null
+                || employee.getUsername().trim().isEmpty()) {
+            return "Username is required";
+        }
+
+        employee.setUsername(employee.getUsername().trim());
+
+        if (repository.findByUsername(employee.getUsername()) != null) {
+            return "Username already exists";
+        }
+
+        if (employee.getEmail() != null
+                && !employee.getEmail().trim().isEmpty()
+                && repository.findByEmail(employee.getEmail()) != null) {
+            return "Email already exists";
+        }
+
+        if (employee.getMobile() != null
+                && !employee.getMobile().trim().isEmpty()
+                && repository.findByMobile(employee.getMobile()) != null) {
+            return "Mobile number already exists";
+        }
+
+        repository.save(employee);
+
+        return "Employee Registered Successfully";
+    }
 
     @GetMapping("/admin/employees")
     @ResponseBody
     public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
+        return employeeRepository.findAllByOrderByIdDesc();
     }
 
     @GetMapping("/admin/employee/{id}")
@@ -160,59 +184,59 @@ public String registerEmployee(@RequestBody Employee employee) {
                 .orElse(null);
     }
 
+    @PutMapping("/employee/assign-headquarter")
+    public Employee assignHeadquarter(@RequestBody Map<String, Object> request) {
 
-@PutMapping("/employee/assign-headquarter")
-public Employee assignHeadquarter(@RequestBody Map<String, Object> request) {
+        Long employeeId = Long.valueOf(request.get("employeeId").toString());
+        String headquarterName = request.get("headquarterName").toString();
 
-    Long employeeId = Long.valueOf(request.get("employeeId").toString());
-    String headquarterName = request.get("headquarterName").toString();
+        Employee employee = repository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-    Employee employee = repository.findById(employeeId)
-            .orElseThrow(() -> new RuntimeException("Employee not found"));
+        employee.setHeadquarters(headquarterName);
 
-    employee.setHeadquarters(headquarterName);
-
-    return repository.save(employee);
-}
-
-@PutMapping("/employee/change-password")
-public String changePassword(@RequestBody ChangePasswordRequest request) {
-
-    Employee employee = repository.findById(request.getEmployeeId())
-            .orElseThrow(() -> new RuntimeException("Employee not found"));
-
-    if (!employee.getPassword().equals(request.getCurrentPassword())) {
-        throw new RuntimeException("Current password is incorrect");
+        return repository.save(employee);
     }
 
-    String newPassword = request.getNewPassword();
+    @PutMapping("/employee/change-password")
+    public String changePassword(@RequestBody ChangePasswordRequest request) {
 
-    if (newPassword == null || newPassword.length() < 6) {
-        throw new RuntimeException("Password must be at least 6 characters");
-    }
+        Employee employee = repository.findById(request.getEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-    if (!newPassword.matches(".*\\d.*")) {
-        throw new RuntimeException("Password must contain at least 1 number");
-    }
+        if (!employee.getPassword().equals(request.getCurrentPassword())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
 
-    if (!newPassword.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
-        throw new RuntimeException("Password must contain at least 1 special character");
-    }
+        String newPassword = request.getNewPassword();
 
-    if (employee.getPassword().equals(newPassword)) {
-        throw new RuntimeException("New password cannot be same as current password");
-    }
+        if (newPassword == null || newPassword.length() < 6) {
+            throw new RuntimeException("Password must be at least 6 characters");
+        }
 
-    employee.setPassword(newPassword);
+        if (!newPassword.matches(".*\\d.*")) {
+            throw new RuntimeException("Password must contain at least 1 number");
+        }
+
+        if (!newPassword.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+            throw new RuntimeException("Password must contain at least 1 special character");
+        }
+
+        if (employee.getPassword().equals(newPassword)) {
+            throw new RuntimeException("New password cannot be same as current password");
+        }
+
+        employee.setPassword(newPassword);
         repository.save(employee);
 
-    return "Password changed successfully";
-}
-@GetMapping("/employee/{id}/doctor-count")
-public Long getDoctorCount(@PathVariable Long id) {
+        return "Password changed successfully";
+    }
 
-    return doctorVisitRepository.countByEmployeeId(id);
+    @GetMapping("/employee/{id}/doctor-count")
+    public Long getDoctorCount(@PathVariable Long id) {
 
-}
+        return doctorVisitRepository.countByEmployeeId(id);
+
+    }
 
 }

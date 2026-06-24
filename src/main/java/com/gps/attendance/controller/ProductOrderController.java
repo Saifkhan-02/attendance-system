@@ -57,6 +57,22 @@ public class ProductOrderController {
     @PostMapping("/place")
     public ProductOrder placeOrder(@RequestBody ProductOrder order) {
 
+        if (order.getEmployeeId() == null) {
+            throw new RuntimeException("Employee ID is required");
+        }
+
+        if (order.getDoctorId() == null) {
+            throw new RuntimeException("Doctor ID is required");
+        }
+
+        if (order.getProductId() == null) {
+            throw new RuntimeException("Product ID is required");
+        }
+
+        if (order.getOrderQuantity() == null || order.getOrderQuantity() <= 0) {
+            throw new RuntimeException("Order quantity must be greater than 0");
+        }
+
         System.out.println("ORDER PRODUCT ID: " + order.getProductId());
         System.out.println("ORDER QTY: " + order.getOrderQuantity());
 
@@ -103,14 +119,12 @@ public class ProductOrderController {
 
     @GetMapping("/history/{employeeId}")
     public List<ProductOrder> getOrderHistory(@PathVariable Long employeeId) {
-        return orderRepository.findByEmployeeId(employeeId);
+        return orderRepository.findByEmployeeIdOrderByIdDesc(employeeId);
     }
 
     @GetMapping("/all")
     public List<ProductOrder> getAllOrders() {
-
-        return orderRepository.findAll();
-
+        return orderRepository.findAllByOrderByIdDesc();
     }
 
     @GetMapping("/summary")
@@ -451,7 +465,7 @@ public class ProductOrderController {
 
     @GetMapping("/admin/all")
     public List<ProductOrder> getAllOrdersForAdmin() {
-        return orderRepository.findAll();
+        return orderRepository.findAllByOrderByIdDesc();
     }
 
     @GetMapping("/admin/sales-payment/summary")

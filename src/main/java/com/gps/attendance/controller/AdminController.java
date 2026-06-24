@@ -74,10 +74,6 @@ public class AdminController {
     public ResponseEntity<?> changePassword(
             @RequestBody AdminChangePasswordRequest request) {
 
-       System.out.println("Admin ID = " + request.getAdminId());
-System.out.println("Current Password = " + request.getCurrentPassword());
-System.out.println("New Password = " + request.getNewPassword());
-
         Admin admin
                 = repository.findById(
                         request.getAdminId())
@@ -98,8 +94,21 @@ System.out.println("New Password = " + request.getNewPassword());
                     .body("Current Password Incorrect");
         }
 
-        admin.setPassword(
-                request.getNewPassword());
+        String newPassword = request.getNewPassword();
+
+        if (newPassword == null || newPassword.length() < 6) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Password must be at least 6 characters");
+        }
+
+        if (admin.getPassword().equals(newPassword)) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("New password cannot be same as current password");
+
+        }
+        admin.setPassword(newPassword);
 
         repository.save(admin);
 

@@ -124,18 +124,38 @@ public class HQController {
     }
 
     @PostMapping("/save")
-    public HQList saveHQ(@RequestBody HQList hq) {
-        return hqRepository.save(hq);
+public HQList saveHQ(@RequestBody HQList hq) {
+
+    if (hq.getHqName() == null
+            || hq.getHqName().trim().isEmpty()) {
+        throw new RuntimeException("HQ name is required");
     }
+
+    if (hqRepository.findByHqName(
+            hq.getHqName().trim()).isPresent()) {
+
+        throw new RuntimeException("HQ already exists");
+    }
+
+    return hqRepository.save(hq);
+}
 
     @GetMapping("/all")
     public List<HQList> getAllHQ() {
-        return hqRepository.findAll();
+        return hqRepository.findAllByOrderByIdDesc();
     }
 
     @PostMapping("/mapping/save")
     public EmployeeHQMapping saveMapping(
             @RequestBody EmployeeHQMapping mapping) {
+
+        if (mappingRepository.existsByEmployeeIdAndHqId(
+                mapping.getEmployeeId(),
+                mapping.getHqId())) {
+
+            throw new RuntimeException(
+                    "HQ already assigned to employee");
+        }
 
         return mappingRepository.save(mapping);
     }

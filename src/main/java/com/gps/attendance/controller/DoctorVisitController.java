@@ -52,6 +52,10 @@ public class DoctorVisitController {
     public ResponseEntity<?> saveDoctorVisit(
             @RequestBody DoctorVisit visit) {
 
+        if (visit.getDoctorName() == null || visit.getDoctorName().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Doctor name is required");
+        }
+
         String doctorName = visit.getDoctorName().trim();
 
         Optional<DoctorVisit> existingVisit
@@ -77,11 +81,11 @@ public class DoctorVisitController {
     }
 
     @GetMapping("/doctor-visit/history/{employeeId}")
-    public List<DoctorVisit> getDoctorVisitHistory(
-            @PathVariable Long employeeId) {
+public List<DoctorVisit> getDoctorVisitHistory(
+        @PathVariable Long employeeId) {
 
-        return repository.findByEmployeeId(employeeId);
-    }
+    return repository.findByEmployeeIdOrderByIdDesc(employeeId);
+}
 
     @GetMapping("/doctor-visit/history/today/{employeeId}")
     public List<DoctorVisit> getTodayDoctorVisitHistory(
@@ -101,9 +105,9 @@ public class DoctorVisitController {
     }
 
     @GetMapping("/doctor-visit/monthly-count")
-public long getMonthlyVisitCount() {
-    return repository.getCurrentMonthVisitCount();
-}
+    public long getMonthlyVisitCount() {
+        return repository.getCurrentMonthVisitCount();
+    }
 
     @GetMapping("/doctor-visit/top10")
     public List<DoctorVisit> getTop10DoctorVisits() {

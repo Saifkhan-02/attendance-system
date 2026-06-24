@@ -11,6 +11,16 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     List<Expense> findByEmployeeId(Long employeeId);
 
+    List<Expense> findByEmployeeIdOrderByIdDesc(Long employeeId);
+
+    boolean existsByEmployeeIdAndExpenseDateAndExpenseType(
+            Long employeeId,
+            String expenseDate,
+            String expenseType
+    );
+
+    List<Expense> findAllByOrderByIdDesc();
+
     @Query(value = """
 SELECT
 SUBSTRING(expense_date,1,7) as month,
@@ -30,13 +40,12 @@ GROUP BY expense_date
 ORDER BY expense_date DESC
 LIMIT 7
 """, nativeQuery = true)
-List<Object[]> getLast7DaysExpenseStats();
+    List<Object[]> getLast7DaysExpenseStats();
 
     @Query("""
 SELECT COALESCE(SUM(e.amount),0)
 FROM Expense e
 WHERE e.employeeId = :employeeId
 """)
-Double getTotalExpenseByEmployee(Long employeeId);
+    Double getTotalExpenseByEmployee(Long employeeId);
 }
-
