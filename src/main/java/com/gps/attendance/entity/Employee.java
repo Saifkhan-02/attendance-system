@@ -38,6 +38,8 @@ public class Employee {
     
     private String status;
 
+    private String sessionToken;
+
     public Employee() {
     }
 
@@ -135,5 +137,13 @@ public class Employee {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getSessionToken() {
+        return sessionToken;
+    }
+
+    public void setSessionToken(String sessionToken) {
+        this.sessionToken = sessionToken;
     }
 }

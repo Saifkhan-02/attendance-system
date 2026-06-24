@@ -23,6 +23,9 @@ import com.gps.attendance.repository.DoctorVisitRepository;
 import com.gps.attendance.repository.EmployeeRepository;
 import com.gps.attendance.service.CloudinaryService;
 
+import java.util.UUID;
+import java.util.HashMap;
+
 @RestController
 @CrossOrigin(origins="*")
 public class EmployeeController {
@@ -40,26 +43,38 @@ public class EmployeeController {
     private DoctorVisitRepository doctorVisitRepository;
 
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(
-            @RequestBody Employee employee) {
+@PostMapping("/login")
+public ResponseEntity<?> login(@RequestBody Employee employee) {
 
-        Employee emp
-                = repository.findByUsernameAndPassword(
-                        employee.getUsername(),
-                        employee.getPassword());
+    Employee emp = repository.findByUsernameAndPassword(
+            employee.getUsername(),
+            employee.getPassword()
+    );
 
-        if (emp != null) {
+    if (emp != null) {
 
-            return ResponseEntity.ok(emp);
+        String token = UUID.randomUUID().toString();
 
-        }
+        emp.setSessionToken(token);
+        repository.save(emp);
 
-        return ResponseEntity
-                .badRequest()
-                .body("Invalid Username or Password");
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("id", emp.getId());
+        response.put("name", emp.getName());
+        response.put("username", emp.getUsername());
+        response.put("email", emp.getEmail());
+        response.put("headquarters", emp.getHeadquarters());
+        response.put("profileImage", emp.getProfileImage());
+        response.put("sessionToken", token);
+
+        return ResponseEntity.ok(response);
     }
 
+    return ResponseEntity
+            .badRequest()
+            .body("Invalid Username or Password");
+}
     @GetMapping("/employee/{id}")
     public ResponseEntity<?> getEmployeeById(
             @PathVariable Long id) {
@@ -123,11 +138,6 @@ public class EmployeeController {
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file
     ) throws IOException {
-
-        System.out.println("Upload API Hit");
-        System.out.println("Employee ID = " + id);
-        System.out.println("File empty = " + file.isEmpty());
-        System.out.println("File size = " + file.getSize());
 
         Employee employee = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
@@ -213,6 +223,31 @@ public Long getDoctorCount(@PathVariable Long id) {
 
     return doctorVisitRepository.countByEmployeeId(id);
 
+}
+
+@GetMapping("/employee/session/check/{employeeId}")
+public ResponseEntity<?> checkEmployeeSession(
+        @PathVariable Long employeeId,
+        @RequestParam String token) {
+
+    Employee employee = repository.findById(employeeId)
+            .orElse(null);
+
+    if (employee == null) {
+        return ResponseEntity
+                .badRequest()
+                .body("Employee Not Found");
+    }
+
+    if (employee.getSessionToken() == null ||
+            !employee.getSessionToken().equals(token)) {
+
+        return ResponseEntity
+                .status(401)
+                .body("Session Expired");
+    }
+
+    return ResponseEntity.ok("VALID");
 }
 
 }
