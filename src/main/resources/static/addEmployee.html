@@ -488,7 +488,7 @@ if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$/.test(username)) {
   .then(response => response.text())
   .then(data => {
     alert(data);
-    window.location.href = "employeeList.html";
+    window.location.href = "admin-dashboard.html";
   })
   .catch(error => {
     console.error(error);
