@@ -542,7 +542,6 @@
             Logout
            </a>
           </li>
-        </li>
       </ul>
     </div>
 
@@ -1179,8 +1178,7 @@ if (chartType) {
         });
       }
 
-      loadDoctorVisitCount();
-      loadDoctorVisits();
+
       loadDoctorVisitChart(`${BASE_URL}/doctor-visit/chart-data-weekly`);
       loadAttendanceChart();
       loadExpenseChart();
@@ -1188,7 +1186,7 @@ if (chartType) {
       // show Employees
 
       async function showEmployees() {
-        const response = await fetch("/admin/employees");
+        const response = await fetch(`${BASE_URL}/admin/employees`);
 
         const employees = await response.json();
 
@@ -1234,7 +1232,7 @@ if (chartType) {
 
       //show Employee Details
       async function showEmployeeDetails(id) {
-        const response = await fetch(`/admin/employee/${id}`);
+        const response = await fetch(`${BASE_URL}/admin/employee/${id}`);
 
         const emp = await response.json();
 
@@ -1260,7 +1258,7 @@ if (chartType) {
 
       //show Doctors
       async function showDoctors() {
-        const response = await fetch("/admin/doctors");
+        const response = await fetch(`${BASE_URL}/admin/doctors`);
 
         const doctors = await response.json();
 
@@ -1306,7 +1304,7 @@ if (chartType) {
       //show Doctor Details
       async function showDoctorDetails(id) {
         try {
-          const response = await fetch(`/admin/doctor/${id}`);
+          const response = await fetch(`${BASE_URL}/admin/doctor/${id}`);
 
           if (!response.ok) {
             alert("Doctor details not found!");
