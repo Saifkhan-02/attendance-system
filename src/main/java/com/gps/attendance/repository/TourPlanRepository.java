@@ -11,17 +11,25 @@ public interface TourPlanRepository
 
     List<TourPlan> findByEmployeeId(Long employeeId);
 
+    List<TourPlan> findByEmployeeIdOrderByIdDesc(Long employeeId);
+
     List<TourPlan> findByStatus(String status);
 
-    long countByStatus(String status);
-    
     List<TourPlan> findByEmployeeIdAndMonth(Long employeeId, String month);
 
-boolean existsByEmployeeIdAndMonth(Long employeeId, String month);
+    List<TourPlan> findByEmployeeIdAndMonthOrderByIdDesc(
+            Long employeeId,
+            String month
+    );
 
-boolean existsByEmployeeIdAndTravelDate(
-        Long employeeId,
-        java.time.LocalDate travelDate
-);
+    List<TourPlan> findAllByOrderByIdDesc();
 
+    long countByStatus(String status);
+
+    boolean existsByEmployeeIdAndMonth(Long employeeId, String month);
+
+    boolean existsByEmployeeIdAndTravelDate(
+            Long employeeId,
+            java.time.LocalDate travelDate
+    );
 }
