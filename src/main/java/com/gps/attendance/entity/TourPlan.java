@@ -29,15 +29,6 @@ public class TourPlan {
     @Column(name = "travel_date")
     private LocalDate travelDate;
 
-    @Column(name = "tour_type")
-    private String tourType;
-
-    @Column(name = "from_hq")
-    private String fromHq;
-
-    @Column(name = "to_hq")
-    private String toHq;
-
     @Column(name = "headquarter")
 private String headquarter;
 
@@ -73,18 +64,6 @@ private String weekDay;
 
     @Column(name = "admin_remark")
     private String adminRemark;
-
-    @Column(name = "approved_by")
-    private String approvedBy;
-
-    @Column(name = "approved_at")
-    private LocalDateTime approvedAt;
-
-    @Column(name = "edited_by")
-    private String editedBy;
-
-    @Column(name = "edited_at")
-    private LocalDateTime editedAt;
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -123,30 +102,6 @@ private String weekDay;
 
     public void setTravelDate(LocalDate travelDate) {
         this.travelDate = travelDate;
-    }
-
-    public String getTourType() {
-        return tourType;
-    }
-
-    public void setTourType(String tourType) {
-        this.tourType = tourType;
-    }
-
-    public String getFromHq() {
-        return fromHq;
-    }
-
-    public void setFromHq(String fromHq) {
-        this.fromHq = fromHq;
-    }
-
-    public String getToHq() {
-        return toHq;
-    }
-
-    public void setToHq(String toHq) {
-        this.toHq = toHq;
     }
 
     public String getHeadquarter() {
@@ -243,38 +198,6 @@ public void setWeekDay(String weekDay) {
 
     public void setAdminRemark(String adminRemark) {
         this.adminRemark = adminRemark;
-    }
-
-    public String getApprovedBy() {
-        return approvedBy;
-    }
-
-    public void setApprovedBy(String approvedBy) {
-        this.approvedBy = approvedBy;
-    }
-
-    public LocalDateTime getApprovedAt() {
-        return approvedAt;
-    }
-
-    public void setApprovedAt(LocalDateTime approvedAt) {
-        this.approvedAt = approvedAt;
-    }
-
-    public String getEditedBy() {
-        return editedBy;
-    }
-
-    public void setEditedBy(String editedBy) {
-        this.editedBy = editedBy;
-    }
-
-    public LocalDateTime getEditedAt() {
-        return editedAt;
-    }
-
-    public void setEditedAt(LocalDateTime editedAt) {
-        this.editedAt = editedAt;
     }
 
     public LocalDateTime getCreatedAt() {

@@ -40,7 +40,6 @@ public class DoctorVisit {
     private String accuracy;
 
     private String photo;
-    private String doctorResponse;
     private String remarks;
     private String status;
 
@@ -170,14 +169,6 @@ public class DoctorVisit {
     public void setPhoto(String photo) {
         this.photo = photo;
     }
-
-    public String getDoctorResponse() {
-        return doctorResponse;
-    }
-    public void setDoctorResponse(String doctorResponse) {
-        this.doctorResponse = doctorResponse;
-    }
-
     public String getRemarks() {
         return remarks;
     }
