@@ -72,6 +72,7 @@ public class DoctorVisitController {
         }
 
         visit.setDoctorName(doctorName);
+        System.out.println("System Time = " + LocalTime.now());
         visit.setVisitTime(LocalTime.now());
         visit.setStatus("Completed");
 
@@ -108,6 +109,11 @@ public List<DoctorVisit> getDoctorVisitHistory(
     public long getMonthlyVisitCount() {
         return repository.getCurrentMonthVisitCount();
     }
+
+    @GetMapping("/doctor-visit/today-count")
+public long getTodayVisitCount() {
+    return repository.getTodayVisitCount();
+}
 
     @GetMapping("/doctor-visit/top10")
     public List<DoctorVisit> getTop10DoctorVisits() {

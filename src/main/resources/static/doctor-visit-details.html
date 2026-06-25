@@ -214,11 +214,15 @@
 
         container.innerHTML = "";
 
-        data.sort((a, b) => {
-          const dateA = new Date(`${a.visitDate} ${a.visitTime}`);
-          const dateB = new Date(`${b.visitDate} ${b.visitTime}`);
-          return dateB - dateA;
-        });
+       data.sort((a, b) => {
+
+    if (a.visitDate !== b.visitDate) {
+        return b.visitDate.localeCompare(a.visitDate);
+    }
+
+    return b.visitTime.localeCompare(a.visitTime);
+
+});
 
         data.forEach((visit) => {
           container.innerHTML += `
@@ -271,12 +275,10 @@
 </button>
                         <br>
 
-                        <button
-  class="btn btn-outline-primary rounded-pill mt-2"
-  onclick="toggleDetails(this)"
->
-  More Details
-</button>
+                        <button class="btn btn-outline-primary rounded-pill mt-2"
+                         onclick="toggleDetails(this)"> 
+                          More Details
+                          </button>
 
                     </div>
 
@@ -299,21 +301,13 @@
         </div>
 
         <div class="col-md-6 mb-3">
-            <strong>Doctor Response :</strong>
-
-            <span class="text-success fw-bold">
-                ${visit.doctorResponse || "-"}
-            </span>
-        </div>
-
-        <div class="col-md-6 mb-3">
-            <strong>Visit Time :</strong>
-            ${visit.visitTime || "-"}
-        </div>
+        <strong>Landmark :</strong>
+        ${visit.landmark || "-"}
+         </div>
 
         <div class="col-md-12 mb-3">
-            <strong>Landmark :</strong>
-            ${visit.landmark || "-"}
+          <strong>Visit Time :</strong>
+          ${formatTime(visit.visitTime)}
         </div>
 
     </div>
@@ -370,6 +364,27 @@
 
         window.open(`https://www.google.com/maps?q=${lat},${lng}`, "_blank");
       }
+
+      function formatTime(time) {
+        if (!time) return "-";
+
+        let parts = time.split(":");
+
+        let hour = parseInt(parts[0]);
+
+        let minute = parts[1];
+
+        let ampm = hour >= 12 ? "PM" : "AM";
+
+        hour = hour % 12;
+
+        if (hour === 0) {
+          hour = 12;
+        }
+
+        return hour + ":" + minute + " " + ampm;
+      }
+
       function toggleDetails(button) {
         const details = button
           .closest(".visit-card")
