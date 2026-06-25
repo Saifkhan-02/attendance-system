@@ -870,34 +870,33 @@ function updateTime() {
       loadAdminInfo();
       updateTime();
 
- window.onload = function () {
+ window.addEventListener("load", function () {
 
- fetch(`${BASE_URL}/get-employees`)
-  .then((response) => response.json())
-  .then((employees) => {
-    document.getElementById("totalEmployees").innerText =
-      employees.length;
-  })
-  .catch((error) => {
-    console.error("Employee Count Error:", error);
-    document.getElementById("totalEmployees").innerText = "0";
-  });
+    fetch(`${BASE_URL}/get-employees`)
+        .then(response => response.json())
+        .then(employees => {
+            document.getElementById("totalEmployees").innerText = employees.length;
+        })
+        .catch(error => {
+            console.error("Employee Count Error:", error);
+            document.getElementById("totalEmployees").innerText = "0";
+        });
 
-  fetch(`${BASE_URL}/doctor-visit/directory`)
-    .then((response) => response.json())
-    .then((doctors) => {
-      document.getElementById("totalDoctors").innerText =
-        doctors.length;
-    })
-    .catch((error) => {
-      console.error("Doctor Count Error:", error);
-      document.getElementById("totalDoctors").innerText = "0";
-    });
+    fetch(`${BASE_URL}/doctor-visit/directory`)
+        .then(response => response.json())
+        .then(doctors => {
+            document.getElementById("totalDoctors").innerText = doctors.length;
+        })
+        .catch(error => {
+            console.error("Doctor Count Error:", error);
+            document.getElementById("totalDoctors").innerText = "0";
+        });
 
-  loadDoctorVisitCount();
-  loadDoctorVisits();
-  loadAdminTotalSale();
-};
+    loadDoctorVisitCount();
+    loadDoctorVisits();
+    loadAdminTotalSale();
+
+});
 
 const profileBtn = document.getElementById("profileBtn");
 const profileModal = document.getElementById("profileModal");
@@ -937,15 +936,23 @@ if(profileBtn && profileModal && closeModal){
           document.getElementById("doctorVisitCount").innerText = "0";
         }
       }
-      async function loadDoctorVisits() {
+     async function loadDoctorVisits() {
+
+    try {
+
         const response = await fetch(`${BASE_URL}/doctor-visit/top10`);
+
+        if (!response.ok) {
+            throw new Error("API Error");
+        }
 
         const visits = await response.json();
 
         let html = "";
 
-        visits.forEach((v) => {
-          html += `
+        visits.forEach(v => {
+
+            html += `
             <tr>
                 <td>${v.employeeName || ""}</td>
                 <td>${v.doctorName || ""}</td>
@@ -954,12 +961,26 @@ if(profileBtn && profileModal && closeModal){
                 <td>${v.visitTime || ""}</td>
                 <td>${v.status || ""}</td>
             </tr>
-        `;
+            `;
+
         });
 
         document.getElementById("doctorVisitTableBody").innerHTML = html;
-      }
 
+    } catch (e) {
+
+        console.error("Doctor Visit Error :", e);
+
+        document.getElementById("doctorVisitTableBody").innerHTML =
+            `<tr>
+                <td colspan="6" class="text-center text-danger">
+                    Data not available
+                </td>
+            </tr>`;
+
+    }
+
+}
       document
         .getElementById("doctorSearch")
         .addEventListener("keyup", async function () {
@@ -971,7 +992,7 @@ if(profileBtn && profileModal && closeModal){
           }
 
           const response = await fetch(
-            `${BASE_URL}/doctor-visit/search/${keyword}`,
+          `${BASE_URL}/doctor-visit/search/${encodeURIComponent(keyword)}`,
           );
 
           const visits = await response.json();
@@ -1089,6 +1110,8 @@ if (chartType) {
   });
 }
 
+      let attendanceChart = null;
+
       async function loadAttendanceChart() {
         const response = await fetch(`${BASE_URL}/attendance/chart-data`);
 
@@ -1096,7 +1119,11 @@ if (chartType) {
 
         const ctx = document.getElementById("attendanceChart");
 
-        new Chart(ctx, {
+        if (attendanceChart) {
+    attendanceChart.destroy();
+}
+
+       attendanceChart = new Chart(ctx, {
           type: "doughnut",
 
           data: {
@@ -1129,6 +1156,8 @@ if (chartType) {
         document.getElementById("leaveCount").innerText = data.leave;
       }
 
+      let expenseChart = null;
+
       async function loadExpenseChart() {
         const response = await fetch(`${BASE_URL}/expenses/chart-data`);
 
@@ -1149,7 +1178,11 @@ if (chartType) {
 
         const ctx = document.getElementById("expenseChart");
 
-        new Chart(ctx, {
+        if (expenseChart) {
+    expenseChart.destroy();
+}
+
+        expenseChart = new Chart(ctx,{
           type: "bar",
 
           data: {
@@ -1246,9 +1279,17 @@ if (chartType) {
 `;
         });
 
-        document.getElementById("employeeListBody").innerHTML = html;
+       const body = document.getElementById("employeeListBody");
 
-        document.getElementById("employeeCount").innerText = employees.length;
+if(body){
+    body.innerHTML = html;
+}
+
+       const employeeCount = document.getElementById("employeeCount");
+
+if (employeeCount) {
+    employeeCount.innerText = employees.length;
+}
 
         new bootstrap.Modal(document.getElementById("employeeModal")).show();
       }
@@ -1318,9 +1359,17 @@ if (chartType) {
 `;
         });
 
-        document.getElementById("doctorListBody").innerHTML = html;
+        const doctorBody = document.getElementById("doctorListBody");
 
-        document.getElementById("doctorCount").innerText = doctors.length;
+if (doctorBody) {
+    doctorBody.innerHTML = html;
+}
+
+       const doctorCount = document.getElementById("doctorCount");
+
+if (doctorCount) {
+    doctorCount.innerText = doctors.length;
+}
 
         new bootstrap.Modal(document.getElementById("doctorModal")).show();
       }
@@ -1416,6 +1465,7 @@ if (chartType) {
 const adminId = localStorage.getItem("adminId");
 
 if (!adminId) {
+    localStorage.clear();
     window.location.replace("index.html");
 }
 
