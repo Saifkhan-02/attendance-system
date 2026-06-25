@@ -127,7 +127,6 @@ public class EmployeeController {
 
         employee.setEmail(updatedEmployee.getEmail());
         employee.setMobile(updatedEmployee.getMobile());
-        employee.setHeadquarters(updatedEmployee.getHeadquarters());
 
         return repository.save(employee);
     }

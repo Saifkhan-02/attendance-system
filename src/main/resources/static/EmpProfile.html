@@ -142,6 +142,21 @@
           height: 120px;
         }
       }
+      .back-btn{
+  position:absolute;
+  top:18px;
+  left:18px;
+  width:42px;
+  height:42px;
+  border:none;
+  border-radius:50%;
+  background:rgba(255,255,255,.2);
+  color:white;
+}
+
+.profile-header{
+  position:relative;
+}
     </style>
   </head>
 
@@ -165,10 +180,14 @@
 
   <p class="mb-1" id="employeeDesignationHeader">Loading...</p>
 
-  <p class="mb-0 text-white">
-    Employee ID :
-    <span id="employeeId">Loading...</span>
-  </p>
+ <button class="back-btn" onclick="window.location.href='Dashboard.html'">
+  <i class="fa-solid fa-arrow-left"></i>
+</button>
+
+<p class="mb-0 text-white">
+  Employee ID:
+  <span id="employeeUsernameHeader">Loading...</span>
+</p>
 </div>
 
           <!-- <div class="col-md-9 mt-3 mt-md-0">
@@ -274,8 +293,8 @@
             <div class="modal-body text-center">
 
               <div class="crop-box mb-3">
-  <img id="photoPreview" src="https://via.placeholder.com/150">
-</div>
+                <img id="photoPreview" src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+              </div>
 
                 <input type="file"
                        id="profileImageInput"
@@ -337,8 +356,8 @@
         <label class="form-label">Mobile Number</label>
         <input type="text" id="editMobile" class="form-control mb-3">
 
-        <label class="form-label">Head Quarter</label>
-        <input type="text" id="editHeadQuarter" class="form-control mb-3">
+        <!-- <label class="form-label">Head Quarter</label>
+        <input type="text" id="editHeadQuarter" class="form-control mb-3"> -->
 
         <button class="btn btn-primary w-100" onclick="updateEmployeeProfile()">
           Save Changes
@@ -352,7 +371,7 @@
 
     <script src="js/config.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
-    <script src="js/session-check.js"></script>
+    <!-- <script src="js/session-check.js"></script> -->
 
     <script>
 
@@ -365,11 +384,11 @@
       function loadProfile() {
         const employeeId = localStorage.getItem("employeeId");
 
-        if (!employeeId) {
-          alert("Please log in first.");
-          window.location.href = "index.html";
-          return;
-        }
+        //if (!employeeId) {
+        //  alert("Please log in first.");
+        //  window.location.href = "index.html";
+        //  return;
+        //}
 
         fetch(`${BASE_URL}/employee/${employeeId}`)
           .then((response) => {
@@ -393,7 +412,8 @@
 
             document.getElementById("employeeName").innerText = employee.name;
 
-            document.getElementById("employeeId").innerText = employee.id;
+            document.getElementById("employeeUsernameHeader").innerText =
+  employee.username || localStorage.getItem("employeeUsername") || "-";
 
             document.getElementById("employeeEmail").innerText = employee.email;
 
@@ -434,19 +454,19 @@
 
   document.getElementById("editEmail").value = currentEmployee.email || "";
   document.getElementById("editMobile").value = currentEmployee.mobile || "";
-  document.getElementById("editHeadQuarter").value = currentEmployee.headquarters || "";
+  //document.getElementById("editHeadQuarter").value = currentEmployee.headquarters || "";
 
   const modal = new bootstrap.Modal(document.getElementById("editProfileModal"));
   modal.show();
 }
 
       function updateEmployeeProfile() {
-  const employeeId = localStorage.getItem("employeeId");
+  const employeeId = localStorage.getItem("employeeUsernameHeader");
 
   const updatedData = {
     email: document.getElementById("editEmail").value,
     mobile: document.getElementById("editMobile").value,
-    headquarters: document.getElementById("editHeadQuarter").value
+    //headquarters: document.getElementById("editHeadQuarter").value
   };
 
   fetch(`${BASE_URL}/employee/update-profile/${employeeId}`, {
