@@ -3,6 +3,7 @@ package com.gps.attendance.controller;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,8 @@ public class DoctorVisitController {
         }
 
         visit.setDoctorName(doctorName);
-        visit.setVisitTime(LocalTime.now());
+        visit.setVisitDate(LocalDate.now(ZoneId.of("Asia/Kolkata")).toString());
+        visit.setVisitTime(LocalTime.now(ZoneId.of("Asia/Kolkata")));
         visit.setStatus("Completed");
 
         DoctorVisit savedVisit = repository.save(visit);
