@@ -22,5 +22,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     Employee findByMobile(String mobile);
 
+    List<Employee> findAllByOrderByNameAsc();
     List<Employee> findAllByOrderByIdDesc();
 }

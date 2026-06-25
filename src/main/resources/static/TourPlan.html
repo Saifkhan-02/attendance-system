@@ -530,6 +530,7 @@ let routeList = [];
 let employeeHQ = "";
 let submittedPlans = [];
 
+
 window.onload = function () {
   document.getElementById("employeeId").value = localStorage.getItem("employeeId") || "";
   document.getElementById("employeeName").value = localStorage.getItem("employeeName") || "";
@@ -539,6 +540,10 @@ window.onload = function () {
 
   loadEmployeeHQAndRoutes();
 };
+function parseLocalDate(dateString) {
+  const [year, month, day] = dateString.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
 
 function loadEmployeeHQAndRoutes() {
   const employeeId = localStorage.getItem("employeeId");
@@ -798,7 +803,7 @@ if (selectedMonth !== currentMonth) {
     alert("Only current month tour can be submitted");
     return;
 }
-const planDate = row.dataset.date;
+const selectedDate = parseLocalDate(row.dataset.date);
 const todayDate = new Date().toISOString().split("T")[0];
 
 if (planDate !== todayDate) {
@@ -846,7 +851,7 @@ if (planDate !== todayDate) {
   console.error(error);
 
   if (error.message.includes("already submitted")) {
-    alert("Aaj ke date ka tour already submitted hai");
+    alert("Today tour has already submitted");
   } else {
     alert("Failed to submit day tour");
   }

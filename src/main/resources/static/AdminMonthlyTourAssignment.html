@@ -401,10 +401,12 @@ function generateMonthRows() {
   table.innerHTML = "";
 
   for (let day = 1; day <= days; day++) {
-    const date = new Date(year, monthNumber - 1, day);
-    const dateStr = date.toISOString().split("T")[0];
-    const dayName = date.toLocaleDateString("en-IN", {weekday:"long"});
-
+   const dateStr =
+  `${year}-${String(monthNumber).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+const date = new Date(year, monthNumber - 1, day);
+const dayName = date.toLocaleDateString("en-IN", {
+  weekday: "long"
+});
    table.innerHTML += `
   <tr class="assign-row" data-date="${dateStr}" data-day="${dayName}">
     <td>${dateStr}</td>
