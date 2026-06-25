@@ -383,10 +383,6 @@
         .main-content {
           margin-left: 0;
         }
-
-        .admin-info {
-          display: none !important;
-        }
         .dashboard-card {
           height: 100%;
         }
@@ -447,7 +443,7 @@
 
     <nav class="navbar top-navbar px-3">
       <div class="d-flex align-items-center">
-        <button class="btn btn-light me-3" onclick="toggleSidebar()">
+        <button id="menuBtn" class="btn btn-light me-3" onclick="toggleSidebar()">
           <i class="fas fa-bars"></i>
         </button>
 
@@ -479,6 +475,7 @@
             Dashboard
           </a>
         </li>
+
 
         <li class="nav-item">
           <a href="admin-employeeTracking.html" class="nav-link">
@@ -542,7 +539,6 @@
             Logout
            </a>
           </li>
-        </li>
       </ul>
     </div>
 
@@ -722,7 +718,7 @@
         <div class="col-lg-3">
           <div class="card shadow-sm mt-4 mb-4">
             <div class="card-header bg-success text-white">
-              Attendance Status
+              Attendance Status Daily
             </div>
 
             <div class="card-body">
@@ -817,19 +813,8 @@
 
     <script>
 
-      function updateTime() {
-        document.getElementById("datetime").innerHTML =
-          new Date().toLocaleString();
-      }
-      setInterval(updateTime, 1000);
 
-      function loadAdminInfo() {
-        document.getElementById("adminName").innerText =
-          localStorage.getItem("adminName") || "Admin";
-      }
-      loadAdminInfo();
-      updateTime();
-
+      
       function toggleSidebar() {
         let sidebar = document.getElementById("sidebar");
 
@@ -844,59 +829,76 @@
         }
       }
 
-      window.onload = function () {
-    updateTime();
-    setInterval(updateTime, 1000);
+      document.addEventListener("click", function (e) {
 
-    loadEmployeeTracking();
+  const sidebar = document.getElementById("sidebar");
+  const main = document.getElementById("mainContent");
+  const menuBtn = document.getElementById("menuBtn");
 
-    document
-      .getElementById("searchEmployee")
-      .addEventListener("keyup", filterEmployeeRows);
-  };
+  // Menu button ya sidebar par click hua to kuch mat karo
+  if (
+  sidebar.contains(e.target) ||
+  (menuBtn && menuBtn.contains(e.target))
+) {
+  return;
+}
 
-  function updateTime() {
-    document.getElementById("datetime").innerHTML =
-      new Date().toLocaleString();
-       }
-       setInterval(updateTime, 1000);
+  // Mobile
+  if (window.innerWidth <= 768) {
+    sidebar.classList.remove("show");
+  }
 
-       function loadAdminInfo() {
+  // Laptop/Desktop
+  else {
+    sidebar.classList.add("hide");
+    main.classList.add("full");
+  }
+
+});
+
+function updateTime() {
+        document.getElementById("datetime").innerHTML =
+          new Date().toLocaleString();
+      }
+      setInterval(updateTime, 1000);
+
+         function loadAdminInfo() {
+
     document.getElementById("adminName").innerText =
         localStorage.getItem("adminName") || "Admin";
-
-}
-   loadAdminInfo();
+      }
+      loadAdminInfo();
       updateTime();
 
-  // ================= DASHBOARD COUNTS ================= 
+ window.onload = function () {
 
-   
-     window.onload = function () {
-
-  fetch(`${BASE_URL}/get-employees`)
-    .then((response) => response.json())
-    .then((employees) => {
-      document.getElementById("totalEmployees").innerText =
-        employees.length;
-    });
-
- fetch(`${BASE_URL}/doctor-visit/directory`)
+ fetch(`${BASE_URL}/get-employees`)
   .then((response) => response.json())
-  .then((doctors) => {
-    document.getElementById("totalDoctors").innerText =
-      doctors.length;
+  .then((employees) => {
+    document.getElementById("totalEmployees").innerText =
+      employees.length;
   })
   .catch((error) => {
-    console.error("Doctor Count Error:", error);
-    document.getElementById("totalDoctors").innerText = "0";
+    console.error("Employee Count Error:", error);
+    document.getElementById("totalEmployees").innerText = "0";
   });
 
-        loadDoctorVisitCount();
-        loadDoctorVisits();
-        loadAdminTotalSale();
+  fetch(`${BASE_URL}/doctor-visit/directory`)
+    .then((response) => response.json())
+    .then((doctors) => {
+      document.getElementById("totalDoctors").innerText =
+        doctors.length;
+    })
+    .catch((error) => {
+      console.error("Doctor Count Error:", error);
+      document.getElementById("totalDoctors").innerText = "0";
+    });
+
+  loadDoctorVisitCount();
+  loadDoctorVisits();
+  loadAdminTotalSale();
 };
-   
+
 const profileBtn = document.getElementById("profileBtn");
 const profileModal = document.getElementById("profileModal");
 const closeModal = document.getElementById("closeModal");
@@ -1199,8 +1201,7 @@ if (chartType) {
         });
       }
 
-      loadDoctorVisitCount();
-      loadDoctorVisits();
+
       loadDoctorVisitChart(`${BASE_URL}/doctor-visit/chart-data-weekly`);
       loadAttendanceChart();
       loadExpenseChart();
@@ -1208,7 +1209,7 @@ if (chartType) {
       // show Employees
 
       async function showEmployees() {
-        const response = await fetch("/admin/employees");
+        const response = await fetch(`${BASE_URL}/admin/employees`);
 
         const employees = await response.json();
 
@@ -1254,7 +1255,7 @@ if (chartType) {
 
       //show Employee Details
       async function showEmployeeDetails(id) {
-        const response = await fetch(`/admin/employee/${id}`);
+        const response = await fetch(`${BASE_URL}/admin/employee/${id}`);
 
         const emp = await response.json();
 
@@ -1280,7 +1281,7 @@ if (chartType) {
 
       //show Doctors
       async function showDoctors() {
-        const response = await fetch("/admin/doctors");
+        const response = await fetch(`${BASE_URL}/admin/doctors`);
 
         const doctors = await response.json();
 
@@ -1326,7 +1327,7 @@ if (chartType) {
       //show Doctor Details
       async function showDoctorDetails(id) {
         try {
-          const response = await fetch(`/admin/doctor/${id}`);
+          const response = await fetch(`${BASE_URL}/admin/doctor/${id}`);
 
           if (!response.ok) {
             alert("Doctor details not found!");

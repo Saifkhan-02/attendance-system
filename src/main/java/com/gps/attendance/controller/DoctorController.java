@@ -24,27 +24,40 @@ public class DoctorController {
     @PostMapping("/admin/save-doctor")
     public Doctor saveDoctor(@ModelAttribute Doctor doctor) {
 
+        if (doctor.getDoctorName() == null
+                || doctor.getDoctorName().trim().isEmpty()) {
+            throw new RuntimeException("Doctor name is required");
+        }
+
+        doctor.setDoctorName(doctor.getDoctorName().trim());
+
+        if (doctorRepository.findByDoctorNameIgnoreCase(
+                doctor.getDoctorName().trim()) != null) {
+
+            throw new RuntimeException("Doctor already exists");
+        }
+
         return doctorRepository.save(doctor);
     }
 
     @GetMapping("/admin/get-doctors")
     public List<Doctor> getDoctors() {
 
-        return doctorRepository.findAll();
+        return doctorRepository.findAllByOrderByIdDesc();
     }
 
     @GetMapping("/doctor/assigned/{employeeId}")
     public List<Doctor> getAssignedDoctors(
             @PathVariable Long employeeId) {
 
-        return doctorRepository.findByEmployeeId(employeeId);
+        return doctorRepository.findByEmployeeIdOrderByIdDesc(employeeId);
     }
 
     @GetMapping("/admin/doctors")
     @ResponseBody
     public List<Doctor> getAllDoctors() {
 
-        return doctorRepository.findAll();
+        return doctorRepository.findAllByOrderByIdDesc();
     }
 
     @GetMapping("/admin/doctor/{id}")

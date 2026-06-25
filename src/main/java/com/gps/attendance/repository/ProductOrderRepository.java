@@ -14,7 +14,7 @@ public interface ProductOrderRepository extends JpaRepository<ProductOrder, Long
 
     long countByEmployeeIdAndOrderDateStartingWith(Long employeeId, String month);
 
-     List<ProductOrder> findByDoctorId(Long doctorId);
+    List<ProductOrder> findByDoctorId(Long doctorId);
 
     // Date wise
     List<ProductOrder> findByOrderDate(String orderDate);
@@ -22,48 +22,52 @@ public interface ProductOrderRepository extends JpaRepository<ProductOrder, Long
     // Month wise
     List<ProductOrder> findByOrderDateStartingWith(String month);
 
+    List<ProductOrder> findByEmployeeIdOrderByIdDesc(Long employeeId);
+
+    List<ProductOrder> findAllByOrderByIdDesc();
+
     @Query("SELECT COALESCE(SUM(p.orderAmount), 0) FROM ProductOrder p WHERE p.employeeId = :employeeId AND p.orderDate LIKE CONCAT(:month, '%')")
-Double getMonthlySalesByEmployee(@Param("employeeId") Long employeeId,
-                                 @Param("month") String month);
+    Double getMonthlySalesByEmployee(@Param("employeeId") Long employeeId,
+            @Param("month") String month);
 
     List<ProductOrder> findByEmployeeIdAndOrderDateOrderByIdDesc(
-        Long employeeId,
-        String orderDate
-);
+            Long employeeId,
+            String orderDate
+    );
 
-List<ProductOrder> findByEmployeeIdAndOrderDateStartingWithOrderByIdDesc(
-        Long employeeId,
-        String month
-);                            
+    List<ProductOrder> findByEmployeeIdAndOrderDateStartingWithOrderByIdDesc(
+            Long employeeId,
+            String month
+    );
 
- List<ProductOrder>
+    List<ProductOrder>
             findByEmployeeNameContainingIgnoreCaseAndDoctorNameContainingIgnoreCase(
                     String employeeName,
                     String doctorName
             );
 
-            @Query("""
+    @Query("""
 SELECT COALESCE(SUM(p.orderAmount), 0)
 FROM ProductOrder p
 WHERE p.employeeId = :employeeId
 """)
-Double getTotalSalesByEmployee(@Param("employeeId") Long employeeId);
+    Double getTotalSalesByEmployee(@Param("employeeId") Long employeeId);
 
-@Query("""
+    @Query("""
 SELECT COALESCE(SUM(p.paidAmount), 0)
 FROM ProductOrder p
 WHERE p.employeeId = :employeeId
 """)
-Double getTotalCollectionByEmployee(@Param("employeeId") Long employeeId);
+    Double getTotalCollectionByEmployee(@Param("employeeId") Long employeeId);
 
-@Query("""
+    @Query("""
 SELECT COALESCE(SUM(p.dueAmount), 0)
 FROM ProductOrder p
 WHERE p.employeeId = :employeeId
 """)
-Double getTotalDueByEmployee(@Param("employeeId") Long employeeId);
+    Double getTotalDueByEmployee(@Param("employeeId") Long employeeId);
 
-@Query("""
+    @Query("""
 SELECT p.distributorName,
        COALESCE(SUM(p.orderAmount), 0),
        COALESCE(SUM(p.paidAmount), 0),
@@ -72,37 +76,38 @@ FROM ProductOrder p
 WHERE p.employeeId = :employeeId
 GROUP BY p.distributorName
 """)
-List<Object[]> getDistributorWiseSales(@Param("employeeId") Long employeeId);
+    List<Object[]> getDistributorWiseSales(@Param("employeeId") Long employeeId);
 
-@Query("""
+    @Query("""
 SELECT p
 FROM ProductOrder p
 WHERE p.employeeId = :employeeId
 AND (:distributorName = '' OR p.distributorName = :distributorName)
 ORDER BY p.id DESC
 """)
-List<ProductOrder> getOrdersByEmployeeAndDistributor(
-        @Param("employeeId") Long employeeId,
-        @Param("distributorName") String distributorName
-);
-@Query("""
+    List<ProductOrder> getOrdersByEmployeeAndDistributor(
+            @Param("employeeId") Long employeeId,
+            @Param("distributorName") String distributorName
+    );
+
+    @Query("""
 SELECT COALESCE(SUM(p.orderAmount),0)
 FROM ProductOrder p
 """)
-Double getTotalSale();
+    Double getTotalSale();
 
-@Query("""
+    @Query("""
 SELECT COALESCE(SUM(p.paidAmount),0)
 FROM ProductOrder p
 """)
-Double getTotalCollection();
+    Double getTotalCollection();
 
-@Query("""
+    @Query("""
 SELECT COALESCE(SUM(p.dueAmount),0)
 FROM ProductOrder p
 """)
-Double getTotalDue();
-   
-   @Query("SELECT COUNT(p) FROM ProductOrder p WHERE p.employeeId = :employeeId")
-long countOrdersByEmployeeId(@Param("employeeId") Long employeeId);
+    Double getTotalDue();
+
+    @Query("SELECT COUNT(p) FROM ProductOrder p WHERE p.employeeId = :employeeId")
+    long countOrdersByEmployeeId(@Param("employeeId") Long employeeId);
 }

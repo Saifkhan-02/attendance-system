@@ -23,39 +23,44 @@ public class AttendanceController {
     @Autowired
     private AttendanceRepository repository;
 
-    
+    @PostMapping("/mark-attendance")
+    public ResponseEntity<?> markAttendance(
+            @RequestBody Attendance attendance) {
 
-@PostMapping("/mark-attendance")
-public ResponseEntity<?> markAttendance(
-        @RequestBody Attendance attendance) {
+        if (attendance.getEmployeeId() == null) {
+            return ResponseEntity.badRequest()
+                    .body("Employee ID is required");
+        }
 
-    LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now();
 
-    if (repository.existsByEmployeeIdAndAttendanceDate(
-            attendance.getEmployeeId(),
-            today)) {
+        if (repository.existsByEmployeeIdAndAttendanceDate(
+                attendance.getEmployeeId(),
+                today)) {
 
-        return ResponseEntity
-                .badRequest()
-                .body("Attendance already marked for today");
+            return ResponseEntity
+                    .badRequest()
+                    .body("Attendance already marked for today");
+        }
+
+        attendance.setAttendanceDate(today);
+        attendance.setAttendanceTime(LocalTime.now());
+
+        repository.save(attendance);
+
+        return ResponseEntity.ok("Attendance Marked Successfully");
     }
 
-    attendance.setAttendanceDate(today);
-    attendance.setAttendanceTime(LocalTime.now());
-
-    repository.save(attendance);
-
-    return ResponseEntity.ok("Attendance Marked Successfully");
-}
     @GetMapping("/attendance/history/{employeeId}")
     public List<Attendance> getAttendanceHistory(
-        @PathVariable Long employeeId){
+            @PathVariable Long employeeId) {
 
-              System.out.println("History API Hit : " + employeeId);
-    return repository.findByEmployeeId(employeeId);
-    }    
+        System.out.println("History API Hit : " + employeeId);
+        return repository.findByEmployeeIdOrderByIdDesc(employeeId);
+    }
+
     @GetMapping("/attendance-list")
     public List<Attendance> getAllAttendance() {
-        return repository.findAll();
+        return repository.findAllByOrderByIdDesc();
     }
 }

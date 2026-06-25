@@ -1,5 +1,7 @@
 package com.gps.attendance.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +15,12 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             String password);
 
     Employee findByUsername(String username);
+
+    
+
+    Employee findByEmail(String email);
+
+    Employee findByMobile(String mobile);
+
+    List<Employee> findAllByOrderByIdDesc();
 }

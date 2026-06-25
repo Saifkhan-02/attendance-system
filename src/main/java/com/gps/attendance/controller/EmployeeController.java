@@ -23,8 +23,11 @@ import com.gps.attendance.repository.DoctorVisitRepository;
 import com.gps.attendance.repository.EmployeeRepository;
 import com.gps.attendance.service.CloudinaryService;
 
+import java.util.UUID;
+import java.util.HashMap;
+
 @RestController
-@CrossOrigin(origins="*")
+@CrossOrigin(origins = "*")
 public class EmployeeController {
 
     @Autowired
@@ -33,8 +36,6 @@ public class EmployeeController {
     @Autowired
     private CloudinaryService cloudinaryService;
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
 
     @Autowired
     private DoctorVisitRepository doctorVisitRepository;
@@ -44,22 +45,35 @@ public class EmployeeController {
     public ResponseEntity<?> login(
             @RequestBody Employee employee) {
 
-        Employee emp
-                = repository.findByUsernameAndPassword(
-                        employee.getUsername(),
-                        employee.getPassword());
+    Employee emp = repository.findByUsernameAndPassword(
+            employee.getUsername(),
+            employee.getPassword()
+    );
 
-        if (emp != null) {
+    if (emp != null) {
 
-            return ResponseEntity.ok(emp);
+        String token = UUID.randomUUID().toString();
 
-        }
+        emp.setSessionToken(token);
+        repository.save(emp);
 
-        return ResponseEntity
-                .badRequest()
-                .body("Invalid Username or Password");
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("id", emp.getId());
+        response.put("name", emp.getName());
+        response.put("username", emp.getUsername());
+        response.put("email", emp.getEmail());
+        response.put("headquarters", emp.getHeadquarters());
+        response.put("profileImage", emp.getProfileImage());
+        response.put("sessionToken", token);
+
+        return ResponseEntity.ok(response);
     }
 
+    return ResponseEntity
+            .badRequest()
+            .body("Invalid Username or Password");
+}
     @GetMapping("/employee/{id}")
     public ResponseEntity<?> getEmployeeById(
             @PathVariable Long id) {
@@ -80,7 +94,7 @@ public class EmployeeController {
 
     @GetMapping("/get-employees")
     public List<Employee> getEmployees() {
-        return repository.findAll();
+        return repository.findAllByOrderByIdDesc();
     }
 
     @PutMapping("/employee/update-photo/{id}")
@@ -124,11 +138,6 @@ public class EmployeeController {
             @RequestParam("file") MultipartFile file
     ) throws IOException {
 
-        System.out.println("Upload API Hit");
-        System.out.println("Employee ID = " + id);
-        System.out.println("File empty = " + file.isEmpty());
-        System.out.println("File size = " + file.getSize());
-
         Employee employee = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
@@ -140,79 +149,129 @@ public class EmployeeController {
     }
 
     @PostMapping("/register")
-public String registerEmployee(@RequestBody Employee employee) {
-    repository.save(employee);
-    return "Employee Registered Successfully";
-}
+    public String registerEmployee(@RequestBody Employee employee) {
+
+        if (employee.getUsername() == null
+                || employee.getUsername().trim().isEmpty()) {
+            return "Username is required";
+        }
+
+        employee.setUsername(employee.getUsername().trim());
+
+        if (repository.findByUsername(employee.getUsername()) != null) {
+            return "Username already exists";
+        }
+
+        if (employee.getEmail() != null
+                && !employee.getEmail().trim().isEmpty()
+                && repository.findByEmail(employee.getEmail()) != null) {
+            return "Email already exists";
+        }
+
+        if (employee.getMobile() != null
+                && !employee.getMobile().trim().isEmpty()
+                && repository.findByMobile(employee.getMobile()) != null) {
+            return "Mobile number already exists";
+        }
+
+        repository.save(employee);
+
+        return "Employee Registered Successfully";
+    }
 
     @GetMapping("/admin/employees")
     @ResponseBody
     public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
+        return repository.findAllByOrderByIdDesc();
     }
 
     @GetMapping("/admin/employee/{id}")
     @ResponseBody
     public Employee getEmployee(@PathVariable Long id) {
 
-        return employeeRepository
+        return repository
                 .findById(id)
                 .orElse(null);
     }
 
+    @PutMapping("/employee/assign-headquarter")
+    public Employee assignHeadquarter(@RequestBody Map<String, Object> request) {
 
-@PutMapping("/employee/assign-headquarter")
-public Employee assignHeadquarter(@RequestBody Map<String, Object> request) {
+        Long employeeId = Long.valueOf(request.get("employeeId").toString());
+        String headquarterName = request.get("headquarterName").toString();
 
-    Long employeeId = Long.valueOf(request.get("employeeId").toString());
-    String headquarterName = request.get("headquarterName").toString();
+        Employee employee = repository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-    Employee employee = repository.findById(employeeId)
-            .orElseThrow(() -> new RuntimeException("Employee not found"));
+        employee.setHeadquarters(headquarterName);
 
-    employee.setHeadquarters(headquarterName);
-
-    return repository.save(employee);
-}
-
-@PutMapping("/employee/change-password")
-public String changePassword(@RequestBody ChangePasswordRequest request) {
-
-    Employee employee = repository.findById(request.getEmployeeId())
-            .orElseThrow(() -> new RuntimeException("Employee not found"));
-
-    if (!employee.getPassword().equals(request.getCurrentPassword())) {
-        throw new RuntimeException("Current password is incorrect");
+        return repository.save(employee);
     }
 
-    String newPassword = request.getNewPassword();
+    @PutMapping("/employee/change-password")
+    public String changePassword(@RequestBody ChangePasswordRequest request) {
 
-    if (newPassword == null || newPassword.length() < 6) {
-        throw new RuntimeException("Password must be at least 6 characters");
-    }
+        Employee employee = repository.findById(request.getEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-    if (!newPassword.matches(".*\\d.*")) {
-        throw new RuntimeException("Password must contain at least 1 number");
-    }
+        if (!employee.getPassword().equals(request.getCurrentPassword())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
 
-    if (!newPassword.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
-        throw new RuntimeException("Password must contain at least 1 special character");
-    }
+        String newPassword = request.getNewPassword();
 
-    if (employee.getPassword().equals(newPassword)) {
-        throw new RuntimeException("New password cannot be same as current password");
-    }
+        if (newPassword == null || newPassword.length() < 6) {
+            throw new RuntimeException("Password must be at least 6 characters");
+        }
 
-    employee.setPassword(newPassword);
+        if (!newPassword.matches(".*\\d.*")) {
+            throw new RuntimeException("Password must contain at least 1 number");
+        }
+
+        if (!newPassword.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+            throw new RuntimeException("Password must contain at least 1 special character");
+        }
+
+        if (employee.getPassword().equals(newPassword)) {
+            throw new RuntimeException("New password cannot be same as current password");
+        }
+
+        employee.setPassword(newPassword);
         repository.save(employee);
 
-    return "Password changed successfully";
-}
-@GetMapping("/employee/{id}/doctor-count")
-public Long getDoctorCount(@PathVariable Long id) {
+        return "Password changed successfully";
+    }
 
-    return doctorVisitRepository.countByEmployeeId(id);
+    @GetMapping("/employee/{id}/doctor-count")
+    public Long getDoctorCount(@PathVariable Long id) {
 
+        return doctorVisitRepository.countByEmployeeId(id);
+
+    }
+
+@GetMapping("/employee/session/check/{employeeId}")
+public ResponseEntity<?> checkEmployeeSession(
+        @PathVariable Long employeeId,
+        @RequestParam String token) {
+
+    Employee employee = repository.findById(employeeId)
+            .orElse(null);
+
+    if (employee == null) {
+        return ResponseEntity
+                .badRequest()
+                .body("Employee Not Found");
+    }
+
+    if (employee.getSessionToken() == null ||
+            !employee.getSessionToken().equals(token)) {
+
+        return ResponseEntity
+                .status(401)
+                .body("Session Expired");
+    }
+
+    return ResponseEntity.ok("VALID");
 }
 
 }

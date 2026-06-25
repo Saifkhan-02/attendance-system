@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Doctor Management</title>
+    <title>Employee Management</title>
 
     <!-- Bootstrap -->
     <link
@@ -40,49 +40,11 @@
           object-fit: contain;
         }
 
-      /* Sidebar */
-      .sidebar {
-        position: fixed;
-        top: 90px;
-        left: 0;
-        width: 250px;
-        height: 100vh;
-        background: #0f172a;
-        transition: 0.3s;
-        overflow-y: auto;
-        z-index: 1000;
-      }
-
-      .sidebar.hide {
-        margin-left: -250px;
-      }
-
-      .sidebar .nav-link {
-        color: #fff;
-        padding: 12px 20px;
-        margin: 5px 10px;
-        border-radius: 8px;
-      }
-
-      .sidebar .nav-link:hover {
-        background: #1e293b;
-      }
-
-      .sidebar .nav-link.active {
-        background: #0d6efd;
-        color: #fff;
-      }
-
       /* Main */
       .main-content {
-        margin-left: 250px;
         margin-top: 100px;
         padding: 20px;
         transition: 0.3s;
-      }
-
-      .main-content.full {
-        margin-left: 0;
       }
 
       /* Cards */
@@ -106,36 +68,199 @@
         margin-bottom: 20px;
       }
 
-      /* Mobile */
-      @media (max-width: 768px) {
-        .sidebar {
-          margin-left: -250px;
-        }
+      /* ================= EMPLOYEE POPUP ================= */
 
-        .sidebar.show {
-          margin-left: 0;
-        }
-
-        .main-content {
-          margin-left: 0;
-        }
-          .navbar-logo{
-          width: 80px;
-          height: 75px;
-        }
-      }
-
-      .top-navbar{
-    background:#fff;
-    box-shadow:0 2px 10px rgba(0,0,0,0.08);
-    min-height:80px;
+.custom-modal{
+    max-width:650px;
 }
+
+.modal-body{
+    overflow-y:auto;
+    max-height:70vh;
+     padding:15px;
+}
+
+.modal-content{
+   max-height:90vh;
+    border-radius:20px;
+    border:none;
+    overflow:hidden;
+}
+
+.modal-header{
+    padding:15px 20px;
+}
+
+/* Profile */
+
+.profile-section{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.profile-section img{
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    object-fit:cover;
+    border:3px solid #e9f2ff;
+}
+
+.profile-section h2{
+    font-size:22px;
+    font-weight:700;
+    margin-top:10px;
+    margin-bottom:8px;
+}
+
+.status-badge{
+    display:inline-block;
+    background:#d4edda;
+    color:#198754;
+    padding:5px 15px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:600;
+}
+
+/* Grid */
+
+.details-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
+
+/* Cards */
+
+.info-card{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:#fff;
+    border:1px solid #eee;
+    border-radius:12px;
+    padding:12px;
+    box-shadow:0 2px 5px rgba(0,0,0,.05);
+}
+
+.info-icon{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:#eef4ff;
+    color:#0d6efd;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:16px;
+    flex-shrink:0;
+}
+
+.info-title{
+    font-size:11px;
+    color:#6c757d;
+    font-weight:600;
+    margin-bottom:2px;
+}
+
+.info-value{
+    font-size:14px;
+    font-weight:600;
+    color:#222;
+    word-break:break-word;
+    overflow-wrap:anywhere;
+}
+
+/* Footer */
+
+.modal-footer-custom{
+    border-top:1px solid #eee;
+    margin-top:15px;
+    padding-top:15px;
+    text-align:right;
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:768px){
+
+    .custom-modal{
+        max-width:95%;
+        margin:10px auto;
+    }
+
+    .modal-body{
+        padding:12px;
+    }
+
+    .profile-section{
+        margin-bottom:15px;
+    }
+
+    .profile-section img{
+        width:70px;
+        height:70px;
+    }
+
+    .profile-section h2{
+        font-size:18px;
+    }
+
+    .status-badge{
+        font-size:11px;
+        padding:4px 12px;
+    }
+
+    .details-grid{
+        grid-template-columns:1fr;
+        gap:8px;
+    }
+
+    .info-card{
+        padding:10px;
+        gap:10px;
+    }
+
+    .info-icon{
+        width:35px;
+        height:35px;
+        font-size:14px;
+    }
+
+    .info-title{
+        font-size:10px;
+    }
+
+    .info-value{
+        font-size:13px;
+    }
+
+    .modal-footer-custom{
+        text-align:center;
+    }
+
+    .modal-footer-custom .btn{
+        width:100%;
+        margin-bottom:8px;
+    }
+    .modal-header h4{
+        font-size:16px;
+        margin:0;
+    }
+
+    .btn-close{
+        font-size:12px;
+    }
+}
+
 
 @media (max-width:768px){
 
-    .top-navbar h4{
-        font-size:18px;
-    }
     .admin-info{
       display: none !important;
     }
@@ -159,11 +284,8 @@
 
     <div class="d-flex align-items-center">
 
-        <button class="btn btn-light me-3"
-                onclick="toggleSidebar()">
-
-            <i class="fas fa-bars"></i>
-
+        <button class="btn btn-light me-3" onclick="goBack()">
+          <i class="fas fa-arrow-left"></i>
         </button>
 
       <img src="images/Inflix-logo-web.png" alt="Logo" class="navbar-logo me-2">
@@ -182,99 +304,12 @@
           <div id="datetime" class="small text-secondary"></div>
         </div>
 
-        <div id="datetime"
-             class="small text-secondary mt-1">
-        </div>
-
     </div>
 
 </div>
     </div>
 
 </nav>
-    <!-- ================= SIDEBAR ================= -->
-
-    <div class="sidebar" id="sidebar">
-      <ul class="nav flex-column mt-3">
-        <li class="nav-item">
-          <a href="admin-dashboard.html" class="nav-link">
-            <i class="fas fa-home me-2"></i>
-            Dashboard
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="admin-employeeTracking.html" class="nav-link">
-            <i class="fas fa-location-dot me-2"></i>
-            Employee Tracking
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="employeeList.html" class="nav-link active">
-            <i class="fas fa-users me-2"></i>
-            Employees
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="doctorList.html" class="nav-link">
-            <i class="fas fa-user-doctor me-2"></i>
-            Doctors
-          </a>
-        </li>
-
-        <!-- <li class="nav-item">
-          <a href="admin-orders.html" class="nav-link">
-            <i class="fas fa-box me-2"></i>
-            Orders
-          </a>
-        </li> -->
-
-        <li class="nav-item">
-          <a href="AdminTourApproval.html" class="nav-link">
-            <i class="fa-solid fa-route"></i>
-            Tour Approval
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="AdminHQManagement.html" class="nav-link">
-            <i class="fas fa-map-marker-alt me-2"></i>
-            HQ Management
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="AdminDistributor.html" class="nav-link">
-            <i class="fa-solid fa-truck-medical me-2"></i>
-            Distributors
-          </a>
-        </li>
-
-        <li class="nav-item">
-  <a href="AdminLeaveRequest.html" class="nav-link">
-    <i class="fa-solid fa-boxes-stacked me-2"></i>
-    Leave Requests
-  </a>
-</li>
-
-        <li class="nav-item">
-          <a href="AdminAttendanceHistory.html" class="nav-link">
-            <i class="fa-solid fa-warehouse me-2"></i>
-            Attendance History
-          </a>
-        </li>
-
-        <li class="nav-item">
-          <a href="index.html" class="nav-link text-danger" id="logoutBtn">
-            <i class="fas fa-sign-out-alt me-2"></i>
-            Logout
-           </a>
-          </li>
-        </li>
-      </ul>
-    </div>
     <!-- ================= MAIN CONTENT ================= -->
 
     <div class="main-content" id="mainContent">
@@ -413,19 +448,27 @@
 
     <!-- ================= VIEW MODAL ================= -->
 
-    <div class="modal fade" id="doctorModal" tabindex="-1">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Employee Profile</h5>
+  <div class="modal fade" id="employeeModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered custom-modal">
+    <div class="modal-content">
 
-            <button class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
+      <div class="modal-header">
+        <h4>
+          <i class="fas fa-user me-2"></i>
+          Employee Details
+        </h4>
 
-          
-        </div>
+        <button class="btn-close"
+                data-bs-dismiss="modal"></button>
       </div>
+
+      <div class="modal-body" id="employeeDetails">
+
+      </div>
+
     </div>
+  </div>
+</div>
 
     <!-- Bootstrap JS -->
 
@@ -434,20 +477,9 @@
     <!-- Sidebar Toggle -->
 
     <script>
-      function toggleSidebar() {
-        let sidebar = document.getElementById("sidebar");
-
-        let main = document.getElementById("mainContent");
-
-        if (window.innerWidth <= 768) {
-          sidebar.classList.toggle("show");
-        } else {
-          sidebar.classList.toggle("hide");
-
-          main.classList.toggle("full");
-        }
+     function goBack() {
+        window.location.replace("admin-dashboard.html");
       }
-
       function updateTime() {
         document.getElementById("datetime").innerHTML =
           new Date().toLocaleString();
@@ -466,14 +498,15 @@
 
 
 <script>
+  let allEmployees = [];
 
 window.onload = function () {
 
     fetch("/get-employees")
-
     .then(response => response.json())
-
     .then(employees => {
+
+        allEmployees = employees;
 
         document.getElementById("totalEmployees").innerText =
             employees.length;
@@ -486,49 +519,24 @@ window.onload = function () {
         employees.forEach(employee => {
 
             table.innerHTML += `
-
             <tr>
-
                 <td>${employee.id}</td>
-
                 <td>${employee.name}</td>
-
                 <td>${employee.username}</td>
-
                 <td>${employee.email}</td>
-
                 <td>
-
-                    <button class="btn btn-info btn-sm">
+                    <button class="btn btn-info btn-sm"
+                            onclick="viewEmployee(${employee.id})">
                         <i class="fas fa-eye"></i>
                     </button>
-
-                    <button class="btn btn-warning btn-sm">
-                        <i class="fas fa-edit"></i>
-                    </button>
-
-                    <button class="btn btn-danger btn-sm">
-                        <i class="fas fa-trash"></i>
-                    </button>
-
                 </td>
-
             </tr>
-
             `;
-
         });
-
-    })
-
-    .catch(error => {
-
-        console.log(error);
 
     });
 
 }
-
 
 </script>
 
@@ -542,17 +550,198 @@ document.getElementById("searchEmployee").addEventListener("keyup", function () 
 
     rows.forEach((row) => {
 
-        let employeeName = row.cells[1].innerText.toLowerCase();
+       let text = row.innerText.toLowerCase();
 
-        if (employeeName.includes(searchValue)) {
-            row.style.display = "";
-        } else {
-            row.style.display = "none";
-        }
+if (text.includes(searchValue)) {
+    row.style.display = "";
+} else {
+    row.style.display = "none";
+}
 
     });
 
 });
+
+
+</script>
+
+<script>
+
+function viewEmployee(id){
+
+    let emp = allEmployees.find(
+        employee => employee.id == id
+    );
+
+    if(!emp){
+        alert("Employee not found");
+        return;
+    }
+
+       document.getElementById("employeeDetails").innerHTML = `
+
+<div class="profile-section">
+
+    <img src="${emp.profile_image || 'images/user.png'}">
+
+    <h2 class="mt-3">${emp.name}</h2>
+
+    <span class="status-badge">
+        ${emp.status || 'Active'}
+    </span>
+
+</div>
+
+<div class="details-grid">
+
+<div class="info-card">
+    <div class="info-icon">
+        <i class="fas fa-id-card"></i>
+    </div>
+    <div>
+        <div class="info-title">Employee ID</div>
+        <div class="info-value">${emp.id}</div>
+    </div>
+</div>
+
+<div class="info-card">
+    <div class="info-icon">
+        <i class="fas fa-user"></i>
+    </div>
+    <div>
+        <div class="info-title">Username</div>
+        <div class="info-value">${emp.username || '-'}</div>
+    </div>
+</div>
+
+<div class="info-card">
+    <div class="info-icon">
+        <i class="fas fa-envelope"></i>
+    </div>
+    <div>
+        <div class="info-title">Email</div>
+        <div class="info-value">${emp.email || '-'}</div>
+    </div>
+</div>
+
+<div class="info-card">
+    <div class="info-icon">
+        <i class="fas fa-lock"></i>
+    </div>
+    <div>
+        <div class="info-title">Password</div>
+        <div class="info-value">********</div>
+    </div>
+</div>
+
+<div class="info-card">
+    <div class="info-icon">
+        <i class="fas fa-phone"></i>
+    </div>
+    <div>
+        <div class="info-title">Mobile</div>
+        <div class="info-value">${emp.mobile || '-'}</div>
+    </div>
+</div>
+
+<div class="info-card">
+    <div class="info-icon">
+        <i class="fas fa-briefcase"></i>
+    </div>
+    <div>
+        <div class="info-title">Designation</div>
+        <div class="info-value">${emp.designation || '-'}</div>
+    </div>
+</div>
+
+<div class="info-card">
+    <div class="info-icon">
+        <i class="fas fa-users"></i>
+    </div>
+    <div>
+        <div class="info-title">Reporting Manager</div>
+        <div class="info-value">${emp.reporting_manager || '-'}</div>
+    </div>
+</div>
+
+<div class="info-card">
+    <div class="info-icon">
+        <i class="fas fa-calendar"></i>
+    </div>
+    <div>
+        <div class="info-title">Joining Date</div>
+        <div class="info-value">${emp.joining_date || '-'}</div>
+    </div>
+</div>
+
+<div class="info-card">
+    <div class="info-icon">
+        <i class="fas fa-building"></i>
+    </div>
+    <div>
+        <div class="info-title">Head Quarter</div>
+        <div class="info-value">${emp.head_quarters || '-'}</div>
+    </div>
+</div>
+
+<div class="info-card">
+    <div class="info-icon">
+        <i class="fas fa-shield-alt"></i>
+    </div>
+    <div>
+        <div class="info-title">Status</div>
+        <div class="info-value">${emp.status || '-'}</div>
+    </div>
+</div>
+
+</div>
+
+<div class="modal-footer-custom">
+
+<button class="btn btn-warning me-2">
+    <i class="fas fa-edit"></i>
+    Edit Employee
+</button>
+
+<button class="btn btn-success me-2">
+    <i class="fas fa-file-pdf"></i>
+    Download PDF
+</button>
+
+<button class="btn btn-secondary"
+        data-bs-dismiss="modal">
+    Close
+</button>
+
+</div>
+`;
+       const modal = bootstrap.Modal.getOrCreateInstance(
+document.getElementById("employeeModal")
+);
+
+modal.show();
+
+
+}
+
+
+document.getElementById("employeeModal")
+.addEventListener("hidden.bs.modal", function () {
+
+    document.body.classList.remove("modal-open");
+
+    document.querySelectorAll(".modal-backdrop")
+    .forEach(el => el.remove());
+
+});
+
+function editEmployee(id){
+
+    window.location.href =
+        "editEmployee.html?id=" + id;
+
+}
+
 </script>
 
 </body>

@@ -14,6 +14,8 @@ public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> 
 
     List<DoctorVisit> findByEmployeeId(Long employeeId);
 
+    List<DoctorVisit> findByEmployeeIdOrderByIdDesc(Long employeeId);
+
     List<DoctorVisit> findAllByOrderByIdDesc(Pageable pageable);
 
     List<DoctorVisit> findByEmployeeNameContainingIgnoreCase(String keyword);

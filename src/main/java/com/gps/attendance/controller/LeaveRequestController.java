@@ -34,42 +34,42 @@ public class LeaveRequestController {
     public List<LeaveRequest> getHistory(
             @PathVariable Long employeeId) {
 
-        return repository.findByEmployeeId(employeeId);
+        return repository.findByEmployeeIdOrderByIdDesc(employeeId);
     }
-  // Admin Endpoints
+    // Admin Endpoints
 
     @GetMapping("/admin/leaves")
-public List<LeaveRequest> getAllLeaves() {
-    return repository.findAll();
-}
-
-@PutMapping("/leave/approve/{id}")
-public String approveLeave(@PathVariable Long id) {
-
-    LeaveRequest leave = repository.findById(id).orElse(null);
-
-    if (leave == null) {
-        return "Leave Request Not Found";
+    public List<LeaveRequest> getAllLeaves() {
+        return repository.findAllByOrderByIdDesc();
     }
 
-    leave.setStatus("Approved");
-    repository.save(leave);
+    @PutMapping("/leave/approve/{id}")
+    public String approveLeave(@PathVariable Long id) {
 
-    return "Leave Approved";
-}
+        LeaveRequest leave = repository.findById(id).orElse(null);
 
-@PutMapping("/leave/reject/{id}")
-public String rejectLeave(@PathVariable Long id) {
+        if (leave == null) {
+            return "Leave Request Not Found";
+        }
 
-    LeaveRequest leave = repository.findById(id).orElse(null);
+        leave.setStatus("Approved");
+        repository.save(leave);
 
-    if (leave == null) {
-        return "Leave Request Not Found";
+        return "Leave Approved";
     }
 
-    leave.setStatus("Rejected");
-    repository.save(leave);
+    @PutMapping("/leave/reject/{id}")
+    public String rejectLeave(@PathVariable Long id) {
 
-    return "Leave Rejected";
-}
+        LeaveRequest leave = repository.findById(id).orElse(null);
+
+        if (leave == null) {
+            return "Leave Request Not Found";
+        }
+
+        leave.setStatus("Rejected");
+        repository.save(leave);
+
+        return "Leave Rejected";
+    }
 }
