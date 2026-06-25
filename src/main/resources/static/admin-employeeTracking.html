@@ -34,13 +34,12 @@
         right: 0;
         z-index: 1050;
       }
-      
-       .navbar-logo{
+
+      .navbar-logo {
         width: 90px;
         height: 85px;
         object-fit: contain;
       }
-
 
       /* Main Content */
 
@@ -64,9 +63,9 @@
         border-radius: 20px;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
       }
-      body::-webkit-scrollbar{
-      display:none;
-    }
+      body::-webkit-scrollbar {
+        display: none;
+      }
 
       @media (max-width: 768px) {
         .admin-info {
@@ -74,13 +73,13 @@
         }
         .top-navbar {
           height: 90px;
-       
-         .navbar-logo{
-          width: 80px;
-          height: 75px;
+
+          .navbar-logo {
+            width: 80px;
+            height: 75px;
+          }
         }
       }
-    }
     </style>
   </head>
 
@@ -89,11 +88,15 @@
 
     <nav class="navbar top-navbar px-3">
       <div class="d-flex align-items-center">
-         <button class="btn btn-light me-3" onclick="goBack()">
+        <button class="btn btn-light me-3" onclick="goBack()">
           <i class="fas fa-arrow-left"></i>
         </button>
 
-        <img src="images/Inflix-logo-web.png" alt="Logo" class="navbar-logo me-2">
+        <img
+          src="images/Inflix-logo-web.png"
+          alt="Logo"
+          class="navbar-logo me-2"
+        />
       </div>
 
       <div class="d-flex align-items-center ms-auto">
@@ -104,10 +107,9 @@
 
           <div id="datetime" class="small text-secondary"></div>
         </div>
-
       </div>
     </nav>
-   
+
     <!-- Main Content Start -->
 
     <div class="main-content" id="mainContent">
@@ -225,82 +227,87 @@
 
     <script src="js/config.js"></script>
 
-
     <script>
-  window.onload = function () {
-    updateTime();
-    setInterval(updateTime, 1000);
+      window.onload = function () {
+        updateTime();
+        setInterval(updateTime, 1000);
 
-    loadEmployeeTracking();
+        loadEmployeeTracking();
 
-    document
-      .getElementById("searchEmployee")
-      .addEventListener("keyup", filterEmployeeRows);
-  };
+        document
+          .getElementById("searchEmployee")
+          .addEventListener("keyup", filterEmployeeRows);
+      };
 
-   function goBack() {
+      function goBack() {
         window.location.replace("admin-dashboard.html");
       }
 
-  function updateTime() {
-    document.getElementById("datetime").innerHTML =
-      new Date().toLocaleString();
-       }
-       setInterval(updateTime, 1000);
+      function updateTime() {
+        document.getElementById("datetime").innerHTML =
+          new Date().toLocaleString();
+      }
+      setInterval(updateTime, 1000);
 
-       function loadAdminInfo() {
-    document.getElementById("adminName").innerText =
-        localStorage.getItem("adminName") || "Admin";
-
-}
-   loadAdminInfo();
+      function loadAdminInfo() {
+        document.getElementById("adminName").innerText =
+          localStorage.getItem("adminName") || "Admin";
+      }
+      loadAdminInfo();
       updateTime();
 
-  function loadEmployeeTracking() {
-    fetch(`${BASE_URL}/get-employees`)
-      .then((response) => response.json())
-      .then((employees) => {
-        document.getElementById("totalEmployees").innerText =
-          employees.length;
-      })
-      .catch((error) => {
-        console.error("Employees Load Error:", error);
-      });
+      function loadEmployeeTracking() {
+        fetch(`${BASE_URL}/get-employees`)
+          .then((response) => response.json())
+          .then((employees) => {
+            document.getElementById("totalEmployees").innerText =
+              employees.length;
+          })
+          .catch((error) => {
+            console.error("Employees Load Error:", error);
+          });
 
-    fetch(`${BASE_URL}/attendance-list`)
-      .then((response) => response.json())
-      .then((attendances) => {
-        document.getElementById("activeEmployees").innerText =
-          attendances.length;
+        fetch(`${BASE_URL}/attendance-list`)
+          .then((response) => response.json())
+          .then((attendances) => {
+            document.getElementById("activeEmployees").innerText =
+              attendances.length;
 
-        document.getElementById("doctorVisits").innerText =
-          attendances.length;
+            document.getElementById("doctorVisits").innerText =
+              attendances.length;
 
-        document.getElementById("todayVisits").innerText =
-          attendances.length;
+            fetch(`${BASE_URL}/doctor-visit/today-count`)
+              .then((response) => response.text())
+              .then((count) => {
+                document.getElementById("todayVisits").innerText = count;
+              })
+              .catch((error) => {
+                console.error(error);
+                document.getElementById("todayVisits").innerText = "0";
+              });
 
-        renderEmployeeTrackingTable(attendances);
-      })
-      .catch((error) => {
-        console.error("Attendance Load Error:", error);
-      });
-  }
+            renderEmployeeTrackingTable(attendances);
+          })
+          .catch((error) => {
+            console.error("Attendance Load Error:", error);
+          });
+      }
 
-  function renderEmployeeTrackingTable(attendances) {
-    const table = document.getElementById("employeeTrackingTable");
-    table.innerHTML = "";
+      function renderEmployeeTrackingTable(attendances) {
+        const table = document.getElementById("employeeTrackingTable");
+        table.innerHTML = "";
 
-    if (!attendances || attendances.length === 0) {
-      table.innerHTML = `
+        if (!attendances || attendances.length === 0) {
+          table.innerHTML = `
         <tr>
           <td colspan="7" class="text-center">No tracking data found</td>
         </tr>
       `;
-      return;
-    }
+          return;
+        }
 
-    attendances.forEach((attendance) => {
-      table.innerHTML += `
+        attendances.forEach((attendance) => {
+          table.innerHTML += `
         <tr>
           <td>${attendance.id || "-"}</td>
           <td>${attendance.employeeName || "-"}</td>
@@ -318,23 +325,21 @@
           </td>
         </tr>
       `;
-    });
-  }
+        });
+      }
 
-  function filterEmployeeRows() {
-    const searchValue = this.value.toLowerCase();
-    const rows = document.querySelectorAll("#employeeTrackingTable tr");
+      function filterEmployeeRows() {
+        const searchValue = this.value.toLowerCase();
+        const rows = document.querySelectorAll("#employeeTrackingTable tr");
 
-    rows.forEach((row) => {
-      if (!row.cells[1]) return;
+        rows.forEach((row) => {
+          if (!row.cells[1]) return;
 
-      const employeeName = row.cells[1].innerText.toLowerCase();
+          const employeeName = row.cells[1].innerText.toLowerCase();
 
-      row.style.display = employeeName.includes(searchValue)
-        ? ""
-        : "none";
-    });
-  }
-</script>
+          row.style.display = employeeName.includes(searchValue) ? "" : "none";
+        });
+      }
+    </script>
   </body>
 </html>

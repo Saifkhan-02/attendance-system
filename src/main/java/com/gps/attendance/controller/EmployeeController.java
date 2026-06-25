@@ -1,8 +1,10 @@
 package com.gps.attendance.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +24,6 @@ import com.gps.attendance.entity.Employee;
 import com.gps.attendance.repository.DoctorVisitRepository;
 import com.gps.attendance.repository.EmployeeRepository;
 import com.gps.attendance.service.CloudinaryService;
-
-import java.util.UUID;
-import java.util.HashMap;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -94,14 +93,7 @@ public class EmployeeController {
 
  @GetMapping("/get-employees")
 public List<Employee> getEmployees() {
-
-    List<Employee> employees = repository.findAll();
-
-    employees.sort((e1, e2) ->
-        e1.getName().compareToIgnoreCase(e2.getName())
-    );
-
-    return employees;
+    return repository.findAllByOrderByNameAsc();
 }
 
     @PutMapping("/employee/update-photo/{id}")
@@ -188,14 +180,7 @@ public List<Employee> getEmployees() {
    @GetMapping("/admin/employees")
 @ResponseBody
 public List<Employee> getAllEmployees() {
-
-    List<Employee> employees = repository.findAll();
-
-    employees.sort((e1, e2) ->
-        e1.getName().compareToIgnoreCase(e2.getName())
-    );
-
-    return employees;
+    return repository.findAllByOrderByNameAsc();
 }
 
     @GetMapping("/admin/employee/{id}")

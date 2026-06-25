@@ -111,6 +111,11 @@ public List<DoctorVisit> getDoctorVisitHistory(
         return repository.getCurrentMonthVisitCount();
     }
 
+    @GetMapping("/doctor-visit/today-count")
+public long getTodayVisitCount() {
+    return repository.getTodayVisitCount();
+}
+
     @GetMapping("/doctor-visit/top10")
     public List<DoctorVisit> getTop10DoctorVisits() {
 

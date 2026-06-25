@@ -93,4 +93,14 @@ public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> 
     )
     long getCurrentMonthVisitCount();
 
+    @Query(
+    value = """
+    SELECT COUNT(*)
+    FROM doctor_visit
+    WHERE visit_date = TO_CHAR(CURRENT_DATE,'YYYY-MM-DD')
+    """,
+    nativeQuery = true
+)
+long getTodayVisitCount();
+
 }
