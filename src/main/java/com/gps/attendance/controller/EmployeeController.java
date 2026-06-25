@@ -92,10 +92,17 @@ public class EmployeeController {
         return ResponseEntity.ok(employee);
     }
 
-    @GetMapping("/get-employees")
-    public List<Employee> getEmployees() {
-        return repository.findAllByOrderByIdDesc();
-    }
+ @GetMapping("/get-employees")
+public List<Employee> getEmployees() {
+
+    List<Employee> employees = repository.findAll();
+
+    employees.sort((e1, e2) ->
+        e1.getName().compareToIgnoreCase(e2.getName())
+    );
+
+    return employees;
+}
 
     @PutMapping("/employee/update-photo/{id}")
     public ResponseEntity<?> updateProfilePhoto(
@@ -178,11 +185,18 @@ public class EmployeeController {
         return "Employee Registered Successfully";
     }
 
-    @GetMapping("/admin/employees")
-    @ResponseBody
-    public List<Employee> getAllEmployees() {
-        return repository.findAllByOrderByIdDesc();
-    }
+   @GetMapping("/admin/employees")
+@ResponseBody
+public List<Employee> getAllEmployees() {
+
+    List<Employee> employees = repository.findAll();
+
+    employees.sort((e1, e2) ->
+        e1.getName().compareToIgnoreCase(e2.getName())
+    );
+
+    return employees;
+}
 
     @GetMapping("/admin/employee/{id}")
     @ResponseBody
