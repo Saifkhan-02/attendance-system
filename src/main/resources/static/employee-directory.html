@@ -40,7 +40,6 @@
         object-fit: contain;
       }
 
-
       /* Main Content */
 
       .main-content {
@@ -130,8 +129,6 @@
       /* Mobile */
 
       @media (max-width: 768px) {
-      
-
         .navbar-logo {
           width: 80px;
           height: 75px;
@@ -182,6 +179,10 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.bootstrap5.min.css"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <!-- NAVBAR -->
@@ -220,16 +221,23 @@
 
       <!-- Search -->
 
-      <div class="card dashboard-card mb-4">
-        <div class="card-body">
-          <input
-            type="text"
-            id="employeeSearch"
-            class="form-control"
-            placeholder="Search Employee by Name, Mobile or HQ..."
-          />
+      <div class="row align-items-end g-3">
+        <div class="col-lg-10">
+          <label class="form-label fw-bold">Employee</label>
+
+          <select id="employeeFilter" class="form-select form-select-lg">
+            <option value="">All Employees</option>
+          </select>
+        </div>
+
+        <div class="col-lg-2 d-grid">
+          <button class="btn btn-danger btn-lg" onclick="resetEmployeeFilter()">
+            <i class="fas fa-rotate-left"></i>
+            Reset
+          </button>
         </div>
       </div>
+      <br>
 
       <!-- Employee List -->
 
@@ -237,9 +245,11 @@
     </div>
 
     <script src="js/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
 
     <script>
-    
+      let employeeTomSelect = null;
+
       function goBack() {
         window.location.replace("admin-dashboard.html");
       }
@@ -251,12 +261,10 @@
 
       setInterval(updateTime, 1000);
 
-     function loadAdminInfo() {
-
-    document.getElementById("adminName").innerText =
-        localStorage.getItem("adminName") || "Admin";
-
-}
+      function loadAdminInfo() {
+        document.getElementById("adminName").innerText =
+          localStorage.getItem("adminName") || "Admin";
+      }
 
       loadAdminInfo();
       updateTime();
@@ -268,6 +276,7 @@
           const response = await fetch(`${BASE_URL}/get-employees`);
 
           const employees = await response.json();
+          loadEmployeeDropdown(employees);
 
           let html = "";
 
@@ -278,7 +287,8 @@
             html += `
 
       <div class="employee-card"
-       onclick="openEmployeeProfile(${emp.id})">
+     data-id="${emp.id}"
+     onclick="openEmployeeProfile(${emp.id})">
 
         <div class="row align-items-center g-3">
 
@@ -348,25 +358,45 @@
           });
 
           document.getElementById("employeeContainer").innerHTML = html;
+
+          if (employeeTomSelect) {
+            employeeTomSelect.destroy();
+          }
+
+          employeeTomSelect = new TomSelect("#employeeFilter", {
+            create: false,
+            searchField: ["text"],
+            placeholder: "Search Employee...",
+          });
         } catch (error) {
           console.error(error);
         }
+      }
+
+      function loadEmployeeDropdown(employees) {
+        const select = document.getElementById("employeeFilter");
+
+        select.innerHTML = '<option value="">All Employees</option>';
+
+        employees.forEach((emp) => {
+          select.innerHTML += `<option value="${emp.id}">
+                ${emp.name}
+            </option>`;
+        });
       }
 
       function openEmployeeProfile(employeeId) {
         window.location.href = `employee-profile.html?id=${employeeId}`;
       }
       document
-        .getElementById("employeeSearch")
-        .addEventListener("keyup", function () {
-          const searchText = this.value.toLowerCase();
+        .getElementById("employeeFilter")
+        .addEventListener("change", function () {
+          const id = this.value;
 
           const cards = document.querySelectorAll(".employee-card");
 
           cards.forEach((card) => {
-            const text = card.innerText.toLowerCase();
-
-            if (text.includes(searchText)) {
+            if (id === "" || card.dataset.id === id) {
               card.style.display = "";
             } else {
               card.style.display = "none";
@@ -374,6 +404,15 @@
           });
         });
 
+      function resetEmployeeFilter() {
+        if (employeeTomSelect) {
+          employeeTomSelect.clear();
+        }
+
+        document.querySelectorAll(".employee-card").forEach((card) => {
+          card.style.display = "";
+        });
+      }
       loadEmployees();
     </script>
   </body>

@@ -83,11 +83,11 @@ public class DoctorVisitController {
     }
 
     @GetMapping("/doctor-visit/history/{employeeId}")
-public List<DoctorVisit> getDoctorVisitHistory(
-        @PathVariable Long employeeId) {
+    public List<DoctorVisit> getDoctorVisitHistory(
+            @PathVariable Long employeeId) {
 
-    return repository.findByEmployeeIdOrderByIdDesc(employeeId);
-}
+        return repository.findByEmployeeIdOrderByIdDesc(employeeId);
+    }
 
     @GetMapping("/doctor-visit/history/today/{employeeId}")
     public List<DoctorVisit> getTodayDoctorVisitHistory(
@@ -112,9 +112,9 @@ public List<DoctorVisit> getDoctorVisitHistory(
     }
 
     @GetMapping("/doctor-visit/today-count")
-public long getTodayVisitCount() {
-    return repository.getTodayVisitCount();
-}
+    public long getTodayVisitCount() {
+        return repository.getTodayVisitCount();
+    }
 
     @GetMapping("/doctor-visit/top10")
     public List<DoctorVisit> getTop10DoctorVisits() {
@@ -237,6 +237,10 @@ public long getTodayVisitCount() {
         int progress
                 = (int) Math.min((achievement * 100) / target, 100);
 
+        long remaining = Math.max(0, target - achievement);
+
+        long extraVisits = Math.max(0, achievement - target);
+
         System.out.println("EMPLOYEE ID: " + employeeId);
         System.out.println("TODAY: " + today);
         System.out.println("ACHIEVEMENT: " + achievement);
@@ -244,8 +248,15 @@ public long getTodayVisitCount() {
         Map<String, Object> data = new HashMap<>();
 
         data.put("target", target);
+
         data.put("achievement", achievement);
+
+        data.put("remaining", remaining);
+
+        data.put("extraVisits", extraVisits);
+
         data.put("progress", progress);
+
         data.put("date", today);
 
         return data;
