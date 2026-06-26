@@ -223,7 +223,7 @@ function renderExpenseSummary(data) {
     const km = Number(item.travelKm || 0);
     const fare = Number(item.fareAmount || 0);
     const da = Number(item.daAmount || 0);
-    const other = Number(item.otherAmount || 0);
+    const other = Number(item.otherAmount ?? item.other ?? 0);
 
     totalFare += fare;
     totalDa += da;
@@ -265,7 +265,7 @@ function renderExpenseSummary(data) {
   if (routes.length === 0) {
     table.innerHTML = `
       <tr>
-        <td colspan="7" class="text-center">No expense found</td>
+        <td colspan="8" class="text-center">No expense found</td>
       </tr>
     `;
     return;
@@ -273,7 +273,8 @@ function renderExpenseSummary(data) {
 
   routes.forEach(route => {
     const item = routeMap[route];
-    const total = item.fare + item.da + item.other;
+    const total =
+  Number(item.totalExpense ?? (item.fare + item.da + item.other));
 
     table.innerHTML += `
       <tr>

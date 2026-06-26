@@ -424,7 +424,7 @@ function loadEmployees() {
 function loadAdminSalesPage() {
   Promise.all([
     fetch(`${BASE_URL}/order/admin/all`).then(res => res.json()),
-    fetch(`${BASE_URL}/admin/expenses`).then(res => res.json())
+    fetch(`${BASE_URL}/admin/tour-plans`).then(res => res.json())
   ])
   .then(([orders, expenses]) => {
     allOrders = orders || [];
@@ -438,7 +438,7 @@ function loadAdminSalesPage() {
 }
 
 function loadAllExpenses() {
-  fetch(`${BASE_URL}/admin/expenses`)
+  fetch(`${BASE_URL}/admin/tour-plans`)
     .then(res => res.json())
     .then(data => {
       allExpenses = data || [];
@@ -488,7 +488,6 @@ function renderSummary(data) {
   document.getElementById("totalDue").innerText = formatRupees(due);
   document.getElementById("totalExpense").innerText = formatRupees(totalExpense);
 }
-
 
 function renderEmployeeSales(data) {
   const map = {};

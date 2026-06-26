@@ -418,6 +418,7 @@
             <th>Fare</th>
             <th>D.A</th>
             <th>Other</th>
+            <th>Total Expense</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -448,7 +449,7 @@
 
         </h4>
 
-        <button
+        <!-- <button
             class="btn btn-danger"
             onclick="downloadPdf()">
 
@@ -456,7 +457,7 @@
 
             Download PDF
 
-        </button>
+        </button> -->
 
     </div>
 
@@ -499,6 +500,8 @@
   <th>Fare</th>
   <th>D.A</th>
   <th>Other</th>
+  <th>Total Exp.</th>
+  
 </tr>
             </thead>
 
@@ -528,7 +531,7 @@
 const KM_RATE = 2;
 let routeList = [];
 let employeeHQ = "";
-let submittedPlans = [];
+//let submittedPlans = data || [];
 
 
 window.onload = function () {
@@ -609,9 +612,13 @@ function generateMonthlyRows() {
       }
 
       assignments.forEach(item => {
-        const route = routeList.find(r => r.routeName === item.routeName);
-        const km = route ? Number(route.distanceKm || 0) : 0;
-        const fare = km * KM_RATE;
+       const route = routeList.find(r =>
+  (r.routeName || "").trim().toLowerCase() ===
+  (item.routeName || "").trim().toLowerCase()
+);
+
+const km = route ? Number(route.distanceKm || route.distance || 0) : 0;
+const fare = km * KM_RATE;
 
         table.innerHTML += `
           <tr class="plan-row"
@@ -630,8 +637,9 @@ function generateMonthlyRows() {
             </td>
             <td><input type="number" class="form-control distanceKm" readonly value="${km}"></td>
             <td><input type="number" class="form-control fareAmount" readonly value="${fare}"></td>
-            <td><input type="number" class="form-control daAmount" value="0" oninput="updateTotals()"></td>
-            <td><input type="number" class="form-control otherAmount" value="0" oninput="updateTotals()"></td>
+            <td><input type="number" class="form-control daAmount"    vlaue="0" oninput="updateTotals()"></td>
+            <td><input type="number" class="form-control otherAmount" vlaue="0" oninput="updateTotals()"></td>
+            <td><input type="number" class="form-control totalExpenseAmount" readonly></td>
             <td>
               <button class="btn btn-primary btn-sm submitDayBtn"
                       onclick="submitSingleDayPlan(this)">
@@ -643,9 +651,9 @@ function generateMonthlyRows() {
         `;
       });
 
-      updateCoverage();
-      updateTotals();
-      loadSavedMonthlyPlan();
+    updateCoverage();
+loadSavedMonthlyPlan();
+loadTourSummary();
     })
     .catch(error => {
       console.error(error);
@@ -658,7 +666,20 @@ function generateMonthlyRows() {
       `;
     });
 }
+function updateTotals() {
+  document.querySelectorAll(".plan-row").forEach(row => {
+    const fare = Number(row.querySelector(".fareAmount").value || 0);
+    const da = Number(row.querySelector(".daAmount").value || 0);
+    const other = Number(row.querySelector(".otherAmount").value || 0);
 
+    const totalExpense = fare + da + other;
+
+    const totalInput = row.querySelector(".totalExpenseAmount");
+    if (totalInput) {
+      totalInput.value = totalExpense;
+    }
+  });
+}
 function loadSavedMonthlyPlan() {
   const employeeId = localStorage.getItem("employeeId");
   const month = document.getElementById("planMonth").value;
@@ -691,32 +712,35 @@ function loadSavedMonthlyPlan() {
         }
       });
 
-      updateCoverage();
-      updateTotals();
-      loadTourHistory();
+     updateCoverage();
+loadTourSummary();
+loadTourHistory();
     })
     .catch(err => console.error("Saved monthly plan error:", err));
 }
+function loadTourSummary() {
+  const employeeId = localStorage.getItem("employeeId");
+  const month = document.getElementById("planMonth").value;
 
-function setRouteDetails(select) {
-  const row = select.closest(".plan-row");
-  const routeId = select.value;
+  if (!employeeId || !month) return;
 
-  const route = routeList.find(r => String(r.id) === String(routeId));
+  fetch(`${BASE_URL}/tour-plan/summary/${employeeId}/${month}`)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("totalKm").innerText =
+        data.totalKm || 0;
 
-  if (!route) {
-    row.querySelector(".distanceKm").value = 0;
-    row.querySelector(".fareAmount").value = 0;
-  } else {
-    const km = Number(route.distanceKm || 0);
-    row.querySelector(".distanceKm").value = km;
-    row.querySelector(".fareAmount").value = km * KM_RATE;
-  }
+      document.getElementById("totalFare").innerText =
+        "₹" + (data.totalFare || 0);
 
-  updateCoverage();
-  updateTotals();
+      document.getElementById("totalDa").innerText =
+        "₹" + (data.totalDa || 0);
+
+      document.getElementById("totalExpense").innerText =
+        "₹" + (data.totalExpense || 0);
+    })
+    .catch(err => console.error("Tour summary error:", err));
 }
-
 function updateCoverage() {
   const selectedRoutes = [];
 
@@ -745,26 +769,7 @@ function updateCoverage() {
 
   document.getElementById("coverageList").innerHTML = html;
 }
-function updateTotals() {
-  let totalKm = 0;
-  let totalFare = 0;
-  let totalDa = 0;
-  let totalOther = 0;
 
-  document.querySelectorAll(".plan-row").forEach(row => {
-    totalKm += Number(row.querySelector(".distanceKm").value || 0);
-    totalFare += Number(row.querySelector(".fareAmount").value || 0);
-    totalDa += Number(row.querySelector(".daAmount").value || 0);
-    totalOther += Number(row.querySelector(".otherAmount").value || 0);
-
-    
-  });
-
-  document.getElementById("totalKm").innerText = totalKm;
-  document.getElementById("totalFare").innerText = "₹" + totalFare;
-  document.getElementById("totalDa").innerText = "₹" + totalDa;
-  document.getElementById("totalExpense").innerText = "₹" + (totalFare + totalDa + totalOther);
-}
 
 function submitSingleDayPlan(button) {
   const row = button.closest(".plan-row");
@@ -803,13 +808,21 @@ if (selectedMonth !== currentMonth) {
     alert("Only current month tour can be submitted");
     return;
 }
-const selectedDate = parseLocalDate(row.dataset.date);
-const todayDate = new Date().toISOString().split("T")[0];
+const planDate = row.dataset.date;
+
+const today = new Date();
+const todayDate =
+  `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
 if (planDate !== todayDate) {
   alert("Only today's assigned tour can be submitted");
   return;
 }
+const travelKm = Number(row.querySelector(".distanceKm").value || 0);
+const fareAmount = Number(row.querySelector(".fareAmount").value || 0);
+const daAmount = Number(row.querySelector(".daAmount").value || 0);
+const otherAmount = Number(row.querySelector(".otherAmount").value || 0);
+const totalExpense = fareAmount + daAmount + otherAmount;
   const tourData = {
     employeeId: Number(localStorage.getItem("employeeId")),
     employeeName: localStorage.getItem("employeeName"),
@@ -818,10 +831,12 @@ if (planDate !== todayDate) {
     travelDate: row.dataset.date,
     weekDay: row.dataset.weekday,
     routeName: routeName,
-    travelKm: Number(row.querySelector(".distanceKm").value || 0),
-    fareAmount: Number(row.querySelector(".fareAmount").value || 0),
-    daAmount: Number(row.querySelector(".daAmount").value || 0),
-    otherAmount: Number(row.querySelector(".otherAmount").value || 0),
+ 
+    travelKm: travelKm,
+fareAmount: fareAmount,
+daAmount: daAmount,
+otherAmount: otherAmount,
+totalExpense: totalExpense,
     status: "COMPLETED"
   };
 
@@ -845,7 +860,8 @@ if (planDate !== todayDate) {
       button.innerHTML = `<i class="fa-solid fa-check me-1"></i>Completed`;
 
       loadSavedMonthlyPlan();
-      loadTourHistory();
+loadTourSummary();
+loadTourHistory();
     })
    .catch(error => {
   console.error(error);
@@ -870,7 +886,7 @@ function loadTourHistory() {
       if (!data || data.length === 0) {
         table.innerHTML = `
           <tr>
-            <td colspan="9" class="text-center">No tour plan found</td>
+            <td colspan="9" class="text-center">No visited tour found</td>
           </tr>
         `;
         return;
@@ -888,15 +904,16 @@ function loadTourHistory() {
             <td>₹${tour.fareAmount || 0}</td>
             <td>₹${tour.daAmount || 0}</td>
             <td>₹${tour.otherAmount || 0}</td>
+            <td>₹${tour.totalExpense || 0}</td>
           </tr>
         `;
       });
     });
 }
 
-function downloadPdf() {
-  alert("PDF export monthly tour plan ke liye baad me update karenge");
-}
+//function downloadPdf() {
+//  alert("PDF export for monthly tour plan is not available right now.");
+//}
 </script>
 </body>
 </html>

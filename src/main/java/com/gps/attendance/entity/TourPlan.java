@@ -65,6 +65,9 @@ private String weekDay;
     @Column(name = "admin_remark")
     private String adminRemark;
 
+    @Column(name = "total_expense")
+    private Double totalExpense;
+
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -200,6 +203,14 @@ public void setWeekDay(String weekDay) {
         this.adminRemark = adminRemark;
     }
 
+    public Double getTotalExpense() {
+        return totalExpense;
+    }
+
+    public void setTotalExpense(Double totalExpense) {
+        this.totalExpense = totalExpense;
+    }
+    
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }

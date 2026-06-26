@@ -21,7 +21,7 @@ import com.gps.attendance.repository.TourPlanRepository;
         origins = "*",
         allowedHeaders = "*",
         methods = {
-                RequestMethod.GET,
+                RequestMethod.GET, 
                 RequestMethod.POST,
                 RequestMethod.PUT,
                 RequestMethod.DELETE
@@ -32,9 +32,8 @@ public class TourPlanController {
     @Autowired
     private TourPlanRepository repository;
 
-    @PostMapping("/tour-plan/save")
-public TourPlan saveTourPlan(
-        @RequestBody TourPlan tourPlan) {
+   @PostMapping("/tour-plan/save")
+public TourPlan saveTourPlan(@RequestBody TourPlan tourPlan) {
 
     if (repository.existsByEmployeeIdAndTravelDate(
             tourPlan.getEmployeeId(),
@@ -46,6 +45,8 @@ public TourPlan saveTourPlan(
     if (tourPlan.getStatus() == null || tourPlan.getStatus().isBlank()) {
         tourPlan.setStatus("PENDING");
     }
+
+    calculateTotals(tourPlan);
 
     return repository.save(tourPlan);
 }
@@ -126,6 +127,8 @@ public String updateExpense(
     plan.setRemarks(
             request.getRemarks());
 
+    calculateTotals(plan);
+
     repository.save(plan);
 
     return "Expense Updated";
@@ -192,9 +195,9 @@ public List<TourPlan> saveMonthlyTourPlan(@RequestBody List<TourPlan> plans) {
     for (TourPlan plan : plans) {
        if (plan.getStatus() == null || plan.getStatus().isBlank()) {
             plan.setStatus("PENDING");
-}
+        }       
 
-        
+        calculateTotals(plan);   
     }
     
 
@@ -210,4 +213,55 @@ public List<TourPlan> getMonthlyTourPlan(
         employeeId,
         month);
 }
+
+private void calculateTotals(TourPlan plan) {
+
+    double fare = plan.getFareAmount() == null ? 0 : plan.getFareAmount();
+    double da = plan.getDaAmount() == null ? 0 : plan.getDaAmount();
+    double other = plan.getOtherAmount() == null ? 0 : plan.getOtherAmount();
+
+    plan.setTotalExpense(fare + da + other);
+}
+@GetMapping("/tour-plan/summary/{employeeId}/{month}")
+public Map<String, Object> getEmployeeTourSummary(
+        @PathVariable Long employeeId,
+        @PathVariable String month) {
+
+    List<TourPlan> plans =
+            repository.findByEmployeeIdAndMonthOrderByIdDesc(employeeId, month);
+
+    double totalKm = 0;
+    double totalFare = 0;
+    double totalDa = 0;
+    double totalOther = 0;
+    double totalExpense = 0;
+
+    for (TourPlan plan : plans) {
+
+        totalKm += plan.getTravelKm() == null ? 0 : plan.getTravelKm();
+        totalFare += plan.getFareAmount() == null ? 0 : plan.getFareAmount();
+        totalDa += plan.getDaAmount() == null ? 0 : plan.getDaAmount();
+        totalOther += plan.getOtherAmount() == null ? 0 : plan.getOtherAmount();
+
+        if (plan.getTotalExpense() != null) {
+            totalExpense += plan.getTotalExpense();
+        } else {
+            totalExpense +=
+                    (plan.getFareAmount() == null ? 0 : plan.getFareAmount())
+                    + (plan.getDaAmount() == null ? 0 : plan.getDaAmount())
+                    + (plan.getOtherAmount() == null ? 0 : plan.getOtherAmount());
+        }
+    }
+
+    Map<String, Object> result = new HashMap<>();
+
+    result.put("totalKm", totalKm);
+    result.put("totalFare", totalFare);
+    result.put("totalDa", totalDa);
+    result.put("totalOther", totalOther);
+    result.put("totalExpense", totalExpense);
+
+    return result;
+}
+
 }
