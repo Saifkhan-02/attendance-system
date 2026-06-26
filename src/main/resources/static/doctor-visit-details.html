@@ -85,8 +85,10 @@
         margin: 15px 0;
       }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.bootstrap5.min.css"
+      rel="stylesheet"
+    />
   </head>
 
   <body>
@@ -192,6 +194,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
 
     <script>
       let allDoctorVisits = [];
@@ -208,22 +211,24 @@
           localStorage.getItem("adminName") || "Admin";
       }
 
-      function loadEmployeeFilter() {
+      async function loadEmployeeFilter() {
         const employeeSelect = document.getElementById("employeeFilter");
 
         employeeSelect.innerHTML = '<option value="">All Employees</option>';
 
-        const employees = [
-          ...new Set(
-            allDoctorVisits.map((v) => v.employeeName).filter((name) => name),
-          ),
-        ];
+        try {
+          const response = await fetch(BASE_URL + "/get-employees");
 
-        employees.sort();
+          const employees = await response.json();
 
-        employees.forEach((emp) => {
-          employeeSelect.innerHTML += `<option value="${emp}">${emp}</option>`;
-        });
+          employees.forEach((emp) => {
+            employeeSelect.innerHTML += `<option value="${emp.name}">
+                    ${emp.name}
+                </option>`;
+          });
+        } catch (error) {
+          console.error("Employee Load Error :", error);
+        }
       }
 
       function loadDoctorFilter() {
@@ -407,11 +412,23 @@
 
           allDoctorVisits = data;
 
-          loadEmployeeFilter();
+          await loadEmployeeFilter();
 
           loadDoctorFilter();
 
           renderDoctorVisits(data);
+
+          new TomSelect("#employeeFilter", {
+            create: false,
+            searchField: ["text"],
+            placeholder: "Search Employee...",
+          });
+
+          new TomSelect("#doctorFilter", {
+            create: false,
+            searchField: ["text"],
+            placeholder: "Search Doctor...",
+          });
         } catch (err) {
           console.error(err);
         }
