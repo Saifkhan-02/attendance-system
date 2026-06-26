@@ -133,25 +133,56 @@
 
       <!-- Search + Filter -->
 
-      <div class="row mb-4">
-        <div class="col-lg-8 mb-2">
-          <input
-            type="text"
-            id="searchDoctor"
-            class="form-control form-control-lg"
-            placeholder="Search Doctor Name, Employee Name, Hospital..."
-          />
-        </div>
+      <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body">
+          <div class="row g-4 align-items-end">
+            <!-- Employee -->
 
-        <div class="col-lg-4 mb-2">
-          <input
-            type="date"
-            id="visitDateFilter"
-            class="form-control form-control-lg"
-          />
+            <div class="col-lg-3 col-md-6">
+              <label class="form-label fw-bold"> Employee </label>
+
+              <select id="employeeFilter" class="form-select form-select-lg">
+                <option value="">All Employees</option>
+              </select>
+            </div>
+
+            <!-- Doctor -->
+
+            <div class="col-lg-3 col-md-6">
+              <label class="form-label fw-bold"> Doctor </label>
+
+              <select id="doctorFilter" class="form-select form-select-lg">
+                <option value="">All Doctors</option>
+              </select>
+            </div>
+
+            <!-- Date -->
+
+            <div class="col-lg-3 col-md-6">
+              <label class="form-label fw-bold"> Visit Date </label>
+
+              <input
+                type="date"
+                id="visitDateFilter"
+                class="form-control form-control-lg"
+              />
+            </div>
+
+            <!-- Reset -->
+
+            <div class="col-lg-2 col-md-6 d-grid">
+              <button
+                id="resetBtn"
+                class="btn btn-danger w-100"
+                onclick="resetFilters()"
+              >
+                <i class="fas fa-rotate-left"></i>
+                Reset
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-
       <!-- Doctor Visit Cards -->
 
       <div id="doctorVisitContainer"></div>
@@ -177,52 +208,54 @@
           localStorage.getItem("adminName") || "Admin";
       }
 
-      document
-        .getElementById("searchDoctor")
-        .addEventListener("keyup", function () {
-          const keyword = this.value.toLowerCase();
+      function loadEmployeeFilter() {
+        const employeeSelect = document.getElementById("employeeFilter");
 
-          const filtered = allDoctorVisits.filter(
-            (v) =>
-              (v.doctorName || "").toLowerCase().includes(keyword) ||
-              (v.employeeName || "").toLowerCase().includes(keyword) ||
-              (v.hospitalName || "").toLowerCase().includes(keyword),
-          );
+        employeeSelect.innerHTML = '<option value="">All Employees</option>';
 
-          renderDoctorVisits(filtered);
+        const employees = [
+          ...new Set(
+            allDoctorVisits.map((v) => v.employeeName).filter((name) => name),
+          ),
+        ];
+
+        employees.sort();
+
+        employees.forEach((emp) => {
+          employeeSelect.innerHTML += `<option value="${emp}">${emp}</option>`;
         });
+      }
 
-      document
-        .getElementById("visitDateFilter")
-        .addEventListener("change", function () {
-          const selectedDate = this.value;
+      function loadDoctorFilter() {
+        const doctorSelect = document.getElementById("doctorFilter");
 
-          if (!selectedDate) {
-            renderDoctorVisits(allDoctorVisits);
-            return;
-          }
+        doctorSelect.innerHTML = '<option value="">All Doctors</option>';
 
-          const filtered = allDoctorVisits.filter(
-            (v) => v.visitDate === selectedDate,
-          );
+        const doctors = [
+          ...new Set(
+            allDoctorVisits.map((v) => v.doctorName).filter((name) => name),
+          ),
+        ];
 
-          renderDoctorVisits(filtered);
+        doctors.sort();
+
+        doctors.forEach((doc) => {
+          doctorSelect.innerHTML += `<option value="${doc}">${doc}</option>`;
         });
+      }
 
       function renderDoctorVisits(data) {
         const container = document.getElementById("doctorVisitContainer");
 
         container.innerHTML = "";
 
-       data.sort((a, b) => {
+        data.sort((a, b) => {
+          if (a.visitDate !== b.visitDate) {
+            return b.visitDate.localeCompare(a.visitDate);
+          }
 
-    if (a.visitDate !== b.visitDate) {
-        return b.visitDate.localeCompare(a.visitDate);
-    }
-
-    return b.visitTime.localeCompare(a.visitTime);
-
-});
+          return b.visitTime.localeCompare(a.visitTime);
+        });
 
         data.forEach((visit) => {
           container.innerHTML += `
@@ -331,6 +364,35 @@
         });
       }
 
+      function applyFilters() {
+        const employee = document.getElementById("employeeFilter").value;
+        const doctor = document.getElementById("doctorFilter").value;
+        const date = document.getElementById("visitDateFilter").value;
+
+        const filtered = allDoctorVisits.filter((visit) => {
+          const employeeMatch = !employee || visit.employeeName === employee;
+
+          const doctorMatch = !doctor || visit.doctorName === doctor;
+
+          const dateMatch = !date || visit.visitDate === date;
+
+          return employeeMatch && doctorMatch && dateMatch;
+        });
+
+        renderDoctorVisits(filtered);
+      }
+      document
+        .getElementById("employeeFilter")
+        .addEventListener("change", applyFilters);
+
+      document
+        .getElementById("doctorFilter")
+        .addEventListener("change", applyFilters);
+
+      document
+        .getElementById("visitDateFilter")
+        .addEventListener("change", applyFilters);
+
       async function loadDoctorVisits() {
         console.log("Function Called");
 
@@ -345,7 +407,10 @@
 
           allDoctorVisits = data;
 
-          console.log("Doctor Visits =", data);
+          loadEmployeeFilter();
+
+          loadDoctorFilter();
+
           renderDoctorVisits(data);
         } catch (err) {
           console.error(err);
@@ -383,6 +448,14 @@
         }
 
         return hour + ":" + minute + " " + ampm;
+      }
+
+      function resetFilters() {
+        document.getElementById("employeeFilter").value = "";
+        document.getElementById("doctorFilter").value = "";
+        document.getElementById("visitDateFilter").value = "";
+
+        renderDoctorVisits(allDoctorVisits);
       }
 
       function toggleDetails(button) {
