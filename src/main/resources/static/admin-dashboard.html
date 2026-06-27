@@ -603,18 +603,21 @@
         </div>
         <!-- Sales & Payments -->
         <div class="col-6 col-md-6 col-lg-3">
-          <div class="card dashboard-card" >
-             <a href="AdminSalesPayment.html" class="text-decoration-none">       
-               <div class="card-body text-center">               
-                 <i class="fa-solid fa-chart-line fa-2x text-success mb-3"></i>
-                 <h6 class="text-dark">Sales & Payment</h6>
-                 <h3 id="adminTotalSale" class="fw-bold text-success">
-                   ₹0
-                 </h3>
-               </div>
-             </a>
+    <div
+        class="card dashboard-card"
+        onclick="window.location.href='AdminSalesPayment.html'"
+        style="cursor: pointer;" >
+        <div class="card-body text-center">
+            <i class="fa-solid fa-chart-line fa-2x text-success mb-3"></i>
+
+            <h6 class="text-muted">Sales & Payment</h6>
+
+            <div id="adminTotalSale" class="count text-success">
+                ₹0
             </div>
         </div>
+    </div>
+</div>
 
       <!-- ================= QUICK ACTIONS ================= -->
 
