@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -117,18 +118,24 @@ public List<Employee> getEmployees() {
     }
 
     @PutMapping("/employee/update-profile/{id}")
-    public Employee updateEmployeeProfile(
-            @PathVariable Long id,
-            @RequestBody Employee updatedEmployee
-    ) {
-        Employee employee = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+public Employee updateEmployeeProfile(
+        @PathVariable Long id,
+        @RequestBody Employee updatedEmployee
+) {
 
-        employee.setEmail(updatedEmployee.getEmail());
-        employee.setMobile(updatedEmployee.getMobile());
+    Employee employee = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        return repository.save(employee);
-    }
+    // Editable Fields
+    employee.setEmail(updatedEmployee.getEmail());
+    employee.setMobile(updatedEmployee.getMobile());
+    employee.setDesignation(updatedEmployee.getDesignation());
+    employee.setReportingManager(updatedEmployee.getReportingManager());
+    employee.setHeadquarters(updatedEmployee.getHeadquarters());
+    employee.setStatus(updatedEmployee.getStatus());
+
+    return repository.save(employee);
+}
 
     @PutMapping("/employee/upload-photo/{id}")
     public Employee uploadEmployeePhoto(
@@ -270,6 +277,18 @@ public ResponseEntity<?> checkEmployeeSession(
     }
 
     return ResponseEntity.ok("VALID");
+}
+
+@DeleteMapping("/employee/{id}")
+public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
+
+    if (!repository.existsById(id)) {
+        return ResponseEntity.badRequest().body("Employee not found");
+    }
+
+    repository.deleteById(id);
+
+    return ResponseEntity.ok("Employee deleted successfully.");
 }
 
 }
