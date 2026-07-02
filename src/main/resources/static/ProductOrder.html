@@ -229,18 +229,20 @@ href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.c
 
           <div class="table-responsive">
             <table class="table table-hover align-middle">
-              <thead class="table-primary">
+             <thead class="table-primary">
                 <tr>
-                  <th>Doctor</th>
-                  <th>Distributor</th>
-                  <th>Product</th>
-                  <th>Quantity</th>
-                  <th>Amount</th>
                   <th>Date</th>
+                  <th>Dr. Name</th>
+                  <th>Distributor</th>
+                  <th>Order Details</th>
+                  <th>Total Amt.</th>
+                  <th>Paid Amt.</th>
+                  <th>Due Amt.</th>
+                  <th>Pay Mode</th>
+                  <th>Remarks</th>
                   <th>Status</th>
                 </tr>
               </thead>
-
               <tbody id="orderTable"></tbody>
             </table>
           </div>
@@ -724,47 +726,98 @@ function placeOrder() {
       }
 
       function loadOrderHistory() {
-        const employeeId = localStorage.getItem("employeeId");
+  const employeeId = localStorage.getItem("employeeId");
 
-        fetch(`${BASE_URL}/order/history/today/${employeeId}`)
-          .then((response) => response.json())
-          .then((data) => {
-            console.log("ORDER HISTORY:", data);
+  fetch(`${BASE_URL}/order/history/today/${employeeId}`)
+    .then((response) => response.json())
+    .then((data) => {
+      const table = document.getElementById("orderTable");
+      table.innerHTML = "";
 
-            const table = document.getElementById("orderTable");
+      if (!data || data.length === 0) {
+       table.innerHTML += `
+  <tr>
+    <td>
+      <div class="p-3 border rounded-4 bg-light">
+        <div class="d-flex justify-content-between mb-2">
+          <strong>${order.doctorName || "-"}</strong>
+          <span class="status-placed">${order.status}</span>
+        </div>
 
-            table.innerHTML = "";
+        <div class="text-muted mb-2">
+          Distributor: ${order.distributorName || "-"}<br>
+          Date: ${order.orderDate || "-"}
+        </div>
 
-            if (data.length === 0) {
-              table.innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center">
-                        No Orders Found
-                    </td>
-                </tr>
-            `;
-              return;
-            }
+        <div class="mb-2">
+          ${order.products.join("")}
+        </div>
 
-            data.forEach((order) => {
-              table.innerHTML += `
-                <tr>
-                    <td>${order.doctorName || "-"}</td>
-                    <td>${order.distributorName || "-"}</td>
-                    <td>${order.productName || "-"}</td>
-                    <td>${order.orderQuantity || 0}</td>
-                    <td>₹${order.orderAmount || 0}</td>
-                    <td>${order.orderDate || "-"}</td>
-                    <td>
-                        <span class="status-placed">
-                            ${order.status || "Placed"}
-                        </span>
-                    </td>
-                </tr>
-            `;
-            });
-          });
+        <div class="fw-bold text-end">
+          Total: ₹${order.totalAmount}
+        </div>
+      </div>
+    </td>
+  </tr>
+`;
+        return;
       }
+
+      const groupedOrders = {};
+
+      data.forEach((order) => {
+        const key = `${order.doctorId}_${order.distributorId}_${order.orderDate}_${order.remarks || ""}`;
+
+        if (!groupedOrders[key]) {
+          groupedOrders[key] = {
+            doctorName: order.doctorName,
+            distributorName: order.distributorName,
+            orderDate: order.orderDate,
+            status: order.status || "Placed",
+            paymentMode: order.paymentMode || "-",
+            remarks: order.remarks || "-",
+            totalAmount: 0,
+            totalPaidAmount: 0,
+            totalDueAmount: 0,
+            products: []
+          };
+        }
+        groupedOrders[key].totalAmount += Number(order.orderAmount || 0);
+        groupedOrders[key].totalPaidAmount += Number(order.paidAmount || 0);
+        groupedOrders[key].totalDueAmount += Number(order.dueAmount || 0);
+
+    groupedOrders[key].products.push(`
+  <div class="border-top pt-2 mt-2">
+    <div class="fw-semibold">${order.productName}</div>
+    <div class="small text-muted">
+      Qty: ${order.orderQuantity} | SP: ₹${order.sellingPrice} | Amount: ₹${order.orderAmount}
+    </div>
+  </div>
+`);
+      });
+
+      Object.values(groupedOrders).forEach((order) => {
+        table.innerHTML += `
+          <tr>
+             <td>${order.orderDate || "-"}</td>
+            <td>${order.doctorName || "-"}</td>
+            <td>${order.distributorName || "-"}</td>
+            <td>${order.products.join("")}</td>
+            <td>
+                <strong>₹${order.totalAmount}</strong>
+            </td>
+            <td>${order.totalPaidAmount || 0}</td>
+            <td>${order.totalDueAmount || 0}</td>
+            <td>${order.paymentMode || "-"}</td>
+            <td>${order.remarks || "-"}</td>
+            <td>
+              <span class="status-placed">${order.status}</span>
+            </td>
+          </tr>
+        `;
+      });
+    });
+}
     </script>
   </body>
 </html>
