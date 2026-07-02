@@ -1401,9 +1401,15 @@ for (let i = 1; i <= pageCount; i++) {
 
 }
 doc.save("Employee_List_Report.pdf");
-    }
+     };
+
+}
+
+console.log("Before toggleEdit");
 
  function toggleEdit(id){
+
+     console.log("toggleEdit loaded");
 
     if(!isEditMode){
 
@@ -1536,7 +1542,6 @@ alert("Employee updated successfully.");
     console.log(err);
 });
     }
-}
 }
 </script>
 
