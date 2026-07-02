@@ -271,33 +271,37 @@ function saveProduct(){
 
     const url = productId
         ? `${BASE_URL}/admin/update-product/${productId}`
-        : `${BASE_URL}/admin/save-product`;
+        : `${BASE_URL}/admin/product/save`;
 
     const method = productId ? "PUT" : "POST";
 
-    fetch(url,{
-        method: method,
-        headers:{
-            "Content-Type":"application/json"
-        },
-        body:JSON.stringify(productData)
-    })
- 
-    .then(response => response.json())
-    .then(data => {
-        alert(productId ? "Product Updated Successfully" : "Product Saved Successfully");
-        clearForm();
-        loadProducts();
-    })
-    .catch(error => {
-        console.error(error);
-        alert("Failed to save product");
-    });
+   fetch(url, {
+    method: method,
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify(productData)
+})
+.then(async response => {
+    if (!response.ok) {
+        const msg = await response.text();
+        throw new Error(msg);
+    }
+    return response.json();
+})
+.then(data => {
+    alert(productId ? "Product Updated Successfully" : "Product Saved Successfully");
+    clearForm();
+    loadProducts();
+})
+.catch(err => {
+    alert(err.message);
+});
 }
 
 function loadProducts(){
 
-    fetch(`${BASE_URL}/products`)
+    fetch(`${BASE_URL}/admin/products`)
     .then(response => response.json())
     .then(data => {
 

@@ -22,7 +22,7 @@ public class AdminAddProductController {
     @Autowired
     private AdminAddProductRepository repository;
 
-    @PostMapping("/product/save")
+    @PostMapping("/admin/product/save")
     public AdminAddProduct saveProduct(
             @RequestBody AdminAddProduct product) {
 
@@ -30,7 +30,6 @@ public class AdminAddProductController {
                 || product.getProductName().trim().isEmpty()) {
             throw new RuntimeException("Product name is required");
         }
-
         product.setProductName(
                 product.getProductName().trim());
 
@@ -44,7 +43,7 @@ public class AdminAddProductController {
         return repository.save(product);
     }
 
-    @GetMapping("/products")
+    @GetMapping("/admin/products")
     public List<AdminAddProduct> getProducts() {
 
         return repository.findAllByOrderByIdDesc();

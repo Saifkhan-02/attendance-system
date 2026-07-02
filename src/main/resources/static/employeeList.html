@@ -516,7 +516,10 @@
     <!-- Sidebar Toggle -->
 
     <script>
-
+        let allEmployees = [];
+        let currentEmployee = null;
+        let isEditMode = false;
+        let hasUnsavedChanges = false;
      function goBack() {
         window.location.replace("admin-dashboard.html");
       }
@@ -550,11 +553,6 @@
       }
       loadAdminInfo();
       updateTime();
-
-  let allEmployees = [];
-  let currentEmployee = null;
-  let isEditMode = false;
-  let hasUnsavedChanges = false;
 
   function loadEmployeeTable() {
 
@@ -1144,7 +1142,6 @@ ${new Date().toLocaleString()}
     });
 
 }
-
 async function exportEmployeeExcel() {
 
     const response = await fetch("/get-employees");
