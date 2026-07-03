@@ -246,9 +246,14 @@ body{background:#f4f6fb}
 
 
 window.onload = function () {
-  loadEmployees();
-  loadheadquarters();
- 
+    loadAdminInfo();
+
+    updateTime();
+    setInterval(updateTime,1000);
+
+    loadEmployees();
+    loadheadquarters();
+    loadMappings();
 };
 
 async function loadEmployees() {
@@ -313,10 +318,13 @@ async function assignheadquarter() {
     })
   });
 
-  if (response.ok) {
+ if (response.ok) {
     alert("Headquarter assigned successfully");
+
     loadEmployees();
-  } else {
+    loadMappings();
+}
+else {
     alert("Failed to assign headquarter");
   }
 }
@@ -327,7 +335,7 @@ async function deleteMapping(id) {
     return;
   }
 
-  const response = await fetch(`${BASE_URL}/headquarter/mapping/delete/${id}`, {
+  const response = await fetch(`${BASE_URL}/hq/mapping/delete/${id}`, {
     method: "DELETE"
   });
 
@@ -351,6 +359,53 @@ function filterMappingRows() {
     row.style.display =
       employeeName.includes(search) ? "" : "none";
   });
+}
+
+async function loadMappings() {
+
+    try {
+
+       const response = await fetch(`${BASE_URL}/hq/mapping/all`);
+
+        if(!response.ok){
+            throw new Error("Failed to load mappings");
+        }
+
+        const data = await response.json();
+
+        console.log(data);
+
+        document.getElementById("totalMappings").innerText = data.length;
+
+        let html = "";
+
+        data.forEach(item => {
+
+            html += `
+                <tr>
+                    <td>${item.id}</td>
+                    <td>${item.employeeName}</td>
+                    <td>${item.hqName}</td>
+
+                    <td>
+                        <button class="btn btn-danger btn-sm"
+                        onclick="deleteMapping(${item.id})">
+                        Delete
+                        </button>
+                    </td>
+
+                </tr>
+            `;
+
+        });
+
+        document.getElementById("mappingTableBody").innerHTML = html;
+
+    }
+    catch(e){
+        console.log(e);
+    }
+
 }
 </script>
 

@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gps.attendance.entity.Employee;
 import com.gps.attendance.entity.EmployeeHQMapping;
 import com.gps.attendance.entity.HQList;
+import com.gps.attendance.entity.Headquarter;
 import com.gps.attendance.repository.EmployeeHQMappingRepository;
 import com.gps.attendance.repository.EmployeeRepository;
 import com.gps.attendance.repository.HQListRepository;
+import com.gps.attendance.repository.HeadquarterRepository;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -37,20 +39,21 @@ public class HQController {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Autowired
+    private HeadquarterRepository headquarterRepository;
+
     @GetMapping("/employee/{employeeId}")
-    public List<HQList> getEmployeeHQs(
+   public List<Headquarter> getEmployeeHQs(
             @PathVariable Long employeeId) {
 
         List<EmployeeHQMapping> mappings
                 = mappingRepository.findByEmployeeId(employeeId);
 
-        List<HQList> hqList = new ArrayList<>();
+        List<Headquarter> hqList = new ArrayList<>();
 
         for (EmployeeHQMapping mapping : mappings) {
 
-            HQList hq
-                    = hqRepository.findById(mapping.getHqId())
-                            .orElse(null);
+           Headquarter hq = headquarterRepository.findById(mapping.getHqId()).orElse(null);
 
             if (hq != null) {
                 hqList.add(hq);
@@ -171,8 +174,7 @@ public HQList saveHQ(@RequestBody HQList hq) {
 
             Employee emp = employeeRepository.findById(m.getEmployeeId()).orElse(null);
 
-            HQList hq
-                    = hqRepository.findById(m.getHqId()).orElse(null);
+           Headquarter hq = headquarterRepository.findById(m.getHqId()).orElse(null);
 
             Map<String, Object> row = new HashMap<>();
 
@@ -181,8 +183,7 @@ public HQList saveHQ(@RequestBody HQList hq) {
             row.put("employeeName",
                     emp != null ? emp.getName() : "");
 
-            row.put("hqName",
-                    hq != null ? hq.getHqName() : "");
+            row.put("hqName", hq != null ? hq.getHeadquarterName() : "");
 
             result.add(row);
         }

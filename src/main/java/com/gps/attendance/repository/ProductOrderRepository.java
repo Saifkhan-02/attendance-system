@@ -110,4 +110,29 @@ FROM ProductOrder p
 
     @Query("SELECT COUNT(p) FROM ProductOrder p WHERE p.employeeId = :employeeId")
     long countOrdersByEmployeeId(@Param("employeeId") Long employeeId);
+
+    List<ProductOrder> findByInvoiceNo(String invoiceNo);
+
+    @Query("""
+SELECT p
+FROM ProductOrder p
+WHERE
+(:employeeId IS NULL OR p.employeeId = :employeeId)
+ORDER BY p.id DESC
+""")
+    List<ProductOrder> findByEmployeeFilter(
+            @Param("employeeId") Long employeeId
+    );
+
+    @Query("""
+SELECT p
+FROM ProductOrder p
+WHERE
+(:employeeId IS NULL OR p.employeeId = :employeeId)
+ORDER BY p.id DESC
+""")
+List<ProductOrder> searchOrders(
+        @Param("employeeId") Long employeeId
+);
+
 }

@@ -646,7 +646,7 @@
       }
 
       function loadProducts() {
-        fetch(`${BASE_URL}/products`)
+        fetch(`${BASE_URL}/admin/products`)
           .then((response) => response.json())
           .then((data) => {
             stockList = data || [];

@@ -22,8 +22,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.gps.attendance.dto.ChangePasswordRequest;
 import com.gps.attendance.entity.Employee;
+import com.gps.attendance.entity.EmployeeHQMapping;
+import com.gps.attendance.entity.Headquarter;
 import com.gps.attendance.repository.DoctorVisitRepository;
+import com.gps.attendance.repository.EmployeeHQMappingRepository;
 import com.gps.attendance.repository.EmployeeRepository;
+import com.gps.attendance.repository.HeadquarterRepository;
 import com.gps.attendance.service.CloudinaryService;
 
 @RestController
@@ -39,6 +43,12 @@ public class EmployeeController {
 
     @Autowired
     private DoctorVisitRepository doctorVisitRepository;
+
+    @Autowired
+    private EmployeeHQMappingRepository mappingRepository;
+
+    @Autowired
+    private HeadquarterRepository headquarterRepository;
 
 
     @PostMapping("/login")
@@ -199,19 +209,44 @@ public List<Employee> getAllEmployees() {
                 .orElse(null);
     }
 
-    @PutMapping("/employee/assign-headquarter")
-    public Employee assignHeadquarter(@RequestBody Map<String, Object> request) {
+  @PutMapping("/employee/assign-headquarter")
+public Employee assignHeadquarter(@RequestBody Map<String, Object> request) {
 
-        Long employeeId = Long.valueOf(request.get("employeeId").toString());
-        String headquarterName = request.get("headquarterName").toString();
+    Long employeeId = Long.valueOf(request.get("employeeId").toString());
+    String headquarterName = request.get("headquarterName").toString();
 
-        Employee employee = repository.findById(employeeId)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+    Employee employee = repository.findById(employeeId)
+            .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        employee.setHeadquarters(headquarterName);
+    // Employee table update
+    employee.setHeadquarters(headquarterName);
+    repository.save(employee);
 
-        return repository.save(employee);
-    }
+    System.out.println("Employee ID = " + employeeId);
+    System.out.println("Headquarter Name = " + headquarterName);
+    System.out.println("Searching HQ : " + headquarterName);
+
+      Headquarter headquarter = headquarterRepository
+        .findByHeadquarterNameIgnoreCase(headquarterName)
+        .orElseThrow(() -> new RuntimeException("Headquarter not found"));
+
+System.out.println("HQ ID = " + headquarter.getId());
+
+if (!mappingRepository.existsByEmployeeIdAndHqId(employeeId, headquarter.getId())) {
+
+    System.out.println("Saving mapping...");
+
+    EmployeeHQMapping mapping = new EmployeeHQMapping();
+    mapping.setEmployeeId(employeeId);
+    mapping.setHqId(headquarter.getId());
+
+    mappingRepository.save(mapping);
+
+    System.out.println("Mapping Saved");
+}
+
+    return employee;
+}
 
     @PutMapping("/employee/change-password")
     public String changePassword(@RequestBody ChangePasswordRequest request) {

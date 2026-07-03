@@ -17,6 +17,8 @@ public class ProductOrder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String invoiceNo;
+
     private Long employeeId;
     private String employeeName;
 
@@ -48,9 +50,19 @@ private String headquarters;
         return id;
     }
 
+    public String getInvoiceNo() {
+    return invoiceNo;
+}
+
+
     public void setId(Long id) {
         this.id = id;
     }
+
+    public void setInvoiceNo(String invoiceNo) {
+    this.invoiceNo = invoiceNo;
+}
+
 
     public Long getEmployeeId() {
         return employeeId;

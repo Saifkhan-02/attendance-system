@@ -198,60 +198,74 @@
 
 </div>
 
+<!-- Filters -->
+
 <div class="card mb-4">
     <div class="card-body">
 
         <div class="row">
 
-            <div class="col-md-4">
-                <label class="form-label">
-                    Month
-                </label>
+    <div class="col-md-3">
+        <label class="form-label">Employee</label>
 
-               <select class="form-select form-select-sm" id="monthFilter">
+        <select id="summaryEmployee" class="form-select form-select-sm"
+           onchange="loadSummary();searchOrders();">
+            <option value="">All Employees</option>
+        </select>
+    </div>
 
-                    <option value="01">January</option>
-                    <option value="02">February</option>
-                    <option value="03">March</option>
-                    <option value="04">April</option>
-                    <option value="05">May</option>
-                    <option value="06" selected>June</option>
-                    <option value="07">July</option>
-                    <option value="08">August</option>
-                    <option value="09">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
+    <div class="col-md-3">
+        <label class="form-label">Month</label>
 
-                </select>
-            </div>
+       <select id="monthFilter" class="form-select form-select-sm"
+       onchange="loadSummary();searchOrders();">
 
-            <div class="col-md-4">
-                <label class="form-label">
-                    Year
-                </label>
+            <option value="01">January</option>
+            <option value="02">February</option>
+            <option value="03">March</option>
+            <option value="04">April</option>
+            <option value="05">May</option>
+            <option value="06" selected>June</option>
+            <option value="07">July</option>
+            <option value="08">August</option>
+            <option value="09">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
 
-                <select class="form-select form-select-sm" id="yearFilter">
+        </select>
+    </div>
 
-                    <option value="2024">2024</option>
-                    <option value="2025">2025</option>
-                    <option value="2026" selected>2026 </option>
-                    <option value="2027">2027</option>
-                    <option value="2028">2028</option>
+    <div class="col-md-2">
+        <label class="form-label">Year</label>
 
-                </select>
-            </div>
+        <select id="yearFilter" class="form-select form-select-sm"
+        onchange="loadSummary();searchOrders();">
 
-            <div class="col-md-4 d-flex align-items-end">
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026" selected>2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
 
-                <button class="btn btn-success btn-sm w-100"
-                    onclick="loadSummary()">
-                    Search
-                </button>
+        </select>
+    </div>
 
-            </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button class="btn btn-success btn-sm w-100"
+                onclick="loadSummary();searchOrders();">
+            Search
+        </button>
+    </div>
 
-        </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button class="btn btn-secondary btn-sm w-100"
+                onclick="resetSummary()">
+            Reset
+        </button>
+    </div>
+
+</div>
 
     </div>
 </div>
@@ -345,65 +359,8 @@
 </div>
 
 </div>
-<!-- Filters -->
 
-<div class="card dashboard-cards mb-4">
 
-    <div class="card-header bg-primary text-white">
-        <h5 class="mb-0">Filter Orders</h5>
-    </div>
-
-    <div class="card-body">
-
-        <div class="row g-3">
-
-            <div class="col-md-3">
-                <input type="text"
-                       id="employeeFilter"
-                       class="form-control"
-                       placeholder="Employee Name">
-            </div>
-
-            <div class="col-md-3">
-                <input type="text"
-                       id="doctorFilter"
-                       class="form-control"
-                       placeholder="Doctor Name">
-            </div>
-
-            <div class="col-md-2">
-                <input type="date"
-                       id="fromDate"
-                       class="form-control">
-            </div>
-
-            <div class="col-md-2">
-                <input type="date"
-                       id="toDate"
-                       class="form-control">
-            </div>
-
-            <div class="col-md-1">
-                <button 
-                onclick="searchOrders()"
-                class="btn btn-primary w-100">
-                    Search
-                </button>
-            </div>
-
-            <div class="col-md-1">
-                <button
-                onclick="resetFilters()"
-                 class="btn btn-secondary w-100">
-                    Reset
-                </button>
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
 <!-- Order List -->
 
 <div class="card dashboard-cards">
@@ -458,10 +415,25 @@
         window.location.replace("admin-dashboard.html");
       }
 
-        window.onload = function () {
-            loadSummary();
+   window.onload = async function () {
 
-        };
+    // Current Month & Year set karo
+    const today = new Date();
+
+    document.getElementById("monthFilter").value =
+        String(today.getMonth() + 1).padStart(2, "0");
+
+    document.getElementById("yearFilter").value =
+        today.getFullYear().toString();
+
+    await loadEmployees();
+
+    await loadSummary();
+
+    await loadOrders();
+
+};
+
       function toggleSidebar() {
         let sidebar = document.getElementById("sidebar");
 
@@ -482,12 +454,40 @@
       }
 
       setInterval(updateTime, 1000);
+
        function loadAdminInfo() {
     document.getElementById("adminName").innerText =
         localStorage.getItem("adminName") || "Admin";
       }
       loadAdminInfo();
       updateTime();
+
+      async function loadEmployees() {
+
+    const response =
+        await fetch(`${BASE_URL}/admin/employees`);
+
+    const employees =
+        await response.json();
+
+    let options =
+        '<option value="">All Employees</option>';
+
+    employees.forEach(emp => {
+
+        options += `
+            <option value="${emp.id}">
+                ${emp.name}
+            </option>
+        `;
+
+    });
+
+    document.getElementById(
+        "summaryEmployee"
+    ).innerHTML = options;
+
+}
       
 async function loadOrders() {
 
@@ -528,92 +528,109 @@ async function loadOrders() {
         'ordersTableBody'
     ).innerHTML = html;
 }
-loadOrders();
 async function loadSummary() {
 
+    const employeeId =
+        document.getElementById("summaryEmployee").value;
+
     const month =
-        document.getElementById(
-            'monthFilter'
-        ).value;
+        document.getElementById("monthFilter").value;
 
     const year =
-        document.getElementById(
-            'yearFilter'
-        ).value;
+        document.getElementById("yearFilter").value;
 
-    const response =
-        await fetch(`${BASE_URL}/order/summary?month=${month}&year=${year}`
-        );
+    let url =
+        `${BASE_URL}/order/summary?month=${month}&year=${year}`;
 
-    const data =
-        await response.json();
+    if (employeeId) {
+        url += `&employeeId=${employeeId}`;
+    }
 
-    document.getElementById(
-        'totalOrders'
-    ).innerText =
-        data.totalOrders;
+    const response = await fetch(url);
 
-    document.getElementById(
-        'totalAmount'
-    ).innerText =
-        '₹' + data.totalAmount;
+    const data = await response.json();
 
-    document.getElementById(
-        'paidAmount'
-    ).innerText =
-        '₹' + data.paidAmount;
-
-    document.getElementById(
-        'dueAmount'
-    ).innerText =
-        '₹' + data.dueAmount;
+    document.getElementById("totalOrders").innerText = data.totalOrders;
+    document.getElementById("totalAmount").innerText = "₹" + data.totalAmount;
+    document.getElementById("paidAmount").innerText = "₹" + data.paidAmount;
+    document.getElementById("dueAmount").innerText = "₹" + data.dueAmount;
 }
+
 async function searchOrders() {
 
-    const employeeName =
-        document.getElementById('employeeFilter').value;
+    const employeeId =
+        document.getElementById("summaryEmployee").value;
 
-    const doctorName =
-        document.getElementById('doctorFilter').value;
+    const month =
+        document.getElementById("monthFilter").value;
 
-    const response =
-        await fetch(`${BASE_URL}/order/search?employeeName=${employeeName}&doctorName=${doctorName}`);
+    const year =
+        document.getElementById("yearFilter").value;
 
-    const orders = await response.json();
+  let url =
+`${BASE_URL}/order/search?month=${month}&year=${year}`;
 
-    let html = '';
+if (employeeId) {
+    url += `&employeeId=${employeeId}`;
+}
+
+const response = await fetch(url);
+
+    const orders =
+        await response.json();
+
+    let html = "";
 
     orders.forEach(order => {
 
         html += `
-        <tr>
-            <td>${order.id}</td>
-            <td>${order.employeeName}</td>
-            <td>${order.doctorName}</td>
-            <td>${order.productName}</td>
-            <td>${order.orderQuantity}</td>
-            <td>${order.orderAmount}</td>
-            <td>${order.paidAmount}</td>
-            <td>${order.dueAmount}</td>
-            <td>${order.paymentMode}</td>
-            <td>${order.orderDate}</td>
-            <td>${order.remarks}</td>
-            <td>
-    <button
-        class="btn btn-danger btn-sm"
-        onclick="downloadBill(${order.id})">
-        <i class="fas fa-file-pdf"></i> Bill
-    </button>
+<tr>
+
+<td>${order.id}</td>
+
+<td>${order.employeeName}</td>
+
+<td>${order.doctorName}</td>
+
+<td>${order.productName}</td>
+
+<td>${order.orderQuantity}</td>
+
+<td>₹${order.orderAmount}</td>
+
+<td>₹${order.paidAmount}</td>
+
+<td>₹${order.dueAmount}</td>
+
+<td>${order.paymentMode}</td>
+
+<td>${order.orderDate}</td>
+
+<td>${order.remarks}</td>
+
+<td>
+<button
+class="btn btn-danger btn-sm"
+onclick="downloadBill(${order.id})">
+
+<i class="fas fa-file-pdf"></i>
+
+Bill
+
+</button>
+
 </td>
-        </tr>
-        `;
+
+</tr>
+`;
+
     });
 
     document.getElementById(
         "ordersTableBody"
     ).innerHTML = html;
-}
 
+}
 function downloadBill(orderId) {
     window.open(
         `/order/bill/${orderId}`,
@@ -621,29 +638,25 @@ function downloadBill(orderId) {
     );
 }
 
-function resetFilters() {
+function resetSummary() {
 
-    document.getElementById(
-        'employeeFilter'
-    ).value = '';
+    // Employee
+    document.getElementById("summaryEmployee").value = "";
 
-    document.getElementById(
-        'doctorFilter'
-    ).value = '';
+    // Current Month
+    const today = new Date();
 
-    document.getElementById(
-        'fromDate'
-    ).value = '';
+    const month = String(today.getMonth() + 1)
+        .padStart(2, '0');
 
-    document.getElementById(
-        'toDate'
-    ).value = '';
+    const year = today.getFullYear();
 
-    loadOrders();
+    document.getElementById("monthFilter").value = month;
+
+    document.getElementById("yearFilter").value = year;
+
+    loadSummary();
 }
-
 </script>
-
-
   </body>
 </html>

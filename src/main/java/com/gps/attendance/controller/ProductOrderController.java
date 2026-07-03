@@ -86,92 +86,109 @@ public class ProductOrderController {
 
     }
 
-    @GetMapping("/summary")
-    public Map<String, Object> getSummary(
-            @RequestParam String month,
-            @RequestParam String year
-    ) {
+   @GetMapping("/summary")
+public Map<String, Object> getSummary(
 
-        List<ProductOrder> allOrders
-                = orderRepository.findAll();
+        @RequestParam(required = false) Long employeeId,
+        @RequestParam String month,
+        @RequestParam String year
 
-        List<ProductOrder> orders
-                = new ArrayList<>();
+) {
 
-        for (ProductOrder order : allOrders) {
+    List<ProductOrder> orders =
+            orderRepository.findByEmployeeFilter(employeeId);
 
-            if (order.getOrderDate() != null) {
+    double totalAmount = 0.0;
+    double paidAmount = 0.0;
+    double dueAmount = 0.0;
 
-                String[] parts
-                        = order.getOrderDate().split("-");
+    int totalOrders = 0;
 
-                if (parts.length == 3) {
+    for (ProductOrder order : orders) {
 
-                    String orderYear = parts[0];
-                    String orderMonth = parts[1];
-
-                    if (orderMonth.equals(month)
-                            && orderYear.equals(year)) {
-
-                        orders.add(order);
-
-                    }
-                }
-            }
+        if (order.getOrderDate() == null) {
+            continue;
         }
 
-        double totalAmount = 0.0;
-        double paidAmount = 0.0;
-        double dueAmount = 0.0;
+        String[] parts = order.getOrderDate().split("-");
 
-        for (ProductOrder order : orders) {
-
-            totalAmount
-                    += order.getOrderAmount() == null
-                    ? 0.0
-                    : order.getOrderAmount();
-
-            paidAmount
-                    += order.getPaidAmount() == null
-                    ? 0.0
-                    : order.getPaidAmount();
-
-            dueAmount
-                    += order.getDueAmount() == null
-                    ? 0.0
-                    : order.getDueAmount();
+        if (parts.length != 3) {
+            continue;
         }
 
-        Map<String, Object> result
-                = new HashMap<>();
+        String orderYear = parts[0];
+        String orderMonth = parts[1];
 
-        result.put("totalOrders",
-                orders.size());
+        if (!orderYear.equals(year)
+                || !orderMonth.equals(month)) {
+            continue;
+        }
 
-        result.put("totalAmount",
-                totalAmount);
+        totalOrders++;
 
-        result.put("paidAmount",
-                paidAmount);
+        totalAmount += order.getOrderAmount() == null
+                ? 0
+                : order.getOrderAmount();
 
-        result.put("dueAmount",
-                dueAmount);
+        paidAmount += order.getPaidAmount() == null
+                ? 0
+                : order.getPaidAmount();
 
-        return result;
+        dueAmount += order.getDueAmount() == null
+                ? 0
+                : order.getDueAmount();
     }
 
-    @GetMapping("/search")
-    public List<ProductOrder> searchOrders(
-            @RequestParam(defaultValue = "") String employeeName,
-            @RequestParam(defaultValue = "") String doctorName
-    ) {
+    Map<String, Object> result = new HashMap<>();
 
-        return orderRepository
-                .findByEmployeeNameContainingIgnoreCaseAndDoctorNameContainingIgnoreCase(
-                        employeeName,
-                        doctorName
-                );
+    result.put("totalOrders", totalOrders);
+    result.put("totalAmount", totalAmount);
+    result.put("paidAmount", paidAmount);
+    result.put("dueAmount", dueAmount);
+
+    return result;
+}
+
+   @GetMapping("/search")
+public List<ProductOrder> searchOrders(
+
+        @RequestParam(required = false) Long employeeId,
+        @RequestParam String month,
+        @RequestParam String year
+
+) {
+
+    List<ProductOrder> allOrders =
+            orderRepository.searchOrders(employeeId);
+
+    List<ProductOrder> result =
+            new ArrayList<>();
+
+    for (ProductOrder order : allOrders) {
+
+        if (order.getOrderDate() == null) {
+            continue;
+        }
+
+        String[] parts =
+                order.getOrderDate().split("-");
+
+        if (parts.length != 3) {
+            continue;
+        }
+
+        if (parts[0].equals(year)
+                && parts[1].equals(month)) {
+
+            result.add(order);
+
+        }
+
     }
+
+    return result;
+
+}
 
     @GetMapping("/bill/{id}")
     public ResponseEntity<byte[]> downloadBill(
@@ -388,6 +405,8 @@ public class ProductOrderController {
     @PostMapping("/place-multiple")
     public List<ProductOrder> placeMultipleOrders(@RequestBody List<ProductOrder> orders) {
 
+        String invoiceNo = "INV-" + System.currentTimeMillis();
+
         for (ProductOrder order : orders) {
 
             DistributorStock stock = distributorStockRepository
@@ -417,7 +436,10 @@ public class ProductOrderController {
             distributorStockRepository.save(stock);
 
             order.setStatus("Placed");
+
+            order.setInvoiceNo(invoiceNo);
         }
+       
 
         return orderRepository.saveAll(orders);
     }
