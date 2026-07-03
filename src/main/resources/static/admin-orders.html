@@ -54,15 +54,24 @@
 
        /* Welcome Banner */
 
-      .welcome-banner {
-        background: linear-gradient(135deg, #2563eb, #60a5fa);
-        color: white;
-        padding: 25px;
-        border-radius: 20px;
-        margin-bottom: 25px;
-      }
+     .welcome-banner{
+    background: linear-gradient(90deg,#2563eb,#60a5fa);
+    color:#fff;
+    border-radius:22px;
+    padding:35px 30px;
+    margin-bottom:30px;
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
 
+.welcome-banner h2{
+    font-size:36px;
+    font-weight:600;
+}
 
+.welcome-banner p{
+    font-size:20px;
+    opacity:.95;
+}
 
  .filter-row select,
 .filter-row button {
@@ -104,6 +113,65 @@
 .summary-icon {
     font-size: 42px;
     margin-bottom: 20px;
+}
+
+/* ================= Filter Card ================= */
+
+
+
+
+
+.filter-card label{
+    font-weight:600;
+    color:#222;
+    margin-bottom:8px;
+}
+
+.filter-card .form-select{
+    height:56px;
+    border-radius:16px;
+    border:1px solid #d9d9d9;
+    font-size:17px;
+    box-shadow:none;
+}
+
+.filter-card .form-select:focus{
+    border-color:#2563eb;
+    box-shadow:0 0 0 .15rem rgba(37,99,235,.15);
+}
+
+.filter-card .btn{
+    height:56px;
+    border-radius:16px;
+    font-size:18px;
+    font-weight:600;
+}
+
+
+.modern-input:focus{
+    border-color:#2563eb;
+    box-shadow:0 0 0 .15rem rgba(37,99,235,.18);
+}
+
+.modern-input{
+    height:48px;
+    border-radius:12px;
+    font-size:15px;
+    width:100%;
+}
+
+.modern-btn{
+    height:48px;
+    border-radius:12px;
+    width:120px;
+}
+
+@media(max-width:768px){
+
+    .modern-btn{
+        width:100%;
+    }
+
 }
 
       /* Mobile */
@@ -167,106 +235,96 @@
     <!-- MAIN CONTENT -->
      <div class="main-content" id="mainContent">
 
-    <div class="card dashboard-card mb-4 border-0">
+    <div class="welcome-banner">
 
-    <div class="card-body">
+    <h2 class="fw-bold mb-2">
+        Orders Management
+    </h2>
 
-        <div class="row align-items-center">
-
-            <div class="col-md-8">
-
-                <h2 class="fw-bold text-primary">
-                    Orders Management
-                </h2>
-
-                <p class="text-muted mb-0">
-                    Monitor employee orders, payments and order history.
-                </p>
-
-            </div>
-
-            <div class="col-md-4 text-end">
-
-                <i class="fas fa-box-open text-primary"
-                   style="font-size:70px;"></i>
-
-            </div>
-
-        </div>
-
-    </div>
+    <p class="mb-0">
+        Monitor employee orders, payments and order history.
+    </p>
 
 </div>
 
 <!-- Filters -->
 
-<div class="card mb-4">
-    <div class="card-body">
+<div class="mb-4">
 
-        <div class="row">
+    <div class="row g-3 align-items-end">
 
-    <div class="col-md-3">
-        <label class="form-label">Employee</label>
+        <!-- Employee -->
 
-        <select id="summaryEmployee" class="form-select form-select-sm"
-           onchange="loadSummary();searchOrders();">
-            <option value="">All Employees</option>
-        </select>
+        <div class="col-lg-3 col-md-4">
+
+            <label class="form-label fw-semibold">
+                Employee
+            </label>
+
+            <select id="summaryEmployee"
+                    class="form-select modern-input"
+                    onchange="loadSummary();searchOrders();">
+
+                <option value="">All Employees</option>
+
+            </select>
+
+        </div>
+
+        <!-- Month -->
+
+        <div class="col-lg-3 col-md-4">
+
+            <label class="form-label fw-semibold">
+                Select Month
+            </label>
+
+            <input type="month"
+                   id="monthYearPicker"
+                   class="form-control modern-input">
+
+            <!-- Hidden Select -->
+
+            <select id="monthFilter" hidden>
+                <option value="01">January</option>
+                <option value="02">February</option>
+                <option value="03">March</option>
+                <option value="04">April</option>
+                <option value="05">May</option>
+                <option value="06">June</option>
+                <option value="07">July</option>
+                <option value="08">August</option>
+                <option value="09">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+
+            <select id="yearFilter" hidden>
+                <option>2024</option>
+                <option>2025</option>
+                <option selected>2026</option>
+                <option>2027</option>
+                <option>2028</option>
+            </select>
+
+        </div>
+
+        <!-- Reset -->
+
+        <div class="col-lg-2 col-md-3">
+
+            <button class="btn btn-secondary modern-btn w-100"
+                    onclick="resetSummary()">
+
+                Reset
+
+            </button>
+
+        </div>
+
     </div>
 
-    <div class="col-md-3">
-        <label class="form-label">Month</label>
-
-       <select id="monthFilter" class="form-select form-select-sm"
-       onchange="loadSummary();searchOrders();">
-
-            <option value="01">January</option>
-            <option value="02">February</option>
-            <option value="03">March</option>
-            <option value="04">April</option>
-            <option value="05">May</option>
-            <option value="06" selected>June</option>
-            <option value="07">July</option>
-            <option value="08">August</option>
-            <option value="09">September</option>
-            <option value="10">October</option>
-            <option value="11">November</option>
-            <option value="12">December</option>
-
-        </select>
-    </div>
-
-    <div class="col-md-2">
-        <label class="form-label">Year</label>
-
-        <select id="yearFilter" class="form-select form-select-sm"
-        onchange="loadSummary();searchOrders();">
-
-            <option value="2024">2024</option>
-            <option value="2025">2025</option>
-            <option value="2026" selected>2026</option>
-            <option value="2027">2027</option>
-            <option value="2028">2028</option>
-
-        </select>
-    </div>
-
-    <div class="col-md-2 d-flex align-items-end mb-2 mb-md-0">
-        <button class="btn btn-success btn-sm w-100"
-                onclick="loadSummary();searchOrders();">
-            Search
-        </button>
-    </div>
-    <div class="col-md-2 d-flex align-items-end">
-        <button class="btn btn-secondary btn-sm w-100"
-                onclick="resetSummary()">
-            Reset
-        </button>
-    </div>
-
-</div>
-
-    </div>
 </div>
 
     <!-- Summary Cards -->
@@ -656,6 +714,24 @@ function resetSummary() {
 
     loadSummary();
 }
+const picker = document.getElementById("monthYearPicker");
+
+picker.value =
+`${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,"0")}`;
+
+picker.addEventListener("change",function(){
+
+    const parts=this.value.split("-");
+
+    document.getElementById("yearFilter").value=parts[0];
+
+    document.getElementById("monthFilter").value=parts[1];
+
+    loadSummary();
+
+    searchOrders();
+
+});
 </script>
   </body>
 </html>
