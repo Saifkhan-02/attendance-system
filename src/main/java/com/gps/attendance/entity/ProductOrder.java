@@ -32,6 +32,7 @@ public class ProductOrder {
     private BigDecimal sellingPrice;
     private Double orderAmount;
     private String orderDate;
+    private String orderTime;
 
     private Double paidAmount = 0.0;
     private Double dueAmount = 0.0;
@@ -142,6 +143,14 @@ private String headquarters;
 
     public void setOrderDate(String orderDate) {
         this.orderDate = orderDate;
+    }
+
+    public String getOrderTime() {
+        return orderTime;
+    }
+
+    public void setOrderTime(String orderTime) {
+        this.orderTime = orderTime;
     }
 
     public Double getPaidAmount() {

@@ -406,6 +406,8 @@ public List<ProductOrder> searchOrders(
     public List<ProductOrder> placeMultipleOrders(@RequestBody List<ProductOrder> orders) {
 
         String invoiceNo = "INV-" + System.currentTimeMillis();
+      String orderTime = java.time.LocalTime.now()
+        .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
 
         for (ProductOrder order : orders) {
 
@@ -438,6 +440,7 @@ public List<ProductOrder> searchOrders(
             order.setStatus("Placed");
 
             order.setInvoiceNo(invoiceNo);
+            order.setOrderTime(orderTime);
         }
        
 

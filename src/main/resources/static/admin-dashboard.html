@@ -89,23 +89,9 @@
 
       /* Cards */
 
-      .dashboard-card {
-        border: none;
-        border-radius: 15px;
-        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-      }
-
       .count {
         font-size: 38px;
         font-weight: bold;
-      }
-
-      .welcome-box {
-        background: linear-gradient(135deg, #0d6efd, #4f8dfd);
-        color: white;
-        border-radius: 15px;
-        padding: 25px;
-        margin-bottom: 20px;
       }
 
       .profile-modal {
@@ -433,9 +419,18 @@
 }
 
       }
+      @media (max-width: 576px){
+
+    .count{
+        font-size: 1.35rem !important;
+        line-height: 1.1;
+        word-break: break-word;
+    }
+
+}
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script> -->
   </head>
 
   <body>
@@ -1176,9 +1171,7 @@ if (chartType) {
 });
 
         const amounts = data.map((item) => item[1]);
-
-        Chart.register(ChartDataLabels);
-
+        //Chart.register(ChartDataLabels);
         const ctx = document.getElementById("expenseChart");
 
         if (expenseChart) {

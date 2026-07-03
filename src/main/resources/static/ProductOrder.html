@@ -195,7 +195,7 @@ href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.c
               <label class="form-label required">Payment Mode</label>
               <select id="paymentMode" class="form-select">
                 <option value="">Select Payment Mode</option>
-                <option value="Pending">Pending</option>
+                <!-- <option value="Pending">Pending</option> -->
                 <option value="Cash">Cash</option>
                 <option value="UPI">UPI</option>
                 <option value="Bank Transfer">Bank Transfer</option>
@@ -232,6 +232,7 @@ href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.c
              <thead class="table-primary">
                 <tr>
                   <th>Date</th>
+                  <th>Time</th>
                   <th>Dr. Name</th>
                   <th>Distributor</th>
                   <th>Order Details</th>
@@ -773,6 +774,7 @@ function placeOrder() {
             doctorName: order.doctorName,
             distributorName: order.distributorName,
             orderDate: order.orderDate,
+            orderTime: order.orderTime,
             status: order.status || "Placed",
             paymentMode: order.paymentMode || "-",
             remarks: order.remarks || "-",
@@ -799,7 +801,8 @@ function placeOrder() {
       Object.values(groupedOrders).forEach((order) => {
         table.innerHTML += `
           <tr>
-             <td>${order.orderDate || "-"}</td>
+            <td>${order.orderDate || "-"}</td>
+            <td>${order.orderTime || "-"}</td>
             <td>${order.doctorName || "-"}</td>
             <td>${order.distributorName || "-"}</td>
             <td>${order.products.join("")}</td>
@@ -816,6 +819,19 @@ function placeOrder() {
           </tr>
         `;
       });
+    });
+}
+function formatTime(dateTime) {
+
+    if (!dateTime) return "-";
+
+    const d = new Date(dateTime);
+
+    return d.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
     });
 }
     </script>
