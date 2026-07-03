@@ -190,24 +190,55 @@ public List<ProductOrder> searchOrders(
 
 }
 
-    @GetMapping("/bill/{id}")
-    public ResponseEntity<byte[]> downloadBill(
-            @PathVariable Long id) throws Exception {
+  @GetMapping("/bill/{id}")
+public ResponseEntity<byte[]> downloadBill(
+        @PathVariable Long id) throws Exception {
 
-        ProductOrder order
-                = orderRepository.findById(id)
-                        .orElseThrow();
+    ProductOrder firstOrder =
+            orderRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        ByteArrayOutputStream out
-                = new ByteArrayOutputStream();
+    List<ProductOrder> orders =
+            orderRepository.findByInvoiceNoOrderByIdAsc(
+                    firstOrder.getInvoiceNo()
+            );
+            if (orders.isEmpty()) {
+    orders.add(firstOrder);
+}
 
-        Document document
-                = new Document();
+    double totalAmount = 0;
+    double paidAmount = 0;
+    double dueAmount = 0;
 
-        PdfWriter writer
-                = PdfWriter.getInstance(document, out);
+    for (ProductOrder order : orders) {
 
-        document.open();
+        totalAmount +=
+                order.getOrderAmount() == null
+                ? 0
+                : order.getOrderAmount();
+
+        paidAmount +=
+                order.getPaidAmount() == null
+                ? 0
+                : order.getPaidAmount();
+
+        dueAmount +=
+                order.getDueAmount() == null
+                ? 0
+                : order.getDueAmount();
+    }
+
+    ByteArrayOutputStream out =
+            new ByteArrayOutputStream();
+
+    Document document =
+            new Document(PageSize.A4);
+
+    PdfWriter writer =
+            PdfWriter.getInstance(document, out);
+
+    document.open();
+
 
         PdfContentByte canvas
                 = writer.getDirectContent();
@@ -257,7 +288,7 @@ public List<ProductOrder> searchOrders(
         invoiceBox.setHorizontalAlignment(PdfPTable.ALIGN_LEFT);
 
         invoiceBox.addCell("Invoice No");
-        invoiceBox.addCell("INV-" + order.getId());
+       invoiceBox.addCell(firstOrder.getInvoiceNo());
 
         invoiceBox.addCell("Generated Date");
         invoiceBox.addCell(String.valueOf(java.time.LocalDate.now()));
@@ -278,16 +309,16 @@ public List<ProductOrder> searchOrders(
         customerBox.setHorizontalAlignment(PdfPTable.ALIGN_LEFT);
 
         customerBox.addCell("Order ID");
-        customerBox.addCell(String.valueOf(order.getId()));
+        customerBox.addCell(firstOrder.getInvoiceNo());
 
         customerBox.addCell("Employee");
-        customerBox.addCell(order.getEmployeeName());
+        customerBox.addCell(firstOrder.getEmployeeName());
 
         customerBox.addCell("Doctor");
-        customerBox.addCell(order.getDoctorName());
+        customerBox.addCell(firstOrder.getDoctorName());
 
         customerBox.addCell("Order Date");
-        customerBox.addCell(String.valueOf(order.getOrderDate()));
+        customerBox.addCell(firstOrder.getOrderDate());
 
         document.add(customerBox);
 
@@ -317,62 +348,59 @@ public List<ProductOrder> searchOrders(
         table.addCell(h3);
         table.addCell(h4);
 
-        table.addCell(order.getProductName());
+       for (ProductOrder order : orders) {
 
-        table.addCell(
-                String.valueOf(order.getOrderQuantity())
-        );
+    table.addCell(order.getProductName());
 
-        table.addCell(
-                "₹" + (order.getSellingPrice() == null
-                ? 0
-                : order.getSellingPrice())
-        );
+    table.addCell(String.valueOf(
+            order.getOrderQuantity()
+    ));
 
-        table.addCell(
-                "₹" + (order.getOrderAmount() == null
-                ? 0
-                : order.getOrderAmount())
-        );
+    table.addCell(
+            "₹" + (
+                    order.getSellingPrice() == null
+                    ? 0
+                    : order.getSellingPrice()
+            )
+    );
 
+    table.addCell(
+            "₹" + (
+                    order.getOrderAmount() == null
+                    ? 0
+                    : order.getOrderAmount()
+            )
+    );
+
+}
         document.add(table);
 
         document.add(new Paragraph(" "));
         document.add(new Paragraph("PAYMENT SUMMARY"));
         document.add(new Paragraph("================================"));
 
-        document.add(
-                new Paragraph(
-                        "Total Amount : ₹"
-                        + (order.getOrderAmount() == null
-                        ? 0
-                        : order.getOrderAmount())
-                )
-        );
+       document.add(
+        new Paragraph(
+                "Total Amount : ₹" + totalAmount
+        )
+);
 
-        document.add(
-                new Paragraph(
-                        "Paid Amount : ₹"
-                        + (order.getPaidAmount() == null
-                        ? 0
-                        : order.getPaidAmount())
-                )
-        );
+document.add(
+        new Paragraph(
+                "Paid Amount : ₹" + paidAmount
+        )
+);
 
-        document.add(
-                new Paragraph(
-                        "Due Amount : ₹"
-                        + (order.getDueAmount() == null
-                        ? 0
-                        : order.getDueAmount())
-                )
-        );
+document.add(
+        new Paragraph(
+                "Due Amount : ₹" + dueAmount
+        )
+);
 
-        String status
-                = (order.getDueAmount() != null
-                && order.getDueAmount() > 0)
-                ? "PENDING"
-                : "PAID";
+        String status =
+        dueAmount > 0
+        ? "PARTIAL"
+        : "PAID";
         document.add(new Paragraph("Status : " + status));
 
         document.add(new Paragraph(" "));
@@ -396,7 +424,7 @@ public List<ProductOrder> searchOrders(
         return ResponseEntity.ok()
                 .header(
                         HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=Bill_" + order.getId() + ".pdf"
+                        "attachment; filename=" + firstOrder.getInvoiceNo() + ".pdf"
                 )
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(out.toByteArray());

@@ -435,18 +435,16 @@
                 <thead class="table-light">
 
                 <tr>
-                    <th>Order ID</th>
-                    <th>Employee Name</th>
-                    <th>Doctor Name</th>
-                    <th>Product Name</th>
-                    <th>Quantity</th>
-                    <th>Amount</th>
-                    <th>Paid</th>
-                    <th>Due</th>
-                    <th>Payment Mode</th>
-                    <th>Order Date</th>
-                    <th>Remarks</th>
-                    <th>Bill</th>
+                <th>Employee ID</th>
+                   <th>Employee</th>
+                   <th>Doctor</th>
+                   <th>Products</th>
+                   <th>Total Amount</th>
+                   <th>Paid</th>
+                   <th>Due</th>
+                   <th>Order Date</th>
+                   <th>Order Time</th>
+                   <th>Bill</th>
                 </tr>
 
                 </thead>
@@ -545,41 +543,138 @@
     ).innerHTML = options;
 
 }
+
+let grouped = {};
       
 async function loadOrders() {
+
+    grouped = {};
 
     const response =
         await fetch(`${BASE_URL}/order/all`);
     const orders =
         await response.json();
 
+orders.forEach(order => {
+
+    const key = order.invoiceNo || order.id;
+
+    if (!grouped[key]) {
+
+      grouped[key] = {
+    id: order.id,
+    employeeId: order.employeeId,
+    invoiceNo: order.invoiceNo,
+    employeeName: order.employeeName,
+    doctorName: order.doctorName,
+    orderDate: order.orderDate,
+    orderTime: order.orderTime,
+    paidAmount: 0,
+    dueAmount: 0,
+    totalAmount: 0,
+    products: [],
+    productHtml: ""
+};
+
+    }
+
+    grouped[key].products.push(order);
+
+    grouped[key].productHtml =
+(grouped[key].productHtml || "") +
+
+`
+<div class="border rounded p-2 mb-2">
+
+<b>${order.productName}</b><br>
+
+Qty : ${order.orderQuantity}
+
+&nbsp;&nbsp;&nbsp;
+
+Price : ₹${order.sellingPrice || 0}
+
+&nbsp;&nbsp;&nbsp;
+
+Amount : ₹${order.orderAmount || 0}
+
+</div>
+`;
+
+    grouped[key].totalAmount += Number(order.orderAmount || 0);
+
+    grouped[key].paidAmount += Number(order.paidAmount || 0);
+
+    grouped[key].dueAmount += Number(order.dueAmount || 0);
+
+});
+
     let html = '';
-    orders.forEach(order => {
+   Object.values(grouped).forEach(order => {
 
-        html += `
-        <tr>
-            <td>${order.id || ''}</td>
-            <td>${order.employeeName || ''}</td>
-            <td>${order.doctorName || ''}</td>
-            <td>${order.productName || ''}</td>
-            <td>${order.orderQuantity || 0}</td>
-            <td>₹${order.orderAmount || 0}</td>
-            <td>₹${order.paidAmount || 0}</td>
-            <td>₹${order.dueAmount || 0}</td>
-            <td>${order.paymentMode || ''}</td>
-            <td>${order.orderDate || ''}</td>
-            <td>${order.remarks || ''}</td>
-            <td>
-              <button
-                   class="btn btn-danger btn-sm"
-                   onclick="downloadBill(${order.id})">
-                    <i class="fas fa-file-pdf"></i> Bill
-                    </button>
-                    </td>
-        </tr>
-        `;
+html += `
 
-    });
+<tr>
+
+<td>${order.employeeId}</td>
+
+<td>${order.employeeName}</td>
+
+<td>${order.doctorName}</td>
+
+<td>
+
+<button
+class="btn btn-primary btn-sm"
+onclick="toggleProducts('${order.invoiceNo}')">
+
+View (${order.products.length})
+
+</button>
+
+</td>
+
+<td>₹${order.totalAmount.toFixed(2)}</td>
+
+<td>₹${order.paidAmount.toFixed(2)}</td>
+
+<td>₹${order.dueAmount.toFixed(2)}</td>
+
+<td>${order.orderDate}</td>
+
+<td>${order.orderTime || "-"}</td>
+
+<td>
+
+<button
+class="btn btn-danger btn-sm"
+onclick="downloadBill(${order.id})">
+
+<i class="fas fa-file-pdf"></i>
+
+PDF
+
+</button>
+
+</td>
+
+</tr>
+
+<tr
+id="products-${order.invoiceNo}"
+style="display:none;">
+
+<td colspan="10">
+
+<div id="productsBody-${order.invoiceNo}"></div>
+
+</td>
+
+</tr>
+
+`;
+
+});
 
     document.getElementById(
         'ordersTableBody'
@@ -636,45 +731,106 @@ const response = await fetch(url);
     const orders =
         await response.json();
 
+        grouped = {};
+
     let html = "";
 
     orders.forEach(order => {
 
-        html += `
+    const key = order.invoiceNo || order.id;
+
+    if (!grouped[key]) {
+
+        grouped[key] = {
+            id: order.id,
+            employeeId: order.employeeId,
+            invoiceNo: order.invoiceNo,
+            employeeName: order.employeeName,
+            doctorName: order.doctorName,
+            orderDate: order.orderDate,
+            orderTime: order.orderTime,
+            paidAmount: 0,
+            dueAmount: 0,
+            totalAmount: 0,
+            products: [],
+            productHtml: ""
+        };
+
+    }
+
+    grouped[key].products.push(order);
+
+    grouped[key].totalAmount += Number(order.orderAmount || 0);
+    grouped[key].paidAmount += Number(order.paidAmount || 0);
+    grouped[key].dueAmount += Number(order.dueAmount || 0);
+
+    grouped[key].productHtml += `
+<div class="border rounded p-2 mb-2">
+<b>${order.productName}</b><br>
+Qty : ${order.orderQuantity}
+&nbsp;&nbsp;
+Price : ₹${order.sellingPrice || 0}
+&nbsp;&nbsp;
+Amount : ₹${order.orderAmount || 0}
+</div>`;
+});
+
+   Object.values(grouped).forEach(order => {
+
+       html += `
 <tr>
 
-<td>${order.id}</td>
+<td>${order.employeeId}</td>
 
 <td>${order.employeeName}</td>
 
 <td>${order.doctorName}</td>
 
-<td>${order.productName}</td>
+<td>
 
-<td>${order.orderQuantity}</td>
+<button
+class="btn btn-primary btn-sm"
+onclick="toggleProducts('${order.invoiceNo}')">
 
-<td>₹${order.orderAmount}</td>
+View (${order.products.length})
 
-<td>₹${order.paidAmount}</td>
+</button>
 
-<td>₹${order.dueAmount}</td>
+</td>
 
-<td>${order.paymentMode}</td>
+<td>₹${order.totalAmount.toFixed(2)}</td>
+
+<td>₹${order.paidAmount.toFixed(2)}</td>
+
+<td>₹${order.dueAmount.toFixed(2)}</td>
 
 <td>${order.orderDate}</td>
 
-<td>${order.remarks}</td>
+<td>${order.orderTime || "-"}</td>
 
 <td>
+
 <button
 class="btn btn-danger btn-sm"
 onclick="downloadBill(${order.id})">
 
 <i class="fas fa-file-pdf"></i>
 
-Bill
+PDF
 
 </button>
+
+</td>
+
+</tr>
+
+<tr
+id="products-${order.invoiceNo}"
+style="display:none;">
+
+<td colspan="10">
+
+<div id="productsBody-${order.invoiceNo}"></div>
 
 </td>
 
@@ -687,6 +843,27 @@ Bill
         "ordersTableBody"
     ).innerHTML = html;
 
+}
+function toggleProducts(invoiceNo) {
+
+    const row = document.getElementById("products-" + invoiceNo);
+
+    const body = document.getElementById("productsBody-" + invoiceNo);
+
+    const order = Object.values(grouped)
+        .find(x => x.invoiceNo === invoiceNo);
+
+    if (!order) {
+        return;
+    }
+
+    body.innerHTML = order.productHtml;
+
+    if (row.style.display === "none") {
+        row.style.display = "table-row";
+    } else {
+        row.style.display = "none";
+    }
 }
 function downloadBill(orderId) {
     window.open(

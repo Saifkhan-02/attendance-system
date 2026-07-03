@@ -111,7 +111,8 @@ FROM ProductOrder p
     @Query("SELECT COUNT(p) FROM ProductOrder p WHERE p.employeeId = :employeeId")
     long countOrdersByEmployeeId(@Param("employeeId") Long employeeId);
 
-    List<ProductOrder> findByInvoiceNo(String invoiceNo);
+   List<ProductOrder> findByInvoiceNo(String invoiceNo);
+   List<ProductOrder> findByInvoiceNoOrderByIdAsc(String invoiceNo);
 
     @Query("""
 SELECT p
