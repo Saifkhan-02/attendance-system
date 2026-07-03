@@ -136,4 +136,52 @@ List<ProductOrder> searchOrders(
         @Param("employeeId") Long employeeId
 );
 
+@Query("""
+SELECT p
+FROM ProductOrder p
+WHERE p.employeeId = :employeeId
+AND p.orderDate LIKE CONCAT(:year,'-',:month,'%')
+ORDER BY p.orderDate ASC, p.id ASC
+""")
+List<ProductOrder> findEmployeeMonthlyOrders(
+        @Param("employeeId") Long employeeId,
+        @Param("year") String year,
+        @Param("month") String month
+);
+
+@Query("""
+SELECT COUNT(DISTINCT p.invoiceNo)
+FROM ProductOrder p
+WHERE p.employeeId = :employeeId
+AND p.orderDate LIKE CONCAT(:year,'-',:month,'%')
+""")
+Long countInvoices(
+        @Param("employeeId") Long employeeId,
+        @Param("year") String year,
+        @Param("month") String month
+);
+
+@Query("""
+SELECT p
+FROM ProductOrder p
+WHERE p.employeeId = :employeeId
+AND p.orderDate = :date
+ORDER BY p.id ASC
+""")
+List<ProductOrder> findEmployeeDailyOrders(
+        @Param("employeeId") Long employeeId,
+        @Param("date") String date
+);
+
+@Query("""
+SELECT COUNT(DISTINCT p.invoiceNo)
+FROM ProductOrder p
+WHERE p.employeeId = :employeeId
+AND p.orderDate = :date
+""")
+Long countDailyInvoices(
+        @Param("employeeId") Long employeeId,
+        @Param("date") String date
+);
+
 }

@@ -46,7 +46,7 @@ public class ProductOrderController {
 
     private final ProductOrderRepository orderRepository;
     private final DistributorStockRepository distributorStockRepository;
-   private final PaymentHistoryRepository paymentHistoryRepository;
+    private final PaymentHistoryRepository paymentHistoryRepository;
 
     public ProductOrderController(ProductOrderRepository orderRepository,
             DistributorStockRepository distributorStockRepository,
@@ -86,159 +86,154 @@ public class ProductOrderController {
 
     }
 
-   @GetMapping("/summary")
-public Map<String, Object> getSummary(
+    @GetMapping("/summary")
+    public Map<String, Object> getSummary(
+            @RequestParam(required = false) Long employeeId,
+            @RequestParam String month,
+            @RequestParam String year
+    ) {
 
-        @RequestParam(required = false) Long employeeId,
-        @RequestParam String month,
-        @RequestParam String year
+        List<ProductOrder> orders
+                = orderRepository.findByEmployeeFilter(employeeId);
 
-) {
+        double totalAmount = 0.0;
+        double paidAmount = 0.0;
+        double dueAmount = 0.0;
 
-    List<ProductOrder> orders =
-            orderRepository.findByEmployeeFilter(employeeId);
+        int totalOrders = 0;
 
-    double totalAmount = 0.0;
-    double paidAmount = 0.0;
-    double dueAmount = 0.0;
+        for (ProductOrder order : orders) {
 
-    int totalOrders = 0;
+            if (order.getOrderDate() == null) {
+                continue;
+            }
 
-    for (ProductOrder order : orders) {
+            String[] parts = order.getOrderDate().split("-");
 
-        if (order.getOrderDate() == null) {
-            continue;
+            if (parts.length != 3) {
+                continue;
+            }
+
+            String orderYear = parts[0];
+            String orderMonth = parts[1];
+
+            if (!orderYear.equals(year)
+                    || !orderMonth.equals(month)) {
+                continue;
+            }
+
+            totalOrders++;
+
+            totalAmount += order.getOrderAmount() == null
+                    ? 0
+                    : order.getOrderAmount();
+
+            paidAmount += order.getPaidAmount() == null
+                    ? 0
+                    : order.getPaidAmount();
+
+            dueAmount += order.getDueAmount() == null
+                    ? 0
+                    : order.getDueAmount();
         }
 
-        String[] parts = order.getOrderDate().split("-");
+        Map<String, Object> result = new HashMap<>();
 
-        if (parts.length != 3) {
-            continue;
-        }
+        result.put("totalOrders", totalOrders);
+        result.put("totalAmount", totalAmount);
+        result.put("paidAmount", paidAmount);
+        result.put("dueAmount", dueAmount);
 
-        String orderYear = parts[0];
-        String orderMonth = parts[1];
-
-        if (!orderYear.equals(year)
-                || !orderMonth.equals(month)) {
-            continue;
-        }
-
-        totalOrders++;
-
-        totalAmount += order.getOrderAmount() == null
-                ? 0
-                : order.getOrderAmount();
-
-        paidAmount += order.getPaidAmount() == null
-                ? 0
-                : order.getPaidAmount();
-
-        dueAmount += order.getDueAmount() == null
-                ? 0
-                : order.getDueAmount();
+        return result;
     }
 
-    Map<String, Object> result = new HashMap<>();
+    @GetMapping("/search")
+    public List<ProductOrder> searchOrders(
+            @RequestParam(required = false) Long employeeId,
+            @RequestParam String month,
+            @RequestParam String year
+    ) {
 
-    result.put("totalOrders", totalOrders);
-    result.put("totalAmount", totalAmount);
-    result.put("paidAmount", paidAmount);
-    result.put("dueAmount", dueAmount);
+        List<ProductOrder> allOrders
+                = orderRepository.searchOrders(employeeId);
 
-    return result;
-}
+        List<ProductOrder> result
+                = new ArrayList<>();
 
-   @GetMapping("/search")
-public List<ProductOrder> searchOrders(
+        for (ProductOrder order : allOrders) {
 
-        @RequestParam(required = false) Long employeeId,
-        @RequestParam String month,
-        @RequestParam String year
+            if (order.getOrderDate() == null) {
+                continue;
+            }
 
-) {
+            String[] parts
+                    = order.getOrderDate().split("-");
 
-    List<ProductOrder> allOrders =
-            orderRepository.searchOrders(employeeId);
+            if (parts.length != 3) {
+                continue;
+            }
 
-    List<ProductOrder> result =
-            new ArrayList<>();
+            if (parts[0].equals(year)
+                    && parts[1].equals(month)) {
 
-    for (ProductOrder order : allOrders) {
+                result.add(order);
 
-        if (order.getOrderDate() == null) {
-            continue;
-        }
-
-        String[] parts =
-                order.getOrderDate().split("-");
-
-        if (parts.length != 3) {
-            continue;
-        }
-
-        if (parts[0].equals(year)
-                && parts[1].equals(month)) {
-
-            result.add(order);
+            }
 
         }
+
+        return result;
 
     }
 
-    return result;
+    @GetMapping("/bill/{id}")
+    public ResponseEntity<byte[]> downloadBill(
+            @PathVariable Long id) throws Exception {
 
-}
+        ProductOrder firstOrder
+                = orderRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Order not found"));
 
-  @GetMapping("/bill/{id}")
-public ResponseEntity<byte[]> downloadBill(
-        @PathVariable Long id) throws Exception {
+        List<ProductOrder> orders
+                = orderRepository.findByInvoiceNoOrderByIdAsc(
+                        firstOrder.getInvoiceNo()
+                );
+        if (orders.isEmpty()) {
+            orders.add(firstOrder);
+        }
 
-    ProductOrder firstOrder =
-            orderRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Order not found"));
+        double totalAmount = 0;
+        double paidAmount = 0;
+        double dueAmount = 0;
 
-    List<ProductOrder> orders =
-            orderRepository.findByInvoiceNoOrderByIdAsc(
-                    firstOrder.getInvoiceNo()
-            );
-            if (orders.isEmpty()) {
-    orders.add(firstOrder);
-}
+        for (ProductOrder order : orders) {
 
-    double totalAmount = 0;
-    double paidAmount = 0;
-    double dueAmount = 0;
+            totalAmount
+                    += order.getOrderAmount() == null
+                    ? 0
+                    : order.getOrderAmount();
 
-    for (ProductOrder order : orders) {
+            paidAmount
+                    += order.getPaidAmount() == null
+                    ? 0
+                    : order.getPaidAmount();
 
-        totalAmount +=
-                order.getOrderAmount() == null
-                ? 0
-                : order.getOrderAmount();
+            dueAmount
+                    += order.getDueAmount() == null
+                    ? 0
+                    : order.getDueAmount();
+        }
 
-        paidAmount +=
-                order.getPaidAmount() == null
-                ? 0
-                : order.getPaidAmount();
+        ByteArrayOutputStream out
+                = new ByteArrayOutputStream();
 
-        dueAmount +=
-                order.getDueAmount() == null
-                ? 0
-                : order.getDueAmount();
-    }
+        Document document
+                = new Document(PageSize.A4);
 
-    ByteArrayOutputStream out =
-            new ByteArrayOutputStream();
+        PdfWriter writer
+                = PdfWriter.getInstance(document, out);
 
-    Document document =
-            new Document(PageSize.A4);
-
-    PdfWriter writer =
-            PdfWriter.getInstance(document, out);
-
-    document.open();
-
+        document.open();
 
         PdfContentByte canvas
                 = writer.getDirectContent();
@@ -288,7 +283,7 @@ public ResponseEntity<byte[]> downloadBill(
         invoiceBox.setHorizontalAlignment(PdfPTable.ALIGN_LEFT);
 
         invoiceBox.addCell("Invoice No");
-       invoiceBox.addCell(firstOrder.getInvoiceNo());
+        invoiceBox.addCell(firstOrder.getInvoiceNo());
 
         invoiceBox.addCell("Generated Date");
         invoiceBox.addCell(String.valueOf(java.time.LocalDate.now()));
@@ -348,59 +343,55 @@ public ResponseEntity<byte[]> downloadBill(
         table.addCell(h3);
         table.addCell(h4);
 
-       for (ProductOrder order : orders) {
+        for (ProductOrder order : orders) {
 
-    table.addCell(order.getProductName());
+            table.addCell(order.getProductName());
 
-    table.addCell(String.valueOf(
-            order.getOrderQuantity()
-    ));
+            table.addCell(String.valueOf(
+                    order.getOrderQuantity()
+            ));
 
-    table.addCell(
-            "₹" + (
-                    order.getSellingPrice() == null
+            table.addCell(
+                    "₹" + (order.getSellingPrice() == null
                     ? 0
-                    : order.getSellingPrice()
-            )
-    );
+                    : order.getSellingPrice())
+            );
 
-    table.addCell(
-            "₹" + (
-                    order.getOrderAmount() == null
+            table.addCell(
+                    "₹" + (order.getOrderAmount() == null
                     ? 0
-                    : order.getOrderAmount()
-            )
-    );
+                    : order.getOrderAmount())
+            );
 
-}
+        }
         document.add(table);
 
         document.add(new Paragraph(" "));
         document.add(new Paragraph("PAYMENT SUMMARY"));
         document.add(new Paragraph("================================"));
 
-       document.add(
-        new Paragraph(
-                "Total Amount : ₹" + totalAmount
-        )
-);
+        document.add(
+                new Paragraph(
+                        "Total Amount : ₹" + totalAmount
+                )
+        );
 
-document.add(
-        new Paragraph(
-                "Paid Amount : ₹" + paidAmount
-        )
-);
+        document.add(
+                new Paragraph(
+                        "Paid Amount : ₹" + paidAmount
+                )
+        );
 
-document.add(
-        new Paragraph(
-                "Due Amount : ₹" + dueAmount
-        )
-);
+        document.add(
+                new Paragraph(
+                        "Due Amount : ₹" + dueAmount
+                )
+        );
 
-        String status =
-        dueAmount > 0
-        ? "PARTIAL"
-        : "PAID";
+        String status
+                = dueAmount > 0
+                        ? "PARTIAL"
+                        : "PAID";
         document.add(new Paragraph("Status : " + status));
 
         document.add(new Paragraph(" "));
@@ -430,12 +421,454 @@ document.add(
                 .body(out.toByteArray());
     }
 
+    @GetMapping("/employee-report")
+    public ResponseEntity<byte[]> employeeReport(
+            @RequestParam Long employeeId,
+            @RequestParam String date
+    ) throws Exception {
+
+        List<ProductOrder> orders
+                = orderRepository.findEmployeeDailyOrders(
+                        employeeId,
+                        date
+                );
+
+        Long totalInvoices
+                = orderRepository.countDailyInvoices(
+                        employeeId,
+                        date
+                );
+
+        if (orders.isEmpty()) {
+            throw new RuntimeException("No Orders Found");
+        }
+
+        ProductOrder firstOrder = orders.get(0);
+
+        double totalAmount = 0;
+        double paidAmount = 0;
+        double dueAmount = 0;
+
+        int totalQuantity = 0;
+
+        for (ProductOrder order : orders) {
+
+            totalAmount
+                    += order.getOrderAmount() == null
+                    ? 0
+                    : order.getOrderAmount();
+
+            paidAmount
+                    += order.getPaidAmount() == null
+                    ? 0
+                    : order.getPaidAmount();
+
+            dueAmount
+                    += order.getDueAmount() == null
+                    ? 0
+                    : order.getDueAmount();
+
+            totalQuantity
+                    += order.getOrderQuantity() == null
+                    ? 0
+                    : order.getOrderQuantity();
+
+        }
+
+        ByteArrayOutputStream out
+                = new ByteArrayOutputStream();
+
+        Document document
+                = new Document(PageSize.A4);
+
+        PdfWriter writer
+                = PdfWriter.getInstance(document, out);
+
+        document.open();
+
+        // ================= BORDER =================
+        PdfContentByte canvas
+                = writer.getDirectContent();
+
+        Rectangle border
+                = new Rectangle(
+                        20,
+                        20,
+                        PageSize.A4.getWidth() - 20,
+                        PageSize.A4.getHeight() - 20
+                );
+
+        border.setBorder(Rectangle.BOX);
+        border.setBorderWidth(2);
+        border.setBorderColor(new Color(0, 102, 51));
+
+        canvas.rectangle(border);
+
+// ================= LOGO =================
+        Image logo = Image.getInstance(
+                "src/main/resources/static/images/Inflix-logo-web.png"
+        );
+
+        logo.scaleToFit(120, 60);
+        logo.setAlignment(Image.ALIGN_CENTER);
+
+        document.add(logo);
+
+// ================= TITLE =================
+        Font titleFont
+                = new Font(
+                        Font.HELVETICA,
+                        18,
+                        Font.BOLD,
+                        new Color(0, 102, 51)
+                );
+
+        Paragraph title
+                = new Paragraph(
+                        "EMPLOYEE DAILY ORDER REPORT",
+                        titleFont
+                );
+
+        title.setAlignment(Paragraph.ALIGN_CENTER);
+
+        document.add(title);
+
+        document.add(new Paragraph(" "));
+
+// ================= EMPLOYEE DETAILS =================
+        PdfPTable employeeBox
+                = new PdfPTable(2);
+
+        employeeBox.setWidthPercentage(100);
+
+        employeeBox.addCell("Employee ID");
+        employeeBox.addCell(
+                String.valueOf(firstOrder.getEmployeeId())
+        );
+
+        employeeBox.addCell("Employee Name");
+        employeeBox.addCell(firstOrder.getEmployeeName());
+
+        employeeBox.addCell("Report Date");
+        employeeBox.addCell(date);
+
+        employeeBox.addCell("Generated Date");
+        employeeBox.addCell(LocalDate.now().toString());
+
+        document.add(employeeBox);
+
+        document.add(new Paragraph(" "));
+
+// ================= SUMMARY =================
+        PdfPTable summary
+                = new PdfPTable(2);
+
+        summary.setWidthPercentage(100);
+
+        summary.addCell("Total Orders");
+        summary.addCell(String.valueOf(orders.size()));
+
+        summary.addCell("Total Invoices");
+        summary.addCell(String.valueOf(totalInvoices));
+
+        summary.addCell("Total Quantity");
+        summary.addCell(String.valueOf(totalQuantity));
+
+        summary.addCell("Total Amount");
+        summary.addCell(formatAmount(totalAmount));
+
+        summary.addCell("Paid Amount");
+        summary.addCell(formatAmount(paidAmount));
+
+        summary.addCell("Due Amount");
+        summary.addCell(formatAmount(dueAmount));
+
+        document.add(summary);
+
+        document.add(new Paragraph(" "));
+
+// ================= ORDER DETAILS =================
+        Paragraph orderTitle = new Paragraph(
+                "ORDER DETAILS",
+                new Font(Font.HELVETICA, 14, Font.BOLD, Color.BLUE)
+        );
+
+        document.add(orderTitle);
+        document.add(new Paragraph(" "));
+
+// ================= GROUP BY DOCTOR =================
+        Map<String, List<ProductOrder>> doctorWiseOrders
+                = new HashMap<>();
+
+        for (ProductOrder order : orders) {
+
+            String doctor
+                    = order.getDoctorName() == null
+                    ? "Unknown Doctor"
+                    : order.getDoctorName();
+
+            doctorWiseOrders
+                    .computeIfAbsent(
+                            doctor,
+                            k -> new ArrayList<>()
+                    )
+                    .add(order);
+
+        }
+
+// ================= DOCTOR WISE TABLE =================
+        for (Map.Entry<String, List<ProductOrder>> entry : doctorWiseOrders.entrySet()) {
+
+            String doctorName = entry.getKey();
+
+            List<ProductOrder> doctorOrders = entry.getValue();
+
+            Paragraph doctorHeading
+                    = new Paragraph(
+                            "Doctor : " + doctorName,
+                            new Font(
+                                    Font.HELVETICA,
+                                    13,
+                                    Font.BOLD,
+                                    new Color(0, 102, 51)
+                            )
+                    );
+
+            document.add(doctorHeading);
+
+            document.add(new Paragraph(" "));
+
+            PdfPTable table = new PdfPTable(5);
+
+            table.setWidthPercentage(100);
+
+            table.setWidths(new float[]{
+                1f,
+                5f,
+                1.5f,
+                2f,
+                2f
+            });
+
+            String[] headers = {
+                "S.No",
+                "Product",
+                "Qty",
+                "Rate",
+                "Amount"
+            };
+
+            for (String h : headers) {
+
+                PdfPCell cell
+                        = new PdfPCell(
+                                new Paragraph(
+                                        h,
+                                        new Font(
+                                                Font.HELVETICA,
+                                                11,
+                                                Font.BOLD
+                                        )
+                                )
+                        );
+
+                cell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+
+                cell.setBackgroundColor(new Color(0, 102, 51));
+
+                table.addCell(cell);
+
+            }
+
+            int sr = 1;
+
+            double doctorTotal = 0;
+
+            int totalQty = 0;
+
+            for (ProductOrder order : doctorOrders) {
+
+                table.addCell(String.valueOf(sr++));
+
+                table.addCell(
+                        order.getProductName() == null
+                        ? "-"
+                        : order.getProductName()
+                );
+
+                table.addCell(
+                        String.valueOf(
+                                order.getOrderQuantity() == null
+                                ? 0
+                                : order.getOrderQuantity()
+                        )
+                );
+
+                table.addCell(
+                        formatAmount(
+                                order.getSellingPrice() == null
+                                ? 0.0
+                                : order.getSellingPrice().doubleValue()
+                        )
+                );
+
+                table.addCell(
+                        formatAmount(
+                                order.getOrderAmount() == null
+                                ? 0
+                                : order.getOrderAmount()
+                        )
+                );
+
+                doctorTotal
+                        += order.getOrderAmount() == null
+                        ? 0
+                        : order.getOrderAmount();
+
+                totalQty
+                        += order.getOrderQuantity() == null
+                        ? 0
+                        : order.getOrderQuantity();
+
+            }
+
+            document.add(table);
+
+            document.add(new Paragraph(" "));
+
+            Paragraph subtotal
+                    = new Paragraph(
+                            "Doctor Total : "
+                            + formatAmount(doctorTotal),
+                            new Font(
+                                    Font.HELVETICA,
+                                    11,
+                                    Font.BOLD
+                            )
+                    );
+
+            subtotal.setAlignment(Paragraph.ALIGN_RIGHT);
+
+            document.add(subtotal);
+
+            Paragraph qty
+                    = new Paragraph(
+                            "Total Quantity : " + totalQty,
+                            new Font(
+                                    Font.HELVETICA,
+                                    11,
+                                    Font.BOLD
+                            )
+                    );
+
+            qty.setAlignment(Paragraph.ALIGN_RIGHT);
+
+            document.add(qty);
+
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph(" "));
+
+        }
+
+        document.add(new Paragraph(" "));
+
+// ================= PAYMENT SUMMARY =================
+        Paragraph paymentTitle = new Paragraph(
+                "PAYMENT SUMMARY",
+                new Font(Font.HELVETICA, 14, Font.BOLD, Color.BLUE)
+        );
+
+        document.add(paymentTitle);
+
+        document.add(new Paragraph(" "));
+
+        PdfPTable paymentTable = new PdfPTable(2);
+
+        paymentTable.setWidthPercentage(60);
+
+        paymentTable.setHorizontalAlignment(PdfPTable.ALIGN_LEFT);
+
+        paymentTable.addCell("Total Amount");
+        paymentTable.addCell(formatAmount(totalAmount));
+
+        paymentTable.addCell("Paid Amount");
+        paymentTable.addCell(formatAmount(paidAmount));
+
+        paymentTable.addCell("Due Amount");
+        paymentTable.addCell(formatAmount(dueAmount));
+
+        String status = dueAmount > 0 ? "PARTIALLY PAID" : "PAID";
+
+        paymentTable.addCell("Payment Status");
+        paymentTable.addCell(status);
+
+        document.add(paymentTable);
+
+        document.add(new Paragraph(" "));
+        document.add(new Paragraph(" "));
+
+// ================= GRAND TOTAL =================
+        Paragraph grandTotal = new Paragraph(
+                "Grand Total : " + formatAmount(totalAmount),
+                new Font(Font.HELVETICA, 15, Font.BOLD, new Color(0, 102, 51))
+        );
+
+        grandTotal.setAlignment(Paragraph.ALIGN_RIGHT);
+
+        document.add(grandTotal);
+
+        document.add(new Paragraph(" "));
+        document.add(new Paragraph(" "));
+
+// ================= SIGNATURE =================
+        Paragraph sign = new Paragraph(
+                "____________________________\nAuthorized Signature",
+                new Font(Font.HELVETICA, 11, Font.BOLD)
+        );
+
+        sign.setAlignment(Paragraph.ALIGN_RIGHT);
+
+        document.add(sign);
+
+        document.add(new Paragraph(" "));
+        document.add(new Paragraph(" "));
+
+// ================= FOOTER =================
+        Paragraph footer = new Paragraph(
+                "Generated By PharmaWEB System\n"
+                + "Inflix Pharma Pvt. Ltd.\n"
+                + "Email : support@inflixpharma.com\n"
+                + "Phone : +91 9876543210",
+                new Font(Font.HELVETICA, 10)
+        );
+
+        footer.setAlignment(Paragraph.ALIGN_CENTER);
+
+        document.add(footer);
+
+// ================= CLOSE PDF =================
+        document.close();
+
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=Employee_Report_"
+                        + firstOrder.getEmployeeName()
+                        + "_"
+                        + date
+                        + ".pdf"
+                )
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(out.toByteArray());
+
+    }
+
     @PostMapping("/place-multiple")
     public List<ProductOrder> placeMultipleOrders(@RequestBody List<ProductOrder> orders) {
 
         String invoiceNo = "INV-" + System.currentTimeMillis();
-      String orderTime = java.time.LocalTime.now()
-        .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
+        String orderTime = java.time.LocalTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
 
         for (ProductOrder order : orders) {
 
@@ -470,7 +903,6 @@ document.add(
             order.setInvoiceNo(invoiceNo);
             order.setOrderTime(orderTime);
         }
-       
 
         return orderRepository.saveAll(orders);
     }
@@ -483,7 +915,7 @@ document.add(
     @GetMapping("/admin/sales-payment/summary")
     public Map<String, Object> getSalesSummary() {
 
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new java.util.LinkedHashMap<>();
 
         result.put("totalSale",
                 orderRepository.getTotalSale());
@@ -541,76 +973,84 @@ document.add(
         return orderRepository.countOrdersByEmployeeId(id);
     }
 
-   @PutMapping("/collect-payment/{orderId}")
-public ProductOrder collectPayment(
-        @PathVariable Long orderId,
-        @RequestBody Map<String, Object> request) {
+    @PutMapping("/collect-payment/{orderId}")
+    public ProductOrder collectPayment(
+            @PathVariable Long orderId,
+            @RequestBody Map<String, Object> request) {
 
-    ProductOrder order = orderRepository.findById(orderId)
-            .orElseThrow(() -> new RuntimeException("Order not found"));
+        ProductOrder order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
 
-    Double receivedAmount =
-            Double.valueOf(request.get("receivedAmount").toString());
+        Double receivedAmount
+                = Double.valueOf(request.get("receivedAmount").toString());
 
-    String paymentMode =
-            request.get("paymentMode") == null
-                    ? order.getPaymentMode()
-                    : request.get("paymentMode").toString();
+        String paymentMode
+                = request.get("paymentMode") == null
+                ? order.getPaymentMode()
+                : request.get("paymentMode").toString();
 
-    if (receivedAmount <= 0) {
-        throw new RuntimeException("Received amount must be greater than 0");
+        if (receivedAmount <= 0) {
+            throw new RuntimeException("Received amount must be greater than 0");
+        }
+
+        Double currentDue = order.getDueAmount() == null ? 0.0 : order.getDueAmount();
+
+        if (receivedAmount > currentDue) {
+            throw new RuntimeException("Received amount cannot be greater than due amount");
+        }
+
+        double oldPaid
+                = order.getPaidAmount() == null ? 0 : order.getPaidAmount();
+
+        order.setPaidAmount(oldPaid + receivedAmount);
+        order.setDueAmount(currentDue - receivedAmount);
+        order.setPaymentMode(paymentMode);
+
+        if (order.getDueAmount() == 0) {
+            order.setStatus("PAID");
+        } else {
+            order.setStatus("PARTIAL");
+        }
+
+        PaymentHistory history = new PaymentHistory();
+
+        history.setOrderId(order.getId());
+
+        history.setEmployeeId(order.getEmployeeId());
+        history.setEmployeeName(order.getEmployeeName());
+
+        history.setDoctorId(order.getDoctorId());
+        history.setDoctorName(order.getDoctorName());
+
+        history.setReceivedAmount(receivedAmount);
+
+        history.setPaymentMode(paymentMode);
+
+        history.setRemarks(
+                request.get("remarks") == null
+                ? ""
+                : request.get("remarks").toString()
+        );
+
+        history.setPaymentDate(LocalDateTime.now());
+
+        paymentHistoryRepository.save(history);
+
+        return orderRepository.save(order);
     }
 
-    Double currentDue = order.getDueAmount() == null ? 0.0 : order.getDueAmount();
+    @GetMapping("/admin/payment-history")
+    public List<PaymentHistory> getPaymentHistory() {
 
-    if (receivedAmount > currentDue) {
-        throw new RuntimeException("Received amount cannot be greater than due amount");
+        return paymentHistoryRepository
+                .findAllByOrderByPaymentDateDesc();
     }
 
-    double oldPaid =
-            order.getPaidAmount() == null ? 0 : order.getPaidAmount();
+// ================= FORMAT AMOUNT =================
+    private String formatAmount(double amount) {
 
-    order.setPaidAmount(oldPaid + receivedAmount);
-    order.setDueAmount(currentDue - receivedAmount);
-    order.setPaymentMode(paymentMode);
+        return String.format("₹%,.2f", amount);
 
-    if (order.getDueAmount() == 0) {
-        order.setStatus("PAID");
-    } else {
-        order.setStatus("PARTIAL");
     }
 
-    PaymentHistory history = new PaymentHistory();
-
-history.setOrderId(order.getId());
-
-history.setEmployeeId(order.getEmployeeId());
-history.setEmployeeName(order.getEmployeeName());
-
-history.setDoctorId(order.getDoctorId());
-history.setDoctorName(order.getDoctorName());
-
-history.setReceivedAmount(receivedAmount);
-
-history.setPaymentMode(paymentMode);
-
-history.setRemarks(
-    request.get("remarks") == null
-        ? ""
-        : request.get("remarks").toString()
-);
-
-history.setPaymentDate(LocalDateTime.now());
-
-paymentHistoryRepository.save(history);
-
-    return orderRepository.save(order);
-}
-
-@GetMapping("/admin/payment-history")
-public List<PaymentHistory> getPaymentHistory() {
-
-    return paymentHistoryRepository
-            .findAllByOrderByPaymentDateDesc();
-}
 }

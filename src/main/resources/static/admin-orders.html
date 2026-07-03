@@ -64,8 +64,8 @@
 }
 
 .welcome-banner h2{
-    font-size:36px;
-    font-weight:600;
+    font-size:28px;
+    font-weight:500;
 }
 
 .welcome-banner p{
@@ -163,7 +163,8 @@
 .modern-btn{
     height:48px;
     border-radius:12px;
-    width:120px;
+    width:100%;
+    min-width:180px;
 }
 
 @media(max-width:768px){
@@ -255,15 +256,15 @@
 
         <!-- Employee -->
 
-        <div class="col-lg-3 col-md-4">
+        <div class="col-lg-4 col-md-4">
 
             <label class="form-label fw-semibold">
                 Employee
             </label>
 
             <select id="summaryEmployee"
-                    class="form-select modern-input"
-                    onchange="loadSummary();searchOrders();">
+        class="form-select modern-input"
+        onchange="employeeChanged()">
 
                 <option value="">All Employees</option>
 
@@ -271,59 +272,86 @@
 
         </div>
 
-        <!-- Month -->
+        <div class="col-lg-3 col-md-3">
 
-        <div class="col-lg-3 col-md-4">
+    <label class="form-label fw-semibold">
+        Report Date
+    </label>
 
-            <label class="form-label fw-semibold">
-                Select Month
-            </label>
+    <input
+        type="date"
+        id="reportDate"
+        class="form-control modern-input">
 
-            <input type="month"
-                   id="monthYearPicker"
-                   class="form-control modern-input">
-
-            <!-- Hidden Select -->
-
-            <select id="monthFilter" hidden>
-                <option value="01">January</option>
-                <option value="02">February</option>
-                <option value="03">March</option>
-                <option value="04">April</option>
-                <option value="05">May</option>
-                <option value="06">June</option>
-                <option value="07">July</option>
-                <option value="08">August</option>
-                <option value="09">September</option>
-                <option value="10">October</option>
-                <option value="11">November</option>
-                <option value="12">December</option>
-            </select>
-
-            <select id="yearFilter" hidden>
-                <option>2024</option>
-                <option>2025</option>
-                <option selected>2026</option>
-                <option>2027</option>
-                <option>2028</option>
-            </select>
-
-        </div>
+</div>
 
         <!-- Reset -->
 
-        <div class="col-lg-2 col-md-3">
+        <div class="col-lg-2 col-md-2">
 
-            <button class="btn btn-secondary modern-btn w-100"
-                    onclick="resetSummary()">
+            <div class="d-flex flex-column">
 
-                Reset
+    <label class="form-label fw-semibold">
+        Action
+    </label>
 
-            </button>
+    <button
+        class="btn btn-secondary modern-btn w-100"
+        onclick="resetSummary()">
+
+        Reset
+
+    </button>
+
+</div>
 
         </div>
 
+        <div class="col-lg-3 col-md-3">
+
+    <div class="d-flex flex-column">
+ <label class="form-label fw-semibold">
+            Employee wise daily report
+        </label>
+        <button
+            id="downloadReportBtn"
+            class="btn btn-danger modern-btn w-100"
+            onclick="downloadEmployeeReport()"
+            disabled>
+
+            <i class="fas fa-file-pdf me-2"></i>
+            Download Report
+
+        </button>
+
     </div>
+
+</div>
+
+<select id="monthFilter" hidden>
+    <option value="01">January</option>
+    <option value="02">February</option>
+    <option value="03">March</option>
+    <option value="04">April</option>
+    <option value="05">May</option>
+    <option value="06">June</option>
+    <option value="07">July</option>
+    <option value="08">August</option>
+    <option value="09">September</option>
+    <option value="10">October</option>
+    <option value="11">November</option>
+    <option value="12">December</option>
+</select>
+
+<select id="yearFilter" hidden>
+    <option>2024</option>
+    <option>2025</option>
+    <option selected>2026</option>
+    <option>2027</option>
+    <option>2028</option>
+</select>
+
+</div>
 
 </div>
 
@@ -475,9 +503,15 @@
     // Current Month & Year set karo
     const today = new Date();
 
+     // Report Date set
+    document.getElementById("reportDate").value =
+        today.toISOString().split("T")[0];
+
+    // Hidden Month
     document.getElementById("monthFilter").value =
         String(today.getMonth() + 1).padStart(2, "0");
 
+    // Hidden Year
     document.getElementById("yearFilter").value =
         today.getFullYear().toString();
 
@@ -488,6 +522,7 @@
     await loadOrders();
 
 };
+
 
       function toggleSidebar() {
         let sidebar = document.getElementById("sidebar");
@@ -537,6 +572,7 @@
         `;
 
     });
+
 
     document.getElementById(
         "summaryEmployee"
@@ -877,6 +913,8 @@ function resetSummary() {
     // Employee
     document.getElementById("summaryEmployee").value = "";
 
+    document.getElementById("downloadReportBtn").disabled = true;
+
     // Current Month
     const today = new Date();
 
@@ -889,26 +927,78 @@ function resetSummary() {
 
     document.getElementById("yearFilter").value = year;
 
+    document.getElementById("reportDate").value =
+    today.toISOString().split("T")[0];
+
     loadSummary();
+
+    searchOrders();
 }
-const picker = document.getElementById("monthYearPicker");
+document.getElementById("reportDate")
+.addEventListener("change", function () {
 
-picker.value =
-`${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,"0")}`;
+    const parts = this.value.split("-");
 
-picker.addEventListener("change",function(){
-
-    const parts=this.value.split("-");
-
-    document.getElementById("yearFilter").value=parts[0];
-
-    document.getElementById("monthFilter").value=parts[1];
+    document.getElementById("yearFilter").value = parts[0];
+    document.getElementById("monthFilter").value = parts[1];
 
     loadSummary();
 
     searchOrders();
 
 });
+
+function downloadEmployeeReport() {
+
+    const employeeId =
+        document.getElementById("summaryEmployee").value;
+
+    if (!employeeId) {
+
+        alert("Please select employee");
+
+        return;
+
+    }
+
+    const date =
+document.getElementById("reportDate").value;
+
+if(!date){
+
+    alert("Please select report date");
+
+    return;
+
+}
+
+window.open(
+
+`${BASE_URL}/order/employee-report?employeeId=${employeeId}&date=${date}`,
+
+"_blank"
+
+);
+
+}
+function employeeChanged() {
+
+    loadSummary();
+
+    searchOrders();
+
+    toggleReportButton();
+
+}
+function toggleReportButton() {
+
+    const employeeId =
+        document.getElementById("summaryEmployee").value;
+
+    document.getElementById("downloadReportBtn").disabled =
+        employeeId === "";
+
+}
 </script>
   </body>
 </html>
