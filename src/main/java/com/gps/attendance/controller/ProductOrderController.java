@@ -439,9 +439,11 @@ public class ProductOrderController {
                         date
                 );
 
-        if (orders.isEmpty()) {
-            throw new RuntimeException("No Orders Found");
-        }
+     if (orders.isEmpty()) {
+
+    return ResponseEntity.noContent().build();
+
+}
 
         ProductOrder firstOrder = orders.get(0);
 

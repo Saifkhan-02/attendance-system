@@ -948,37 +948,69 @@ document.getElementById("reportDate")
 
 });
 
-function downloadEmployeeReport() {
+async function downloadEmployeeReport() {
 
     const employeeId =
         document.getElementById("summaryEmployee").value;
 
     if (!employeeId) {
-
         alert("Please select employee");
-
         return;
-
     }
 
     const date =
-document.getElementById("reportDate").value;
+        document.getElementById("reportDate").value;
 
-if(!date){
+    if (!date) {
+        alert("Please select report date");
+        return;
+    }
 
-    alert("Please select report date");
+    const url =
+        `${BASE_URL}/order/employee-report?employeeId=${employeeId}&date=${date}`;
 
-    return;
+    try {
 
-}
+        const response = await fetch(url);
 
-window.open(
+        if (response.status === 204) {
 
-`${BASE_URL}/order/employee-report?employeeId=${employeeId}&date=${date}`,
+            alert("No orders found for selected date.");
+            return;
 
-"_blank"
+        }
 
-);
+        if (!response.ok) {
+
+            alert("Unable to download report.");
+            return;
+
+        }
+
+        const blob = await response.blob();
+
+        const fileURL = window.URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+
+        a.href = fileURL;
+        a.download = `Employee_Report_${employeeId}_${date}.pdf`;
+
+        document.body.appendChild(a);
+
+        a.click();
+
+        a.remove();
+
+        window.URL.revokeObjectURL(fileURL);
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Something went wrong while downloading report.");
+
+    }
 
 }
 function employeeChanged() {
