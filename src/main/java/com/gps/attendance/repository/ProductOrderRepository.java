@@ -5,10 +5,14 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.gps.attendance.entity.ProductOrder;
 
 public interface ProductOrderRepository extends JpaRepository<ProductOrder, Long> {
+
+        // BASIC ORDER METHODS
 
     List<ProductOrder> findByEmployeeId(Long employeeId);
 
@@ -27,7 +31,8 @@ public interface ProductOrderRepository extends JpaRepository<ProductOrder, Long
     List<ProductOrder> findAllByOrderByIdDesc();
 
     @Query("SELECT COALESCE(SUM(p.orderAmount), 0) FROM ProductOrder p WHERE p.employeeId = :employeeId AND p.orderDate LIKE CONCAT(:month, '%')")
-    Double getMonthlySalesByEmployee(@Param("employeeId") Long employeeId,
+    Double getMonthlySalesByEmployee(
+        @Param("employeeId") Long employeeId,
             @Param("month") String month);
 
     List<ProductOrder> findByEmployeeIdAndOrderDateOrderByIdDesc(
@@ -134,6 +139,21 @@ ORDER BY p.id DESC
 """)
 List<ProductOrder> searchOrders(
         @Param("employeeId") Long employeeId
+);
+
+@Query("""
+SELECT p
+FROM ProductOrder p
+WHERE
+(:employeeId IS NULL OR p.employeeId = :employeeId)
+AND
+(:date IS NULL OR :date = '' OR p.orderDate = :date)
+ORDER BY p.id DESC
+""")
+Page<ProductOrder> searchOrdersWithPagination(
+        @Param("employeeId") Long employeeId,
+        @Param("date") String date,
+        Pageable pageable
 );
 
 @Query("""
