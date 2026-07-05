@@ -484,14 +484,24 @@ function loginEmployee() {
         }
         return response.json();
     })
-    .then((data) => {
-        localStorage.setItem("employeeId", data.id);
-        localStorage.setItem("employeeName", data.name);
-        localStorage.setItem("employeeUsername", data.username);
-        localStorage.setItem("sessionToken", data.sessionToken);
+   .then((data) => {
+    localStorage.clear();
 
-        window.location.href = "Dashboard.html";
-    })
+    localStorage.setItem("employeeId", data.id);
+    localStorage.setItem("employeeName", data.name);
+    localStorage.setItem("employeeUsername", data.username);
+    localStorage.setItem("employeeRole", data.role);
+    localStorage.setItem("sessionToken", data.sessionToken);
+
+    if (data.role === "ASM") {
+        window.location.replace("ASMDashboard.html");
+    } else if (data.role === "MR") {
+        window.location.replace("Dashboard.html");
+    } else {
+        alert("Unauthorized role. Please contact admin.");
+        localStorage.clear();
+    }
+})
     .catch((error) => {
         alert(error.message);
     });

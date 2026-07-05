@@ -24,4 +24,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     List<Employee> findAllByOrderByNameAsc();
     List<Employee> findAllByOrderByIdDesc();
+
+    List<Employee> findByHeadquartersInAndRoleIgnoreCase(List<String> headquarters, String role);
 }

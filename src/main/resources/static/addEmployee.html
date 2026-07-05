@@ -225,6 +225,15 @@ body{
         <div class="row g-3 mb-4">
 
           <div class="col-md-6">
+  <label class="form-label fw-bold">Role *</label>
+  <select id="role" class="form-select" onchange="handleRoleChange()">
+    <option value="">Select Role</option>
+    <option value="MR">MR</option>
+    <option value="ASM">ASM</option>
+  </select>
+</div>
+
+          <!-- <div class="col-md-6">
             <label class="form-label fw-bold">Designation *</label>
             <select id="designation" class="form-select">
               <option value="">Select Designation</option>
@@ -234,14 +243,18 @@ body{
               <option value="Zonal Manager">Zonal Manager</option>
               <option value="Admin">Admin</option>
             </select>
-          </div>
+          </div> -->
+<div class="col-md-6" id="singleHqBox">
+  <label class="form-label fw-bold">Headquarter *</label>
+  <select id="headquarters" class="form-select">
+    <option value="">Select Headquarter</option>
+  </select>
+</div>
 
-          <div class="col-md-6">
-            <label class="form-label fw-bold">Headquarter *</label>
-            <select id="headquarters" class="form-select">
-              <option value="">Select Headquarter</option>
-            </select>
-          </div>
+<div class="col-md-12 d-none" id="multiHqBox">
+  <label class="form-label fw-bold">Assigned Headquarters *</label>
+  <div id="assignedHeadquarters" class="row g-2"></div>
+</div>
 
           <div class="col-md-6">
             <label class="form-label fw-bold">Reporting Manager</label>
@@ -322,17 +335,6 @@ body{
 
 <script>
 
-  window.onload = function () {
-    updateTime();
-    setInterval(updateTime, 1000);
-
-    loadEmployeeTracking();
-
-    document
-      .getElementById("searchEmployee")
-      .addEventListener("keyup", filterEmployeeRows);
-  };
-
    function goBack() {
         window.location.replace("admin-dashboard.html");
       }
@@ -355,25 +357,53 @@ body{
 window.onload = function () {
   loadHeadquarters();
 };
+function handleRoleChange() {
+  const role = document.getElementById("role").value;
+
+  if (role === "ASM") {
+    document.getElementById("singleHqBox").classList.add("d-none");
+    document.getElementById("multiHqBox").classList.remove("d-none");
+  } else {
+    document.getElementById("singleHqBox").classList.remove("d-none");
+    document.getElementById("multiHqBox").classList.add("d-none");
+  }
+}
+
+let allHeadquarters = [];
 
 function loadHeadquarters() {
   fetch(`${BASE_URL}/headquarter/active`)
     .then(response => response.json())
     .then(data => {
-      const dropdown = document.getElementById("headquarters");
-      dropdown.innerHTML = `<option value="">Select Headquarter</option>`;
+      allHeadquarters = data || [];
 
-      data.forEach(hq => {
+      const dropdown = document.getElementById("headquarters");
+      const checkboxBox = document.getElementById("assignedHeadquarters");
+
+      dropdown.innerHTML = `<option value="">Select Headquarter</option>`;
+      checkboxBox.innerHTML = "";
+
+      allHeadquarters.forEach(hq => {
         dropdown.innerHTML += `
           <option value="${hq.headquarterName}">
             ${hq.headquarterName}
           </option>
         `;
+
+        checkboxBox.innerHTML += `
+          <div class="col-md-4 col-6">
+            <div class="form-check border rounded-3 p-2 ps-4 bg-light">
+              <input class="form-check-input assigned-hq"
+                     type="checkbox"
+                     value="${hq.headquarterName}"
+                     id="hq_${hq.id}">
+              <label class="form-check-label" for="hq_${hq.id}">
+                ${hq.headquarterName}
+              </label>
+            </div>
+          </div>
+        `;
       });
-    })
-    .catch(error => {
-      console.error(error);
-      alert("Failed to load headquarters");
     });
 }
 
@@ -392,11 +422,12 @@ function togglePassword(inputId, icon) {
 }
 
 function saveEmployee() {
+  const role = document.getElementById("role").value;
   const name = document.getElementById("name").value.trim();
   const mobile = document.getElementById("mobile").value.trim();
   const email = document.getElementById("email").value.trim();
   //const profileImage = document.getElementById("profileImage").value.trim();
-  const designation = document.getElementById("designation").value;
+  //const designation = document.getElementById("designation").value;
   const headquarters = document.getElementById("headquarters").value;
   const reportingManager = document.getElementById("reportingManager").value.trim();
   const joiningDate = document.getElementById("joiningDate").value;
@@ -404,6 +435,11 @@ function saveEmployee() {
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
   const confirmPassword = document.getElementById("confirmPassword").value.trim();
+
+  if(!role){
+    alert("Please select role");
+    return;
+  }
 
   if (!name) {
     alert("Employee name is required");
@@ -420,15 +456,23 @@ function saveEmployee() {
     return;
   }
 
-  if (!designation) {
-    alert("Please select designation");
-    return;
-  }
+ let assignedHeadquarters = [];
 
+if (role === "MR") {
   if (!headquarters) {
     alert("Please select headquarter");
     return;
   }
+} else if (role === "ASM") {
+  assignedHeadquarters = Array.from(
+    document.querySelectorAll(".assigned-hq:checked")
+  ).map(cb => cb.value);
+
+  if (assignedHeadquarters.length === 0) {
+    alert("Please select at least one headquarter for ASM");
+    return;
+  }
+}
 
   if (!joiningDate) {
     alert("Please select joining date");
@@ -471,14 +515,15 @@ if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$/.test(username)) {
     username,
     password,
     mobile,
-    designation,
-    headquarters,
+    role,
+    headquarters: role === "MR" ? headquarters : "",
+    assignedHeadquarters,
     reportingManager,
     joiningDate,
     status
   };
 
-  fetch(`${BASE_URL}/register`, {
+  fetch(`${BASE_URL}/register-role-based`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"

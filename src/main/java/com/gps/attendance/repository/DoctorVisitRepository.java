@@ -103,4 +103,6 @@ public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> 
 )
 long getTodayVisitCount();
 
+List<DoctorVisit> findByEmployeeIdInOrderByIdDesc(List<Long> employeeIds);
+
 }

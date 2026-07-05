@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MR Details</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+<style>
+body{background:#dfe8f6;font-family:Arial,sans-serif}
+.header{
+  background:linear-gradient(135deg,#064b90,#1976d2);
+  color:white;padding:20px;border-radius:0 0 28px 28px;
+}
+.back-btn{width:45px;height:45px;border:none;border-radius:12px;background:rgba(255,255,255,.2);color:white}
+.logo{width:130px;background:white;border-radius:10px;padding:5px 12px}
+.card-box{background:white;border-radius:20px;padding:18px;box-shadow:0 8px 22px rgba(0,0,0,.08);margin-bottom:18px}
+.profile-icon{width:70px;height:70px;border-radius:50%;background:#eef4ff;color:#0d6efd;display:flex;align-items:center;justify-content:center;font-size:32px}
+.stat-card{background:white;border-radius:18px;padding:18px;box-shadow:0 8px 20px rgba(0,0,0,.08)}
+.stat-card i{font-size:25px;color:#0d6efd}
+.stat-card h4{font-weight:900;margin:8px 0 0}
+.nav-tabs .nav-link{font-weight:700;color:#0f172a}
+.nav-tabs .nav-link.active{color:#0d6efd}
+.table-responsive{font-size:14px}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="d-flex align-items-center justify-content-between">
+    <button class="back-btn" onclick="window.location.href='ASMTeam.html'">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <div class="text-center">
+      <img src="images/Inflix-logo-web.png" class="logo">
+      <h5 class="fw-bold mt-2 mb-0">Employee Performance</h5>
+    </div>
+
+    <div style="width:45px"></div>
+  </div>
+</div>
+
+<div class="container py-4">
+
+  <div class="card-box">
+    <div class="d-flex align-items-center gap-3">
+      <div class="profile-icon">
+        <i class="fa-solid fa-user"></i>
+      </div>
+      <div>
+        <h4 class="fw-bold mb-1" id="empName">Loading...</h4>
+        <div class="text-muted" id="empRole">MR</div>
+        <div class="small">
+          HQ: <b id="empHq">-</b> |
+          Mobile: <b id="empMobile">-</b>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <i class="fa-solid fa-calendar-check"></i>
+        <div>Attendance</div>
+        <h4 id="attendanceStatus">-</h4>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <i class="fa-solid fa-user-doctor"></i>
+        <div>Today Visits</div>
+        <h4 id="todayVisits">0</h4>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <i class="fa-solid fa-cart-shopping"></i>
+        <div>Today Orders</div>
+        <h4 id="todayOrders">0</h4>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <i class="fa-solid fa-indian-rupee-sign"></i>
+        <div>Total Sales</div>
+        <h4 id="totalSales">₹0</h4>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <i class="fa-solid fa-wallet"></i>
+        <div>Collection</div>
+        <h4 id="totalCollection">₹0</h4>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <i class="fa-solid fa-chart-pie"></i>
+        <div>Due</div>
+        <h4 id="totalDue">₹0</h4>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <i class="fa-solid fa-receipt"></i>
+        <div>Expense</div>
+        <h4 id="totalExpense">₹0</h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-box">
+    <ul class="nav nav-tabs mb-3">
+      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#attendanceTab">Attendance</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#visitsTab">Visits</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#ordersTab">Orders</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#expensesTab">Expenses</button></li>
+    </ul>
+
+    <div class="tab-content">
+
+      <div class="tab-pane fade show active" id="attendanceTab">
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Location</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="visitsTab">
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Date</th>
+                <th>Doctor</th>
+                <th>Time</th>
+                <th>Working With</th>
+                <th>Remarks</th>
+              </tr>
+            </thead>
+            <tbody id="visitsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="ordersTab">
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Date</th>
+                <th>Doctor</th>
+                <th>Distributor</th>
+                <th>Product</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="expensesTab">
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Remarks</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="expensesTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/config.js"></script>
+
+<script>
+const employeeId = localStorage.getItem("selectedEmployeeId");
+const asmId = localStorage.getItem("employeeId");
+const role = localStorage.getItem("employeeRole");
+const token = localStorage.getItem("sessionToken");
+
+if (!asmId || !token || role !== "ASM" || !employeeId) {
+  window.location.href = "index.html";
+}
+
+window.onload = function(){
+  loadProfile();
+  loadSummary();
+  loadAttendance();
+  loadVisits();
+  loadOrders();
+  loadExpenses();
+};
+
+function money(value){
+  return "₹" + Number(value || 0).toLocaleString("en-IN");
+}
+
+function loadProfile(){
+  fetch(`${BASE_URL}/asm/employee/${employeeId}`)
+    .then(res => res.json())
+    .then(emp => {
+      document.getElementById("empName").innerText = emp.name || "-";
+      document.getElementById("empRole").innerText = emp.role || "MR";
+      document.getElementById("empHq").innerText = emp.headquarters || "-";
+      document.getElementById("empMobile").innerText = emp.mobile || "-";
+    });
+}
+
+function loadSummary(){
+  fetch(`${BASE_URL}/asm/employee-summary/${employeeId}`)
+    .then(res => res.json())
+    .then(s => {
+      document.getElementById("attendanceStatus").innerText = s.attendanceStatus || "-";
+      document.getElementById("todayVisits").innerText = s.todayVisits || 0;
+      document.getElementById("todayOrders").innerText = s.todayOrders || 0;
+      document.getElementById("totalSales").innerText = money(s.totalSales);
+      document.getElementById("totalCollection").innerText = money(s.totalCollection);
+      document.getElementById("totalDue").innerText = money(s.totalDue);
+      document.getElementById("totalExpense").innerText = money(s.totalExpense);
+    });
+}
+
+function loadAttendance(){
+  fetch(`${BASE_URL}/asm/mr-attendance/${employeeId}`)
+    .then(res => res.json())
+    .then(data => {
+      const table = document.getElementById("attendanceTable");
+      table.innerHTML = "";
+
+      if(!data || data.length === 0){
+        table.innerHTML = `<tr><td colspan="4" class="text-center">No attendance found</td></tr>`;
+        return;
+      }
+
+      data.forEach(a => {
+        table.innerHTML += `
+          <tr>
+            <td>${a.attendanceDate || "-"}</td>
+            <td>${a.attendanceTime || a.time || "-"}</td>
+            <td>${a.location || "-"}</td>
+            <td>${a.status || "-"}</td>
+          </tr>
+        `;
+      });
+    });
+}
+
+function loadVisits(){
+  fetch(`${BASE_URL}/asm/mr-visits/${employeeId}`)
+    .then(res => res.json())
+    .then(data => {
+      const table = document.getElementById("visitsTable");
+      table.innerHTML = "";
+
+      if(!data || data.length === 0){
+        table.innerHTML = `<tr><td colspan="5" class="text-center">No visits found</td></tr>`;
+        return;
+      }
+
+      data.forEach(v => {
+        table.innerHTML += `
+          <tr>
+            <td>${v.visitDate || "-"}</td>
+            <td>${v.doctorName || "-"}</td>
+            <td>${v.visitTime || "-"}</td>
+            <td>${v.workingWithName || v.workingWith || "Alone"}</td>
+            <td>${v.remarks || "-"}</td>
+          </tr>
+        `;
+      });
+    });
+}
+
+function loadOrders(){
+  fetch(`${BASE_URL}/asm/mr-orders/${employeeId}`)
+    .then(res => res.json())
+    .then(data => {
+      const table = document.getElementById("ordersTable");
+      table.innerHTML = "";
+
+      if(!data || data.length === 0){
+        table.innerHTML = `<tr><td colspan="6" class="text-center">No orders found</td></tr>`;
+        return;
+      }
+
+      data.forEach(o => {
+        table.innerHTML += `
+          <tr>
+            <td>${o.orderDate || "-"}</td>
+            <td>${o.doctorName || "-"}</td>
+            <td>${o.distributorName || "-"}</td>
+            <td>${o.productName || "-"}</td>
+            <td>${money(o.orderAmount)}</td>
+            <td>${o.status || "-"}</td>
+          </tr>
+        `;
+      });
+    });
+}
+
+function loadExpenses(){
+  fetch(`${BASE_URL}/asm/mr-expenses/${employeeId}`)
+    .then(res => res.json())
+    .then(data => {
+      const table = document.getElementById("expensesTable");
+      table.innerHTML = "";
+
+      if(!data || data.length === 0){
+        table.innerHTML = `<tr><td colspan="5" class="text-center">No expenses found</td></tr>`;
+        return;
+      }
+
+      data.forEach(e => {
+        table.innerHTML += `
+          <tr>
+            <td>${e.expenseDate || "-"}</td>
+            <td>${e.expenseType || "-"}</td>
+            <td>${money(e.amount)}</td>
+            <td>${e.remarks || "-"}</td>
+            <td>${e.status || "-"}</td>
+          </tr>
+        `;
+      });
+    });
+}
+</script>
+
+</body>
+</html>

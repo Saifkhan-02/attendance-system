@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Territory Management</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+<style>
+body{
+    background:#f4f6fb;
+}
+
+.top-header{
+    background:linear-gradient(135deg,#0d4f9c,#3f7fe0);
+    color:white;
+    padding:25px;
+    border-radius:0 0 25px 25px;
+}
+
+.back-btn{
+    width:42px;
+    height:42px;
+    border:none;
+    border-radius:50%;
+    background:rgba(255,255,255,.2);
+    color:white;
+}
+
+.card{
+    border:none;
+    border-radius:18px;
+    box-shadow:0 10px 28px rgba(0,0,0,.08);
+}
+
+.form-control,.form-select{
+    border-radius:12px;
+    padding:12px;
+}
+
+.btn-main{
+    background:#0d6efd;
+    color:white;
+    border-radius:12px;
+    padding:11px 28px;
+    border:none;
+}
+
+.status-active{
+    color:#198754;
+    font-weight:700;
+}
+
+.status-inactive{
+    color:#dc3545;
+    font-weight:700;
+}
+</style>
+</head>
+
+<body>
+
+<div class="top-header">
+    <div class="d-flex align-items-center justify-content-between">
+        <button class="back-btn" onclick="window.location.href='admin-dashboard.html'">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <div class="text-center flex-grow-1">
+            <h2 class="fw-bold mb-1">Territory Management</h2>
+            <p class="mb-0">Add and manage HQ / city territories</p>
+        </div>
+
+        <div style="width:42px"></div>
+    </div>
+</div>
+
+<div class="container py-4">
+
+    <div class="card mb-4">
+        <div class="card-body p-4">
+            <h4 class="fw-bold mb-4">Add Territory</h4>
+
+            <input type="hidden" id="territoryId">
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Territory / City Name</label>
+                    <input type="text" id="territoryName" class="form-control" placeholder="Lucknow">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">State</label>
+                    <input type="text" id="stateName" class="form-control" placeholder="Uttar Pradesh">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Status</label>
+                    <select id="status" class="form-select">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="col-md-12">
+                    <button class="btn-main" onclick="saveTerritory()" id="saveBtn">
+                        <i class="fa-solid fa-save me-2"></i>
+                        Save Territory
+                    </button>
+
+                    <button class="btn btn-secondary ms-2" onclick="clearForm()">
+                        Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-4">
+            <h4 class="fw-bold mb-4">Territory List</h4>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>#</th>
+                            <th>Territory</th>
+                            <th>State</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="territoryTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="js/config.js"></script>
+
+<script>
+window.onload = function(){
+    loadTerritories();
+};
+
+function saveTerritory(){
+
+    const id = document.getElementById("territoryId").value;
+
+    const territory = {
+        territoryName: document.getElementById("territoryName").value.trim(),
+        stateName: document.getElementById("stateName").value.trim(),
+        status: document.getElementById("status").value
+    };
+
+    if(!territory.territoryName){
+        alert("Please enter territory name");
+        return;
+    }
+
+    const btn = document.getElementById("saveBtn");
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-2"></i>Saving...`;
+
+    let url = `${BASE_URL}/territory/save`;
+    let method = "POST";
+
+    if(id){
+        url = `${BASE_URL}/territory/update/${id}`;
+        method = "PUT";
+    }
+
+    fetch(url,{
+        method: method,
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify(territory)
+    })
+    .then(async response => {
+        const text = await response.text();
+
+        if(!response.ok){
+            throw new Error(text);
+        }
+
+        alert(id ? "Territory updated successfully" : "Territory saved successfully");
+
+        clearForm();
+        loadTerritories();
+    })
+    .catch(error => {
+        console.error(error);
+        alert("Failed: " + error.message);
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-save me-2"></i>Save Territory`;
+    });
+}
+
+function loadTerritories(){
+
+    fetch(`${BASE_URL}/territory/all`)
+    .then(response => response.json())
+    .then(data => {
+
+        const table = document.getElementById("territoryTable");
+        table.innerHTML = "";
+
+        if(!data || data.length === 0){
+            table.innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center">No territories found</td>
+                </tr>
+            `;
+            return;
+        }
+
+        data.forEach((t,index) => {
+            table.innerHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${t.territoryName || "-"}</td>
+                    <td>${t.stateName || "-"}</td>
+                    <td>
+                        <span class="${t.status === 'Active' ? 'status-active' : 'status-inactive'}">
+                            ${t.status || "-"}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-primary me-1"
+                            onclick='editTerritory(${JSON.stringify(t)})'>
+                            Edit
+                        </button>
+
+                        <button class="btn btn-sm btn-danger"
+                            onclick="deleteTerritory(${t.id})">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+    });
+}
+
+function editTerritory(t){
+    document.getElementById("territoryId").value = t.id;
+    document.getElementById("territoryName").value = t.territoryName || "";
+    document.getElementById("stateName").value = t.stateName || "";
+    document.getElementById("status").value = t.status || "Active";
+
+    document.getElementById("saveBtn").innerHTML =
+        `<i class="fa-solid fa-pen me-2"></i>Update Territory`;
+
+    window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function deleteTerritory(id){
+
+    if(!confirm("Are you sure you want to delete this territory?")){
+        return;
+    }
+
+    fetch(`${BASE_URL}/territory/delete/${id}`,{
+        method:"DELETE"
+    })
+    .then(response => response.text())
+    .then(() => {
+        alert("Territory deleted successfully");
+        loadTerritories();
+    })
+    .catch(error => {
+        console.error(error);
+        alert("Failed to delete territory");
+    });
+}
+
+function clearForm(){
+    document.getElementById("territoryId").value = "";
+    document.getElementById("territoryName").value = "";
+    document.getElementById("stateName").value = "";
+    document.getElementById("status").value = "Active";
+
+    document.getElementById("saveBtn").innerHTML =
+        `<i class="fa-solid fa-save me-2"></i>Save Territory`;
+}
+</script>
+
+</body>
+</html>
