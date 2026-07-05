@@ -307,6 +307,8 @@
 
         </div>
 
+        <!-- ================= EMPLOYEE DAILY REPORT PDF BUTTON ================= -->
+
         <div class="col-lg-3 col-md-3">
 
     <div class="d-flex flex-column">
@@ -483,6 +485,44 @@
 
         </div>
 
+        <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap">
+
+    <div id="paginationInfo" class="fw-semibold text-muted">
+        Showing 0–0 of 0 Orders
+    </div>
+
+    <div>
+
+        <button
+            id="prevBtn"
+            class="btn btn-outline-primary btn-sm"
+            onclick="previousPage()">
+
+            Previous
+
+        </button>
+
+        <span
+            id="pageNumber"
+            class="mx-3 fw-bold">
+
+            1
+
+        </span>
+
+        <button
+            id="nextBtn"
+            class="btn btn-outline-primary btn-sm"
+            onclick="nextPage()">
+
+            Next
+
+        </button>
+
+    </div>
+
+</div>
+
     </div>
 
 </div>
@@ -504,22 +544,15 @@
     const today = new Date();
 
      // Report Date set
-    document.getElementById("reportDate").value =
-        today.toISOString().split("T")[0];
-
-    // Hidden Month
-    document.getElementById("monthFilter").value =
-        String(today.getMonth() + 1).padStart(2, "0");
-
-    // Hidden Year
-    document.getElementById("yearFilter").value =
-        today.getFullYear().toString();
+    document.getElementById("reportDate").value = "";
 
     await loadEmployees();
 
+    currentPage = 0;
+
     await loadSummary();
 
-    await loadOrders();
+    await searchOrders();
 
 };
 
@@ -581,6 +614,10 @@
 }
 
 let grouped = {};
+
+let currentPage = 0;
+let totalPages = 0;
+let totalElements = 0;
       
 async function loadOrders() {
 
@@ -681,7 +718,7 @@ View (${order.products.length})
 <td>${order.orderTime || "-"}</td>
 
 <td>
-
+// ================= BILL PDF BUTTON =================
 <button
 class="btn btn-danger btn-sm"
 onclick="downloadBill(${order.id})">
@@ -721,18 +758,25 @@ async function loadSummary() {
     const employeeId =
         document.getElementById("summaryEmployee").value;
 
-    const month =
-        document.getElementById("monthFilter").value;
+   const date =
+document.getElementById("reportDate").value;
 
-    const year =
-        document.getElementById("yearFilter").value;
+let url =
+`${BASE_URL}/order/summary`;
 
-    let url =
-        `${BASE_URL}/order/summary?month=${month}&year=${year}`;
+const params = [];
 
-    if (employeeId) {
-        url += `&employeeId=${employeeId}`;
-    }
+if (date) {
+    params.push(`date=${date}`);
+}
+
+if (employeeId) {
+    params.push(`employeeId=${employeeId}`);
+}
+
+if (params.length > 0) {
+    url += "?" + params.join("&");
+}
 
     const response = await fetch(url);
 
@@ -746,26 +790,44 @@ async function loadSummary() {
 
 async function searchOrders() {
 
+    
     const employeeId =
         document.getElementById("summaryEmployee").value;
 
-    const month =
-        document.getElementById("monthFilter").value;
+    const date =
+document.getElementById("reportDate").value;
 
-    const year =
-        document.getElementById("yearFilter").value;
+let url =`${BASE_URL}/order/search`;
 
-  let url =
-`${BASE_URL}/order/search?month=${month}&year=${year}`;
+const params = [];
+
+if (date) {
+    params.push(`date=${date}`);
+}
 
 if (employeeId) {
-    url += `&employeeId=${employeeId}`;
+    params.push(`employeeId=${employeeId}`);
+}
+
+params.push("page=" + currentPage);
+params.push("size=20");
+
+if (params.length > 0) {
+    url += "?" + params.join("&");
 }
 
 const response = await fetch(url);
 
-    const orders =
-        await response.json();
+const pageData = await response.json();
+
+const orders = pageData.content;
+
+console.log(pageData);
+console.log(orders);
+
+totalPages = pageData.totalPages;
+totalElements = pageData.totalElements;
+currentPage = pageData.number;
 
         grouped = {};
 
@@ -879,6 +941,29 @@ style="display:none;">
         "ordersTableBody"
     ).innerHTML = html;
 
+    const start =
+    totalElements === 0
+        ? 0
+        : currentPage * 20 + 1;
+
+const end =
+    Math.min(
+        (currentPage + 1) * 20,
+        totalElements
+    );
+
+document.getElementById("paginationInfo").innerText =
+    `Showing ${start}-${end} of ${totalElements} Orders`;
+
+document.getElementById("pageNumber").innerText =
+    currentPage + 1;
+
+document.getElementById("prevBtn").disabled =
+    currentPage === 0;
+
+document.getElementById("nextBtn").disabled =
+    currentPage >= totalPages - 1;
+
 }
 function toggleProducts(invoiceNo) {
 
@@ -901,6 +986,9 @@ function toggleProducts(invoiceNo) {
         row.style.display = "none";
     }
 }
+
+// ================= SINGLE BILL PDF DOWNLOAD =================
+
 function downloadBill(orderId) {
     window.open(
         `/order/bill/${orderId}`,
@@ -910,30 +998,24 @@ function downloadBill(orderId) {
 
 function resetSummary() {
 
-    // Employee
+    // Employee Reset
     document.getElementById("summaryEmployee").value = "";
 
+    // Download Button Disable
     document.getElementById("downloadReportBtn").disabled = true;
 
-    // Current Month
-    const today = new Date();
+    // Date Filter Remove
+    document.getElementById("reportDate").value = "";
 
-    const month = String(today.getMonth() + 1)
-        .padStart(2, '0');
+    currentPage = 0;
 
-    const year = today.getFullYear();
-
-    document.getElementById("monthFilter").value = month;
-
-    document.getElementById("yearFilter").value = year;
-
-    document.getElementById("reportDate").value =
-    today.toISOString().split("T")[0];
-
+    // Load All Data
     loadSummary();
 
     searchOrders();
+
 }
+
 document.getElementById("reportDate")
 .addEventListener("change", function () {
 
@@ -947,6 +1029,8 @@ document.getElementById("reportDate")
     searchOrders();
 
 });
+
+// ================= EMPLOYEE DAILY REPORT PDF DOWNLOAD =================
 
 async function downloadEmployeeReport() {
 
@@ -1013,7 +1097,10 @@ async function downloadEmployeeReport() {
     }
 
 }
+
 function employeeChanged() {
+
+    currentPage = 0;
 
     loadSummary();
 
@@ -1022,6 +1109,7 @@ function employeeChanged() {
     toggleReportButton();
 
 }
+
 function toggleReportButton() {
 
     const employeeId =
@@ -1031,6 +1119,31 @@ function toggleReportButton() {
         employeeId === "";
 
 }
+
+function previousPage() {
+
+    if (currentPage > 0) {
+
+        currentPage--;
+
+        searchOrders();
+
+    }
+
+}
+
+function nextPage() {
+
+    if (currentPage < totalPages - 1) {
+
+        currentPage++;
+
+        searchOrders();
+
+    }
+
+}
+
 </script>
   </body>
 </html>
