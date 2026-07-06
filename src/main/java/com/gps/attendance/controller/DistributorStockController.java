@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -91,6 +93,33 @@ public class DistributorStockController {
 
         return distributorStockRepository.save(stock);
     }
+
+    @PutMapping("/admin/distributor-stock/update/{id}")
+public ResponseEntity<DistributorStock> updateStock(
+        @PathVariable Long id,
+        @RequestBody Map<String, Object> request) {
+
+    DistributorStock stock = distributorStockRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Stock not found"));
+
+    Integer quantity = Integer.valueOf(request.get("availableUnits").toString());
+
+    if (quantity < 0) {
+        throw new RuntimeException("Quantity cannot be negative");
+    }
+
+    stock.setAvailableUnits(quantity);
+
+    return ResponseEntity.ok(distributorStockRepository.save(stock));
+}
+
+    @DeleteMapping("/admin/distributor-stock/{id}")
+public ResponseEntity<String> deleteStock(@PathVariable Long id) {
+
+    distributorStockRepository.deleteById(id);
+
+    return ResponseEntity.ok("Stock deleted successfully");
+}
 
     
 }
