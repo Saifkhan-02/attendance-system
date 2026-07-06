@@ -15,6 +15,12 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String role = "MR";
+
+    private Long managerId;
+
+    private String managerName;
+
     private String profileImage;
 
     private String name;
@@ -49,6 +55,28 @@ public class Employee {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public Long getManagerId(){
+        return managerId;
+    }
+    public void setManagerId(Long managerId){
+        this.managerId = managerId;
+    }
+
+    public String getManagerName(){
+        return managerName;
+    }
+    public void setManagerName(String managerName){
+        this.managerName = managerName;
     }
 
     public String getProfileImage() {

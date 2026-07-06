@@ -17,4 +17,6 @@ public interface EmployeeHQMappingRepository
         Long employeeId,
         Long hqId
 );
+void deleteByEmployeeId(Long employeeId);
+
 }

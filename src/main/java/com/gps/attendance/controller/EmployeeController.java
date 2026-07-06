@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.gps.attendance.dto.ChangePasswordRequest;
+import com.gps.attendance.dto.EmployeeRequest;
 import com.gps.attendance.entity.Employee;
 import com.gps.attendance.entity.EmployeeHQMapping;
 import com.gps.attendance.entity.Headquarter;
@@ -69,6 +72,7 @@ public class EmployeeController {
 
         Map<String, Object> response = new HashMap<>();
 
+        response.put("role", emp.getRole());
         response.put("id", emp.getId());
         response.put("name", emp.getName());
         response.put("username", emp.getUsername());
@@ -194,6 +198,84 @@ public Employee updateEmployeeProfile(
         return "Employee Registered Successfully";
     }
 
+    @PostMapping("/register-role-based")
+public String registerRoleBasedEmployee(@RequestBody EmployeeRequest request) {
+
+    if (request.getUsername() == null || request.getUsername().trim().isEmpty()) {
+        return "Username is required";
+    }
+
+    if (repository.findByUsername(request.getUsername().trim()) != null) {
+        return "Username already exists";
+    }
+
+    if (request.getEmail() != null
+            && !request.getEmail().trim().isEmpty()
+            && repository.findByEmail(request.getEmail()) != null) {
+        return "Email already exists";
+    }
+
+    if (request.getMobile() != null
+            && !request.getMobile().trim().isEmpty()
+            && repository.findByMobile(request.getMobile()) != null) {
+        return "Mobile number already exists";
+    }
+
+    Employee employee = new Employee();
+
+    employee.setName(request.getName());
+    employee.setEmail(request.getEmail());
+    employee.setUsername(request.getUsername().trim());
+    employee.setPassword(request.getPassword());
+    employee.setMobile(request.getMobile());
+    employee.setRole(request.getRole());
+    employee.setJoiningDate(request.getJoiningDate());
+    employee.setStatus(request.getStatus());
+
+    if ("MR".equalsIgnoreCase(request.getRole())) {
+        employee.setHeadquarters(request.getHeadquarters());
+    } else {
+        employee.setHeadquarters("");
+    }
+
+    Employee savedEmployee = repository.save(employee);
+
+    if ("MR".equalsIgnoreCase(request.getRole())) {
+
+        Headquarter hq = headquarterRepository
+                .findByHeadquarterNameIgnoreCase(request.getHeadquarters())
+                .orElseThrow(() -> new RuntimeException("Headquarter not found"));
+
+        EmployeeHQMapping mapping = new EmployeeHQMapping();
+        mapping.setEmployeeId(savedEmployee.getId());
+        mapping.setHqId(hq.getId());
+
+        mappingRepository.save(mapping);
+    }
+
+    if ("ASM".equalsIgnoreCase(request.getRole())) {
+
+        if (request.getAssignedHeadquarters() == null
+                || request.getAssignedHeadquarters().isEmpty()) {
+            throw new RuntimeException("Please assign at least one HQ to ASM");
+        }
+
+        for (String hqName : request.getAssignedHeadquarters()) {
+
+            Headquarter hq = headquarterRepository
+                    .findByHeadquarterNameIgnoreCase(hqName)
+                    .orElseThrow(() -> new RuntimeException("Headquarter not found: " + hqName));
+
+            EmployeeHQMapping mapping = new EmployeeHQMapping();
+            mapping.setEmployeeId(savedEmployee.getId());
+            mapping.setHqId(hq.getId());
+
+            mappingRepository.save(mapping);
+        }
+    }
+
+    return "Employee Registered Successfully";
+}
    @GetMapping("/admin/employees")
 @ResponseBody
 public List<Employee> getAllEmployees() {
@@ -325,5 +407,6 @@ public ResponseEntity<?> deleteEmployee(@PathVariable Long id) {
 
     return ResponseEntity.ok("Employee deleted successfully.");
 }
+
 
 }

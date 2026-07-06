@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Working With Analysis</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+<style>
+body{background:#dfe8f6;font-family:Arial,sans-serif}
+.header{
+  background:linear-gradient(135deg,#064b90,#1976d2);
+  color:white;
+  padding:20px;
+  border-radius:0 0 28px 28px;
+}
+.back-btn{
+  width:45px;height:45px;border:none;border-radius:12px;
+  background:rgba(255,255,255,.2);color:white;
+}
+.logo{width:130px;background:white;border-radius:10px;padding:5px 12px}
+.card-box{
+  background:white;border-radius:20px;padding:18px;
+  box-shadow:0 8px 22px rgba(0,0,0,.08);
+}
+.form-control,.form-select{border-radius:12px;padding:11px}
+.badge-role{background:#eaf1ff;color:#0d6efd;padding:6px 10px;border-radius:8px;font-weight:700}
+.table-responsive{font-size:14px}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="d-flex align-items-center justify-content-between">
+    <button class="back-btn" onclick="window.location.href='ASMDashboard.html'">
+      <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <div class="text-center">
+      <img src="images/Inflix-logo-web.png" class="logo">
+      <h5 class="fw-bold mt-2 mb-0">Working With Analysis</h5>
+    </div>
+
+    <div style="width:45px"></div>
+  </div>
+</div>
+
+<div class="container py-4">
+
+  <div class="card-box mb-3">
+    <div class="row g-2">
+      <div class="col-md-3">
+        <input type="date" id="fromDate" class="form-control" onchange="filterData()">
+      </div>
+
+      <div class="col-md-3">
+        <input type="date" id="toDate" class="form-control" onchange="filterData()">
+      </div>
+
+      <div class="col-md-3">
+        <select id="employeeFilter" class="form-select" onchange="filterData()">
+          <option value="">All MRs</option>
+        </select>
+      </div>
+
+      <div class="col-md-3">
+        <select id="workingFilter" class="form-select" onchange="filterData()">
+          <option value="">All Working Type</option>
+          <option value="Alone">Alone</option>
+          <option value="ASM">ASM</option>
+          <option value="ZSM">ZSM</option>
+          <option value="State Head">State Head</option>
+        </select>
+      </div>
+
+      <div class="col-md-12 mt-2">
+        <input type="text" id="searchInput" class="form-control"
+               placeholder="Search doctor, MR, person name, location..."
+               onkeyup="filterData()">
+      </div>
+    </div>
+  </div>
+
+  <div class="card-box">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="fw-bold mb-0">Visit Working Report</h4>
+      <span class="badge bg-primary" id="totalCount">0 Records</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-bordered align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Date</th>
+            <th>Time</th>
+            <th>MR</th>
+            <th>Working With</th>
+            <th>Person</th>
+            <th>Doctor</th>
+            <th>Location</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody id="workingTable">
+          <tr>
+            <td colspan="8" class="text-center text-muted">Loading...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+
+<script>
+const asmId = localStorage.getItem("employeeId");
+const role = localStorage.getItem("employeeRole");
+const token = localStorage.getItem("sessionToken");
+
+let workingData = [];
+
+if (!asmId || !token || role !== "ASM") {
+  localStorage.clear();
+  window.location.href = "index.html";
+}
+
+window.onload = function(){
+  loadWorkingData();
+};
+
+function loadWorkingData(){
+  fetch(`${BASE_URL}/asm/working-with/${asmId}`)
+    .then(res => res.json())
+    .then(data => {
+      workingData = data || [];
+      loadEmployeeFilter();
+      renderTable(workingData);
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Failed to load working with data");
+    });
+}
+
+function loadEmployeeFilter(){
+  const filter = document.getElementById("employeeFilter");
+  filter.innerHTML = `<option value="">All MRs</option>`;
+
+  const names = [...new Set(workingData.map(v => v.employeeName).filter(Boolean))];
+
+  names.forEach(name => {
+    filter.innerHTML += `<option value="${name}">${name}</option>`;
+  });
+}
+
+function renderTable(data){
+  const table = document.getElementById("workingTable");
+  document.getElementById("totalCount").innerText = `${data.length} Records`;
+
+  table.innerHTML = "";
+
+  if(data.length === 0){
+    table.innerHTML = `
+      <tr>
+        <td colspan="8" class="text-center text-muted">No records found</td>
+      </tr>
+    `;
+    return;
+  }
+
+  data.forEach(v => {
+    const workingType = v.workingWith || "Alone";
+    const personName = v.workingPersonName || "-";
+
+    table.innerHTML += `
+      <tr>
+        <td>${v.visitDate || "-"}</td>
+        <td>${v.visitTime || "-"}</td>
+        <td><strong>${v.employeeName || "-"}</strong></td>
+        <td><span class="badge-role">${workingType}</span></td>
+        <td>${personName}</td>
+        <td>${v.doctorName || "-"}</td>
+        <td>${v.location || "-"}</td>
+        <td>${v.remarks || "-"}</td>
+      </tr>
+    `;
+  });
+}
+
+function filterData(){
+  const fromDate = document.getElementById("fromDate").value;
+  const toDate = document.getElementById("toDate").value;
+  const employee = document.getElementById("employeeFilter").value;
+  const working = document.getElementById("workingFilter").value;
+  const keyword = document.getElementById("searchInput").value.toLowerCase();
+
+  const filtered = workingData.filter(v => {
+    const visitDate = v.visitDate || "";
+
+    const matchFrom = !fromDate || visitDate >= fromDate;
+    const matchTo = !toDate || visitDate <= toDate;
+
+    const matchEmployee = !employee || v.employeeName === employee;
+
+    const currentWorking = v.workingWith || "Alone";
+    const matchWorking = !working || currentWorking === working;
+
+    const text = `
+      ${v.employeeName || ""}
+      ${v.workingWith || ""}
+      ${v.workingPersonName || ""}
+      ${v.doctorName || ""}
+      ${v.location || ""}
+      ${v.remarks || ""}
+    `.toLowerCase();
+
+    return matchFrom && matchTo && matchEmployee && matchWorking && text.includes(keyword);
+  });
+
+  renderTable(filtered);
+}
+</script>
+
+</body>
+</html>
