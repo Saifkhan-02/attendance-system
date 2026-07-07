@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.gps.attendance.entity.Attendance;
 
@@ -32,4 +34,33 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
         Long employeeId,
         java.time.LocalDate attendanceDate
 );
+
+@Query("""
+SELECT a
+FROM Attendance a
+WHERE a.employeeId = :employeeId
+AND YEAR(a.attendanceDate) = :year
+AND MONTH(a.attendanceDate) = :month
+ORDER BY a.attendanceDate DESC
+""")
+List<Attendance> findMonthlyAttendance(
+        @Param("employeeId") Long employeeId,
+        @Param("month") int month,
+        @Param("year") int year
+);
+
+@Query("""
+SELECT COUNT(a)
+FROM Attendance a
+WHERE a.employeeId = :employeeId
+AND YEAR(a.attendanceDate) = :year
+AND MONTH(a.attendanceDate) = :month
+AND a.status = 'Present'
+""")
+long countPresentDays(
+        @Param("employeeId") Long employeeId,
+        @Param("month") int month,
+        @Param("year") int year
+);
+
 }

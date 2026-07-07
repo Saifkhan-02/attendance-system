@@ -2,7 +2,9 @@ package com.gps.attendance.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -73,4 +75,11 @@ public class RouteMasterController {
 
         return routeMasterRepository.save(route);
     }
+
+    @DeleteMapping("/delete/{id}")
+public ResponseEntity<String> deleteRoute(@PathVariable Long id) {
+    routeMasterRepository.deleteById(id);
+    return ResponseEntity.ok("Route deleted successfully");
+}
+
 }
