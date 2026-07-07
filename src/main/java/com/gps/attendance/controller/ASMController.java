@@ -457,7 +457,7 @@ public Map<String, Object> getEmployeeDetailsFast(
     List<DoctorVisit> visits;
     List<ProductOrder> orders;
     List<Expense> expenses;
-    List<TourPlan> tourPlans;
+    List<TourPlan> tourPlans = null;
 
     if ("date".equalsIgnoreCase(filterType) && date != null && !date.isEmpty()) {
         attendance = attendanceRepository.findByEmployeeIdAndAttendanceDateOrderByIdDesc(
@@ -469,12 +469,12 @@ public Map<String, Object> getEmployeeDetailsFast(
         expenses = expenseRepository.findByEmployeeIdAndExpenseDateOrderByIdDesc(
                 employeeId, date);
 
-        tourPlans = tourPlanRepository
-        .findByEmployeeIdAndTravelDateBetweenOrderByIdDesc(
-                employeeId,
-                LocalDate.parse(date),
-                LocalDate.parse(date)
-        );
+        // tourPlans = tourPlanRepository
+        // .findByEmployeeIdAndTravelDateBetweenOrderByIdDesc(
+        //         employeeId,
+        //         LocalDate.parse(date),
+        //         LocalDate.parse(date)
+        // );
 
     } else if ("month".equalsIgnoreCase(filterType) && month != null && !month.isEmpty()) {
         attendance = attendanceRepository.findByEmployeeIdAndAttendanceDateBetweenOrderByIdDesc(

@@ -433,19 +433,31 @@ function renderRouteTable() {
         <td>${route.routeType || "-"}</td>
         <td><span class="${statusClass}">${status}</span></td>
         <td>
-          <button class="btn btn-sm btn-primary me-1"
-                  onclick='editRoute(${JSON.stringify(route)})'>
-            <i class="fa-solid fa-pen"></i>
-          </button>
+  <!-- Edit -->
+  <button class="btn btn-sm btn-primary me-1"
+          onclick='editRoute(${JSON.stringify(route)})'
+          title="Edit">
+    <i class="fa-solid fa-pen"></i>
+  </button>
 
-          <button class="btn btn-sm ${
-            status === "Active" ? "btn-danger" : "btn-success"
-          }" onclick="toggleRouteStatus(${route.id})">
-            <i class="fa-solid ${
-              status === "Active" ? "fa-ban" : "fa-check"
-            }"></i>
-          </button>
-        </td>
+  <!-- Active / Inactive -->
+  <button class="btn btn-sm ${
+    status === "Active" ? "btn-danger" : "btn-success"
+  } me-1"
+  onclick="toggleRouteStatus(${route.id})"
+  title="${status === "Active" ? "Deactivate" : "Activate"}">
+    <i class="fa-solid ${
+      status === "Active" ? "fa-ban" : "fa-check"
+    }"></i>
+  </button>
+
+  <!-- Delete -->
+  <button class="btn btn-sm btn-outline-danger"
+          onclick="deleteRoute(${route.id})"
+          title="Delete Route">
+    <i class="fa-solid fa-trash"></i>
+  </button>
+</td>
       </tr>
     `;
   });
@@ -492,7 +504,30 @@ function updateSummary() {
   const activeCount = routeList.filter(r => (r.status || "Active") === "Active").length;
   document.getElementById("activeRoutes").innerText = activeCount;
 }
-</script>
 
+function deleteRoute(id) {
+
+  if (!confirm("Are you sure you want to permanently delete this route?")) {
+    return;
+  }
+
+  fetch(`${BASE_URL}/route-master/delete/${id}`, {
+    method: "DELETE"
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("Delete failed");
+    }
+
+    alert("Route deleted successfully.");
+    loadRoutes();
+  })
+  .catch(error => {
+    console.error(error);
+    alert("Failed to delete route.");
+  });
+}
+
+</script>
 </body>
 </html>

@@ -401,9 +401,9 @@
                   <th>Product</th>
                   <th>Quantity</th>
                   <th>Status</th>
+                  <th class="text-center">Action</th>
                 </tr>
               </thead>
-
               <tbody id="stockTable"></tbody>
             </table>
           </div>
@@ -579,18 +579,31 @@
           }
 
           table.innerHTML += `
-             <tr>
-        <td>${item.headquarters || "-"}</td>
-        <td>${item.distributorName || "-"}</td>
-        <td class="fw-semibold">${item.productName || "-"}</td>
-        <td>${qty.toLocaleString("en-IN")}</td>
-        <td>
-            <span class="${statusClass}">
-                ${statusText}
-            </span>
-        </td>
-    </tr>
-        `;
+    <tr>
+    <td>${item.headquarters || "-"}</td>
+    <td>${item.distributorName || "-"}</td>
+    <td class="fw-semibold">${item.productName || "-"}</td>
+    <td>${qty.toLocaleString("en-IN")}</td>
+    <td>
+        <span class="${statusClass}">
+            ${statusText}
+        </span>
+    </td>
+    <td class="text-center">
+
+    <button class="btn btn-sm btn-warning me-1"
+        onclick="openEditModal(${item.id}, '${item.productName}', ${item.availableUnits})">
+        <i class="fa-solid fa-pen"></i>
+    </button>
+
+    <button class="btn btn-sm btn-danger"
+        onclick="deleteStock(${item.id})">
+        <i class="fa-solid fa-trash"></i>
+    </button>
+
+</td>
+</tr>
+`;
         });
 
         document.getElementById("totalUnits").innerText =
@@ -755,50 +768,6 @@
             alert("Failed to update distributor stock");
           });
       }
-function fillDistributorStockTable(data) {
-    const table = document.getElementById("stockTable");
-    table.innerHTML = "";
-
-    if (!data || data.length === 0) {
-        table.innerHTML = `
-            <tr>
-                <td colspan="5" class="text-center">
-                    No Stock Found For Selected Distributor
-                </td>
-            </tr>
-        `;
-        return;
-    }
-
-    data.forEach(item => {
-        const qty = Number(item.availableUnits || 0);
-
-        let statusText = "In Stock";
-        let statusClass = "status-active";
-
-        if (qty <= 0) {
-            statusText = "Out of Stock";
-            statusClass = "status-out";
-        } else if (qty <= 20) {
-            statusText = "Low Stock";
-            statusClass = "status-low";
-        }
-
-        table.innerHTML += `
-            <tr>
-                <td>${item.headquarters || "-"}</td>
-                <td>${item.distributorName || "-"}</td>
-                <td class="fw-semibold">${item.productName || "-"}</td>
-                <td>${qty.toLocaleString("en-IN")}</td>
-                <td>
-                    <span class="${statusClass}">
-                        ${statusText}
-                    </span>
-                </td>
-            </tr>
-        `;
-    });
-}
 
       function updateSummary() {
         let totalProducts = stockList.length;
@@ -839,6 +808,141 @@ function fillDistributorStockTable(data) {
       function resetFinalPreview() {
         document.getElementById("finalQuantity").innerText = "0";
       }
+
+      function deleteStock(id) {
+
+    if (!confirm("Do you really want to delete this stock? This action cannot be undone.")) {
+    return;
+}
+
+    fetch(`${BASE_URL}/admin/distributor-stock/${id}`, {
+        method: "DELETE"
+    })
+    .then(async response => {
+
+        const msg = await response.text();
+
+        if (!response.ok) {
+            throw new Error(msg);
+        }
+
+        alert("Stock deleted successfully.");
+
+        loadSelectedDistributorStock();
+
+    })
+    .catch(error => {
+        console.error(error);
+        alert("Failed to delete stock.");
+    });
+
+}
+
+function openEditModal(id, productName, quantity) {
+
+    document.getElementById("editStockId").value = id;
+
+    document.getElementById("editProductName").value = productName;
+
+    document.getElementById("editQuantity").value = quantity;
+
+    const modal = new bootstrap.Modal(
+        document.getElementById("editStockModal")
+    );
+
+    modal.show();
+}
+function updateStock() {
+
+    const id = document.getElementById("editStockId").value;
+    const quantity = document.getElementById("editQuantity").value;
+
+    if (quantity === "" || Number(quantity) < 0) {
+        alert("Please enter valid quantity.");
+        return;
+    }
+
+    fetch(`${BASE_URL}/admin/distributor-stock/update/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            availableUnits: quantity
+        })
+    })
+    .then(async response => {
+
+        const text = await response.text();
+
+        if (!response.ok) {
+            throw new Error(text);
+        }
+
+        alert("Stock updated successfully.");
+
+        bootstrap.Modal.getInstance(
+            document.getElementById("editStockModal")
+        ).hide();
+
+        loadSelectedDistributorStock();
+
+    })
+    .catch(error => {
+        console.error(error);
+        alert("Failed to update stock.");
+    });
+
+}
     </script>
+
+    <!-- Edit Stock Modal -->
+<div class="modal fade" id="editStockModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Stock</h5>
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <input type="hidden" id="editStockId">
+
+                <div class="mb-3">
+                    <label class="form-label">Product Name</label>
+                    <input type="text"
+                           id="editProductName"
+                           class="form-control"
+                           readonly>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Quantity</label>
+                    <input type="number"
+                           id="editQuantity"
+                           class="form-control">
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+                <button class="btn btn-primary"
+                        onclick="updateStock()">
+                    Save Changes
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
   </body>
 </html>

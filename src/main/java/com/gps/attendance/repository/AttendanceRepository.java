@@ -34,6 +34,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
         Long employeeId,
         java.time.LocalDate attendanceDate
 );
+<<<<<<< HEAD
 @Query("""
         SELECT a.employeeId, COUNT(a)
         FROM Attendance a
@@ -55,4 +56,35 @@ List<Attendance> findByEmployeeIdAndAttendanceDateBetweenOrderByIdDesc(
         LocalDate startDate,
         LocalDate endDate
 );
+=======
+
+@Query("""
+SELECT a
+FROM Attendance a
+WHERE a.employeeId = :employeeId
+AND YEAR(a.attendanceDate) = :year
+AND MONTH(a.attendanceDate) = :month
+ORDER BY a.attendanceDate DESC
+""")
+List<Attendance> findMonthlyAttendance(
+        @Param("employeeId") Long employeeId,
+        @Param("month") int month,
+        @Param("year") int year
+);
+
+@Query("""
+SELECT COUNT(a)
+FROM Attendance a
+WHERE a.employeeId = :employeeId
+AND YEAR(a.attendanceDate) = :year
+AND MONTH(a.attendanceDate) = :month
+AND a.status = 'Present'
+""")
+long countPresentDays(
+        @Param("employeeId") Long employeeId,
+        @Param("month") int month,
+        @Param("year") int year
+);
+
+>>>>>>> 503dee86bc0ffa31ddf8813ac47b58c6957f6a34
 }

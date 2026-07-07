@@ -479,9 +479,9 @@
 
 
         <li class="nav-item">
-          <a href="admin-employeeTracking.html" class="nav-link">
+          <a href="attendance-list.html" class="nav-link">
             <i class="fas fa-location-dot me-2"></i>
-            Employee Tracking
+            Attendance list
           </a>
         </li>
 
@@ -671,11 +671,11 @@
 
             <div class="col-6 col-md-3">
               <a
-                href="admin-employeeTracking.html"
+                href="attendance-list.html"
                 class="quick-action bg-danger"
               >
                 <i class="fas fa-location-dot"></i>
-                <span>Track Employee</span>
+                <span>Attendance List</span>
               </a>
             </div>
 
@@ -1169,7 +1169,7 @@ if (chartType) {
       let expenseChart = null;
 
       async function loadExpenseChart() {
-        const response = await fetch(`${BASE_URL}/expenses/chart-data`);
+    const response = await fetch(`${BASE_URL}/tour-plan/expense-chart`);
 
         const data = await response.json();
 

@@ -3,6 +3,7 @@ package com.gps.attendance.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.gps.attendance.entity.TourPlan;
 
@@ -43,5 +44,16 @@ long countByEmployeeIdAndTravelDate(
         Long employeeId,
         java.time.LocalDate travelDate
 );
+    @Query(value = """
+SELECT
+    travel_date,
+    SUM(total_expense)
+FROM tour_plan
+WHERE total_expense IS NOT NULL
+GROUP BY travel_date
+ORDER BY travel_date DESC
+LIMIT 7
+""", nativeQuery = true)
+List<Object[]> getLast7DaysExpenseChart();
 
 }
