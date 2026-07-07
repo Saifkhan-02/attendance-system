@@ -1169,7 +1169,7 @@ if (chartType) {
       let expenseChart = null;
 
       async function loadExpenseChart() {
-        const response = await fetch(`${BASE_URL}/expenses/chart-data`);
+    const response = await fetch(`${BASE_URL}/tour-plan/expense-chart`);
 
         const data = await response.json();
 

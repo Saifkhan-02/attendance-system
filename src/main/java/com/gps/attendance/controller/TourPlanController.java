@@ -264,4 +264,14 @@ public Map<String, Object> getEmployeeTourSummary(
     return result;
 }
 
+@GetMapping("/tour-plan/expense-chart")
+public List<Object[]> getExpenseChart() {
+
+    List<Object[]> data = repository.getLast7DaysExpenseChart();
+
+    java.util.Collections.reverse(data);
+
+    return data;
+}
+
 }
