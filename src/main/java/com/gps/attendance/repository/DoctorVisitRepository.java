@@ -105,4 +105,21 @@ long getTodayVisitCount();
 
 List<DoctorVisit> findByEmployeeIdInOrderByIdDesc(List<Long> employeeIds);
 
+@Query("""
+SELECT d.employeeId, COUNT(d)
+FROM DoctorVisit d
+WHERE d.employeeId IN :employeeIds
+AND d.visitDate = :today
+GROUP BY d.employeeId
+""")
+List<Object[]> countTodayVisitsByEmployees(
+        @Param("employeeIds") List<Long> employeeIds,
+        @Param("today") String today
+);
+
+List<DoctorVisit> findByEmployeeIdAndVisitDateStartingWithOrderByIdDesc(
+        Long employeeId,
+        String month
+);
+
 }

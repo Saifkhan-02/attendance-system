@@ -32,4 +32,16 @@ public interface TourPlanRepository
             Long employeeId,
             java.time.LocalDate travelDate
     );
+
+    List<TourPlan> findByEmployeeIdAndTravelDateBetweenOrderByIdDesc(
+        Long employeeId,
+        java.time.LocalDate fromDate,
+        java.time.LocalDate toDate
+);
+
+long countByEmployeeIdAndTravelDate(
+        Long employeeId,
+        java.time.LocalDate travelDate
+);
+
 }

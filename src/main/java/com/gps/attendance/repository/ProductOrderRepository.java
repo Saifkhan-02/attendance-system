@@ -204,4 +204,42 @@ Long countDailyInvoices(
         @Param("date") String date
 );
 
+@Query("""
+SELECT p.employeeId,
+       COUNT(DISTINCT p.invoiceNo),
+       COALESCE(SUM(p.orderAmount),0),
+       COALESCE(SUM(p.paidAmount),0),
+       COALESCE(SUM(p.dueAmount),0)
+FROM ProductOrder p
+WHERE p.employeeId IN :employeeIds
+GROUP BY p.employeeId
+""")
+List<Object[]> getSalesSummaryByEmployees(
+        @Param("employeeIds") List<Long> employeeIds
+);
+@Query("""
+SELECT p.employeeId, COUNT(DISTINCT p.invoiceNo)
+FROM ProductOrder p
+WHERE p.employeeId IN :employeeIds
+AND p.orderDate = :today
+GROUP BY p.employeeId
+""")
+List<Object[]> countTodayOrdersByEmployees(
+        @Param("employeeIds") List<Long> employeeIds,
+        @Param("today") String today
+);
+
+@Query("""
+SELECT COALESCE(SUM(p.orderAmount),0),
+       COALESCE(SUM(p.paidAmount),0),
+       COALESCE(SUM(p.dueAmount),0)
+FROM ProductOrder p
+WHERE p.employeeId = :employeeId
+AND p.orderDate = :today
+""")
+
+List<Object[]> getTodaySalesSummaryByEmployee(
+        @Param("employeeId") Long employeeId,
+        @Param("today") String today
+);
 }

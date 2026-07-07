@@ -1,0 +1,239 @@
+body{
+  background:#dfe8f6;
+  font-family:Arial,sans-serif;
+  overflow-x:hidden;
+}
+
+.asm-header{
+  background:linear-gradient(135deg,#064b90,#1976d2);
+  color:white;
+  padding:22px 18px 26px;
+  border-radius:0 0 28px 28px;
+  text-align:center;
+  position:relative;
+}
+
+.asm-logo{
+  width:135px;
+  background:white;
+  border-radius:10px;
+  padding:5px 12px;
+}
+
+.asm-header-title{
+  font-weight:800;
+  margin-top:8px;
+  font-size:16px;
+}
+
+.asm-header-btn{
+  width:48px;
+  height:48px;
+  border:none;
+  border-radius:14px;
+  background:rgba(255,255,255,.18);
+  color:white;
+  font-size:21px;
+  position:absolute;
+  top:42px;
+}
+
+.asm-menu-btn{left:18px;}
+.asm-back-btn{left:18px;}
+.asm-notify-btn{right:18px;}
+
+.asm-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:transparent;
+  z-index:999;
+}
+
+.asm-overlay.show{
+  display:block;
+}
+
+.asm-sidebar{
+  position:fixed;
+  top:0;
+  left:-280px;
+  width:270px;
+  height:100vh;
+  background:white;
+  z-index:1000;
+  transition:.3s;
+  padding:18px;
+  overflow-y:auto;
+  box-shadow:4px 0 20px rgba(0,0,0,.18);
+}
+
+.asm-sidebar.show{
+  left:0;
+}
+
+.asm-side-logo{
+  text-align:center;
+  margin-bottom:18px;
+}
+
+.asm-side-logo img{
+  width:135px;
+}
+
+.asm-side-user{
+  background:#f5f8ff;
+  padding:16px;
+  border-radius:16px;
+  text-align:center;
+  margin-bottom:15px;
+}
+
+.asm-side-user i{
+  font-size:42px;
+  color:#0d6efd;
+}
+
+.asm-side-user h5{
+  color:#0d6efd;
+  font-weight:800;
+  margin:10px 0 2px;
+}
+
+.asm-link{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:13px 12px;
+  border-radius:12px;
+  color:#1f2937;
+  font-weight:700;
+  text-decoration:none;
+  margin-bottom:5px;
+}
+
+.asm-link i{
+  width:22px;
+}
+
+.asm-link.active,
+.asm-link:hover{
+  background:#0d6efd;
+  color:white;
+}
+
+.asm-logout{
+  color:#dc3545;
+}
+
+.asm-container{
+  padding:24px 18px 40px;
+}
+
+.asm-card{
+  background:white;
+  border-radius:20px;
+  padding:18px;
+  box-shadow:0 8px 22px rgba(0,0,0,.08);
+  margin-bottom:18px;
+}
+
+.asm-feature-card{
+  background:linear-gradient(135deg,#a3a7db,#d1d6e6, rgb(100, 136, 197));
+  color:#111827;
+  border-radius:20px;
+  padding:24px 12px;
+  min-height:145px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  cursor:pointer;
+  border:1px solid #e8edf6;
+  box-shadow:0 8px 24px rgba(15,23,42,.08);
+  transition:.25s;
+}
+
+.asm-feature-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 30px rgba(15,23,42,.14);
+}
+
+.asm-icon-box{
+  width:62px;
+  height:62px;
+  border-radius:18px;
+  background:#eef4ff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+  margin-bottom:14px;
+  color:#0d6efd;
+}
+
+.asm-feature-card h5{
+  font-size:16px;
+  font-weight:800;
+  margin:0;
+}
+
+.asm-feature-card .count{
+  font-size:28px;
+  font-weight:900;
+  color:#0d6efd;
+  margin-top:8px;
+}
+
+.asm-badge{
+  background:#eaf1ff;
+  color:#0d6efd;
+  padding:5px 10px;
+  border-radius:8px;
+  font-weight:700;
+  font-size:13px;
+}
+
+.form-control,
+.form-select{
+  border-radius:12px;
+  padding:11px;
+}
+
+.table-responsive{
+  font-size:14px;
+}
+
+@media(max-width:576px){
+  .asm-header{
+    padding:20px 15px 22px;
+  }
+
+  .asm-logo{
+    width:125px;
+  }
+
+  .asm-header-btn{
+    width:45px;
+    height:45px;
+    top:40px;
+  }
+
+  .asm-container{
+    padding:20px 14px;
+  }
+
+  .asm-feature-card{
+    min-height:140px;
+    padding:20px 10px;
+  }
+
+  .asm-feature-card .count{
+    font-size:24px;
+  }
+
+  .table-responsive{
+    font-size:13px;
+  }
+}
