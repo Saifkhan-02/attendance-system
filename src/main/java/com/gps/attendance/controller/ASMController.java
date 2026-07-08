@@ -183,7 +183,7 @@ Double todayExpense = expenseRepository.getTodayExpenseByEmployee(employeeId, to
     List<Attendance> todayAttendance =
             attendanceRepository.findByEmployeeId(employeeId);
 
-    String attendanceStatus = "Absent";
+    String attendanceStatus = "Not Marked Yet";
 
     for (Attendance a : todayAttendance) {
         if (a.getAttendanceDate() != null

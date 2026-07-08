@@ -241,9 +241,9 @@ public class DoctorVisitController {
 
         long extraVisits = Math.max(0, achievement - target);
 
-        System.out.println("EMPLOYEE ID: " + employeeId);
-        System.out.println("TODAY: " + today);
-        System.out.println("ACHIEVEMENT: " + achievement);
+        // System.out.println("EMPLOYEE ID: " + employeeId);
+        // System.out.println("TODAY: " + today);
+        // System.out.println("ACHIEVEMENT: " + achievement);
 
         Map<String, Object> data = new HashMap<>();
 

@@ -393,6 +393,15 @@
       let activityChart = null;
       let performanceChart = null;
 
+      const INCENTIVE_SLABS = [
+         { sale: 150000, incentive: 5000 },
+         { sale: 200000, incentive: 10000 },
+         { sale: 250000, incentive: 15000 },
+         { sale: 300000, incentive: 20000 },
+         { sale: 400000, incentive: 35000 },
+         { sale: 450000, incentive: 40000 }
+        ];
+
       window.onload = function () {
         const currentMonth = new Date().toISOString().slice(0, 7);
         document.getElementById("summaryMonth").value = currentMonth;
@@ -405,9 +414,6 @@
       }
 
       function loadMonthlySummary() {
-
-     
-
         const employeeId = localStorage.getItem("employeeId");
         const month = document.getElementById("summaryMonth").value;
 
@@ -453,10 +459,18 @@
   fetch(`${BASE_URL}/summary/incentive/${employeeId}?month=${month}`)
     .then(response => response.json())
     .then(data => {
-      const monthlySales = data.monthlySales || 0;
-      const incentive = data.incentive || 0;
-      const nextMilestone = data.nextMilestone || 100000;
-      const remaining = data.remaining || 0;
+     const monthlySales = Number(data.monthlySales || 0);
+
+      let incentive = 0;
+      INCENTIVE_SLABS.forEach(slab => {
+        if (monthlySales >= slab.sale) {
+          incentive = slab.incentive;
+        }
+      });
+
+      const nextSlab = INCENTIVE_SLABS.find(slab => monthlySales < slab.sale);
+      const nextMilestone = nextSlab ? nextSlab.sale : INCENTIVE_SLABS[INCENTIVE_SLABS.length - 1].sale;
+      const remaining = nextSlab ? nextSlab.sale - monthlySales : 0;
 
       document.getElementById("monthlySales").innerText = formatRupees(monthlySales);
       document.getElementById("currentIncentive").innerText = formatRupees(incentive);
@@ -478,19 +492,10 @@
 }
 
       function renderMilestoneTable(monthlySales) {
-const milestones = [
-  { sale: 150000, incentive: 5000 },
-  { sale: 200000, incentive: 10000 },
-  { sale: 250000, incentive: 15000 },
-  { sale: 300000, incentive: 20000 },
-  { sale: 400000, incentive: 35000 },
-  { sale: 450000, incentive: 40000 }
-];
-
   const table = document.getElementById("milestoneTable");
   table.innerHTML = "";
 
-  milestones.forEach(item => {
+  INCENTIVE_SLABS.forEach(item => {
     const achieved = monthlySales >= item.sale;
 
     table.innerHTML += `

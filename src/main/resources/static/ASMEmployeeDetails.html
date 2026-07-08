@@ -335,6 +335,22 @@ function loadSummary(){
     .then(res => res.json())
     .then(s => {
       document.getElementById("attendanceStatus").innerText = s.attendanceStatus || "-";
+      const attendance = s.attendanceStatus || "Not Marked Yet";
+      const attEl = document.getElementById("attendanceStatus");
+          
+      attEl.innerText = attendance;
+          
+      attEl.className = "";
+          
+      if(attendance.toLowerCase() === "present"){
+        attEl.classList.add("text-success", "fw-bold");
+      }
+      else if(attendance.toLowerCase() === "absent"){
+        attEl.classList.add("text-danger", "fw-bold");
+      }
+      else{
+        attEl.classList.add("text-warning", "fw-bold");
+      }
       document.getElementById("todayVisits").innerText = s.todayVisits || 0;
       document.getElementById("todayOrders").innerText = s.todayOrders || 0;
       document.getElementById("totalSales").innerText = money(s.totalSales);

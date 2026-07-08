@@ -304,9 +304,9 @@ public Employee assignHeadquarter(@RequestBody Map<String, Object> request) {
     employee.setHeadquarters(headquarterName);
     repository.save(employee);
 
-    System.out.println("Employee ID = " + employeeId);
-    System.out.println("Headquarter Name = " + headquarterName);
-    System.out.println("Searching HQ : " + headquarterName);
+    // System.out.println("Employee ID = " + employeeId);
+    // System.out.println("Headquarter Name = " + headquarterName);
+    // System.out.println("Searching HQ : " + headquarterName);
 
       Headquarter headquarter = headquarterRepository
         .findByHeadquarterNameIgnoreCase(headquarterName)
