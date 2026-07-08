@@ -143,7 +143,7 @@ public Employee updateEmployeeProfile(
     // Editable Fields
     employee.setEmail(updatedEmployee.getEmail());
     employee.setMobile(updatedEmployee.getMobile());
-    employee.setDesignation(updatedEmployee.getDesignation());
+    employee.setRole(updatedEmployee.getRole());
     employee.setReportingManager(updatedEmployee.getReportingManager());
     employee.setHeadquarters(updatedEmployee.getHeadquarters());
     employee.setStatus(updatedEmployee.getStatus());

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.transaction.annotation.Transactional;
 import com.gps.attendance.entity.TourPlan;
 import com.gps.attendance.repository.TourPlanRepository;
 import com.gps.attendance.entity.Employee;
@@ -540,5 +541,30 @@ public List<String> getAsmHeadquarters(@PathVariable Long asmId) {
             .collect(Collectors.toList());
 }
 
+@GetMapping("/all-headquarters")
+public List<Headquarter> getAllHeadquarters() {
+    return headquarterRepository.findAll();
+}
 
+
+@PutMapping("/headquarters/{asmId}")
+@Transactional
+public String updateAsmHeadquarters(
+        @PathVariable Long asmId,
+        @RequestBody List<Long> hqIds
+) {
+    mappingRepository.deleteByEmployeeId(asmId);
+
+    if (hqIds != null) {
+        for (Long hqId : hqIds) {
+            EmployeeHQMapping mapping = new EmployeeHQMapping();
+            mapping.setEmployeeId(asmId);
+            mapping.setHqId(hqId);
+
+            mappingRepository.save(mapping);
+        }
+    }
+
+    return "ASM headquarters updated successfully";
+}
 }
