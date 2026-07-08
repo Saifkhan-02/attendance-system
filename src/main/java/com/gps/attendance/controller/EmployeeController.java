@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.ArrayList;
-import java.util.stream.Collectors;
+// import java.util.ArrayList;
+// import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -143,7 +143,7 @@ public Employee updateEmployeeProfile(
     // Editable Fields
     employee.setEmail(updatedEmployee.getEmail());
     employee.setMobile(updatedEmployee.getMobile());
-    employee.setDesignation(updatedEmployee.getDesignation());
+    employee.setRole(updatedEmployee.getRole());
     employee.setReportingManager(updatedEmployee.getReportingManager());
     employee.setHeadquarters(updatedEmployee.getHeadquarters());
     employee.setStatus(updatedEmployee.getStatus());
@@ -304,9 +304,9 @@ public Employee assignHeadquarter(@RequestBody Map<String, Object> request) {
     employee.setHeadquarters(headquarterName);
     repository.save(employee);
 
-    System.out.println("Employee ID = " + employeeId);
-    System.out.println("Headquarter Name = " + headquarterName);
-    System.out.println("Searching HQ : " + headquarterName);
+    // System.out.println("Employee ID = " + employeeId);
+    // System.out.println("Headquarter Name = " + headquarterName);
+    // System.out.println("Searching HQ : " + headquarterName);
 
       Headquarter headquarter = headquarterRepository
         .findByHeadquarterNameIgnoreCase(headquarterName)

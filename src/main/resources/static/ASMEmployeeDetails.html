@@ -90,7 +90,7 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
     <div class="col-6 col-md-3">
       <div class="stat-card">
         <i class="fa-solid fa-indian-rupee-sign"></i>
-        <div>Total Sales</div>
+        <div>Today Sales</div>
         <h4 id="totalSales">₹0</h4>
       </div>
     </div>
@@ -98,7 +98,7 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
     <div class="col-6 col-md-3">
       <div class="stat-card">
         <i class="fa-solid fa-wallet"></i>
-        <div>Collection</div>
+        <div>Today Collection</div>
         <h4 id="totalCollection">₹0</h4>
       </div>
     </div>
@@ -106,7 +106,7 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
     <div class="col-6 col-md-3">
       <div class="stat-card">
         <i class="fa-solid fa-chart-pie"></i>
-        <div>Due</div>
+        <div>Today Due</div>
         <h4 id="totalDue">₹0</h4>
       </div>
     </div>
@@ -114,18 +114,79 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
     <div class="col-6 col-md-3">
       <div class="stat-card">
         <i class="fa-solid fa-receipt"></i>
-        <div>Expense</div>
+        <div>Today Expense</div>
         <h4 id="totalExpense">₹0</h4>
       </div>
     </div>
+
+    <div class="col-6 col-md-3">
+  <div class="stat-card" onclick="openTourPlans()" style="cursor:pointer">
+    <i class="fa-solid fa-route"></i>
+    <div>Today Tour Plans</div>
+    <h4 id="todayTourPlans">0</h4>
+  </div>
+</div>
   </div>
 
   <div class="card-box">
+   <div class="card border-0 shadow-sm mb-3">
+    <div class="card-body">
+
+        <div class="row g-3 align-items-end">
+
+            <div class="col-6 col-md-4">
+                <label class="form-label fw-semibold">
+                    <i class="fa-solid fa-calendar-days text-primary"></i>
+                    From Date
+                </label>
+
+                <input type="date"
+                       id="fromDate"
+                       class="form-control">
+            </div>
+
+            <div class="col-6 col-md-4">
+                <label class="form-label fw-semibold">
+                    <i class="fa-solid fa-calendar-check text-success"></i>
+                    To Date
+                </label>
+
+                <input type="date"
+                       id="toDate"
+                       class="form-control">
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="d-flex gap-2">
+
+                    <button class="btn btn-primary flex-fill"
+                            onclick="loadAllDetails()">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        Apply
+                    </button>
+
+                    <button class="btn btn-outline-secondary"
+                            onclick="resetFilter()">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
     <ul class="nav nav-tabs mb-3">
       <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#attendanceTab">Attendance</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#visitsTab">Visits</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#ordersTab">Orders</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#expensesTab">Expenses</button></li>
+      <li class="nav-item">
+         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tourPlansTab">Tour Plans </button>
+      </li>
     </ul>
 
     <div class="tab-content">
@@ -185,18 +246,42 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
         <div class="table-responsive">
           <table class="table table-bordered align-middle">
             <thead class="table-light">
-              <tr>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Amount</th>
-                <th>Remarks</th>
-                <th>Status</th>
-              </tr>
+             <tr>
+  <th>Date</th>
+  <th>Route</th>
+  <th>Fare</th>
+  <th>DA</th>
+  <th>Other</th>
+  <th>Total</th>
+</tr>
             </thead>
             <tbody id="expensesTable"></tbody>
           </table>
         </div>
       </div>
+
+      <div class="tab-pane fade" id="tourPlansTab">
+  <div class="table-responsive">
+    <table class="table table-bordered align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Date</th>
+          <th>HQ</th>
+          <th>Route</th>
+          <th>Day</th>
+          <th>KM</th>
+          <th>Fare</th>
+          <th>DA</th>
+          <th>Other</th>
+          <th>Total</th>
+          <th>Status</th>
+         
+        </tr>
+      </thead>
+      <tbody id="tourPlansTable"></tbody>
+    </table>
+  </div>
+</div>
 
     </div>
   </div>
@@ -215,147 +300,202 @@ const token = localStorage.getItem("sessionToken");
 if (!asmId || !token || role !== "ASM" || !employeeId) {
   window.location.href = "index.html";
 }
-
-window.onload = function(){
-  loadProfile();
-  loadSummary();
-  loadAttendance();
-  loadVisits();
-  loadOrders();
-  loadExpenses();
-};
-
 function money(value){
-  return "₹" + Number(value || 0).toLocaleString("en-IN");
+    return "₹" + Number(value || 0).toLocaleString("en-IN");
 }
 
-function loadProfile(){
-  fetch(`${BASE_URL}/asm/employee/${employeeId}`)
+window.onload = function(){
+  loadSummary();
+  loadAllDetails();
+};
+function loadAllDetails(){
+
+  const fromDate = document.getElementById("fromDate").value;
+  const toDate = document.getElementById("toDate").value;
+
+  fetch(`${BASE_URL}/asm/employee-details-fast/${employeeId}?fromDate=${fromDate}&toDate=${toDate}`)
     .then(res => res.json())
-    .then(emp => {
+    .then(data => {
+
+      const emp = data.employee || {};
       document.getElementById("empName").innerText = emp.name || "-";
       document.getElementById("empRole").innerText = emp.role || "MR";
       document.getElementById("empHq").innerText = emp.headquarters || "-";
       document.getElementById("empMobile").innerText = emp.mobile || "-";
+
+      renderAttendance(data.attendance || []);
+      renderVisits(data.visits || []);
+      renderOrders(data.orders || []);
+     renderExpenses(data.tourPlans || []);
+      renderTourPlans(data.tourPlans || []);
     });
 }
-
 function loadSummary(){
   fetch(`${BASE_URL}/asm/employee-summary/${employeeId}`)
     .then(res => res.json())
     .then(s => {
       document.getElementById("attendanceStatus").innerText = s.attendanceStatus || "-";
+      const attendance = s.attendanceStatus || "Not Marked Yet";
+      const attEl = document.getElementById("attendanceStatus");
+          
+      attEl.innerText = attendance;
+          
+      attEl.className = "";
+          
+      if(attendance.toLowerCase() === "present"){
+        attEl.classList.add("text-success", "fw-bold");
+      }
+      else if(attendance.toLowerCase() === "absent"){
+        attEl.classList.add("text-danger", "fw-bold");
+      }
+      else{
+        attEl.classList.add("text-warning", "fw-bold");
+      }
       document.getElementById("todayVisits").innerText = s.todayVisits || 0;
       document.getElementById("todayOrders").innerText = s.todayOrders || 0;
       document.getElementById("totalSales").innerText = money(s.totalSales);
       document.getElementById("totalCollection").innerText = money(s.totalCollection);
       document.getElementById("totalDue").innerText = money(s.totalDue);
       document.getElementById("totalExpense").innerText = money(s.totalExpense);
+      document.getElementById("todayTourPlans").innerText = s.todayTourPlans || 0;
     });
 }
+function resetFilter(){
 
-function loadAttendance(){
-  fetch(`${BASE_URL}/asm/mr-attendance/${employeeId}`)
-    .then(res => res.json())
-    .then(data => {
-      const table = document.getElementById("attendanceTable");
-      table.innerHTML = "";
+    document.getElementById("fromDate").value="";
+    document.getElementById("toDate").value="";
 
-      if(!data || data.length === 0){
-        table.innerHTML = `<tr><td colspan="4" class="text-center">No attendance found</td></tr>`;
-        return;
-      }
+    loadAllDetails();
 
-      data.forEach(a => {
-        table.innerHTML += `
-          <tr>
-            <td>${a.attendanceDate || "-"}</td>
-            <td>${a.attendanceTime || a.time || "-"}</td>
-            <td>${a.location || "-"}</td>
-            <td>${a.status || "-"}</td>
-          </tr>
-        `;
-      });
-    });
+}
+function renderAttendance(data){
+  const table = document.getElementById("attendanceTable");
+  table.innerHTML = "";
+
+  if(!data || data.length === 0){
+    table.innerHTML = `<tr><td colspan="4" class="text-center">No attendance found</td></tr>`;
+    return;
+  }
+
+  data.forEach(a => {
+    table.innerHTML += `
+      <tr>
+        <td>${a.attendanceDate || "-"}</td>
+        <td>${a.attendanceTime || a.time || "-"}</td>
+        <td>${a.location || "-"}</td>
+        <td>${a.status || "-"}</td>
+      </tr>
+    `;
+  });
 }
 
-function loadVisits(){
-  fetch(`${BASE_URL}/asm/mr-visits/${employeeId}`)
-    .then(res => res.json())
-    .then(data => {
-      const table = document.getElementById("visitsTable");
-      table.innerHTML = "";
+function renderVisits(data){
+  const table = document.getElementById("visitsTable");
+  table.innerHTML = "";
 
-      if(!data || data.length === 0){
-        table.innerHTML = `<tr><td colspan="5" class="text-center">No visits found</td></tr>`;
-        return;
-      }
+  if(!data || data.length === 0){
+    table.innerHTML = `<tr><td colspan="5" class="text-center">No visits found</td></tr>`;
+    return;
+  }
 
-      data.forEach(v => {
-        table.innerHTML += `
-          <tr>
-            <td>${v.visitDate || "-"}</td>
-            <td>${v.doctorName || "-"}</td>
-            <td>${v.visitTime || "-"}</td>
-            <td>${v.workingWithName || v.workingWith || "Alone"}</td>
-            <td>${v.remarks || "-"}</td>
-          </tr>
-        `;
-      });
-    });
+  data.forEach(v => {
+    table.innerHTML += `
+      <tr>
+        <td>${v.visitDate || "-"}</td>
+        <td>${v.doctorName || "-"}</td>
+        <td>${v.visitTime || "-"}</td>
+        <td>${v.workingWithName || v.workingWith || "Alone"}</td>
+        <td>${v.remarks || "-"}</td>
+      </tr>
+    `;
+  });
 }
 
-function loadOrders(){
-  fetch(`${BASE_URL}/asm/mr-orders/${employeeId}`)
-    .then(res => res.json())
-    .then(data => {
-      const table = document.getElementById("ordersTable");
-      table.innerHTML = "";
+function renderOrders(data){
+  const table = document.getElementById("ordersTable");
+  table.innerHTML = "";
 
-      if(!data || data.length === 0){
-        table.innerHTML = `<tr><td colspan="6" class="text-center">No orders found</td></tr>`;
-        return;
-      }
+  if(!data || data.length === 0){
+    table.innerHTML = `<tr><td colspan="6" class="text-center">No orders found</td></tr>`;
+    return;
+  }
 
-      data.forEach(o => {
-        table.innerHTML += `
-          <tr>
-            <td>${o.orderDate || "-"}</td>
-            <td>${o.doctorName || "-"}</td>
-            <td>${o.distributorName || "-"}</td>
-            <td>${o.productName || "-"}</td>
-            <td>${money(o.orderAmount)}</td>
-            <td>${o.status || "-"}</td>
-          </tr>
-        `;
-      });
-    });
+  data.forEach(o => {
+    table.innerHTML += `
+      <tr>
+        <td>${o.orderDate || "-"}</td>
+        <td>${o.doctorName || "-"}</td>
+        <td>${o.distributorName || "-"}</td>
+        <td>${o.productName || "-"}</td>
+        <td>${money(o.orderAmount)}</td>
+        <td>${o.status || "-"}</td>
+      </tr>
+    `;
+  });
 }
 
-function loadExpenses(){
-  fetch(`${BASE_URL}/asm/mr-expenses/${employeeId}`)
-    .then(res => res.json())
-    .then(data => {
-      const table = document.getElementById("expensesTable");
-      table.innerHTML = "";
 
-      if(!data || data.length === 0){
-        table.innerHTML = `<tr><td colspan="5" class="text-center">No expenses found</td></tr>`;
-        return;
-      }
+function renderExpenses(data){
+  const table = document.getElementById("expensesTable");
+  table.innerHTML = "";
 
-      data.forEach(e => {
-        table.innerHTML += `
-          <tr>
-            <td>${e.expenseDate || "-"}</td>
-            <td>${e.expenseType || "-"}</td>
-            <td>${money(e.amount)}</td>
-            <td>${e.remarks || "-"}</td>
-            <td>${e.status || "-"}</td>
-          </tr>
-        `;
-      });
+  if(!data || data.length === 0){
+    table.innerHTML = `<tr><td colspan="6" class="text-center">No expense found</td></tr>`;
+    return;
+  }
+
+  data.forEach(t => {
+    table.innerHTML += `
+      <tr>
+        <td>${t.travelDate || "-"}</td>
+        <td>${t.routeName || "-"}</td>
+        <td>${money(t.fareAmount)}</td>
+        <td>${money(t.daAmount)}</td>
+        <td>${money(t.otherAmount)}</td>
+        <td>${money(t.totalExpense)}</td>
+      </tr>
+    `;
+  });
+}
+
+function renderTourPlans(data){
+  const table = document.getElementById("tourPlansTable");
+  table.innerHTML = "";
+
+  if(!data || data.length === 0){
+    table.innerHTML = `<tr><td colspan="10" class="text-center">No tour plans found</td></tr>`;
+    return;
+  }
+
+  data.forEach(t => {
+    table.innerHTML += `
+      <tr>
+        <td>${t.travelDate || "-"}</td>
+        <td>${t.headquarter || "-"}</td>
+        <td>${t.routeName || "-"}</td>
+        <td>${t.weekDay || "-"}</td>
+        <td>${t.travelKm || 0}</td>
+        <td>${money(t.fareAmount)}</td>
+        <td>${money(t.daAmount)}</td>
+        <td>${money(t.otherAmount)}</td>
+        <td>${money(t.totalExpense)}</td>
+        <td>${t.status || "-"}</td>
+      </tr>
+    `;
+  });
+}
+
+function openTourPlans(){
+  const tabBtn = document.querySelector('[data-bs-target="#tourPlansTab"]');
+
+  if(tabBtn){
+    new bootstrap.Tab(tabBtn).show();
+
+    document.getElementById("tourPlansTab").scrollIntoView({
+      behavior: "smooth",
+      block: "start"
     });
+  }
 }
 </script>
 

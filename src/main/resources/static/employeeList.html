@@ -299,6 +299,16 @@
     }
 
 }
+.hq-badge{
+  display:inline-block;
+  background:#eaf1ff;
+  color:#0d6efd;
+  padding:6px 10px;
+  border-radius:18px;
+  font-size:13px;
+  font-weight:700;
+  margin:3px;
+}
 
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -447,6 +457,8 @@
                   <th>Name</th>
                   <th>Username</th>
                   <th>Email</th>
+                  <th>Role</th>
+                  <th>Head Quarter</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -512,7 +524,7 @@
     <!-- Bootstrap JS -->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- <script src="js/config.js"></script> -->
+    <script src="js/config.js"></script>
     <!-- Sidebar Toggle -->
 
     <script>
@@ -520,6 +532,8 @@
         let currentEmployee = null;
         let isEditMode = false;
         let hasUnsavedChanges = false;
+
+        let employeeHqMap = {};
      function goBack() {
         window.location.replace("admin-dashboard.html");
       }
@@ -531,21 +545,52 @@
       }
 
       setInterval(updateTime, 1000);
-      window.onload = function () {
+window.onload = async function () {
+  const response = await fetch(`${BASE_URL}/get-employees`);
+  const employees = await response.json();
 
-    fetch("/get-employees")
-    .then(response => response.json())
-    .then(employees => {
+  employees.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+  allEmployees = employees;
 
-        employees.sort((a, b) =>
-    (a.name || "").localeCompare(b.name || ""));
-    allEmployees = employees;
+  await loadAsmHeadquarters();
 
-        document.getElementById("totalEmployees").innerText =
-            employees.length;
+  document.getElementById("totalEmployees").innerText = employees.length;
+  loadEmployeeTable();
+};
+async function loadAsmHeadquarters(){
+  const asms = allEmployees.filter(emp =>
+    (emp.role || "").toLowerCase() === "asm"
+  );
 
-            loadEmployeeTable();
-    });
+  await Promise.all(asms.map(async emp => {
+    try{
+      const res = await fetch(`${BASE_URL}/asm/headquarters/${emp.id}`);
+      employeeHqMap[emp.id] = await res.json();
+    }catch(e){
+      employeeHqMap[emp.id] = [];
+    }
+  }));
+}
+
+function getEmployeeHqText(emp){
+  if((emp.role || "").toLowerCase() === "asm"){
+    const hqs = employeeHqMap[emp.id] || [];
+    return hqs.length ? hqs.join(", ") : "-";
+  }
+
+  return emp.headquarters || "-";
+}
+
+function getEmployeeHqHtml(emp){
+  if((emp.role || "").toLowerCase() === "asm"){
+    const hqs = employeeHqMap[emp.id] || [];
+
+    if(!hqs.length) return "-";
+
+    return hqs.map(hq => `<span class="hq-badge">${hq}</span>`).join("");
+  }
+
+  return emp.headquarters || "-";
 }
          function loadAdminInfo() {
 
@@ -555,31 +600,31 @@
       loadAdminInfo();
       updateTime();
 
-  function loadEmployeeTable() {
+function loadEmployeeTable() {
 
-    let table = document.getElementById("employeeTable");
+  let table = document.getElementById("employeeTable");
+  table.innerHTML = "";
 
-    table.innerHTML = "";
+  allEmployees.forEach(employee => {
 
-    allEmployees.forEach(employee => {
+    table.innerHTML += `
+      <tr>
+        <td>${employee.id}</td>
+        <td>${employee.name || "-"}</td>
+        <td>${employee.username || "-"}</td>
+        <td>${employee.email || "-"}</td>
+        <td>${employee.role || "-"}</td>
+        <td>${getEmployeeHqHtml(employee)}</td>
+        <td>
+          <button class="btn btn-info btn-sm"
+                  onclick="viewEmployee(${employee.id})">
+            <i class="fas fa-eye"></i>
+          </button>
+        </td>
+      </tr>
+    `;
 
-        table.innerHTML += `
-        <tr>
-            <td>${employee.id}</td>
-            <td>${employee.name}</td>
-            <td>${employee.username}</td>
-            <td>${employee.email}</td>
-            <td>
-                <button class="btn btn-info btn-sm"
-                        onclick="viewEmployee(${employee.id})">
-                    <i class="fas fa-eye"></i>
-                </button>
-            </td>
-        </tr>
-        `;
-
-    });
-
+  });
 }
 
 
@@ -620,7 +665,7 @@ function viewEmployee(id){
 
 <div class="profile-section">
 
-   <img src="${emp.profileImage || 'images/user.png'}">
+   <img src="${emp.profileImage || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}">
 
     <h2 class="mt-3">${emp.name}</h2>
 
@@ -736,19 +781,27 @@ function viewEmployee(id){
         <i class="fas fa-briefcase"></i>
     </div>
     <div>
-        <div class="info-title">Designation</div>
+        <div class="info-title">Role</div>
 
 <div class="info-value">
 
-<span id="designationText">
-    ${emp.designation || '-'}
+<span id="roleText">
+  ${emp.role || '-'}
 </span>
+
+<select id="roleInput"
+        class="form-select d-none"
+        onchange="hasUnsavedChanges=true">
+  <option value="MR" ${emp.role === "MR" ? "selected" : ""}>MR</option>
+  <option value="ASM" ${emp.role === "ASM" ? "selected" : ""}>ASM</option>
+  <option value="ADMIN" ${emp.role === "ADMIN" ? "selected" : ""}>ADMIN</option>
+</select>
 
 <input
 type="text"
 id="designationInput"
 class="form-control d-none"
-value="${emp.designation || ''}"
+value="${emp.role || ''}"
 oninput="hasUnsavedChanges=true">
 
 </div>
@@ -797,17 +850,11 @@ oninput="hasUnsavedChanges=true">
        <div class="info-title">Head Quarter</div>
 
 <div class="info-value">
+<span id="headQuarterText">
+  ${getEmployeeHqHtml(emp)}
+</span>
 
-    <span id="headQuarterText">
-        ${emp.headquarters || '-'}
-    </span>
-
-    <input
-        type="text"
-        id="headQuarterInput"
-        class="form-control d-none"
-        value="${emp.headquarters || ''}"
-          oninput="hasUnsavedChanges=true">
+<div id="headQuarterEditBox" class="d-none"></div>
 
 </div>
     </div>
@@ -881,10 +928,57 @@ document.getElementById("employeeModal")
 );
 
 modal.show();
+loadHeadQuarterInput(emp);
 
 
 }
+function loadHeadQuarterInput(emp){
+  const box = document.getElementById("headQuarterEditBox");
+  if(!box) return;
 
+  fetch(`${BASE_URL}/asm/all-headquarters`)
+    .then(res => res.json())
+    .then(hqs => {
+      box.innerHTML = "";
+
+      if((emp.role || "").toUpperCase() === "ASM"){
+        const selectedHqs = employeeHqMap[emp.id] || [];
+
+        hqs.forEach(hq => {
+          const hqName = hq.headquarterName;
+
+          box.innerHTML += `
+            <div class="form-check">
+              <input class="form-check-input asm-hq-check"
+                     type="checkbox"
+                     value="${hq.id}"
+                     ${selectedHqs.includes(hqName) ? "checked" : ""}
+                     onchange="hasUnsavedChanges=true">
+
+              <label class="form-check-label">
+                ${hqName}
+              </label>
+            </div>
+          `;
+        });
+
+      } else {
+        box.innerHTML = `
+          <select id="headQuarterInput"
+                  class="form-select"
+                  onchange="hasUnsavedChanges=true">
+            <option value="">Select Headquarter</option>
+            ${hqs.map(hq => `
+              <option value="${hq.headquarterName}"
+                ${emp.headquarters === hq.headquarterName ? "selected" : ""}>
+                ${hq.headquarterName}
+              </option>
+            `).join("")}
+          </select>
+        `;
+      }
+    });
+}
 document.getElementById("employeeModal")
 .addEventListener("hide.bs.modal", function (e) {
 
@@ -893,15 +987,10 @@ document.getElementById("employeeModal")
         let confirmClose = confirm(
             "You have unsaved changes.\n\nDo you want to close without saving?"
         );
-
         if (!confirmClose) {
-
             e.preventDefault();
-
         }
-
     }
-
 });
 
 document.getElementById("employeeModal")
@@ -915,8 +1004,6 @@ document.getElementById("employeeModal")
 });
 
 function editEmployee(id){
-
-
     window.location.href =
         "editEmployee.html?id=" + id;
 
@@ -1120,7 +1207,7 @@ ${new Date().toLocaleString()}
                 <td>${emp.username || ""}</td>
                 <td>${emp.email || ""}</td>
                 <td>${emp.mobile || ""}</td>
-                <td>${emp.designation || ""}</td>
+                <td>${emp.role || ""}</td>
                 <td>${emp.reportingManager || ""}</td>
                 <td>${emp.headquarters || ""}</td>
                 <td>${emp.joiningDate || ""}</td>
@@ -1167,7 +1254,7 @@ async function exportEmployeeExcel() {
 
             "Mobile": emp.mobile || "",
 
-            "Designation": emp.designation || "",
+            "Designation": emp.role || "",
 
             "Reporting Manager": emp.reportingManager || "",
 
@@ -1303,7 +1390,7 @@ doc.text("Total Employees : " + employees.length,235,52);
                 emp.username || "",
                 emp.email || "",
                 emp.mobile || "",
-                emp.designation || "",
+                emp.role || "",
                 emp.reportingManager || "",
                 emp.headquarters || "",
                 emp.joiningDate || ""
@@ -1322,7 +1409,7 @@ doc.text("Total Employees : " + employees.length,235,52);
                 "Username",
                 "Email",
                 "Mobile",
-                "Designation",
+                "Role",
                 "Reporting Manager",
                 "Head Quarter",
                 "Joining Date"
@@ -1426,19 +1513,31 @@ console.log("Before toggleEdit");
         document.getElementById("mobileText").classList.add("d-none");
         document.getElementById("mobileInput").classList.remove("d-none");
 
-        document.getElementById("designationText").classList.add("d-none");
-        document.getElementById("designationInput").classList.remove("d-none");
+        document.getElementById("roleText").classList.add("d-none");
+        document.getElementById("roleInput").classList.remove("d-none");
 
         document.getElementById("reportingManagerText").classList.add("d-none");
         document.getElementById("reportingManagerInput").classList.remove("d-none");
 
         document.getElementById("headQuarterText").classList.add("d-none");
-        document.getElementById("headQuarterInput").classList.remove("d-none");
+        document.getElementById("headQuarterEditBox").classList.remove("d-none");
 
         document.getElementById("statusText").classList.add("d-none");
         document.getElementById("statusInput").classList.remove("d-none");
 
     }else{
+        let selectedHeadquarters = "";
+
+const selectedRole = document.getElementById("roleInput").value;
+
+if(selectedRole.toUpperCase() === "ASM"){
+  selectedHeadquarters = Array.from(
+    document.querySelectorAll(".asm-hq-check:checked")
+  ).map(cb => cb.value).join(",");
+} else {
+  selectedHeadquarters =
+    document.getElementById("headQuarterInput")?.value || "";
+}
 
         const updatedEmployee = {
 
@@ -1446,20 +1545,19 @@ console.log("Before toggleEdit");
 
     mobile: document.getElementById("mobileInput").value,
 
-    designation: document.getElementById("designationInput").value,
+    role: document.getElementById("roleInput").value,
 
     reportingManager:
         document.getElementById("reportingManagerInput").value,
 
-    headquarters:
-        document.getElementById("headQuarterInput").value,
+headquarters: selectedHeadquarters,
 
     status:
         document.getElementById("statusInput").value
 
 };
 
-fetch("/employee/update-profile/" + currentEmployee.id, {
+fetch(`${BASE_URL}/employee/update-profile/${currentEmployee.id}`, {
 
     method: "PUT",
 
@@ -1475,7 +1573,7 @@ fetch("/employee/update-profile/" + currentEmployee.id, {
 
     currentEmployee.email = data.email;
     currentEmployee.mobile = data.mobile;
-    currentEmployee.designation = data.designation;
+    currentEmployee.role = data.role;
     currentEmployee.reportingManager = data.reportingManager;
     currentEmployee.headquarters = data.headquarters;
     currentEmployee.status = data.status;
@@ -1498,11 +1596,11 @@ fetch("/employee/update-profile/" + currentEmployee.id, {
         document.getElementById("mobileText").classList.remove("d-none");
         document.getElementById("mobileInput").classList.add("d-none");
 
-        document.getElementById("designationText").innerText =
-        document.getElementById("designationInput").value;
-
-        document.getElementById("designationText").classList.remove("d-none");
-        document.getElementById("designationInput").classList.add("d-none");
+        document.getElementById("roleText").innerText =
+        document.getElementById("roleInput").value;
+        
+        document.getElementById("roleText").classList.remove("d-none");
+        document.getElementById("roleInput").classList.add("d-none");
 
         document.getElementById("reportingManagerText").innerText =
         document.getElementById("reportingManagerInput").value;
@@ -1510,11 +1608,13 @@ fetch("/employee/update-profile/" + currentEmployee.id, {
         document.getElementById("reportingManagerText").classList.remove("d-none");
         document.getElementById("reportingManagerInput").classList.add("d-none");
 
-        document.getElementById("headQuarterText").innerText =
-        document.getElementById("headQuarterInput").value;
+document.getElementById("headQuarterText").innerHTML =
+  selectedHeadquarters
+    ? selectedHeadquarters.split(",").map(hq => `<span class="hq-badge">${hq}</span>`).join("")
+    : "-";
 
-        document.getElementById("headQuarterText").classList.remove("d-none");
-        document.getElementById("headQuarterInput").classList.add("d-none");
+       document.getElementById("headQuarterText").classList.remove("d-none");
+document.getElementById("headQuarterEditBox").classList.add("d-none");
 
         document.getElementById("statusText").innerText =
         document.getElementById("statusInput").value;
@@ -1530,6 +1630,17 @@ if (index !== -1) {
 
     allEmployees[index] = data;
 
+}
+if(document.getElementById("roleInput").value.toUpperCase() === "ASM"){
+  const selectedHqIds = Array.from(
+    document.querySelectorAll(".asm-hq-check:checked")
+  ).map(cb => Number(cb.value));
+
+  fetch(`${BASE_URL}/asm/headquarters/${currentEmployee.id}`, {
+    method: "PUT",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(selectedHqIds)
+  });
 }
 loadEmployeeTable();
 

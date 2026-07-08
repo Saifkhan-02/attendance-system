@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.gps.attendance.entity.Expense;
 
@@ -48,4 +49,41 @@ FROM Expense e
 WHERE e.employeeId = :employeeId
 """)
     Double getTotalExpenseByEmployee(Long employeeId);
+
+@Query("""
+SELECT e.employeeId, COALESCE(SUM(e.amount),0)
+FROM Expense e
+WHERE e.employeeId IN :employeeIds
+GROUP BY e.employeeId
+""")
+List<Object[]> getExpenseSummaryByEmployees(
+        @Param("employeeIds") List<Long> employeeIds
+);
+
+List<Expense> findByEmployeeIdAndExpenseDateOrderByIdDesc(
+        Long employeeId,
+        String expenseDate
+);
+
+List<Expense> findByEmployeeIdAndExpenseDateStartingWithOrderByIdDesc(
+        Long employeeId,
+        String month
+);
+
+@Query("""
+SELECT COALESCE(SUM(e.amount),0)
+FROM Expense e
+WHERE e.employeeId = :employeeId
+AND e.expenseDate = :today
+""")
+Double getTodayExpenseByEmployee(
+        @Param("employeeId") Long employeeId,
+        @Param("today") String today
+);
+List<Expense> findByEmployeeIdAndExpenseDateBetweenOrderByIdDesc(
+        Long employeeId,
+        String fromDate,
+        String toDate
+);
 }
+

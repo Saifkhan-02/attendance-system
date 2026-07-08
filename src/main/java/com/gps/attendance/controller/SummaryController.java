@@ -73,6 +73,10 @@ public Map<String, Object> getIncentiveSummary(
     Double monthlySales = productOrderRepository
             .getMonthlySalesByEmployee(employeeId, month);
 
+            if (monthlySales == null) {
+                    monthlySales = 0.0;
+            }
+
     int incentive = calculateIncentive(monthlySales);
     int nextMilestone = getNextMilestone(monthlySales);
 
@@ -88,20 +92,28 @@ public Map<String, Object> getIncentiveSummary(
 }
 
 private int calculateIncentive(Double sales) {
+    if (sales == null) sales = 0.0;
+
     if (sales >= 450000) return 40000;
     if (sales >= 400000) return 35000;
     if (sales >= 300000) return 20000;
-    if (sales >= 200000) return 15000;
-    if (sales >= 100000) return 10000;
+    if (sales >= 250000) return 15000;
+    if (sales >= 200000) return 10000;
+    if (sales >= 150000) return 5000;
+
     return 0;
 }
 
 private int getNextMilestone(Double sales) {
-    if (sales < 100000) return 100000;
+    if (sales == null) sales = 0.0;
+
+    if (sales < 150000) return 150000;
     if (sales < 200000) return 200000;
+    if (sales < 250000) return 250000;
     if (sales < 300000) return 300000;
     if (sales < 400000) return 400000;
     if (sales < 450000) return 450000;
+
     return 450000;
 }
 
