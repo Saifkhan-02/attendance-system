@@ -25,9 +25,10 @@
       /* Navbar */
 
       .top-navbar {
-        min-height: 80px;
+        height: 80px;
         min-height: 80px;
         padding: 0 16px;
+        overflow: hidden;
         background: #fff;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         position: fixed;
@@ -37,16 +38,17 @@
         z-index: 1050;
       }
       .navbar-logo {
-        width: 100px;
-        height: 90px;
-        object-fit: contain;
-      }
+    width: 150px;       
+    height: 76px;       
+    object-fit: contain;
+    display: block;
+    }
 
       /* Sidebar */
 
       .sidebar {
         position: fixed;
-        top: 90px;
+        top: 80px;
         left: 0;
         width: 250px;
         height: 100vh;
@@ -380,14 +382,22 @@
           flex-direction: column;
           justify-content: center;
         }
-        .navbar-logo {
-          width: 85px;
-          height: 80px;
+
+       .top-navbar{
+          height:80px;
+           min-height:80px;
+          }
+
+        .navbar-logo{
+          width:120px;    
+          height:68px;
         }
-         .count {
-        font-size: 28px;
-        font-weight: bold;
-      }
+        
+        .count {
+         font-size: 28px;
+         font-weight: bold;
+        }
+
         .doctor-avatar {
           width: 70px;
           height: 70px;
