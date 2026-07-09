@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +24,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import com.gps.attendance.entity.DistributorStock;
 import com.gps.attendance.entity.PaymentHistory;
@@ -525,11 +525,6 @@ public Page<ProductOrder> searchOrders(
 
         employeeBox.setWidthPercentage(100);
 
-        employeeBox.addCell("Employee ID");
-        employeeBox.addCell(
-                String.valueOf(firstOrder.getEmployeeId())
-        );
-
         employeeBox.addCell("Employee Name");
         employeeBox.addCell(firstOrder.getEmployeeName());
 
@@ -578,7 +573,7 @@ public Page<ProductOrder> searchOrders(
         );
 
         document.add(orderTitle);
-        document.add(new Paragraph(" "));
+
 
 // ================= GROUP BY DOCTOR =================
         Map<String, List<ProductOrder>> doctorWiseOrders
@@ -620,8 +615,8 @@ public Page<ProductOrder> searchOrders(
 
             document.add(doctorHeading);
 
-            document.add(new Paragraph(" "));
-
+ document.add(new Paragraph(" "));
+ 
             PdfPTable table = new PdfPTable(5);
 
             table.setWidthPercentage(100);
@@ -718,8 +713,6 @@ public Page<ProductOrder> searchOrders(
 
             document.add(table);
 
-            document.add(new Paragraph(" "));
-
             Paragraph subtotal
                     = new Paragraph(
                             "Doctor Total : "
@@ -749,12 +742,7 @@ public Page<ProductOrder> searchOrders(
 
             document.add(qty);
 
-            document.add(new Paragraph(" "));
-            document.add(new Paragraph(" "));
-
         }
-
-        document.add(new Paragraph(" "));
 
 // ================= PAYMENT SUMMARY =================
         Paragraph paymentTitle = new Paragraph(
@@ -764,7 +752,7 @@ public Page<ProductOrder> searchOrders(
 
         document.add(paymentTitle);
 
-        document.add(new Paragraph(" "));
+ document.add(new Paragraph(" "));
 
         PdfPTable paymentTable = new PdfPTable(2);
 
@@ -788,8 +776,7 @@ public Page<ProductOrder> searchOrders(
 
         document.add(paymentTable);
 
-        document.add(new Paragraph(" "));
-        document.add(new Paragraph(" "));
+
 
 // ================= GRAND TOTAL =================
         Paragraph grandTotal = new Paragraph(
@@ -801,9 +788,6 @@ public Page<ProductOrder> searchOrders(
 
         document.add(grandTotal);
 
-        document.add(new Paragraph(" "));
-        document.add(new Paragraph(" "));
-
 // ================= SIGNATURE =================
         Paragraph sign = new Paragraph(
                 "____________________________\nAuthorized Signature",
@@ -813,9 +797,6 @@ public Page<ProductOrder> searchOrders(
         sign.setAlignment(Paragraph.ALIGN_RIGHT);
 
         document.add(sign);
-
-        document.add(new Paragraph(" "));
-        document.add(new Paragraph(" "));
 
 // ================= CLOSE PDF =================
         document.close();

@@ -465,7 +465,6 @@
                 <thead class="table-light">
 
                 <tr>
-                <th>Employee ID</th>
                    <th>Employee</th>
                    <th>Doctor</th>
                    <th>Products</th>
@@ -689,8 +688,6 @@ html += `
 
 <tr>
 
-<td>${order.employeeId}</td>
-
 <td>${order.employeeName}</td>
 
 <td>${order.doctorName}</td>
@@ -737,7 +734,7 @@ PDF
 id="products-${order.invoiceNo}"
 style="display:none;">
 
-<td colspan="10">
+<td colspan="9">
 
 <div id="productsBody-${order.invoiceNo}"></div>
 
@@ -877,8 +874,6 @@ Amount : ₹${order.orderAmount || 0}
 
        html += `
 <tr>
-
-<td>${order.employeeId}</td>
 
 <td>${order.employeeName}</td>
 

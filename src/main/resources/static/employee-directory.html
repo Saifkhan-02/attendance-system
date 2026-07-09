@@ -237,7 +237,7 @@
           </button>
         </div>
       </div>
-      <br>
+      <br />
 
       <!-- Employee List -->
 
@@ -249,6 +249,8 @@
 
     <script>
       let employeeTomSelect = null;
+      let allEmployees = [];
+      let employeeHqMap = {};
 
       function goBack() {
         window.location.replace("admin-dashboard.html");
@@ -275,89 +277,13 @@
         try {
           const response = await fetch(`${BASE_URL}/get-employees`);
 
-          const employees = await response.json();
-          loadEmployeeDropdown(employees);
+          allEmployees = await response.json();
 
-          let html = "";
+          await loadAsmHeadquarters();
 
-          employees.forEach((emp) => {
-            const statusColor =
-              emp.status === "Active" ? "success" : "secondary";
+          loadEmployeeDropdown(allEmployees);
 
-            html += `
-
-      <div class="employee-card"
-     data-id="${emp.id}"
-     onclick="openEmployeeProfile(${emp.id})">
-
-        <div class="row align-items-center g-3">
-
-          <div class="col-md-1 text-center">
-
-            <div class="employee-avatar">
-
-             ${
-               emp.profileImage || emp.profile_image
-                 ? `<img src="${emp.profileImage || emp.profile_image}"
-                     style="width:70px;height:70px;border-radius:50%;object-fit:cover;">`
-                 : `<i class="fas fa-user"></i>`
-             }
-
-            </div>
-
-          </div>
-
-          <div class="col-md-3">
-
-            <h5 class="mb-1">
-              ${emp.name || ""}
-            </h5>
-
-            <div class="text-primary">
-              ${emp.designation || ""}
-            </div>
-
-          </div>
-
-          <div class="col-md-3">
-
-          <div> 📞 <strong>Mobile</strong> </div>
-          <small class="text-muted">${emp.mobile || "Not Available"}</small>
-          </div>
-
-          <div class="col-md-2">
-            <div>  📍 <strong>HQ</strong> </div> 
-            <small class="text-muted"> 
-                ${emp.headquarters || "Not Assigned"}
-                 </small>
-            </div> 
-            
-            <div class="col-md-2">
-
-            <div class="col-md-2">
-                <div><strong>Status</strong></div>
-
-               <span class="badge ${emp.status === "Active" ? "bg-success" : "bg-secondary"}">
-               ${emp.status || "Pending"}
-               </span>
-                </div>
-                </div> 
-                <div class="col-md-1 text-end">
-
-            <div class="arrow-btn">
-              ➜
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      `;
-          });
-
-          document.getElementById("employeeContainer").innerHTML = html;
+          renderEmployees();
 
           if (employeeTomSelect) {
             employeeTomSelect.destroy();
@@ -371,6 +297,123 @@
         } catch (error) {
           console.error(error);
         }
+      }
+
+      async function loadAsmHeadquarters() {
+        const asms = allEmployees.filter(
+          (emp) => (emp.role || "").toLowerCase() === "asm",
+        );
+
+        await Promise.all(
+          asms.map(async (emp) => {
+            try {
+              const res = await fetch(`${BASE_URL}/asm/headquarters/${emp.id}`);
+
+              employeeHqMap[emp.id] = await res.json();
+            } catch (e) {
+              employeeHqMap[emp.id] = [];
+            }
+          }),
+        );
+      }
+
+      function getEmployeeHqHtml(emp) {
+        if ((emp.role || "").toLowerCase() === "asm") {
+          const hqs = employeeHqMap[emp.id] || [];
+
+          if (!hqs.length) {
+            return "Not Assigned";
+          }
+
+          return hqs.join(", ");
+        }
+
+        return emp.headquarters || "Not Assigned";
+      }
+
+      function renderEmployees() {
+        let html = "";
+
+        allEmployees.forEach((emp) => {
+          html += `
+
+<div class="employee-card"
+     data-id="${emp.id}"
+     onclick="openEmployeeProfile(${emp.id})">
+
+    <div class="row align-items-center g-3">
+
+        <div class="col-md-1 text-center">
+
+            <div class="employee-avatar">
+
+            ${
+              emp.profileImage || emp.profile_image
+                ? `<img src="${emp.profileImage || emp.profile_image}"
+                    style="width:70px;height:70px;border-radius:50%;object-fit:cover;">`
+                : `<i class="fas fa-user"></i>`
+            }
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <h5 class="mb-1">${emp.name || ""}</h5>
+
+            <div class="text-primary">
+                ${emp.role || ""}
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div>📞 <strong>Mobile</strong></div>
+
+            <small class="text-muted">
+                ${emp.mobile || "Not Available"}
+            </small>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <div>📍 <strong>HQ</strong></div>
+
+            <small class="text-muted">
+                ${getEmployeeHqHtml(emp)}
+            </small>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <div><strong>Status</strong></div>
+
+            <span class="badge ${emp.status === "Active" ? "bg-success" : "bg-secondary"}">
+                ${emp.status || "Pending"}
+            </span>
+
+        </div>
+
+        <div class="col-md-1 text-end">
+
+            <div class="arrow-btn">
+                ➜
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+`;
+        });
+
+        document.getElementById("employeeContainer").innerHTML = html;
       }
 
       function loadEmployeeDropdown(employees) {
