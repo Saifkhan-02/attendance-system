@@ -122,35 +122,22 @@ body{
                         Leave Type
                     </label>
 
-                    <select class="form-select " id="leaveType">
+                  <select class="form-select" id="leaveType">
 
-                        <option>Sick Leave</option>
-                        <option>Casual Leave</option>
-                        <option>Emergency Leave</option>
-                        <option>Annual Leave</option>
+    <option value="">-- Select Leave Type --</option>
 
-                    </select>
+    <option value="Sick Leave">Sick Leave</option>
 
+    <option value="Casual Leave">Casual Leave</option>
+
+    <option value="Emergency Leave">Emergency Leave</option>
+
+    <option value="Annual Leave">Annual Leave</option>
+
+</select>
                 </div>
-
-                <!-- Half Day -->
-                <div class="col-md-6">
-
-                    <label class="form-label">
-                        Half Day
-                    </label>
-
-                    <select class="form-select" id="halfDay">
-
-                        <option>No</option>
-                        <option>Yes</option>
-
-                    </select>
-
-                </div>
-
                 <!-- From Date -->
-                <div class="col-md-6">
+                <div class="col-6 col-md-6">
 
                     <label class="form-label">
                         From Date
@@ -160,19 +147,16 @@ body{
                            class="form-control">
 
                 </div>
-
                 <!-- To Date -->
-                <div class="col-md-6">
+                <div class="col-6 col-md-6">
 
                     <label class="form-label">
                         To Date
                     </label>
-
                     <input type="date" id="toDate"
                            class="form-control">
 
                 </div>
-
                 <!-- Emergency Contact -->
                 <div class="col-md-12">
 
@@ -238,7 +222,7 @@ body{
                             <th>From</th>
                             <th>To</th>
                             <th>Reason</th>
-                            <th>Status</th>
+                            <th>Emergency Cont.</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -258,106 +242,160 @@ body{
 <script>
 
     //localStorage.setItem("employeeMobile", data.mobile);
+window.onload = function () {
+  const today = new Date().toISOString().split("T")[0];
 
-    function applyLeave() {
+  document.getElementById("fromDate").min = today;
+  document.getElementById("toDate").min = today;
 
-    const employeeId =
-        localStorage.getItem("employeeId");
+  loadLeaveHistory();
+};
 
-    fetch(`${BASE_URL}/leave/apply`, {
+document.getElementById("fromDate").addEventListener("change", function () {
+  document.getElementById("toDate").min = this.value;
+});
 
-        method: "POST",
+   function applyLeave() {
 
-        headers: {
-            "Content-Type": "application/json"
-        },
+  const employeeId = localStorage.getItem("employeeId");
+  const employeeName = localStorage.getItem("employeeName");
 
-        body: JSON.stringify({
+  const leaveType = document.getElementById("leaveType").value;
+  const fromDate = document.getElementById("fromDate").value;
+  const toDate = document.getElementById("toDate").value;
+  const emergencyContact = document.getElementById("emergencyContact").value.trim();
+  const reason = document.getElementById("reason").value.trim();
 
-            employeeId: employeeId,
+  if (!employeeId || !employeeName) {
+    alert("Session expired. Please login again.");
+    window.location.href = "index.html";
+    return;
+  }
 
-            employeeName: 
-                localStorage.getItem("employeeName"),
-        
-            leaveType:
-                document.getElementById("leaveType").value,
+  if (!leaveType) {
+    alert("Please select leave type.");
+    return;
+  }
 
-            fromDate:
-                document.getElementById("fromDate").value,
+  if (!fromDate) {
+    alert("Please select from date.");
+    return;
+  }
 
-            toDate:
-                document.getElementById("toDate").value,
+  if (!toDate) {
+    alert("Please select to date.");
+    return;
+  }
 
-            emergencyContact:
-                document.getElementById("emergencyContact").value,
+  if (toDate < fromDate) {
+    alert("To Date cannot be before From Date.");
+    return;
+  }
 
-            reason:
-                document.getElementById("reason").value
-        })
+  if (!emergencyContact) {
+    alert("Please enter emergency contact number.");
+    return;
+  }
+
+  if (!/^[6-9]\d{9}$/.test(emergencyContact)) {
+    alert("Please enter valid 10 digit mobile number.");
+    return;
+  }
+
+  if (!reason) {
+    alert("Please enter leave reason.");
+    return;
+  }
+
+  if (reason.length < 10) {
+    alert("Reason must be at least 10 characters.");
+    return;
+  }
+
+  fetch(`${BASE_URL}/leave/apply`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      employeeId,
+      employeeName,
+      leaveType,
+      fromDate,
+      toDate,
+      emergencyContact,
+      reason
     })
+  })
+  .then(async response => {
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+    return response.json();
+  })
+  .then(data => {
+    alert("Leave Request Submitted");
 
-    .then(response => response.json())
+    document.getElementById("leaveType").selectedIndex = 0;
+    document.getElementById("fromDate").value = "";
+    document.getElementById("toDate").value = "";
+    document.getElementById("emergencyContact").value = "";
+    document.getElementById("reason").value = "";
 
-    .then(data => {
-
-        alert("Leave Request Submitted");
-
-        document.getElementById("leaveType").selectedIndex = 0;
-        document.getElementById("halfDay").selectedIndex = 0;
-        document.getElementById("fromDate").value ="";
-        document.getElementById("toDate").value ="";
-        document.getElementById("emergencyContact").value ="";
-        document.getElementById("reason").value ="";
-        
-
-        loadLeaveHistory();
-    });
+    loadLeaveHistory();
+  })
+  .catch(error => {
+    console.error(error);
+    alert(error.message || "Failed to submit leave request.");
+  });
 }
-
-window.onload = loadLeaveHistory;
 
 function loadLeaveHistory() {
+  const employeeId = localStorage.getItem("employeeId");
+  const table = document.getElementById("leaveHistoryTable");
 
-    const employeeId =
-        localStorage.getItem("employeeId");
-    const table =
-    document.getElementById("leaveHistoryTable");
+  console.log("Leave employeeId =", employeeId);
 
-    fetch(`${BASE_URL}/leave/history/${employeeId}`)
+  if (!employeeId) {
+    table.innerHTML = `<tr><td colspan="5" class="text-center">Please login again</td></tr>`;
+    return;
+  }
 
+  fetch(`${BASE_URL}/leave/history/${employeeId}`)
     .then(response => response.json())
-
     .then(data => {
+      console.log("Leave history data =", data);
 
-        let rows = "";
+      if (!data || data.length === 0) {
+        table.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No leave history found</td></tr>`;
+        return;
+      }
 
-        data.forEach(leave => {
+      let rows = "";
 
-            rows += `
-            <tr>
-                <td>${leave.leaveType}</td>
-                <td>${leave.fromDate}</td>
-                <td>${leave.toDate}</td>
-                <td>${leave.reason}</td>
-                <td>${leave.status}</td>
+      data.forEach(leave => {
+        rows += `
+          <tr>
+            <td>${leave.leaveType || "-"}</td>
+            <td>${leave.fromDate || "-"}</td>
+            <td>${leave.toDate || "-"}</td>
+            <td>${leave.reason || "-"}</td>
+            <td>${leave.emergencyContact || "-"}</td>
+            <td>
+              <span class="${
+                leave.status === "Approved" ? "status-approved" :
+                leave.status === "Pending" ? "status-pending" : "status-rejected"
+              }">
+                ${leave.status || "Pending"}
+              </span>
+            </td>
+          </tr>
+        `;
+      });
 
-                <td>
-                    <span class="${
-                        leave.status === "Approved" ? "status-approved" :
-                        leave.status === "Pending" ? "status-pending" : "status-rejected"
-                    }">
-                        ${leave.status}
-                    </span>
-                </td>
-            </tr>
-            `;
-        });
-
-        document.getElementById("leaveHistoryTable")
-                .innerHTML = rows;
+      table.innerHTML = rows;
     });
 }
-
 </script>
 </body>
 </html>
