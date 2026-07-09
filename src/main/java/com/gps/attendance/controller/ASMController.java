@@ -424,24 +424,19 @@ public Map<String, Object> getDashboardFast(@PathVariable Long asmId) {
 }
 
 @GetMapping("/working-with/{asmId}")
-public List<Map<String, Object>> getWorkingWith(@PathVariable Long asmId) {
+public List<DoctorVisit> getWorkingWith(@PathVariable Long asmId) {
 
     List<Employee> team = getAsmTeam(asmId);
-    List<Map<String, Object>> result = new ArrayList<>();
 
-    for (Employee e : team) {
-        Map<String, Object> row = new HashMap<>();
-
-        row.put("employeeId", e.getId());
-        row.put("employeeName", e.getName());
-        row.put("headquarters", e.getHeadquarters());
-        row.put("role", e.getRole());
-        row.put("status", e.getStatus());
-
-        result.add(row);
+    if (team == null || team.isEmpty()) {
+        return new ArrayList<>();
     }
 
-    return result;
+    List<Long> employeeIds = team.stream()
+            .map(Employee::getId)
+            .collect(Collectors.toList());
+
+    return doctorVisitRepository.findByEmployeeIdInOrderByIdDesc(employeeIds);
 }
 
 @GetMapping("/employee-details-fast/{employeeId}")
