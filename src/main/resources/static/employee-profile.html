@@ -402,6 +402,7 @@
  </div>
  <script src="js/config.js"></script>
     <script>
+        let employeeHqMap = {};
 
       function updateTime() {
 
@@ -424,6 +425,33 @@
       const employeeId = new URLSearchParams(window.location.search).get("id");
 
       console.log(employeeId);
+
+      async function getEmployeeHeadquarters(employee) {
+
+    if ((employee.role || "").toLowerCase() !== "asm") {
+        return employee.headquarters || "No HQ";
+    }
+
+    try {
+
+        const response = await fetch(`${BASE_URL}/asm/headquarters/${employee.id}`);
+
+        const hqs = await response.json();
+
+        if (!hqs || hqs.length === 0) {
+            return "No HQ";
+        }
+
+        return hqs.join(", ");
+
+    } catch (e) {
+
+        return "No HQ";
+
+    }
+
+}
+
 async function loadEmployee() {
 
     const employeeId =
@@ -450,10 +478,10 @@ async function loadEmployee() {
         employee.name || "N/A";
 
     document.getElementById("designation").innerText =
-        employee.designation || "Not Assigned";
+     employee.role || "Not Assigned";
 
-    document.getElementById("hq").innerText =
-        employee.headquarters || "No HQ";
+    const headQuarter = await getEmployeeHeadquarters(employee);
+    document.getElementById("hq").innerText = headQuarter;
 
     document.getElementById("mobile").innerText =
         employee.mobile || "No Mobile";
