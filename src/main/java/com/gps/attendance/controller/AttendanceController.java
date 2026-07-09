@@ -166,11 +166,11 @@ public Map<String, Object> getEmployeeSummary(
             monthValue,
             year);
 
-    List<Attendance> attendanceList =
-            repository.findMonthlyAttendance(
-                    employeeId,
-                    monthValue,
-                    year);
+//     List<Attendance> attendanceList =
+//             repository.findMonthlyAttendance(
+//                     employeeId,
+//                     monthValue,
+//                     year);
 
     long leaveDays = calculateLeaveDays(
         employeeId,

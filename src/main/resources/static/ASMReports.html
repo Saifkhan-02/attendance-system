@@ -83,11 +83,11 @@
       <h4 class="fw-bold mb-0">Team Leaderboard</h4>
 
       <div class="d-flex gap-2">
-        <button class="btn btn-outline-success btn-sm" onclick="alert('Excel export baad me add karenge')">
+        <!-- <button class="btn btn-outline-success btn-sm" onclick="alert('Excel export baad me add karenge')">
           <i class="fa-solid fa-file-excel me-1"></i>Excel
-        </button>
+        </button> -->
 
-        <button class="btn btn-outline-danger btn-sm" onclick="alert('PDF export baad me add karenge')">
+        <button class="btn btn-outline-danger btn-sm" onclick="alert('PDF export add later')">
           <i class="fa-solid fa-file-pdf me-1"></i>PDF
         </button>
       </div>
@@ -98,13 +98,13 @@
         <input type="text" id="searchInput" class="form-control" placeholder="Search MR or HQ..." onkeyup="filterReports()">
       </div>
 
-      <div class="col-md-4">
+      <div class="col-6 col-md-4">
         <select id="hqFilter" class="form-select" onchange="filterReports()">
           <option value="">All HQ</option>
         </select>
       </div>
 
-      <div class="col-md-4">
+      <div class="col-6 col-md-4">
         <select id="sortBy" class="form-select" onchange="filterReports()">
           <option value="sales">Sort by Sales</option>
           <option value="collection">Sort by Collection</option>
