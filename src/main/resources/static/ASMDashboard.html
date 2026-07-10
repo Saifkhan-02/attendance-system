@@ -133,6 +133,7 @@
       <table class="table align-middle">
         <thead class="table-light">
           <tr>
+            <th>Date</th>
             <th>MR</th>
             <th>HQ</th>
             <th>Visits</th>
@@ -186,7 +187,6 @@ function loadFastDashboard(){
       const top = data.leaderboard && data.leaderboard.length > 0
         ? data.leaderboard[0]
         : null;
-
       if (top) {
         setText("topName", top.employeeName || "-");
         setText("topHq", top.headquarters || "-");
@@ -194,6 +194,8 @@ function loadFastDashboard(){
         setText("topVisits", top.visits || 0);
         setText("topOrders", top.orders || 0);
       }
+
+      renderTeamSummary(data.leaderboard || []);
     })
     .catch(err => console.error("Fast Dashboard Error:", err));
 }
@@ -211,7 +213,33 @@ function loadTopPerformer(){
     })
     .catch(err => console.error("Top Performer Error:", err));
 }
+function renderTeamSummary(data){
+  const table = document.getElementById("teamSummaryTable");
+  table.innerHTML = "";
 
+  if(!data || data.length === 0){
+    table.innerHTML = `
+      <tr>
+        <td colspan="7" class="text-center text-muted">No team data found</td>
+      </tr>
+    `;
+    return;
+  }
+
+  data.forEach(row => {
+    table.innerHTML += `
+      <tr onclick="openEmployee(${row.employeeId})" style="cursor:pointer">
+        <td>${row.date || "-"}</td>
+        <td><strong>${row.employeeName || "-"}</strong></td>
+        <td>${row.headquarters || "-"}</td>
+        <td>${row.visits || 0}</td>
+        <td>${row.orders || 0}</td>
+        <td>${money(row.sales)}</td>
+        <td>${row.attendance || "-"}</td>
+      </tr>
+    `;
+  });
+}
 
 function openEmployee(id){
   localStorage.setItem("selectedEmployeeId", id);

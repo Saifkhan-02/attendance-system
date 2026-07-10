@@ -304,6 +304,7 @@ public Map<String, Object> getDashboardFast(@PathVariable Long asmId) {
     Map<String, Object> response = new HashMap<>();
 
     if (team == null || team.isEmpty()) {
+        response.put("date", todayStr);
         response.put("team", 0);
         response.put("present", 0);
         response.put("visits", 0);
@@ -389,7 +390,8 @@ public Map<String, Object> getDashboardFast(@PathVariable Long asmId) {
         row.put("employeeId", id);
         row.put("employeeName", e.getName());
         row.put("headquarters", e.getHeadquarters());
-        row.put("attendance", present > 0 ? "Present" : "Absent");
+        row.put("date", todayStr);
+        row.put("attendance", present > 0 ? "Present" : "Not Marked Yet");
         row.put("visits", visits);
         row.put("orders", orders);
         row.put("sales", sales);
@@ -409,7 +411,7 @@ public Map<String, Object> getDashboardFast(@PathVariable Long asmId) {
     for (Map<String, Object> row : leaderboard) {
         row.put("rank", rank++);
     }
-
+    response.put("date", todayStr);
     response.put("team", team.size());
     response.put("present", totalPresent);
     response.put("visits", totalVisits);
