@@ -618,6 +618,7 @@ function selectDoctor(doctor) {
 
 }
 
+
 async function checkDuplicateDoctor(doctorName) {
 
    const employeeId = localStorage.getItem("employeeId");
@@ -1102,7 +1103,7 @@ document.getElementById("totalVisitCount").innerText = "";
           function (error) {
             console.error(error);
             locationInput.value = "";
-            alert("Location permission allow karo");
+            alert("Please go to your settings and allow Location permission");
           },
           {
             enableHighAccuracy: true,
