@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Team Attendance</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/asm-common.css">
+
+<style>
+.status-badge{
+  display:inline-block;
+  padding:6px 11px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:800;
+}
+
+.status-present{
+  background:#dcfce7;
+  color:#15803d;
+}
+
+.status-absent{
+  background:#fee2e2;
+  color:#dc2626;
+}
+
+.status-leave{
+  background:#dbeafe;
+  color:#1d4ed8;
+}
+
+.status-pending{
+  background:#fef3c7;
+  color:#b45309;
+}
+
+.summary-box{
+  background:#fff;
+  border-radius:18px;
+  padding:18px;
+  text-align:center;
+  box-shadow:0 8px 22px rgba(0,0,0,.08);
+}
+
+.summary-box h3{
+  font-weight:900;
+  color:#0d6efd;
+}
+</style>
+</head>
+
+<body>
+
+<div class="asm-container">
+
+  <div class="asm-card">
+    <h4 class="fw-bold mb-3">
+      <i class="fa-solid fa-calendar-check text-primary me-2"></i>
+      Team Attendance
+    </h4>
+
+    <ul class="nav nav-pills mb-3">
+      <li class="nav-item">
+        <button class="nav-link active"
+                id="dailyTabButton"
+                onclick="showDailyView()">
+          Daily
+        </button>
+      </li>
+
+      <li class="nav-item">
+        <button class="nav-link"
+                id="monthlyTabButton"
+                onclick="showMonthlyView()">
+          Monthly
+        </button>
+      </li>
+    </ul>
+
+    <div id="dailyFilter">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Select Date</label>
+          <input type="date" id="attendanceDate" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+          <button class="btn btn-primary w-100"
+                  onclick="loadDailyAttendance()">
+            <i class="fa-solid fa-filter me-1"></i>
+            Apply
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="monthlyFilter" class="d-none">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Select Month</label>
+          <input type="month" id="attendanceMonth" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+          <button class="btn btn-primary w-100"
+                  onclick="loadMonthlyAttendance()">
+            <i class="fa-solid fa-filter me-1"></i>
+            Apply
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-6 col-md-3">
+      <div class="summary-box">
+        <div class="text-muted">Total MRs</div>
+        <h3 id="totalMrs">0</h3>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="summary-box">
+        <div class="text-muted">Present</div>
+        <h3 id="presentCount">0</h3>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="summary-box">
+        <div class="text-muted">Absent</div>
+        <h3 id="absentCount">0</h3>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+      <div class="summary-box">
+        <div class="text-muted" id="fourthCardLabel">Not Marked</div>
+        <h3 id="fourthCardValue">0</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="asm-card">
+
+    <div id="dailyTableBox" class="table-responsive">
+      <table class="table table-bordered align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Date</th>
+            <th>MR</th>
+            <th>HQ</th>
+            <th>Time</th>
+            <th>Location</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody id="dailyAttendanceTable">
+          <tr>
+            <td colspan="6" class="text-center text-muted">
+              Loading...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="monthlyTableBox" class="table-responsive d-none">
+      <table class="table table-bordered align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>MR</th>
+            <th>HQ</th>
+            <th>Present</th>
+            <th>Absent</th>
+            <th>Leave</th>
+            <th>Attendance %</th>
+          </tr>
+        </thead>
+
+        <tbody id="monthlyAttendanceTable"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/asm-common.js"></script>
+
+<script>
+if(checkAsmSession()){
+  renderAsmSidebar("attendance");
+  renderAsmHeader(
+    "Team Attendance",
+    true,
+    "ASMDashboard.html"
+  );
+}
+
+const asmId = getAsmId();
+
+window.onload = function(){
+  const today = new Date();
+  const todayString = today.toISOString().split("T")[0];
+  const monthString = todayString.substring(0, 7);
+
+  document.getElementById("attendanceDate").value = todayString;
+  document.getElementById("attendanceMonth").value = monthString;
+
+  loadDailyAttendance();
+};
+
+function showDailyView(){
+  document.getElementById("dailyTabButton").classList.add("active");
+  document.getElementById("monthlyTabButton").classList.remove("active");
+
+  document.getElementById("dailyFilter").classList.remove("d-none");
+  document.getElementById("monthlyFilter").classList.add("d-none");
+
+  document.getElementById("dailyTableBox").classList.remove("d-none");
+  document.getElementById("monthlyTableBox").classList.add("d-none");
+
+  document.getElementById("fourthCardLabel").innerText = "Not Marked";
+
+  loadDailyAttendance();
+}
+
+function showMonthlyView(){
+  document.getElementById("monthlyTabButton").classList.add("active");
+  document.getElementById("dailyTabButton").classList.remove("active");
+
+  document.getElementById("monthlyFilter").classList.remove("d-none");
+  document.getElementById("dailyFilter").classList.add("d-none");
+
+  document.getElementById("monthlyTableBox").classList.remove("d-none");
+  document.getElementById("dailyTableBox").classList.add("d-none");
+
+  document.getElementById("fourthCardLabel").innerText = "Leave";
+
+  loadMonthlyAttendance();
+}
+
+function loadDailyAttendance(){
+  const date = document.getElementById("attendanceDate").value;
+
+  if(!date){
+    alert("Please select date");
+    return;
+  }
+
+  fetch(`${BASE_URL}/asm/team-attendance/daily/${asmId}?date=${date}`)
+    .then(async res => {
+      if(!res.ok){
+        throw new Error(await res.text());
+      }
+
+      return res.json();
+    })
+    .then(data => {
+      renderDailyAttendance(data || []);
+      updateDailyCards(data || []);
+    })
+    .catch(err => {
+      console.error("Daily attendance error:", err);
+      alert("Failed to load daily attendance");
+    });
+}
+
+function renderDailyAttendance(data){
+  const table = document.getElementById("dailyAttendanceTable");
+  table.innerHTML = "";
+
+  if(data.length === 0){
+    table.innerHTML = `
+      <tr>
+        <td colspan="6" class="text-center text-muted">
+          No team attendance found
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  data.forEach(row => {
+    table.innerHTML += `
+      <tr onclick="openEmployee(${row.employeeId})"
+          style="cursor:pointer">
+        <td>${row.date || "-"}</td>
+        <td><strong>${row.employeeName || "-"}</strong></td>
+        <td>${row.headquarters || "-"}</td>
+        <td>${row.attendanceTime || "-"}</td>
+        <td>${row.location || "-"}</td>
+        <td>${statusBadge(row.status)}</td>
+      </tr>
+    `;
+  });
+}
+
+function updateDailyCards(data){
+  const present = data.filter(row =>
+    (row.status || "").toLowerCase() === "present"
+  ).length;
+
+  const absent = data.filter(row =>
+    (row.status || "").toLowerCase() === "absent"
+  ).length;
+
+  const pending = data.filter(row =>
+    (row.status || "").toLowerCase() === "not marked yet"
+  ).length;
+
+  setText("totalMrs", data.length);
+  setText("presentCount", present);
+  setText("absentCount", absent);
+  setText("fourthCardValue", pending);
+}
+
+function loadMonthlyAttendance(){
+  const month = document.getElementById("attendanceMonth").value;
+
+  if(!month){
+    alert("Please select month");
+    return;
+  }
+
+  fetch(`${BASE_URL}/asm/team-attendance/monthly/${asmId}?month=${month}`)
+    .then(async res => {
+      if(!res.ok){
+        throw new Error(await res.text());
+      }
+
+      return res.json();
+    })
+    .then(data => {
+      renderMonthlyAttendance(data || []);
+      updateMonthlyCards(data || []);
+    })
+    .catch(err => {
+      console.error("Monthly attendance error:", err);
+      alert("Failed to load monthly attendance");
+    });
+}
+
+function renderMonthlyAttendance(data){
+  const table = document.getElementById("monthlyAttendanceTable");
+  table.innerHTML = "";
+
+  if(data.length === 0){
+    table.innerHTML = `
+      <tr>
+        <td colspan="6" class="text-center text-muted">
+          No monthly attendance found
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  data.forEach(row => {
+    table.innerHTML += `
+      <tr onclick="openEmployee(${row.employeeId})"
+          style="cursor:pointer">
+        <td><strong>${row.employeeName || "-"}</strong></td>
+        <td>${row.headquarters || "-"}</td>
+        <td>${row.presentDays || 0}</td>
+        <td>${row.absentDays || 0}</td>
+        <td>${row.leaveDays || 0}</td>
+        <td>${Number(row.attendancePercentage || 0).toFixed(2)}%</td>
+      </tr>
+    `;
+  });
+}
+
+function updateMonthlyCards(data){
+  const totalPresent = data.reduce(
+    (sum, row) => sum + Number(row.presentDays || 0),
+    0
+  );
+
+  const totalAbsent = data.reduce(
+    (sum, row) => sum + Number(row.absentDays || 0),
+    0
+  );
+
+  const totalLeave = data.reduce(
+    (sum, row) => sum + Number(row.leaveDays || 0),
+    0
+  );
+
+  setText("totalMrs", data.length);
+  setText("presentCount", totalPresent);
+  setText("absentCount", totalAbsent);
+  setText("fourthCardValue", totalLeave);
+}
+
+function statusBadge(status){
+  const value = status || "Not Marked Yet";
+  const lower = value.toLowerCase();
+
+  let className = "status-pending";
+
+  if(lower === "present"){
+    className = "status-present";
+  }else if(lower === "absent"){
+    className = "status-absent";
+  }else if(lower.includes("leave")){
+    className = "status-leave";
+  }
+
+  return `<span class="status-badge ${className}">${value}</span>`;
+}
+
+function openEmployee(employeeId){
+  localStorage.setItem("selectedEmployeeId", employeeId);
+  window.location.href = "ASMEmployeeDetails.html";
+}
+</script>
+
+</body>
+</html>

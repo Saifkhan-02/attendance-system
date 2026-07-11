@@ -564,4 +564,77 @@ public String updateAsmHeadquarters(
 
     return "ASM headquarters updated successfully";
 }
+
+
+@GetMapping("/team-attendance/daily/{asmId}")
+public List<Map<String, Object>> getTeamDailyAttendance(
+        @PathVariable Long asmId,
+        @RequestParam String date
+) {
+    List<Employee> team = getAsmTeam(asmId);
+    List<Map<String, Object>> result = new ArrayList<>();
+
+    if (team == null || team.isEmpty()) {
+        return result;
+    }
+
+    LocalDate selectedDate = LocalDate.parse(date);
+
+    List<Long> employeeIds = team.stream()
+            .map(Employee::getId)
+            .collect(Collectors.toList());
+
+    List<Attendance> attendanceList =
+            attendanceRepository.findByEmployeeIdInAndAttendanceDate(
+                    employeeIds,
+                    selectedDate
+            );
+
+    Map<Long, Attendance> attendanceMap = new HashMap<>();
+
+    for (Attendance attendance : attendanceList) {
+        attendanceMap.put(attendance.getEmployeeId(), attendance);
+    }
+
+    LocalDate today = LocalDate.now();
+
+    for (Employee employee : team) {
+        Attendance attendance = attendanceMap.get(employee.getId());
+
+        String status;
+        String attendanceTime = "-";
+        String location = "-";
+
+        if (attendance != null) {
+            status = attendance.getStatus() == null
+                    ? "Present"
+                    : attendance.getStatus();
+
+            if (attendance.getAttendanceTime() != null) {
+                attendanceTime = attendance.getAttendanceTime().toString();
+            }
+
+            if (attendance.getLocation() != null) {
+                location = attendance.getLocation();
+            }
+        } else {
+            status = selectedDate.equals(today)
+                    ? "Not Marked Yet"
+                    : "Absent";
+        }
+
+        Map<String, Object> row = new HashMap<>();
+        row.put("employeeId", employee.getId());
+        row.put("employeeName", employee.getName());
+        row.put("headquarters", employee.getHeadquarters());
+        row.put("date", selectedDate);
+        row.put("attendanceTime", attendanceTime);
+        row.put("location", location);
+        row.put("status", status);
+
+        result.add(row);
+    }
+
+    return result;
+}
 }

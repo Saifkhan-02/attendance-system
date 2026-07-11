@@ -83,5 +83,14 @@ long countPresentDays(
         @Param("month") int month,
         @Param("year") int year
 );
+List<Attendance> findByEmployeeIdInAndAttendanceDate(
+        List<Long> employeeIds,
+        LocalDate attendanceDate
+);
 
+List<Attendance> findByEmployeeIdInAndAttendanceDateBetweenOrderByAttendanceDateDesc(
+        List<Long> employeeIds,
+        LocalDate fromDate,
+        LocalDate toDate
+);
 }
