@@ -435,7 +435,7 @@ function renderRouteTable() {
   filtered.forEach(route => {
     const status = route.status || "Active";
     const statusClass = status === "Active" ? "status-active" : "status-inactive";
-    const fare = Number(route.distanceKm || 0) * KM_RATE;
+    const fare = Number((travelKm * KM_RATE).toFixed(1));
 
     table.innerHTML += `
       <tr>
