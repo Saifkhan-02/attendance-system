@@ -16,6 +16,7 @@ public class Distributor {
 
     private String distributorName;
     private String headquarters;
+    private String mobile;
     private String address;
     private String status = "Active";
 
@@ -29,6 +30,13 @@ public class Distributor {
 
     public String getHeadquarters() {
         return headquarters;
+    }
+
+    public String getMobile(){
+        return mobile;
+    }
+    public void setMobile(String mobile){
+        this.mobile = mobile;
     }
 
     public String getAddress() {

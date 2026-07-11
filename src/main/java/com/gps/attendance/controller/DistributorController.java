@@ -57,6 +57,7 @@ public Distributor updateDistributor(
 
     distributor.setDistributorName(updated.getDistributorName());
     distributor.setHeadquarters(updated.getHeadquarters());
+    distributor.setMobile(updated.getMobile());
     distributor.setAddress(updated.getAddress());
     distributor.setStatus(updated.getStatus());
 

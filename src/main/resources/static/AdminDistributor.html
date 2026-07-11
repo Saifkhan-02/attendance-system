@@ -239,11 +239,11 @@
           <label class="form-label">Contact Person</label>
           <input type="text" id="contactPerson" class="form-control" placeholder="Contact person">
         </div>
-
+        -->
         <div class="col-md-4">
-          <label class="form-label">Mobile</label>
-          <input type="text" id="mobile" class="form-control" placeholder="Mobile number">
-        </div> -->
+          <label class="form-label">Mobile No.</label>
+          <input type="text" id="mobile" class="form-control" maxlength="10" placeholder="Enter Mobile number">
+        </div> 
 
             <div class="col-md-4">
               <label class="form-label">Status</label>
@@ -303,9 +303,9 @@
                 <tr>
                   <th>Headquarter</th>
                   <th>Distributor</th>
-                  <!-- <th>Contact Person</th>
-              <th>Mobile</th> -->
+                  <!-- <th>Contact Person</th> -->
                   <th>Address</th>
+                  <th>Mobile</th>
                   <th>Status</th>
                   <th>Action</th>
                 </tr>
@@ -394,6 +394,8 @@
         const distributorName = document
           .getElementById("distributorName")
           .value.trim();
+        
+        const mobile = document.getElementById("mobile").value.trim();
         const address = document.getElementById("address").value.trim();
         const status = document.getElementById("status").value;
 
@@ -406,10 +408,15 @@
           alert("Please enter distributor name");
           return;
         }
+        if (!/^[6-9]\d{9}$/.test(mobile)) {
+            alert("Enter valid 10 digit mobile number");
+            return;
+        }
 
         const payload = {
           distributorName: distributorName,
           headquarters: finalHQ,
+          mobile: mobile,
           address: address,
           status: status,
         };
@@ -484,9 +491,11 @@
       <tr>
         <td>${d.headquarters || "-"}</td>
         <td class="fw-semibold">${d.distributorName || "-"}</td>
-        
         <td>${d.address || "-"}</td>
+        <td>${d.mobile || "-"}</td>
+       
         <td><span class="${statusClass}">${d.status || "Active"}</span></td>
+
         <td>
           <button class="btn btn-sm btn-primary me-1"
                   onclick="editDistributor(${d.id})">
@@ -519,6 +528,7 @@ onclick="toggleDistributorStatus(${d.id})">
     document.getElementById("editDistributorId").value = d.id;
     document.getElementById("headquarterSelect").value = d.headquarters || "";
     document.getElementById("distributorName").value = d.distributorName || "";
+    document.getElementById("mobile").value = d.mobile || "";
     document.getElementById("address").value = d.address || "";
     document.getElementById("status").value = d.status || "Active";
 
@@ -548,7 +558,7 @@ onclick="toggleDistributorStatus(${d.id})">
         document.getElementById("distributorName").value = "";
         document.getElementById("address").value = "";
         //document.getElementById("contactPerson").value = "";
-        //document.getElementById("mobile").value = "";
+        document.getElementById("mobile").value = "";
         document.getElementById("status").value = "Active";
       }
 
