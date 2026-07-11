@@ -1,26 +1,31 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>Admin Leave Requests</title>
+    <title>Admin Leave Requests</title>
 
-  <link
+    <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
 
-<style>
-body{
-    background:#f4f6fb;
-}
+    <style>
+      body {
+        background: #f4f6fb;
+      }
 
-
- .top-header {
+      .top-header {
         background: linear-gradient(135deg, #0d4f9c, #3f7fe0);
         color: white;
         padding: 15px;
@@ -28,22 +33,24 @@ body{
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
       }
 
-      .back-btn{
-  width:42px;
-  height:42px;
-  border:none;
-  border-radius:50%;
-  background:rgba(255,255,255,.2);
-  color:white;
-}
+      .back-btn {
+        width: 42px;
+        height: 42px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
 
-.back-btn:hover{
-  background:rgba(255,255,255,.3);
-}
-/* Navbar */
+      .back-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+      /* Navbar */
 
       .top-navbar {
+        height: 80px;
         min-height: 80px;
+        padding: 0 16px;
         background: #fff;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         position: fixed;
@@ -52,13 +59,12 @@ body{
         right: 0;
         z-index: 1050;
       }
-      
-       .navbar-logo{
-        width: 90px;
-        height: 85px;
+
+      .navbar-logo {
+        height: 80px;
+        min-height: 80px;
         object-fit: contain;
       }
-
 
       /* Main Content */
 
@@ -77,43 +83,58 @@ body{
         margin-bottom: 25px;
       }
 
-.page-header{
-    background:linear-gradient(135deg,#0d4f9c,#3f7fe0);
-    color:white;
-    padding:25px;
-    border-radius:0 0 25px 25px;
-    box-shadow:0 5px 20px rgba(0,0,0,.15);
-}
+      .page-header {
+        background: linear-gradient(135deg, #0d4f9c, #3f7fe0);
+        color: white;
+        padding: 25px;
+        border-radius: 0 0 25px 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+      }
 
-.card{
-    border:none;
-    border-radius:20px;
-    box-shadow:0 10px 30px rgba(0,0,0,.08);
-}
+      .card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      }
 
-.badge-pending{
-    background:#fd7e14;
-}
+      .badge-pending {
+        background: #fd7e14;
+      }
 
-.badge-approved{
-    background:#198754;
-}
+      .badge-approved {
+        background: #198754;
+      }
 
-.badge-rejected{
-    background:#dc3545;
-}
-</style>
-</head>
+      .badge-rejected {
+        background: #dc3545;
+      }
+      @media (max-width: 768px) {
+        .top-navbar {
+          height: 80px;
+          min-height: 80px;
+        }
 
-<body>
-  <!-- Navbar -->
+        .navbar-logo {
+          width: 120px;
+          height: 68px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Navbar -->
     <nav class="navbar top-navbar px-3">
       <div class="d-flex align-items-center">
-       <button class="btn btn-light me-3" onclick="goBack()">
+        <button class="btn btn-light me-3" onclick="goBack()">
           <i class="fas fa-arrow-left"></i>
         </button>
 
-        <img src="images/Inflix-logo-web.png" alt="Logo" class="navbar-logo me-2">
+        <img
+          src="images/Inflix-logo-web.png"
+          alt="Logo"
+          class="navbar-logo me-2"
+        />
       </div>
 
       <div class="d-flex align-items-center ms-auto">
@@ -124,119 +145,102 @@ body{
 
           <div id="datetime" class="small text-secondary"></div>
         </div>
-
       </div>
     </nav>
-   
+
     <!-- Main Content Start -->
 
     <div class="main-content" id="mainContent">
       <!-- Welcome Banner -->
 
       <div class="welcome-banner">
-         <h2 class="fw-bold mb-1">Leave Requests</h2>
-    <p class="mb-0">Approve or reject employee leave requests</p>
+        <h2 class="fw-bold mb-1">Leave Requests</h2>
+        <p class="mb-0">Approve or reject employee leave requests</p>
       </div>
 
-    <div class="card">
+      <div class="card">
         <div class="card-body">
+          <h4 class="fw-bold mb-4">All Leave Requests</h4>
 
-            <h4 class="fw-bold mb-4">All Leave Requests</h4>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-primary">
+                <tr>
+                  <th>Employee ID</th>
+                  <th>Employee Name</th>
+                  <th>Employee Contact</th>
+                  <th>Leave Type</th>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Reason</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
 
-            <div class="table-responsive">
-
-                <table class="table table-hover align-middle">
-
-                    <thead class="table-primary">
-                        <tr>
-                           <th>Employee ID</th>
-                            <th>Employee Name</th>
-                            <th>Employee Contact</th>
-                            <th>Leave Type</th>
-                            <th>From</th>
-                            <th>To</th>
-                            <th>Reason</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="leaveRequestTable"></tbody>
-
-                </table>
-
-                
-
-            </div>
-
+              <tbody id="leaveRequestTable"></tbody>
+            </table>
+          </div>
         </div>
+      </div>
     </div>
 
-</div>
+    <script src="js/config.js"></script>
 
-<script src="js/config.js"></script>
-
-<script>
-
-   function goBack() {
+    <script>
+      function goBack() {
         window.location.replace("admin-dashboard.html");
       }
 
-  function updateTime() {
-    document.getElementById("datetime").innerHTML =
-      new Date().toLocaleString();
-       }
-       setInterval(updateTime, 1000);
+      function updateTime() {
+        document.getElementById("datetime").innerHTML =
+          new Date().toLocaleString();
+      }
+      setInterval(updateTime, 1000);
 
-       function loadAdminInfo() {
-    document.getElementById("adminName").innerText =
-        localStorage.getItem("adminName") || "Admin";
-
-}
-   loadAdminInfo();
+      function loadAdminInfo() {
+        document.getElementById("adminName").innerText =
+          localStorage.getItem("adminName") || "Admin";
+      }
+      loadAdminInfo();
       updateTime();
 
+      window.onload = loadAllLeaves;
 
-window.onload = loadAllLeaves;
+      function loadAllLeaves() {
+        fetch(`${BASE_URL}/admin/leaves`)
+          .then((response) => response.json())
 
-function loadAllLeaves() {
+          .then((data) => {
+            const table = document.getElementById("leaveRequestTable");
 
-    fetch(`${BASE_URL}/admin/leaves`)
+            table.innerHTML = "";
 
-    .then(response => response.json())
-
-    .then(data => {
-
-        const table = document.getElementById("leaveRequestTable");
-
-        table.innerHTML = "";
-
-        if(data.length === 0) {
-            table.innerHTML = `
+            if (data.length === 0) {
+              table.innerHTML = `
                 <tr>
                     <td colspan="7" class="text-center">
                         No Leave Requests Found
                     </td>
                 </tr>
             `;
-            return;
-        }
+              return;
+            }
 
-        data.forEach(leave => {
+            data.forEach((leave) => {
+              let badgeClass = "badge-pending";
 
-            let badgeClass = "badge-pending";
-
-            if(leave.status === "Approved") {
+              if (leave.status === "Approved") {
                 badgeClass = "badge-approved";
-            }
+              }
 
-            if(leave.status === "Rejected") {
+              if (leave.status === "Rejected") {
                 badgeClass = "badge-rejected";
-            }
+              }
 
-            let actionButtons = "-";
+              let actionButtons = "-";
 
-            if(leave.status === "Pending") {
+              if (leave.status === "Pending") {
                 actionButtons = `
                     <button class="btn btn-success btn-sm me-1"
                             onclick="approveLeave(${leave.id})">
@@ -248,9 +252,9 @@ function loadAllLeaves() {
                         Reject
                     </button>
                 `;
-            }
+              }
 
-            table.innerHTML += `
+              table.innerHTML += `
                 <tr>
                     <td>${leave.employeeId || "-"}</td>
                     <td>${leave.employeeName || "-"}</td>
@@ -267,39 +271,33 @@ function loadAllLeaves() {
                     <td>${actionButtons}</td>
                 </tr>
             `;
-        });
-    });
-}
+            });
+          });
+      }
 
-function approveLeave(id) {
+      function approveLeave(id) {
+        fetch(`${BASE_URL}/leave/approve/${id}`, {
+          method: "PUT",
+        })
+          .then((response) => response.text())
 
-    fetch(`${BASE_URL}/leave/approve/${id}`, {
-        method:"PUT"
-    })
+          .then((data) => {
+            alert(data);
+            loadAllLeaves();
+          });
+      }
 
-    .then(response => response.text())
+      function rejectLeave(id) {
+        fetch(`${BASE_URL}/leave/reject/${id}`, {
+          method: "PUT",
+        })
+          .then((response) => response.text())
 
-    .then(data => {
-        alert(data);
-        loadAllLeaves();
-    });
-}
-
-function rejectLeave(id) {
-
-    fetch(`${BASE_URL}/leave/reject/${id}`, {
-        method:"PUT"
-    })
-
-    .then(response => response.text())
-
-    .then(data => {
-        alert(data);
-        loadAllLeaves();
-    });
-}
-
-</script>
-
-</body>
+          .then((data) => {
+            alert(data);
+            loadAllLeaves();
+          });
+      }
+    </script>
+  </body>
 </html>

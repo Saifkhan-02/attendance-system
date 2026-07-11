@@ -24,10 +24,12 @@
         background: #f4f6fb;
       }
 
-       /* Navbar */
+      /* Navbar */
 
       .top-navbar {
+        height: 80px;
         min-height: 80px;
+        padding: 0 16px;
         background: #fff;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         position: fixed;
@@ -36,13 +38,12 @@
         right: 0;
         z-index: 1050;
       }
-      
-       .navbar-logo{
-        width: 90px;
-        height: 85px;
+
+      .navbar-logo {
+        width: 130px;
+        height: 74px;
         object-fit: contain;
       }
-
 
       /* Main Content */
 
@@ -60,7 +61,6 @@
         border-radius: 20px;
         margin-bottom: 25px;
       }
-
 
       .top-header {
         background: linear-gradient(135deg, #0d4f9c, #3f7fe0);
@@ -170,21 +170,34 @@
         .btn-outline-light {
           width: 100%;
         }
+
+        .top-navbar {
+          height: 80px;
+          min-height: 80px;
+        }
+
+        .navbar-logo {
+          width: 120px;
+          height: 68px;
+        }
       }
     </style>
   </head>
 
   <body>
-
     <!-- Navbar -->
 
     <nav class="navbar top-navbar px-3">
       <div class="d-flex align-items-center">
-         <button class="btn btn-light me-3" onclick="goBack()">
+        <button class="btn btn-light me-3" onclick="goBack()">
           <i class="fas fa-arrow-left"></i>
         </button>
 
-        <img src="images/Inflix-logo-web.png" alt="Logo" class="navbar-logo me-2">
+        <img
+          src="images/Inflix-logo-web.png"
+          alt="Logo"
+          class="navbar-logo me-2"
+        />
       </div>
 
       <div class="d-flex align-items-center ms-auto">
@@ -195,10 +208,9 @@
 
           <div id="datetime" class="small text-secondary"></div>
         </div>
-
       </div>
     </nav>
-   
+
     <!-- Main Content Start -->
 
     <div class="main-content" id="mainContent">
@@ -206,9 +218,9 @@
 
       <div class="welcome-banner">
         <h2 class="fw-bold mb-1">Add Stock</h2>
-            <p class="mb-0">
-              Add quantity and update selling price for existing products
-            </p>
+        <p class="mb-0">
+          Add quantity and update selling price for existing products
+        </p>
       </div>
 
       <div class="row g-3 mb-4">
@@ -386,7 +398,10 @@
               </p>
             </div>
 
-            <button class="btn btn-outline-primary" onclick="loadSelectedDistributorStock()">
+            <button
+              class="btn btn-outline-primary"
+              onclick="loadSelectedDistributorStock()"
+            >
               <i class="fa-solid fa-rotate-right me-2"></i>
               Refresh
             </button>
@@ -427,25 +442,22 @@
 
       let productTomSelect = null;
 
-
-   function goBack() {
+      function goBack() {
         window.location.replace("admin-dashboard.html");
       }
 
-  function updateTime() {
-    document.getElementById("datetime").innerHTML =
-      new Date().toLocaleString();
-       }
-       setInterval(updateTime, 1000);
+      function updateTime() {
+        document.getElementById("datetime").innerHTML =
+          new Date().toLocaleString();
+      }
+      setInterval(updateTime, 1000);
 
-       function loadAdminInfo() {
-    document.getElementById("adminName").innerText =
-        localStorage.getItem("adminName") || "Admin";
-
-}
-   loadAdminInfo();
+      function loadAdminInfo() {
+        document.getElementById("adminName").innerText =
+          localStorage.getItem("adminName") || "Admin";
+      }
+      loadAdminInfo();
       updateTime();
-
 
       window.onload = function () {
         loadHeadquarters();
@@ -810,139 +822,130 @@
       }
 
       function deleteStock(id) {
-
-    if (!confirm("Do you really want to delete this stock? This action cannot be undone.")) {
-    return;
-}
-
-    fetch(`${BASE_URL}/admin/distributor-stock/${id}`, {
-        method: "DELETE"
-    })
-    .then(async response => {
-
-        const msg = await response.text();
-
-        if (!response.ok) {
-            throw new Error(msg);
+        if (
+          !confirm(
+            "Do you really want to delete this stock? This action cannot be undone.",
+          )
+        ) {
+          return;
         }
 
-        alert("Stock deleted successfully.");
-
-        loadSelectedDistributorStock();
-
-    })
-    .catch(error => {
-        console.error(error);
-        alert("Failed to delete stock.");
-    });
-
-}
-
-function openEditModal(id, productName, quantity) {
-
-    document.getElementById("editStockId").value = id;
-
-    document.getElementById("editProductName").value = productName;
-
-    document.getElementById("editQuantity").value = quantity;
-
-    const modal = new bootstrap.Modal(
-        document.getElementById("editStockModal")
-    );
-
-    modal.show();
-}
-function updateStock() {
-
-    const id = document.getElementById("editStockId").value;
-    const quantity = document.getElementById("editQuantity").value;
-
-    if (quantity === "" || Number(quantity) < 0) {
-        alert("Please enter valid quantity.");
-        return;
-    }
-
-    fetch(`${BASE_URL}/admin/distributor-stock/update/${id}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            availableUnits: quantity
+        fetch(`${BASE_URL}/admin/distributor-stock/${id}`, {
+          method: "DELETE",
         })
-    })
-    .then(async response => {
+          .then(async (response) => {
+            const msg = await response.text();
 
-        const text = await response.text();
+            if (!response.ok) {
+              throw new Error(msg);
+            }
 
-        if (!response.ok) {
-            throw new Error(text);
+            alert("Stock deleted successfully.");
+
+            loadSelectedDistributorStock();
+          })
+          .catch((error) => {
+            console.error(error);
+            alert("Failed to delete stock.");
+          });
+      }
+
+      function openEditModal(id, productName, quantity) {
+        document.getElementById("editStockId").value = id;
+
+        document.getElementById("editProductName").value = productName;
+
+        document.getElementById("editQuantity").value = quantity;
+
+        const modal = new bootstrap.Modal(
+          document.getElementById("editStockModal"),
+        );
+
+        modal.show();
+      }
+      function updateStock() {
+        const id = document.getElementById("editStockId").value;
+        const quantity = document.getElementById("editQuantity").value;
+
+        if (quantity === "" || Number(quantity) < 0) {
+          alert("Please enter valid quantity.");
+          return;
         }
 
-        alert("Stock updated successfully.");
+        fetch(`${BASE_URL}/admin/distributor-stock/update/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            availableUnits: quantity,
+          }),
+        })
+          .then(async (response) => {
+            const text = await response.text();
 
-        bootstrap.Modal.getInstance(
-            document.getElementById("editStockModal")
-        ).hide();
+            if (!response.ok) {
+              throw new Error(text);
+            }
 
-        loadSelectedDistributorStock();
+            alert("Stock updated successfully.");
 
-    })
-    .catch(error => {
-        console.error(error);
-        alert("Failed to update stock.");
-    });
+            bootstrap.Modal.getInstance(
+              document.getElementById("editStockModal"),
+            ).hide();
 
-}
+            loadSelectedDistributorStock();
+          })
+          .catch((error) => {
+            console.error(error);
+            alert("Failed to update stock.");
+          });
+      }
     </script>
 
     <!-- Edit Stock Modal -->
-<div class="modal fade" id="editStockModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal fade" id="editStockModal" tabindex="-1">
+      <div class="modal-dialog">
         <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit Stock</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
 
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Stock</h5>
-                <button type="button" class="btn-close"
-                        data-bs-dismiss="modal"></button>
+          <div class="modal-body">
+            <input type="hidden" id="editStockId" />
+
+            <div class="mb-3">
+              <label class="form-label">Product Name</label>
+              <input
+                type="text"
+                id="editProductName"
+                class="form-control"
+                readonly
+              />
             </div>
 
-            <div class="modal-body">
-
-                <input type="hidden" id="editStockId">
-
-                <div class="mb-3">
-                    <label class="form-label">Product Name</label>
-                    <input type="text"
-                           id="editProductName"
-                           class="form-control"
-                           readonly>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Quantity</label>
-                    <input type="number"
-                           id="editQuantity"
-                           class="form-control">
-                </div>
-
+            <div class="mb-3">
+              <label class="form-label">Quantity</label>
+              <input type="number" id="editQuantity" class="form-control" />
             </div>
+          </div>
 
-            <div class="modal-footer">
-                <button class="btn btn-secondary"
-                        data-bs-dismiss="modal">
-                    Cancel
-                </button>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">
+              Cancel
+            </button>
 
-                <button class="btn btn-primary"
-                        onclick="updateStock()">
-                    Save Changes
-                </button>
-            </div>
-
+            <button class="btn btn-primary" onclick="updateStock()">
+              Save Changes
+            </button>
+          </div>
         </div>
+      </div>
     </div>
-</div>
-
   </body>
 </html>

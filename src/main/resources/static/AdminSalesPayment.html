@@ -19,7 +19,9 @@ body{background:#f4f6fb
       /* Navbar */
 
       .top-navbar {
+         height: 80px;
         min-height: 80px;
+        padding: 0 16px;
         background: #fff;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         position: fixed;
@@ -30,8 +32,8 @@ body{background:#f4f6fb
       }
       
        .navbar-logo{
-        width: 90px;
-        height: 85px;
+         width: 130px;
+       height: 74px;
         object-fit: contain;
       }
 
@@ -137,6 +139,17 @@ th,td{white-space:nowrap}
 
 .payment-history-card:hover{
   transform:translateY(-5px);
+}
+
+@media (max-width: 768px) {
+  .top-navbar {
+    height: 80px;
+    min-height: 80px;
+}
+.navbar-logo {
+    width: 120px;
+    height: 68px;
+}
 }
 </style>
 </head>

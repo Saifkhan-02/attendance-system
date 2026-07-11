@@ -25,7 +25,9 @@
 
       /* Navbar */
       .top-navbar {
-        min-height: 90px;
+         height: 80px;
+        min-height: 80px;
+        padding: 0 16px;
         background: #fff;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         position: fixed;
@@ -35,8 +37,8 @@
         z-index: 1050;
       }
         .navbar-logo{
-          width: 90px;
-          height: 85px;
+          width: 130px;
+          height: 74px;
           object-fit: contain;
         }
 
@@ -189,6 +191,16 @@
 
 @media(max-width:768px){
 
+    .top-navbar {
+    height: 80px;
+    min-height: 80px;
+}
+
+.navbar-logo {
+    width: 120px;
+    height: 68px;
+}
+
     .custom-modal{
         max-width:95%;
         margin:10px auto;
@@ -256,20 +268,6 @@
     .btn-close{
         font-size:12px;
     }
-}
-
-
-@media (max-width:768px){
-
-    .admin-info{
-      display: none !important;
-    }
-
-    #datetime{
-        font-size:10px;
-        white-space:nowrap;
-    }
-
 }
 
 @media print{
@@ -345,9 +343,6 @@
           <div id="datetime" class="small text-secondary"></div>
         </div>
 
-    </div>
-
-</div>
     </div>
 
 </nav>
