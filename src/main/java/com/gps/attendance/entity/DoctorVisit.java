@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 
 @Entity
 public class DoctorVisit {
@@ -42,6 +43,9 @@ public class DoctorVisit {
     private String photo;
     private String remarks;
     private String status;
+
+    @Transient
+    private long totalVisitCount;
 
     // getters and setters
 
@@ -181,4 +185,11 @@ public class DoctorVisit {
     public void setStatus(String status) {
         this.status = status; 
     } 
+    public long getTotalVisitCount() {
+    return totalVisitCount;
+}
+
+public void setTotalVisitCount(long totalVisitCount) {
+    this.totalVisitCount = totalVisitCount;
+}
 }

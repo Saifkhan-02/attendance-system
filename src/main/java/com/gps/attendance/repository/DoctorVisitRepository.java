@@ -122,4 +122,11 @@ List<DoctorVisit> findByEmployeeIdAndVisitDateStartingWithOrderByIdDesc(
         String month
 );
 
+// Doctor Search (Autocomplete + Auto Fill)
+List<DoctorVisit> findByDoctorNameContainingIgnoreCaseOrderByDoctorNameAsc(String doctorName);
+List<DoctorVisit> findByDoctorNameIgnoreCaseOrderByHospitalNameAsc(String doctorName);
+
+// Total Visit Count
+long countByDoctorNameIgnoreCase(String doctorName);
+
 }

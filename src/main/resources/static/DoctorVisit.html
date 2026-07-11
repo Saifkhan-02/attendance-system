@@ -27,18 +27,18 @@
         border-radius: 0 0 25px 25px;
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
       }
-        .back-btn{
-  width:42px;
-  height:42px;
-  border:none;
-  border-radius:50%;
-  background:rgba(255,255,255,.2);
-  color:white;
-}
+      .back-btn {
+        width: 42px;
+        height: 42px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
 
-.back-btn:hover{
-  background:rgba(255,255,255,.3);
-}
+      .back-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
       .visit-card,
       .history-card {
         border: none;
@@ -88,23 +88,23 @@
   </head>
 
   <body>
-   <div class="top-header">
-  <div class="d-flex align-items-center justify-content-between">
+    <div class="top-header">
+      <div class="d-flex align-items-center justify-content-between">
+        <button
+          class="back-btn"
+          onclick="window.location.href = 'Dashboard.html'"
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
 
-    <button class="back-btn"
-            onclick="window.location.href='Dashboard.html'">
-      <i class="fa-solid fa-arrow-left"></i>
-    </button>
+        <div class="text-center flex-grow-1">
+          <h2 class="fw-bold mb-1">Doctor Visit</h2>
+          <p class="mb-0">Submit your daily doctor visits</p>
+        </div>
 
-    <div class="text-center flex-grow-1">
-      <h2 class="fw-bold mb-1">Doctor Visit</h2>
-      <p class="mb-0">Submit your daily doctor visits</p>
+        <div style="width: 42px"></div>
+      </div>
     </div>
-
-    <div style="width:42px"></div>
-
-  </div>
-</div>
 
     <div class="container py-4">
       <!-- Doctor Visit Form -->
@@ -142,8 +142,18 @@
                 id="doctorName"
                 class="form-control"
                 placeholder="Enter doctor name"
+                autocomplete="off"
+                oninput="searchDoctor()"
                 required
               />
+
+              <div id="doctorStatus" class="mt-2"></div>
+
+              <div
+                id="doctorSuggestionBox"
+                class="list-group mt-1"
+                style="display: none; max-height: 250px; overflow-y: auto"
+              ></div>
             </div>
 
             <div class="col-md-6">
@@ -177,6 +187,27 @@
                 required
               />
             </div>
+
+            <div id="doctorInfoCard"
+     class="alert alert-success mt-3"
+     style="display:none;">
+
+    <h6 class="mb-2">
+        <i class="fa-solid fa-user-doctor"></i>
+        Existing Doctor
+    </h6>
+
+    <div>
+        <strong>Last Visit :</strong>
+        <span id="lastVisitDate"></span>
+    </div>
+
+    <div>
+        <strong>Total Visits :</strong>
+        <span id="totalVisitCount"></span>
+    </div>
+
+</div>
 
             <!-- <div class="col-md-6">
               <label class="form-label">Visit Date</label>
@@ -282,51 +313,6 @@
                 "
               />
             </div>
-
-            <!-- <div class="col-md-6">
-                    <label class="form-label">Doctor Response</label>
-                    <select id="doctorResponse" class="form-select">
-                        <option>Positive</option>
-                        <option>Neutral</option>
-                        <option>Negative</option>
-                        <option>Follow-up Required</option>
-                    </select>
-                </div> -->
-
-            <!-- <hr class="my-4"> -->
-            <!-- 
-<h4 class="fw-bold mb-3">Order Details</h4>
-
-<div class="col-md-6">
-    <label class="form-label">Product</label>
-    <select id="stockId" class="form-select" onchange="loadAvailableStock()">
-        <option value="">Select Product</option>
-    </select>
-    <input type="hidden" id="productName">
-</div>
-
-<div class="col-md-6">
-    <label class="form-label">Available Stock</label>
-    <div class="stock-box" id="availableStock">
-        0 Units
-    </div>
-</div>
-
-<div class="col-md-6">
-    <label class="form-label">Order Quantity</label>
-    <input type="number"
-           id="orderQuantity"
-           class="form-control"
-           placeholder="Enter order quantity">
-</div>
-
-<div class="col-md-6">
-    <label class="form-label">Order Amount</label>
-    <input type="number"
-           id="orderAmount"
-           class="form-control"
-           placeholder="Enter order amount">
-</div> -->
 
             <div class="col-md-12">
               <label class="form-label">Remarks</label>
@@ -435,6 +421,30 @@
         </div>
       </div>
 
+      <!-- Doctor Selection Modal -->
+<div class="modal fade" id="doctorSelectModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Select Doctor
+                </h5>
+
+                <button class="btn-close"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div id="doctorListContainer"></div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
       <!-- Visit Image Modal -->
       <div class="modal fade" id="visitImageModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -481,12 +491,198 @@
         getCurrentLocation();
       };
 
-     
+      async function searchDoctor() {
 
-async function submitDoctorVisit() {
- 
+    const keyword = document.getElementById("doctorName").value.trim();
+
+    document.getElementById("doctorStatus").innerHTML = "";
+
+document.getElementById("doctorInfoCard").style.display = "none";
+
+    const suggestionBox = document.getElementById("doctorSuggestionBox");
+
+    if (keyword.length < 2) {
+        suggestionBox.style.display = "none";
+        suggestionBox.innerHTML = "";
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${BASE_URL}/doctor-visit/search-doctor?doctorName=${encodeURIComponent(keyword)}`
+        );
+
+        const doctors = await response.json();
+
+        document.getElementById("doctorStatus").innerHTML = "";
+
+        suggestionBox.innerHTML = "";
+
+       if (doctors.length === 0) {
+
+    document.getElementById("doctorStatus").innerHTML = `
+    <div class="alert alert-warning py-2 mb-0">
+        <i class="fa-solid fa-circle-plus"></i>
+        New Doctor
+    </div>
+    `;
+
+    suggestionBox.style.display = "none";
+    suggestionBox.innerHTML = "";
+    return;
+}
+
+        suggestionBox.style.display = "block";
+
+        doctors.forEach((doctor) => {
+
+         suggestionBox.innerHTML += `
+<div class="list-group-item list-group-item-action"
+     style="cursor:pointer"
+     onclick='checkDuplicateDoctor("${doctor.doctorName}")'>
+
+    <div class="fw-bold text-primary">
+        <i class="fa-solid fa-user-doctor"></i>
+        ${doctor.doctorName}
+    </div>
+
+    <div class="small text-dark mt-1">
+        <i class="fa-solid fa-hospital"></i>
+        ${doctor.hospitalName || "-"}
+    </div>
+
+    <div class="small text-secondary">
+        <i class="fa-solid fa-stethoscope"></i>
+        ${doctor.specialization || "-"}
+    </div>
+
+    <div class="small text-success">
+        <i class="fa-solid fa-location-dot"></i>
+        ${doctor.landmark || "-"}
+    </div>
+
+</div>
+`;
+
+        });
+
+    } catch (e) {
+
+        console.error(e);
+
+    }
+
+}
+
+function selectDoctor(doctor) {
+
+    document.getElementById("doctorName").value =
+        doctor.doctorName || "";
+
+    document.getElementById("specialization").value =
+        doctor.specialization || "";
+
+    document.getElementById("dob").value =
+        doctor.dob || "";
+
+    document.getElementById("anniversaryDate").value =
+        doctor.anniversaryDate || "";
+
+    document.getElementById("hospitalName").value =
+        doctor.hospitalName || "";
+
+    document.getElementById("landmark").value =
+        doctor.landmark || "";
 
 
+        document.getElementById("doctorStatus").innerHTML = `
+<div class="alert alert-success py-2 mb-0">
+    <i class="fa-solid fa-circle-check"></i>
+    Existing Doctor
+</div>
+`;
+
+         document.getElementById("doctorInfoCard").style.display = "block";
+
+        document.getElementById("lastVisitDate").innerText =
+         doctor.visitDate || "-";
+
+         document.getElementById("totalVisitCount").innerText =
+    doctor.totalVisitCount || 0;
+
+    document.getElementById("doctorSuggestionBox").style.display = "none";
+    document.getElementById("doctorSuggestionBox").innerHTML = "";
+
+}
+
+async function checkDuplicateDoctor(doctorName) {
+
+    const response = await fetch(
+        `${BASE_URL}/doctor-visit/exact-doctor?doctorName=${encodeURIComponent(doctorName)}`
+    );
+
+    const doctors = await response.json();
+
+    if (doctors.length <= 1) {
+
+        selectDoctor(doctors[0]);
+
+        return;
+
+    }
+
+    let html = "";
+
+    doctors.forEach((doctor) => {
+
+        html += `
+        <div class="card mb-2">
+
+            <div class="card-body">
+
+                <h6>${doctor.doctorName}</h6>
+
+                <p class="mb-1">
+                    <b>Hospital :</b>
+                    ${doctor.hospitalName}
+                </p>
+
+                <p class="mb-1">
+                    <b>Specialization :</b>
+                    ${doctor.specialization}
+                </p>
+
+                <p class="mb-2">
+                    <b>Landmark :</b>
+                    ${doctor.landmark}
+                </p>
+
+                <button
+                    class="btn btn-primary btn-sm"
+                    onclick='selectDoctor(${JSON.stringify(doctor)});
+                             bootstrap.Modal.getInstance(document.getElementById("doctorSelectModal")).hide();'>
+
+                    Select
+
+                </button>
+
+            </div>
+
+        </div>
+        `;
+
+    });
+
+    document.getElementById("doctorListContainer").innerHTML = html;
+
+    new bootstrap.Modal(
+        document.getElementById("doctorSelectModal")
+    ).show();
+
+}
+
+      async function submitDoctorVisit() {
         if (!document.getElementById("workingWith").value) {
           alert("Please select Working With");
           return;
@@ -511,22 +707,20 @@ async function submitDoctorVisit() {
           return;
         }
 
-       // if (!document.getElementById("dob").value) {
-       //   alert("Please select DOB");
-       //   return;
-       // }
-//
-       // if (!document.getElementById("anniversaryDate").value) {
-       //   alert("Please select DOA");
-       //   return;
-       // }
+        // if (!document.getElementById("dob").value) {
+        //   alert("Please select DOB");
+        //   return;
+        // }
+        
+        if (!document.getElementById("anniversaryDate").value) {
+          alert("Please select DOA");
+           return;
+         }
 
         if (!document.getElementById("hospitalName").value.trim()) {
           alert("Please fill Hospital / Clinic First ");
           return;
         }
-
-       
 
         if (!document.getElementById("locationName").value.trim()) {
           alert("your Current location is not accurate ");
@@ -552,23 +746,23 @@ async function submitDoctorVisit() {
           return;
         }
 
-         if (isSubmittingVisit) {
-    return;
-  }
+        if (isSubmittingVisit) {
+          return;
+        }
 
-  const submitBtn = document.getElementById("submitVisitBtn");
+        const submitBtn = document.getElementById("submitVisitBtn");
 
-  isSubmittingVisit = true;
-submitBtn.disabled = true;
-submitBtn.innerHTML = "Submitting...";
+        isSubmittingVisit = true;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = "Submitting...";
         const photoUrl = await uploadDoctorVisitPhoto();
 
-       if (!photoUrl) {
-  isSubmittingVisit = false;
-  submitBtn.disabled = false;
-  submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane me-2"></i> Submit Visit`;
-  return;
-}
+        if (!photoUrl) {
+          isSubmittingVisit = false;
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane me-2"></i> Submit Visit`;
+          return;
+        }
         const visitData = {
           employeeId: localStorage.getItem("employeeId"),
 
@@ -588,7 +782,7 @@ submitBtn.innerHTML = "Submitting...";
 
           hospitalName: document.getElementById("hospitalName").value,
 
-         // visitDate: document.getElementById("visitDate").value,
+          // visitDate: document.getElementById("visitDate").value,
 
           location: document.getElementById("locationName").value,
 
@@ -608,8 +802,6 @@ submitBtn.innerHTML = "Submitting...";
           photo: photoUrl,
         };
 
-        
-        
         fetch(`${BASE_URL}/doctor-visit/save`, {
           method: "POST",
           headers: {
@@ -631,20 +823,29 @@ submitBtn.innerHTML = "Submitting...";
             alert("Doctor Visit Submitted Successfully");
 
             clearForm();
-            
+
+            document.getElementById("doctorStatus").innerHTML = "";
+
+document.getElementById("doctorSuggestionBox").innerHTML = "";
+document.getElementById("doctorSuggestionBox").style.display = "none";
+
+document.getElementById("doctorInfoCard").style.display = "none";
+
+document.getElementById("lastVisitDate").innerText = "";
+document.getElementById("totalVisitCount").innerText = "";
+
             loadDoctorVisitHistory();
             isSubmittingVisit = false;
             submitBtn.disabled = false;
             submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane me-2"></i> Submit Visit`;
-            
           })
           .catch((error) => {
             isSubmittingVisit = false;
-  submitBtn.disabled = false;
-  submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane me-2"></i> Submit Visit`;
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane me-2"></i> Submit Visit`;
 
-  console.error("SAVE ERROR:", error);
-  alert(error.message || "Failed To Submit Visit");
+            console.error("SAVE ERROR:", error);
+            alert(error.message || "Failed To Submit Visit");
           });
       }
 
@@ -940,56 +1141,60 @@ submitBtn.innerHTML = "Submitting...";
 
         modal.show();
       }
-    
-      function openEditVisitModal(visit) {
-    document.getElementById("editVisitId").value = visit.id;
-    document.getElementById("editWorkingWith").value = visit.workingWith || "Individual";
-    document.getElementById("editWorkingPersonName").value = visit.workingPersonName || "";
-    document.getElementById("editLandmark").value = visit.landmark || "";
-    document.getElementById("editRemarks").value = visit.remarks || "";
 
-    const modal = new bootstrap.Modal(document.getElementById("editVisitModal"));
-    modal.show();
-}
+      function openEditVisitModal(visit) {
+        document.getElementById("editVisitId").value = visit.id;
+        document.getElementById("editWorkingWith").value =
+          visit.workingWith || "Individual";
+        document.getElementById("editWorkingPersonName").value =
+          visit.workingPersonName || "";
+        document.getElementById("editLandmark").value = visit.landmark || "";
+        document.getElementById("editRemarks").value = visit.remarks || "";
+
+        const modal = new bootstrap.Modal(
+          document.getElementById("editVisitModal"),
+        );
+        modal.show();
+      }
 
       function updateDoctorVisit() {
-    const visitId = document.getElementById("editVisitId").value;
+        const visitId = document.getElementById("editVisitId").value;
 
-    const updatedVisit = {
-        workingWith: document.getElementById("editWorkingWith").value,
-        workingPersonName: document.getElementById("editWorkingPersonName").value,
-        landmark: document.getElementById("editLandmark").value,
-        remarks: document.getElementById("editRemarks").value
-    };
+        const updatedVisit = {
+          workingWith: document.getElementById("editWorkingWith").value,
+          workingPersonName: document.getElementById("editWorkingPersonName")
+            .value,
+          landmark: document.getElementById("editLandmark").value,
+          remarks: document.getElementById("editRemarks").value,
+        };
 
-    fetch(`${BASE_URL}/doctor-visit/update/${visitId}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(updatedVisit)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("Update failed");
-        }
-        return response.json();
-    })
-    .then(data => {
-        document.activeElement.blur();
+        fetch(`${BASE_URL}/doctor-visit/update/${visitId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedVisit),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Update failed");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            document.activeElement.blur();
 
-        const modalElement = document.getElementById("editVisitModal");
-        bootstrap.Modal.getInstance(modalElement).hide();
+            const modalElement = document.getElementById("editVisitModal");
+            bootstrap.Modal.getInstance(modalElement).hide();
 
-        alert("Visit updated successfully");
-        loadDoctorVisitHistory();
-    })
-    .catch(error => {
-        console.error(error);
-        alert("Failed to update visit");
-    });
-}
-    
+            alert("Visit updated successfully");
+            loadDoctorVisitHistory();
+          })
+          .catch((error) => {
+            console.error(error);
+            alert("Failed to update visit");
+          });
+      }
     </script>
   </body>
 </html>

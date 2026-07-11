@@ -271,6 +271,61 @@ public class DoctorVisitController {
         return cloudinaryService.uploadDoctorVisitImage(file, employeeId);
     }
 
+@GetMapping("/doctor-visit/search-doctor")
+public List<DoctorVisit> searchDoctor(
+        @RequestParam String doctorName) {
+
+    List<DoctorVisit> doctors = repository
+            .findByDoctorNameContainingIgnoreCaseOrderByDoctorNameAsc(doctorName)
+            .stream()
+            .collect(Collectors.toMap(
+                    d -> (d.getDoctorName() + "|" +
+                          d.getHospitalName() + "|" +
+                          d.getSpecialization()).toLowerCase(),
+                    d -> d,
+                    (oldValue, newValue) ->
+                            oldValue.getVisitDate().compareTo(newValue.getVisitDate()) >= 0
+                                    ? oldValue
+                                    : newValue
+            ))
+            .values()
+            .stream()
+            .toList();
+
+    for (DoctorVisit doctor : doctors) {
+
+        long totalVisits =
+                repository.countByDoctorNameIgnoreCase(
+                        doctor.getDoctorName());
+
+        doctor.setTotalVisitCount(totalVisits);
+
+    }
+
+    return doctors;
+}
+
+@GetMapping("/doctor-visit/exact-doctor")
+public List<DoctorVisit> getExactDoctor(
+        @RequestParam String doctorName) {
+
+    List<DoctorVisit> doctors =
+            repository.findByDoctorNameIgnoreCaseOrderByHospitalNameAsc(doctorName);
+
+    for (DoctorVisit doctor : doctors) {
+
+        long totalVisits =
+                repository.countByDoctorNameIgnoreCase(
+                        doctor.getDoctorName());
+
+        doctor.setTotalVisitCount(totalVisits);
+
+    }
+
+    return doctors;
+}
+
+
     @PutMapping("/doctor-visit/update/{id}")
     public DoctorVisit updateDoctorVisit(
             @PathVariable Long id,
