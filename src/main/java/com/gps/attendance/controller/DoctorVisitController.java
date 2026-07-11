@@ -311,27 +311,49 @@ public List<DoctorVisit> searchDoctor(
 
 @GetMapping("/doctor-visit/exact-doctor")
 public List<DoctorVisit> getExactDoctor(
+
         @RequestParam Long employeeId,
         @RequestParam String doctorName) {
 
-    List<DoctorVisit> doctors =
-            repository.findByEmployeeIdAndDoctorNameIgnoreCaseOrderByHospitalNameAsc(
-                    employeeId,
-                    doctorName);
+   List<DoctorVisit> doctors = repository
+        .findByEmployeeIdAndDoctorNameIgnoreCaseOrderByHospitalNameAsc(
+                employeeId,
+                doctorName)
+        .stream()
+        .collect(Collectors.toMap(
 
-    for (DoctorVisit doctor : doctors) {
+                d -> (
+                        d.getDoctorName() + "|" +
+                        d.getHospitalName() + "|" +
+                        d.getSpecialization()
+                ).toLowerCase(),
 
-        long totalVisits =
-                repository.countByDoctorNameIgnoreCase(
-                        doctor.getDoctorName());
+                d -> d,
 
-        doctor.setTotalVisitCount(totalVisits);
+                (oldValue, newValue) ->
 
-    }
+                        oldValue.getVisitDate().compareTo(newValue.getVisitDate()) >= 0
+                                ? oldValue
+                                : newValue
 
-    return doctors;
+        ))
+        .values()
+        .stream()
+        .toList();
+
+for (DoctorVisit doctor : doctors) {
+
+    doctor.setTotalVisitCount(
+            repository.countByDoctorNameIgnoreCase(
+                    doctor.getDoctorName()
+            )
+    );
+
 }
 
+return doctors;
+        
+}
 
     @PutMapping("/doctor-visit/update/{id}")
     public DoctorVisit updateDoctorVisit(
