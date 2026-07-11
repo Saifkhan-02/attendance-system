@@ -76,6 +76,7 @@ function renderAsmSidebar(activePage = "dashboard") {
       <a href="ASMWorkingWith.html" class="asm-link ${activePage === "working" ? "active" : ""}">
         <i class="fa-solid fa-user-group"></i> Working With
       </a>
+    
 
       <a href="ASMReports.html" class="asm-link ${activePage === "reports" ? "active" : ""}">
         <i class="fa-solid fa-chart-line"></i> Reports

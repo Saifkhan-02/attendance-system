@@ -489,7 +489,7 @@
         <td><span class="${statusClass}">${d.status || "Active"}</span></td>
         <td>
           <button class="btn btn-sm btn-primary me-1"
-                  onclick='editDistributor(${JSON.stringify(d)})'>
+                  onclick="editDistributor(${d.id})">
             <i class="fa-solid fa-pen"></i>
           </button>
 
@@ -507,20 +507,26 @@ onclick="toggleDistributorStatus(${d.id})">
         });
       }
 
-      function editDistributor(d) {
-        document.getElementById("editDistributorId").value = d.id;
-        document.getElementById("headquarterSelect").value =
-          d.headquarters || "";
-        document.getElementById("newHeadquarter").value = "";
-        document.getElementById("distributorName").value =
-          d.distributorName || "";
-        document.getElementById("address").value = d.address || "";
-        // document.getElementById("contactPerson").value = d.contactPerson || "";
-        // document.getElementById("mobile").value = d.mobile || "";
-        document.getElementById("status").value = d.status || "Active";
+   function editDistributor(id){
 
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
+    const d = distributors.find(x => x.id === id);
+
+    if(!d){
+        alert("Distributor not found");
+        return;
+    }
+
+    document.getElementById("editDistributorId").value = d.id;
+    document.getElementById("headquarterSelect").value = d.headquarters || "";
+    document.getElementById("distributorName").value = d.distributorName || "";
+    document.getElementById("address").value = d.address || "";
+    document.getElementById("status").value = d.status || "Active";
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
 
       function toggleDistributorStatus(id) {
         fetch(`${BASE_URL}/distributor/toggle-status/${id}`, {
