@@ -637,4 +637,101 @@ public List<Map<String, Object>> getTeamDailyAttendance(
 
     return result;
 }
+
+@GetMapping("/team-attendance/monthly/{asmId}")
+public List<Map<String, Object>> getTeamMonthlyAttendance(
+        @PathVariable Long asmId,
+        @RequestParam String month
+) {
+    List<Employee> team = getAsmTeam(asmId);
+    List<Map<String, Object>> result = new ArrayList<>();
+
+    if (team == null || team.isEmpty()) {
+        return result;
+    }
+
+    LocalDate fromDate = LocalDate.parse(month + "-01");
+    LocalDate monthEnd = fromDate.plusMonths(1).minusDays(1);
+    LocalDate today = LocalDate.now();
+
+    LocalDate toDate = monthEnd.isAfter(today) ? today : monthEnd;
+
+    List<Long> employeeIds = team.stream()
+            .map(Employee::getId)
+            .collect(Collectors.toList());
+
+    List<Attendance> attendanceList =
+            attendanceRepository
+                    .findByEmployeeIdInAndAttendanceDateBetweenOrderByAttendanceDateDesc(
+                            employeeIds,
+                            fromDate,
+                            toDate
+                    );
+
+    Map<Long, Long> presentMap = new HashMap<>();
+    Map<Long, Long> leaveMap = new HashMap<>();
+
+    for (Attendance attendance : attendanceList) {
+        Long employeeId = attendance.getEmployeeId();
+
+        String status = attendance.getStatus() == null
+                ? ""
+                : attendance.getStatus().trim();
+
+        if ("Present".equalsIgnoreCase(status)) {
+            presentMap.put(
+                    employeeId,
+                    presentMap.getOrDefault(employeeId, 0L) + 1
+            );
+        } else if ("Leave".equalsIgnoreCase(status)
+                || "Approved Leave".equalsIgnoreCase(status)) {
+
+            leaveMap.put(
+                    employeeId,
+                    leaveMap.getOrDefault(employeeId, 0L) + 1
+            );
+        }
+    }
+
+    long elapsedDays =
+            java.time.temporal.ChronoUnit.DAYS.between(
+                    fromDate,
+                    toDate
+            ) + 1;
+
+    for (Employee employee : team) {
+        long presentDays =
+                presentMap.getOrDefault(employee.getId(), 0L);
+
+        long leaveDays =
+                leaveMap.getOrDefault(employee.getId(), 0L);
+
+        long absentDays = Math.max(
+                elapsedDays - presentDays - leaveDays,
+                0
+        );
+
+        double percentage = elapsedDays == 0
+                ? 0
+                : (presentDays * 100.0) / elapsedDays;
+
+        Map<String, Object> row = new HashMap<>();
+
+        row.put("employeeId", employee.getId());
+        row.put("employeeName", employee.getName());
+        row.put("headquarters", employee.getHeadquarters());
+        row.put("month", month);
+        row.put("presentDays", presentDays);
+        row.put("absentDays", absentDays);
+        row.put("leaveDays", leaveDays);
+        row.put(
+                "attendancePercentage",
+                Math.round(percentage * 100.0) / 100.0
+        );
+
+        result.add(row);
+    }
+
+    return result;
+}
 }
