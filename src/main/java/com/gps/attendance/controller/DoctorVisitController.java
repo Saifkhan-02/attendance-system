@@ -273,10 +273,14 @@ public class DoctorVisitController {
 
 @GetMapping("/doctor-visit/search-doctor")
 public List<DoctorVisit> searchDoctor(
-        @RequestParam String doctorName) {
+       @RequestParam Long employeeId,
+@RequestParam String doctorName) {
 
     List<DoctorVisit> doctors = repository
-            .findByDoctorNameContainingIgnoreCaseOrderByDoctorNameAsc(doctorName)
+            .findByEmployeeIdAndDoctorNameContainingIgnoreCaseOrderByDoctorNameAsc(
+        employeeId,
+        doctorName
+)
             .stream()
             .collect(Collectors.toMap(
                     d -> (d.getDoctorName() + "|" +
@@ -307,10 +311,13 @@ public List<DoctorVisit> searchDoctor(
 
 @GetMapping("/doctor-visit/exact-doctor")
 public List<DoctorVisit> getExactDoctor(
+        @RequestParam Long employeeId,
         @RequestParam String doctorName) {
 
     List<DoctorVisit> doctors =
-            repository.findByDoctorNameIgnoreCaseOrderByHospitalNameAsc(doctorName);
+            repository.findByEmployeeIdAndDoctorNameIgnoreCaseOrderByHospitalNameAsc(
+                    employeeId,
+                    doctorName);
 
     for (DoctorVisit doctor : doctors) {
 

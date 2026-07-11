@@ -509,9 +509,11 @@ document.getElementById("doctorInfoCard").style.display = "none";
 
     try {
 
-        const response = await fetch(
-            `${BASE_URL}/doctor-visit/search-doctor?doctorName=${encodeURIComponent(keyword)}`
-        );
+       const employeeId = localStorage.getItem("employeeId");
+
+       const response = await fetch(
+`${BASE_URL}/doctor-visit/search-doctor?employeeId=${employeeId}&doctorName=${encodeURIComponent(keyword)}`
+);
 
         const doctors = await response.json();
 
@@ -618,9 +620,16 @@ function selectDoctor(doctor) {
 
 async function checkDuplicateDoctor(doctorName) {
 
-    const response = await fetch(
-        `${BASE_URL}/doctor-visit/exact-doctor?doctorName=${encodeURIComponent(doctorName)}`
-    );
+   const employeeId = localStorage.getItem("employeeId");
+
+const response = await fetch(
+`${BASE_URL}/doctor-visit/exact-doctor?employeeId=${employeeId}&doctorName=${encodeURIComponent(doctorName)}`
+);
+
+if (!response.ok) {
+    console.error(await response.text());
+    return;
+}
 
     const doctors = await response.json();
 

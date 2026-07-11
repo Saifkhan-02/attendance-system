@@ -25,9 +25,9 @@
       /* Navbar */
 
       .top-navbar {
-         height: 80px;
-         min-height: 80px;
-         padding: 0 16px;
+        height: 80px;
+        min-height: 80px;
+        padding: 0 16px;
         background: #fff;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         position: fixed;
@@ -37,8 +37,8 @@
         z-index: 1050;
       }
       .navbar-logo {
-      width: 130px;
-      height: 74px;
+        width: 130px;
+        height: 74px;
         object-fit: contain;
       }
       /* Main Content */
@@ -67,7 +67,6 @@
         color: green;
         font-weight: bold;
       }
-  
 
       .directory-header {
         background: linear-gradient(135deg, #0d6efd, #2563eb);
@@ -114,15 +113,14 @@
       /* Mobile */
 
       @media (max-width: 768px) {
-
         .top-navbar {
-    height: 80px;
-    min-height: 80px;
-}
+          height: 80px;
+          min-height: 80px;
+        }
 
         .navbar-logo {
           width: 120px;
-        height: 68px;
+          height: 68px;
         }
         .directory-header .d-flex {
           flex-direction: column;
@@ -147,7 +145,7 @@
 
     <nav class="navbar top-navbar px-3">
       <div class="d-flex align-items-center">
-         <button class="btn btn-light me-3" onclick="goBack()">
+        <button class="btn btn-light me-3" onclick="goBack()">
           <i class="fas fa-arrow-left"></i>
         </button>
 
@@ -169,7 +167,6 @@
       </div>
     </nav>
 
-    
     <!-- MAIN CONTENT -->
 
     <div class="main-content" id="mainContent">
@@ -197,8 +194,7 @@
 
     <script src="js/config.js"></script>
     <script>
-
-       function goBack() {
+      function goBack() {
         window.location.replace("admin-dashboard.html");
       }
 
@@ -227,8 +223,8 @@
 
           let html = "";
 
-         doctors.forEach((doc) => {
-  html += `
+          doctors.forEach((doc) => {
+            html += `
         
 <div class="col-lg-4 col-md-6">
 
@@ -250,28 +246,32 @@
                 <strong>Hospital:</strong>
                 ${doc.hospitalName || "-"}
             </p>
+<p>
+    <strong>Landmark:</strong>
+    ${doc.landmark || "-"}
+</p>
 
-            <p>
-                <strong>Location:</strong>
-                ${doc.location?.split(",") || "-"}
-            </p>
+<p>
+    <strong>DOB:</strong>
+    ${doc.dob || "-"}
+</p>
 
-            <p>
-                <strong>Employee:</strong>
-                ${doc.employeeName || "-"}
-            </p>
+<p>
+    <strong>Anniversary:</strong>
+    ${doc.anniversaryDate || "-"}
+</p>
 
-            <p>
-                <strong>Visit Date:</strong>
-                ${doc.visitDate || "-"}
-            </p>
+<p>
+    <strong>Employee:</strong>
+    ${doc.employeeName || "-"}
+</p>
 
-            <p>
-                <strong>Status:</strong>
-                <span class="status-active">
-                    ${doc.status || "Completed"}
-                </span>
-            </p>
+<p>
+    <strong>Status:</strong>
+    <span class="status-active">
+        ${doc.status || "Completed"}
+    </span>
+</p>
 
 
         </div>
@@ -279,7 +279,7 @@
     </div>
 
 </div>`;
-});
+          });
 
           document.getElementById("doctorContainer").innerHTML = html;
         } catch (error) {

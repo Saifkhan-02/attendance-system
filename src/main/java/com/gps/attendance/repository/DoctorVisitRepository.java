@@ -123,9 +123,15 @@ List<DoctorVisit> findByEmployeeIdAndVisitDateStartingWithOrderByIdDesc(
 );
 
 // Doctor Search (Autocomplete + Auto Fill)
-List<DoctorVisit> findByDoctorNameContainingIgnoreCaseOrderByDoctorNameAsc(String doctorName);
-List<DoctorVisit> findByDoctorNameIgnoreCaseOrderByHospitalNameAsc(String doctorName);
+List<DoctorVisit> findByEmployeeIdAndDoctorNameContainingIgnoreCaseOrderByDoctorNameAsc(
+        Long employeeId,
+        String doctorName
+);
 
+List<DoctorVisit> findByEmployeeIdAndDoctorNameIgnoreCaseOrderByHospitalNameAsc(
+        Long employeeId,
+        String doctorName
+);
 // Total Visit Count
 long countByDoctorNameIgnoreCase(String doctorName);
 
