@@ -444,9 +444,8 @@ public List<DoctorVisit> getWorkingWith(@PathVariable Long asmId) {
 @GetMapping("/employee-details-fast/{employeeId}")
 public Map<String, Object> getEmployeeDetailsFast(
         @PathVariable Long employeeId,
-        @RequestParam(defaultValue = "all") String filterType,
-        @RequestParam(required = false) String date,
-        @RequestParam(required = false) String month
+        @RequestParam(required = false) String fromDate,
+        @RequestParam(required = false) String toDate
 ) {
     Employee employee = employeeRepository.findById(employeeId)
             .orElseThrow(() -> new RuntimeException("Employee not found"));
@@ -455,57 +454,89 @@ public Map<String, Object> getEmployeeDetailsFast(
     List<DoctorVisit> visits;
     List<ProductOrder> orders;
     List<Expense> expenses;
-    List<TourPlan> tourPlans = null;
+    List<TourPlan> tourPlans;
 
-    if ("date".equalsIgnoreCase(filterType) && date != null && !date.isEmpty()) {
-        attendance = attendanceRepository.findByEmployeeIdAndAttendanceDateOrderByIdDesc(
-                employeeId, LocalDate.parse(date));
-        visits = doctorVisitRepository.findByEmployeeIdAndVisitDateOrderByVisitTimeDesc(
-                employeeId, date);
-        orders = orderRepository.findByEmployeeIdAndOrderDateOrderByIdDesc(
-                employeeId, date);
-        expenses = expenseRepository.findByEmployeeIdAndExpenseDateOrderByIdDesc(
-                employeeId, date);
+    boolean hasFromDate = fromDate != null && !fromDate.isBlank();
+    boolean hasToDate = toDate != null && !toDate.isBlank();
 
-        // tourPlans = tourPlanRepository
-        // .findByEmployeeIdAndTravelDateBetweenOrderByIdDesc(
-        //         employeeId,
-        //         LocalDate.parse(date),
-        //         LocalDate.parse(date)
-        // );
+    if (hasFromDate && hasToDate) {
 
-    } else if ("month".equalsIgnoreCase(filterType) && month != null && !month.isEmpty()) {
-        attendance = attendanceRepository.findByEmployeeIdAndAttendanceDateBetweenOrderByIdDesc(
-                employeeId,
-                LocalDate.parse(month + "-01"),
-                LocalDate.parse(month + "-01").plusMonths(1).minusDays(1));
-        visits = doctorVisitRepository.findByEmployeeIdAndVisitDateStartingWithOrderByIdDesc(
-                employeeId, month);
-        orders = orderRepository.findByEmployeeIdAndOrderDateStartingWithOrderByIdDesc(
-                employeeId, month);
-        expenses = expenseRepository.findByEmployeeIdAndExpenseDateStartingWithOrderByIdDesc(
-                employeeId, month);
-        LocalDate from = LocalDate.parse(month + "-01");
-LocalDate to = from.plusMonths(1).minusDays(1);
+        LocalDate from = LocalDate.parse(fromDate);
+        LocalDate to = LocalDate.parse(toDate);
 
-tourPlans = tourPlanRepository
-        .findByEmployeeIdAndTravelDateBetweenOrderByIdDesc(
-                employeeId,
-                from,
-                to
-        );
+        if (to.isBefore(from)) {
+            throw new IllegalArgumentException(
+                    "To Date cannot be before From Date"
+            );
+        }
+
+        attendance =
+                attendanceRepository
+                        .findByEmployeeIdAndAttendanceDateBetweenOrderByIdDesc(
+                                employeeId,
+                                from,
+                                to
+                        );
+
+        visits =
+                doctorVisitRepository
+                        .findByEmployeeIdAndVisitDateBetweenOrderByIdDesc(
+                                employeeId,
+                                fromDate,
+                                toDate
+                        );
+
+        orders =
+                orderRepository
+                        .findByEmployeeIdAndOrderDateBetweenOrderByIdDesc(
+                                employeeId,
+                                fromDate,
+                                toDate
+                        );
+
+        expenses =
+                expenseRepository
+                        .findByEmployeeIdAndExpenseDateBetweenOrderByIdDesc(
+                                employeeId,
+                                fromDate,
+                                toDate
+                        );
+
+        tourPlans =
+                tourPlanRepository
+                        .findByEmployeeIdAndTravelDateBetweenOrderByIdDesc(
+                                employeeId,
+                                from,
+                                to
+                        );
 
     } else {
-        attendance = attendanceRepository.findByEmployeeIdOrderByIdDesc(employeeId);
-        visits = doctorVisitRepository.findByEmployeeIdOrderByIdDesc(employeeId);
-        orders = orderRepository.findByEmployeeIdOrderByIdDesc(employeeId);
-        expenses = expenseRepository.findByEmployeeIdOrderByIdDesc(employeeId);
-        tourPlans = tourPlanRepository.findByEmployeeIdOrderByIdDesc(employeeId);
+
+        attendance =
+                attendanceRepository
+                        .findByEmployeeIdOrderByIdDesc(employeeId);
+
+        visits =
+                doctorVisitRepository
+                        .findByEmployeeIdOrderByIdDesc(employeeId);
+
+        orders =
+                orderRepository
+                        .findByEmployeeIdOrderByIdDesc(employeeId);
+
+        expenses =
+                expenseRepository
+                        .findByEmployeeIdOrderByIdDesc(employeeId);
+
+        tourPlans =
+                tourPlanRepository
+                        .findByEmployeeIdOrderByIdDesc(employeeId);
     }
 
     Map<String, Object> summary = getEmployeeSummary(employeeId);
 
     Map<String, Object> result = new HashMap<>();
+
     result.put("employee", employee);
     result.put("summary", summary);
     result.put("attendance", attendance);
@@ -542,7 +573,6 @@ public List<String> getAsmHeadquarters(@PathVariable Long asmId) {
 public List<Headquarter> getAllHeadquarters() {
     return headquarterRepository.findAll();
 }
-
 
 @PutMapping("/headquarters/{asmId}")
 @Transactional

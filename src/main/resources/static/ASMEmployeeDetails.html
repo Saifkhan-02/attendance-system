@@ -184,9 +184,8 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#visitsTab">Visits</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#ordersTab">Orders</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#expensesTab">Expenses</button></li>
-      <li class="nav-item">
-         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tourPlansTab">Tour Plans </button>
-      </li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tourPlansTab">Tour Plans </button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#totalSalesTab">Total Sales </button></li>
     </ul>
 
     <div class="tab-content">
@@ -281,6 +280,69 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
       <tbody id="tourPlansTable"></tbody>
     </table>
   </div>
+      </div>
+
+      <div class="tab-pane fade" id="totalSalesTab">
+
+  <div class="row g-3 mb-3">
+
+    <div class="col-6 col-md-4">
+      <div class="stat-card">
+        <i class="fa-solid fa-indian-rupee-sign"></i>
+        <div>Filtered Sales</div>
+        <h4 id="filteredSales">₹0</h4>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-4">
+      <div class="stat-card">
+        <i class="fa-solid fa-wallet"></i>
+        <div>Filtered Collection</div>
+        <h4 id="filteredCollection">₹0</h4>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+      <div class="stat-card">
+        <i class="fa-solid fa-chart-pie"></i>
+        <div>Filtered Due</div>
+        <h4 id="filteredDue">₹0</h4>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered align-middle">
+
+      <thead class="table-light">
+        <tr>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Doctor</th>
+          <th>Distributor</th>
+          <th>Sale</th>
+          <th>Collection</th>
+          <th>Due</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody id="totalSalesTable"></tbody>
+
+      <tfoot class="table-primary">
+        <tr>
+          <th colspan="4" class="text-end">Grand Total</th>
+          <th id="grandSales">₹0</th>
+          <th id="grandCollection">₹0</th>
+          <th id="grandDue">₹0</th>
+          <th></th>
+        </tr>
+      </tfoot>
+
+    </table>
+  </div>
+
 </div>
 
     </div>
@@ -308,26 +370,62 @@ window.onload = function(){
   loadSummary();
   loadAllDetails();
 };
-function loadAllDetails(){
+function loadAllDetails() {
 
   const fromDate = document.getElementById("fromDate").value;
   const toDate = document.getElementById("toDate").value;
 
-  fetch(`${BASE_URL}/asm/employee-details-fast/${employeeId}?fromDate=${fromDate}&toDate=${toDate}`)
-    .then(res => res.json())
+  if ((fromDate && !toDate) || (!fromDate && toDate)) {
+    alert("Please select both From Date and To Date");
+    return;
+  }
+
+  if (fromDate && toDate && toDate < fromDate) {
+    alert("To Date cannot be before From Date");
+    return;
+  }
+
+  let url =
+    `${BASE_URL}/asm/employee-details-fast/${employeeId}`;
+
+  if (fromDate && toDate) {
+    url += `?fromDate=${encodeURIComponent(fromDate)}&toDate=${encodeURIComponent(toDate)}`;
+  }
+
+  fetch(url)
+    .then(async res => {
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
+
+      return res.json();
+    })
     .then(data => {
 
       const emp = data.employee || {};
-      document.getElementById("empName").innerText = emp.name || "-";
-      document.getElementById("empRole").innerText = emp.role || "MR";
-      document.getElementById("empHq").innerText = emp.headquarters || "-";
-      document.getElementById("empMobile").innerText = emp.mobile || "-";
+
+      document.getElementById("empName").innerText =
+        emp.name || "-";
+
+      document.getElementById("empRole").innerText =
+        emp.role || "MR";
+
+      document.getElementById("empHq").innerText =
+        emp.headquarters || "-";
+
+      document.getElementById("empMobile").innerText =
+        emp.mobile || "-";
 
       renderAttendance(data.attendance || []);
       renderVisits(data.visits || []);
       renderOrders(data.orders || []);
-     renderExpenses(data.tourPlans || []);
+      renderExpenses(data.tourPlans || []);
       renderTourPlans(data.tourPlans || []);
+      renderTotalSales(data.orders || []);
+    })
+    .catch(error => {
+      console.error("Employee details error:", error);
+      alert("Failed to load employee details");
     });
 }
 function loadSummary(){
@@ -434,7 +532,6 @@ function renderOrders(data){
   });
 }
 
-
 function renderExpenses(data){
   const table = document.getElementById("expensesTable");
   table.innerHTML = "";
@@ -497,6 +594,73 @@ function openTourPlans(){
     });
   }
 }
+
+function renderTotalSales(data){
+  const table = document.getElementById("totalSalesTable");
+  table.innerHTML = "";
+
+  let totalSales = 0;
+  let totalCollection = 0;
+  let totalDue = 0;
+
+  if(!data || data.length === 0){
+    table.innerHTML = `<tr>
+      <td colspan="8" class="text-center">No sales history found</td>
+    </tr>`;
+    
+    updateSalesTotals(0, 0, 0);
+    return;
+  }
+  data.forEach(order => {
+    const sale = Number(order.orderAmount || 0);
+    const collection = Number(order.paidAmount || 0);
+    const due = Number(order.dueAmount || 0);
+
+    totalSales += sale;
+    totalCollection += collection;
+    totalDue += due;
+
+    table.innerHTML += `
+      <tr>
+        <td>${order.orderDate || "-"}</td>
+        <td>${order.orderTime || "-"}</td>
+        <td>${order.doctorName || "-"}</td>
+        <td>${order.distributorName || "-"}</td>
+        <td>${order.productName || "-"}</td>
+        <td>${money(sale)}</td>
+        <td>${money(collection)}</td>
+        <td>${money(due)}</td>
+        <td>${order.status || "-"}</td>
+      </tr>
+    `;
+  });
+
+  updateSalesTotals(totalSales,
+                    totalCollection,
+                    totalDue);
+}
+
+function updateSalesTotals(sales, collection, due) {
+
+  document.getElementById("filteredSales").innerText =
+    money(sales);
+
+  document.getElementById("filteredCollection").innerText =
+    money(collection);
+
+  document.getElementById("filteredDue").innerText =
+    money(due);
+
+  document.getElementById("grandSales").innerText =
+    money(sales);
+
+  document.getElementById("grandCollection").innerText =
+    money(collection);
+
+  document.getElementById("grandDue").innerText =
+    money(due);
+}
+
 </script>
 
 </body>

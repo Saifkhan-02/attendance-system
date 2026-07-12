@@ -69,7 +69,7 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
       <div class="col-6 col-md-3">
         <select id="workingFilter" class="form-select" onchange="filterData()">
           <option value="">All Working Type</option>
-          <option value="Alone">Alone</option>
+          <option value="Individual">Individual</option>
           <option value="ASM">ASM</option>
           <option value="ZSM">ZSM</option>
           <option value="State Head">State Head</option>
@@ -174,7 +174,7 @@ function renderTable(data){
   }
 
   data.forEach(v => {
-    const workingType = v.workingWith || "Alone";
+    const workingType = v.workingWith || "Individual";
     const personName = v.workingPersonName || "-";
 
     table.innerHTML += `
@@ -207,7 +207,7 @@ function filterData(){
 
     const matchEmployee = !employee || v.employeeName === employee;
 
-    const currentWorking = v.workingWith || "Alone";
+    const currentWorking = v.workingWith || "Individual";
     const matchWorking = !working || currentWorking === working;
 
     const text = `

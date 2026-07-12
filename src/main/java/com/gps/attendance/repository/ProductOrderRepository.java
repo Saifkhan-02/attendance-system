@@ -242,4 +242,10 @@ List<Object[]> getTodaySalesSummaryByEmployee(
         @Param("employeeId") Long employeeId,
         @Param("today") String today
 );
+
+List<ProductOrder> findByEmployeeIdAndOrderDateBetweenOrderByIdDesc(
+        Long employeeId,
+        String fromDate,
+        String toDate
+);
 }
