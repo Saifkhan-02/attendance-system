@@ -34,6 +34,7 @@ public class DoctorVisit {
     private LocalTime visitTime;
 
     private String location;
+    private String routeName;
 
     private String landmark;
     private String latitude;
@@ -48,10 +49,10 @@ public class DoctorVisit {
     private long totalVisitCount;
 
     // getters and setters
-
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -59,6 +60,7 @@ public class DoctorVisit {
     public Long getEmployeeId() {
         return employeeId;
     }
+
     public void setEmployeeId(Long employeeId) {
         this.employeeId = employeeId;
     }
@@ -66,13 +68,15 @@ public class DoctorVisit {
     public String getEmployeeName() {
         return employeeName;
     }
+
     public void setEmployeeName(String employeeName) {
         this.employeeName = employeeName;
     }
 
-    public String getWorkingWith(){
+    public String getWorkingWith() {
         return workingWith;
     }
+
     public void setWorkingWith(String workingWith) {
         this.workingWith = workingWith;
     }
@@ -80,6 +84,7 @@ public class DoctorVisit {
     public String getWorkingPersonName() {
         return workingPersonName;
     }
+
     public void setWorkingPersonName(String workingPersonName) {
         this.workingPersonName = workingPersonName;
     }
@@ -87,38 +92,47 @@ public class DoctorVisit {
     public String getVisitCategory() {
         return visitCategory;
     }
+
     public void setVisitCategory(String visitCategory) {
         this.visitCategory = visitCategory;
     }
+
     public String getDoctorName() {
         return doctorName;
     }
+
     public void setDoctorName(String doctorName) {
         this.doctorName = doctorName;
     }
-    public String getSpecialization(){
+
+    public String getSpecialization() {
         return specialization;
     }
-    public void setSpecialization(String specialization){
+
+    public void setSpecialization(String specialization) {
         this.specialization = specialization;
     }
 
     public String getDOB() {
         return dob;
     }
+
     public void setDOB(String dob) {
         this.dob = dob;
     }
 
-       public String getAnniversaryDate() {
+    public String getAnniversaryDate() {
         return anniversaryDate;
     }
+
     public void setAnniversaryDate(String anniversaryDate) {
         this.anniversaryDate = anniversaryDate;
     }
+
     public String getHospitalName() {
         return hospitalName;
     }
+
     public void setHospitalName(String hospitalName) {
         this.hospitalName = hospitalName;
     }
@@ -126,6 +140,7 @@ public class DoctorVisit {
     public String getVisitDate() {
         return visitDate;
     }
+
     public void setVisitDate(String visitDate) {
         this.visitDate = visitDate;
     }
@@ -133,68 +148,88 @@ public class DoctorVisit {
     public LocalTime getVisitTime() {
         return visitTime;
     }
+
     public void setVisitTime(LocalTime visitTime) {
         this.visitTime = visitTime;
     }
 
-
     public String getLocation() {
         return location;
     }
+
     public void setLocation(String location) {
         this.location = location;
     }
 
-    public String getLandmark(){
+    public String getRouteName() {
+        return routeName;
+    }
+
+    public void setRouteName(String routeName) {
+        this.routeName = routeName;
+    }
+
+    public String getLandmark() {
         return landmark;
     }
+
     public void setLandmark(String landmark) {
         this.landmark = landmark;
     }
-      public String getLatitude(){
+
+    public String getLatitude() {
         return latitude;
     }
+
     public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
 
-      public String getLongitude(){
-        return  longitude;
-    }
-    public void setLongitude(String longitude) {
-        this.longitude =  longitude;
+    public String getLongitude() {
+        return longitude;
     }
 
-      public String getAccuracy(){
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getAccuracy() {
         return accuracy;
     }
 
     public void setAccuracy(String accuracy) {
         this.accuracy = accuracy;
     }
+
     public String getPhoto() {
         return photo;
     }
+
     public void setPhoto(String photo) {
         this.photo = photo;
     }
+
     public String getRemarks() {
         return remarks;
     }
+
     public void setRemarks(String remarks) {
         this.remarks = remarks;
     }
+
     public String getStatus() {
         return status;
     }
-    public void setStatus(String status) {
-        this.status = status; 
-    } 
-    public long getTotalVisitCount() {
-    return totalVisitCount;
-}
 
-public void setTotalVisitCount(long totalVisitCount) {
-    this.totalVisitCount = totalVisitCount;
-}
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public long getTotalVisitCount() {
+        return totalVisitCount;
+    }
+
+    public void setTotalVisitCount(long totalVisitCount) {
+        this.totalVisitCount = totalVisitCount;
+    }
 }
