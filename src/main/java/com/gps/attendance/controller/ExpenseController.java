@@ -75,11 +75,6 @@ public class ExpenseController {
         return data;
     }
 
-    @GetMapping("/employee/{id}/expense-total")
-    public Double getExpenseTotal(@PathVariable Long id) {
-        return repository.getTotalExpenseByEmployee(id);
-    }
-
     @GetMapping("/admin/expenses")
     public List<Expense> getAllExpenses() {
         return repository.findAllByOrderByIdDesc();

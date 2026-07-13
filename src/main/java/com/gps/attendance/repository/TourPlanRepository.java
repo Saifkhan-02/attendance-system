@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.gps.attendance.entity.TourPlan;
 
@@ -35,15 +36,16 @@ public interface TourPlanRepository
     );
 
     List<TourPlan> findByEmployeeIdAndTravelDateBetweenOrderByIdDesc(
-        Long employeeId,
-        java.time.LocalDate fromDate,
-        java.time.LocalDate toDate
-);
+            Long employeeId,
+            java.time.LocalDate fromDate,
+            java.time.LocalDate toDate
+    );
 
-long countByEmployeeIdAndTravelDate(
-        Long employeeId,
-        java.time.LocalDate travelDate
-);
+    long countByEmployeeIdAndTravelDate(
+            Long employeeId,
+            java.time.LocalDate travelDate
+    );
+
     @Query(value = """
 SELECT
     travel_date,
@@ -54,6 +56,14 @@ GROUP BY travel_date
 ORDER BY travel_date DESC
 LIMIT 7
 """, nativeQuery = true)
-List<Object[]> getLast7DaysExpenseChart();
+    List<Object[]> getLast7DaysExpenseChart();
+
+    @Query(value = """
+SELECT COALESCE(SUM(total_expense),0)
+FROM tour_plan
+WHERE employee_id = :employeeId
+""", nativeQuery = true)
+    Double getEmployeeTotalExpense(
+            @Param("employeeId") Long employeeId);
 
 }
