@@ -868,10 +868,13 @@
           );
         }
 
-        if (!document.getElementById("specialization").value.trim()) {
-          alert("Please fill Specialization First");
-          return;
-        }
+       if (
+  visitCategory === "DOCTOR" &&
+  !document.getElementById("specialization").value.trim()
+) {
+  alert("Please fill Specialization First");
+  return;
+}
 
         // if (!document.getElementById("dob").value) {
         //   alert("Please select DOB");
@@ -938,7 +941,9 @@
 
           doctorName: document.getElementById("doctorName").value,
 
-          specialization: document.getElementById("specialization").value,
+         specialization:
+                 visitCategory === "DOCTOR"
+                   ? document.getElementById("specialization").value.trim() : "",
 
           dob: document.getElementById("dob").value,
 
