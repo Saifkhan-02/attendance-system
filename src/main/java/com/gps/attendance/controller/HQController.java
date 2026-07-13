@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gps.attendance.entity.Employee;
 import com.gps.attendance.entity.EmployeeHQMapping;
+import com.gps.attendance.entity.EmployeeTerritoryMapping;
 import com.gps.attendance.entity.HQList;
 import com.gps.attendance.entity.Headquarter;
 import com.gps.attendance.repository.EmployeeHQMappingRepository;
 import com.gps.attendance.repository.EmployeeRepository;
+import com.gps.attendance.repository.EmployeeTerritoryMappingRepository;
 import com.gps.attendance.repository.HQListRepository;
 import com.gps.attendance.repository.HeadquarterRepository;
 
@@ -42,8 +44,11 @@ public class HQController {
     @Autowired
     private HeadquarterRepository headquarterRepository;
 
+    @Autowired
+    private EmployeeTerritoryMappingRepository territoryRepository;
+
     @GetMapping("/employee/{employeeId}")
-   public List<Headquarter> getEmployeeHQs(
+    public List<Headquarter> getEmployeeHQs(
             @PathVariable Long employeeId) {
 
         List<EmployeeHQMapping> mappings
@@ -53,7 +58,7 @@ public class HQController {
 
         for (EmployeeHQMapping mapping : mappings) {
 
-           Headquarter hq = headquarterRepository.findById(mapping.getHqId()).orElse(null);
+            Headquarter hq = headquarterRepository.findById(mapping.getHqId()).orElse(null);
 
             if (hq != null) {
                 hqList.add(hq);
@@ -127,21 +132,21 @@ public class HQController {
     }
 
     @PostMapping("/save")
-public HQList saveHQ(@RequestBody HQList hq) {
+    public HQList saveHQ(@RequestBody HQList hq) {
 
-    if (hq.getHqName() == null
-            || hq.getHqName().trim().isEmpty()) {
-        throw new RuntimeException("HQ name is required");
+        if (hq.getHqName() == null
+                || hq.getHqName().trim().isEmpty()) {
+            throw new RuntimeException("HQ name is required");
+        }
+
+        if (hqRepository.findByHqName(
+                hq.getHqName().trim()).isPresent()) {
+
+            throw new RuntimeException("HQ already exists");
+        }
+
+        return hqRepository.save(hq);
     }
-
-    if (hqRepository.findByHqName(
-            hq.getHqName().trim()).isPresent()) {
-
-        throw new RuntimeException("HQ already exists");
-    }
-
-    return hqRepository.save(hq);
-}
 
     @GetMapping("/all")
     public List<HQList> getAllHQ() {
@@ -174,7 +179,7 @@ public HQList saveHQ(@RequestBody HQList hq) {
 
             Employee emp = employeeRepository.findById(m.getEmployeeId()).orElse(null);
 
-           Headquarter hq = headquarterRepository.findById(m.getHqId()).orElse(null);
+            Headquarter hq = headquarterRepository.findById(m.getHqId()).orElse(null);
 
             Map<String, Object> row = new HashMap<>();
 
@@ -212,5 +217,29 @@ public HQList saveHQ(@RequestBody HQList hq) {
         mappingRepository.deleteById(id);
 
         return "Mapping Deleted Successfully";
+    }
+
+    @GetMapping("/routes/{hqId}")
+    public List<String> getRoutesByHeadquarter(@PathVariable Long hqId) {
+
+        List<EmployeeHQMapping> mappings = mappingRepository.findByHqId(hqId);
+
+        System.out.println("Mappings = " + mappings.size());
+
+        List<Long> employeeIds = mappings.stream()
+                .map(EmployeeHQMapping::getEmployeeId)
+                .toList();
+
+        System.out.println("Employee IDs = " + employeeIds);
+
+        List<EmployeeTerritoryMapping> territories
+                = territoryRepository.findByEmployeeIdIn(employeeIds);
+
+        System.out.println("Territories = " + territories.size());
+
+        return territories.stream()
+                .map(EmployeeTerritoryMapping::getTerritoryName)
+                .distinct()
+                .toList();
     }
 }

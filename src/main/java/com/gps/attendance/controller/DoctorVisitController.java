@@ -51,6 +51,8 @@ public class DoctorVisitController {
     @Autowired
     private CloudinaryService cloudinaryService;
 
+    
+
     @PostMapping("/doctor-visit/save")
     public ResponseEntity<?> saveDoctorVisit(
             @RequestBody DoctorVisit visit) {
@@ -209,22 +211,50 @@ public class DoctorVisitController {
                 .toList();
     }
 
-    @GetMapping("/doctor-visit/directory")
-    public List<DoctorVisit> getDoctorDirectory() {
+@GetMapping("/doctor-visit/directory")
+public List<DoctorVisit> getDoctorDirectory(
 
-        return repository.findAll()
-                .stream()
-                .filter(v -> v.getDoctorName() != null
+        @RequestParam(required = false) String category,
+
+        @RequestParam(required = false) String route
+
+) {
+
+ List<DoctorVisit> visits;
+
+if (route != null && !route.isBlank()) {
+
+    visits = repository
+            .findByVisitCategoryAndRouteNameIgnoreCaseOrderByVisitDateDesc(
+                    category,
+                    route
+            );
+
+} else {
+
+    visits = repository
+            .findByVisitCategoryOrderByVisitDateDesc(
+                    category
+            );
+
+}
+
+return visits
+        .stream()
+        .filter(v -> v.getDoctorName() != null
                 && !v.getDoctorName().isBlank())
-                .collect(Collectors.toMap(
-                        DoctorVisit::getDoctorName,
-                        v -> v,
-                        (oldValue, newValue) -> newValue
-                ))
-                .values()
-                .stream()
-                .toList();
-    }
+        .collect(Collectors.toMap(
+                d -> (
+                        d.getDoctorName() + "|" +
+                        (d.getHospitalName() == null ? "" : d.getHospitalName())
+                ).toLowerCase(),
+                d -> d,
+                (oldValue, newValue) -> oldValue
+        ))
+        .values()
+        .stream()
+        .toList();
+}
 
     @GetMapping("/doctor-visit/daily-target/{employeeId}")
     public Map<String, Object> getDailyTarget(@PathVariable Long employeeId) {

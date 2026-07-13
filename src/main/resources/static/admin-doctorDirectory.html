@@ -110,6 +110,24 @@
         display: none;
       }
 
+      .form-select,
+      .form-control {
+        height: 48px;
+        border-radius: 12px;
+      }
+
+      .directory-header h3 {
+        font-weight: 700;
+      }
+
+      .directory-header p {
+        font-size: 15px;
+      }
+
+      .btn {
+        border-radius: 12px;
+      }
+
       /* Mobile */
 
       @media (max-width: 768px) {
@@ -170,20 +188,106 @@
     <!-- MAIN CONTENT -->
 
     <div class="main-content" id="mainContent">
+      <!-- Header -->
+
       <div class="directory-header text-white">
         <div class="d-flex justify-content-between align-items-center">
-          <h4 class="mb-0">
-            <i class="fas fa-user-doctor me-2"></i>
-            Doctors Directory
-          </h4>
+          <div>
+            <h3 class="fw-bold mb-1" id="pageTitle">
+              Doctor & Chemist Directory
+            </h3>
 
-          <input
-            type="text"
-            id="searchDoctor"
-            class="form-control"
-            placeholder="Search Doctor"
-            onkeyup="searchDoctors()"
-          />
+            <p class="mb-0 opacity-75" id="pageSubtitle">
+              List of all doctors and chemists
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category -->
+
+      <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body">
+          <label class="form-label fw-bold mb-3"> Select Category </label>
+
+          <div class="d-flex gap-2 flex-wrap">
+            <input
+              type="radio"
+              class="btn-check"
+              name="listCategory"
+              id="listDoctor"
+              value="DOCTOR"
+              checked
+              onchange="changeListCategory()"
+            />
+
+            <label class="btn btn-outline-primary" for="listDoctor">
+              <i class="fa-solid fa-user-doctor me-2"></i>
+
+              Doctors
+            </label>
+
+            <input
+              type="radio"
+              class="btn-check"
+              name="listCategory"
+              id="listChemist"
+              value="CHEMIST"
+              onchange="changeListCategory()"
+            />
+
+            <label class="btn btn-outline-success" for="listChemist">
+              <i class="fa-solid fa-prescription-bottle-medical me-2"></i>
+
+              Chemists
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+
+      <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-lg-3">
+              <input
+                type="text"
+                id="searchDoctor"
+                class="form-control"
+                placeholder="Search Doctor / Chemist"
+                onkeyup="searchDoctors()"
+              />
+            </div>
+
+            <div class="col-lg-3">
+              <select
+                id="hqFilter"
+                class="form-select"
+                onchange="loadRoutesByHQ()"
+              >
+                <option value="">Select Headquarter</option>
+              </select>
+            </div>
+
+            <div class="col-lg-3">
+              <select
+                id="routeFilter"
+                class="form-select"
+                onchange="loadDoctors()"
+              >
+                <option value="">All Routes</option>
+              </select>
+            </div>
+
+            <div class="col-lg-3">
+              <button class="btn btn-primary w-100" onclick="loadDoctors()">
+                <i class="fa-solid fa-rotate-right me-2"></i>
+
+                Refresh
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -194,6 +298,9 @@
 
     <script src="js/config.js"></script>
     <script>
+      let doctors = [];
+      let selectedCategory = "DOCTOR";
+
       function goBack() {
         window.location.replace("admin-dashboard.html");
       }
@@ -210,75 +317,151 @@
       }
       loadAdminInfo();
       updateTime();
+      loadHeadquarters();
       loadDoctors();
+
+      function getSelectedCategory() {
+        return document.querySelector('input[name="listCategory"]:checked')
+          .value;
+      }
+
+      function getSelectedCategory() {
+        if (document.getElementById("listDoctor").checked) {
+          return "DOCTOR";
+        }
+
+        return "CHEMIST";
+      }
+
+      function changeListCategory() {
+        selectedCategory = getSelectedCategory();
+
+        console.log("Category =", selectedCategory);
+
+        if (selectedCategory === "CHEMIST") {
+          document.getElementById("pageTitle").innerText = "Chemist Directory";
+
+          document.getElementById("pageSubtitle").innerText =
+            "List of all chemists";
+
+          document.getElementById("searchDoctor").placeholder =
+            "Search Chemist";
+        } else {
+          document.getElementById("pageTitle").innerText = "Doctor Directory";
+
+          document.getElementById("pageSubtitle").innerText =
+            "List of all doctors";
+
+          document.getElementById("searchDoctor").placeholder = "Search Doctor";
+        }
+
+        loadDoctors();
+      }
+
+      async function loadHeadquarters() {
+        try {
+          const response = await fetch(BASE_URL + "/route-master/headquarters");
+
+          const headquarters = await response.json();
+
+          let html = `
+                  <option value="">Select Headquarter</option>
+              `;
+
+          headquarters.forEach((hq) => {
+            html += `
+                      <option value="${hq}">
+                          ${hq}
+                      </option>
+                  `;
+          });
+
+          document.getElementById("hqFilter").innerHTML = html;
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      async function loadRoutesByHQ() {
+        const hqId = document.getElementById("hqFilter").value;
+
+        let routeDropdown = document.getElementById("routeFilter");
+
+        routeDropdown.innerHTML = `<option value="">All Routes</option>`;
+
+        if (!hqId) return;
+
+        try {
+          const response = await fetch(
+            BASE_URL + "/route-master/active/by-headquarter/" + hqId,
+          );
+
+          const routes = await response.json();
+
+          routes.forEach((route) => {
+            routeDropdown.innerHTML += `
+              <option value="${route.routeName}">
+                  ${route.routeName}
+              </option>`;
+          });
+          loadDoctors();
+        } catch (e) {
+          console.error(e);
+        }
+      }
 
       async function loadDoctors() {
         try {
-          const response = await fetch(BASE_URL + "/doctor-visit/directory");
+          const category = selectedCategory;
+          const route = document.getElementById("routeFilter").value;
+
+          let url = BASE_URL + "/doctor-visit/directory?category=" + category;
+
+          if (route) {
+            url += "&route=" + encodeURIComponent(route);
+          }
+
+          console.log(url);
+
+          const response = await fetch(url);
 
           const doctors = await response.json();
 
-          console.log("Doctors Count =", doctors.length);
-          console.log(doctors);
+          console.log("Doctors =", doctors);
 
           let html = "";
 
           doctors.forEach((doc) => {
             html += `
-        
-<div class="col-lg-4 col-md-6">
+            <div class="col-lg-4 col-md-6">
 
-    <div class="card doctor-card shadow-sm h-100">
+                <div class="card doctor-card shadow-sm h-100">
 
-        <div class="card-body">
+                    <div class="card-body">
 
-            <h5 class="fw-bold text-primary mb-3">
-                <i class="fas fa-user-doctor me-2"></i>
-                ${doc.doctorName || "-"}
-            </h5>
+                        <h5 class="fw-bold text-primary mb-3">
+                            <i class="fas fa-user-doctor me-2"></i>
+                            ${doc.doctorName || "-"}
+                        </h5>
 
-            <p>
-                <strong>Specialization:</strong>
-                ${doc.specialization || "-"}
-            </p>
+                        <p><strong>Specialization:</strong> ${doc.specialization || "-"}</p>
+                        <p><strong>Hospital:</strong> ${doc.hospitalName || "-"}</p>
+                        <p><strong>Landmark:</strong> ${doc.landmark || "-"}</p>
+                        <p><strong>DOB:</strong> ${doc.dob || "-"}</p>
+                        <p><strong>Anniversary:</strong> ${doc.anniversaryDate || "-"}</p>
+                        <p><strong>Employee:</strong> ${doc.employeeName || "-"}</p>
 
-            <p>
-                <strong>Hospital:</strong>
-                ${doc.hospitalName || "-"}
-            </p>
-<p>
-    <strong>Landmark:</strong>
-    ${doc.landmark || "-"}
-</p>
+                        <p>
+                            <strong>Status:</strong>
+                            <span class="status-active">
+                                ${doc.status || "Completed"}
+                            </span>
+                        </p>
 
-<p>
-    <strong>DOB:</strong>
-    ${doc.dob || "-"}
-</p>
+                    </div>
 
-<p>
-    <strong>Anniversary:</strong>
-    ${doc.anniversaryDate || "-"}
-</p>
+                </div>
 
-<p>
-    <strong>Employee:</strong>
-    ${doc.employeeName || "-"}
-</p>
-
-<p>
-    <strong>Status:</strong>
-    <span class="status-active">
-        ${doc.status || "Completed"}
-    </span>
-</p>
-
-
-        </div>
-
-    </div>
-
-</div>`;
+            </div>`;
           });
 
           document.getElementById("doctorContainer").innerHTML = html;
@@ -286,7 +469,6 @@
           console.error(error);
         }
       }
-
       function viewDoctor(id) {
         window.location.href = "doctor-profile.html?id=" + id;
       }
