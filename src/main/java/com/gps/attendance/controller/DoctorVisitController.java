@@ -220,9 +220,17 @@ public List<DoctorVisit> getDoctorDirectory(
 
 ) {
 
- List<DoctorVisit> visits;
+List<DoctorVisit> visits;
 
-if (route != null && !route.isBlank()) {
+// Dashboard ke liye (koi category nahi aayi)
+if (category == null || category.isBlank()) {
+
+    visits = repository.findAll();
+
+}
+
+// Category + Route
+else if (route != null && !route.isBlank()) {
 
     visits = repository
             .findByVisitCategoryAndRouteNameIgnoreCaseOrderByVisitDateDesc(
@@ -230,7 +238,10 @@ if (route != null && !route.isBlank()) {
                     route
             );
 
-} else {
+}
+
+// Sirf Category
+else {
 
     visits = repository
             .findByVisitCategoryOrderByVisitDateDesc(
