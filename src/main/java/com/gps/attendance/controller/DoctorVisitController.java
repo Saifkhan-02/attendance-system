@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -375,4 +377,108 @@ return doctors;
     public Long getVisitCount(@PathVariable Long id) {
         return repository.countByEmployeeId(id);
     }
+
+@GetMapping("/doctor-visit/search-party")
+public List<DoctorVisit> searchParty(
+        @RequestParam Long employeeId,
+        @RequestParam String visitCategory,
+        @RequestParam String name
+) {
+    return repository
+            .findByEmployeeIdAndVisitCategoryAndDoctorNameContainingIgnoreCaseOrderByDoctorNameAsc(
+                    employeeId,
+                    visitCategory,
+                    name
+            );
+}
+
+@GetMapping("/doctor-visit/exact-party")
+public List<DoctorVisit> getExactParty(
+        @RequestParam Long employeeId,
+        @RequestParam String visitCategory,
+        @RequestParam String name
+) {
+    return repository
+            .findByEmployeeIdAndVisitCategoryAndDoctorNameIgnoreCaseOrderByHospitalNameAsc(
+                    employeeId,
+                    visitCategory,
+                    name
+            );
+}
+
+@GetMapping("/doctor-visit/category-summary/{employeeId}")
+public Map<String, Long> getCategorySummary(
+        @PathVariable Long employeeId
+) {
+    Map<String, Long> result = new HashMap<>();
+
+    result.put(
+            "doctors",
+            repository.countByEmployeeIdAndVisitCategory(
+                    employeeId,
+                    "DOCTOR"
+            )
+    );
+
+    result.put(
+            "chemists",
+            repository.countByEmployeeIdAndVisitCategory(
+                    employeeId,
+                    "CHEMIST"
+            )
+    );
+
+    return result;
+}
+
+@GetMapping("/doctor-visit/list/{employeeId}")
+public List<DoctorVisit> getPartyList(
+        @PathVariable Long employeeId,
+        @RequestParam(required = false) String category
+) {
+    if (category != null && !category.isBlank()) {
+        return repository
+                .findByEmployeeIdAndVisitCategoryOrderByIdDesc(
+                        employeeId,
+                        category
+                );
+    }
+
+    return repository.findByEmployeeIdOrderByIdDesc(employeeId);
+}
+
+@GetMapping("/doctor-visit/unique-parties/{employeeId}")
+public List<DoctorVisit> getUniqueParties(
+        @PathVariable Long employeeId,
+        @RequestParam String category
+) {
+    List<DoctorVisit> visits =
+            repository
+                    .findByEmployeeIdAndVisitCategoryOrderByVisitDateDesc(
+                            employeeId,
+                            category
+                    );
+
+    Map<String, DoctorVisit> uniqueMap = new LinkedHashMap<>();
+
+    for (DoctorVisit visit : visits) {
+        String name = visit.getDoctorName();
+
+        if (name == null || name.isBlank()) {
+            continue;
+        }
+
+        String uniqueKey =
+                name.trim().toLowerCase()
+                + "|"
+                + (visit.getHospitalName() == null
+                    ? ""
+                    : visit.getHospitalName().trim().toLowerCase());
+
+        uniqueMap.putIfAbsent(uniqueKey, visit);
+    }
+
+    return new ArrayList<>(uniqueMap.values());
+}
+
 }

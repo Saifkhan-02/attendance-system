@@ -21,7 +21,7 @@ public class DoctorVisit {
     private String workingWith;
     private String workingPersonName;
 
-
+    private String visitCategory;
 
     private String doctorName;
     private String specialization;
@@ -84,13 +84,18 @@ public class DoctorVisit {
         this.workingPersonName = workingPersonName;
     }
 
+    public String getVisitCategory() {
+        return visitCategory;
+    }
+    public void setVisitCategory(String visitCategory) {
+        this.visitCategory = visitCategory;
+    }
     public String getDoctorName() {
         return doctorName;
     }
     public void setDoctorName(String doctorName) {
         this.doctorName = doctorName;
     }
-
     public String getSpecialization(){
         return specialization;
     }

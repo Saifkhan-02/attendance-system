@@ -97,9 +97,10 @@
     </button>
 
     <div class="text-center flex-grow-1">
-      <h2 class="fw-bold mb-1">Doctor's List</h2>
-      <p class="mb-0">List of all doctors you have visited</p>
-    </div>
+     <h2 class="fw-bold mb-1" id="pageTitle">Doctor & Chemist List</h2>
+<p class="mb-0" id="pageSubtitle">
+  List of doctors and chemists you have visited
+</p>    </div>
 
     <div style="width:42px"></div>
 
@@ -107,15 +108,59 @@
 </div>
 
     <div class="container py-4">
+      <div class="card border-0 shadow-sm rounded-4 mb-4">
+  <div class="card-body">
+
+    <label class="form-label fw-bold mb-3">
+      Select Category
+    </label>
+
+    <div class="d-flex gap-2 flex-wrap">
+
+      <input
+        type="radio"
+        class="btn-check"
+        name="listCategory"
+        id="listDoctor"
+        value="DOCTOR"
+        autocomplete="off"
+        checked
+        onchange="changeListCategory()"
+      >
+
+      <label class="btn btn-outline-primary" for="listDoctor">
+        <i class="fa-solid fa-user-doctor me-2"></i>
+        Doctors
+      </label>
+
+      <input
+        type="radio"
+        class="btn-check"
+        name="listCategory"
+        id="listChemist"
+        value="CHEMIST"
+        autocomplete="off"
+        onchange="changeListCategory()"
+      >
+
+      <label class="btn btn-outline-success" for="listChemist">
+        <i class="fa-solid fa-prescription-bottle-medical me-2"></i>
+        Chemists
+      </label>
+
+    </div>
+
+  </div>
+</div>
       <div class="row g-3 mb-4">
         <div class="col-md-8">
-          <input
-            type="text"
-            id="searchDoctor"
-            class="form-control"
-            placeholder="Search doctor by name or area..."
-            onkeyup="searchDoctors()"
-          />
+        <input
+  type="text"
+  id="searchDoctor"
+  class="form-control"
+  placeholder="Search doctor by name or area..."
+  onkeyup="searchDoctors()"
+/>
         </div>
 
         <div class="col-md-4">
@@ -210,12 +255,16 @@
 
           <div class="modal-body">
             <div class="mb-3">
-              <div class="detail-label">Specialization</div>
+             <div class="detail-label" id="modalSpecializationLabel">
+  Specialization
+</div>
               <div class="detail-value" id="modalSpecialization">-</div>
             </div>
 
             <div class="mb-3">
-              <div class="detail-label">Hospital / Clinic</div>
+             <div class="detail-label" id="modalHospitalLabel">
+  Hospital / Clinic
+</div>
               <div class="detail-value" id="modalHospital">-</div>
             </div>
 
@@ -266,20 +315,87 @@
 
     <script>
       let doctors = [];
-      let currentDoctorList = [];
-      window.onload = loadDoctors;
+let currentDoctorList = [];
+let selectedCategory = "DOCTOR";
 
-      function loadDoctors() {
-        const employeeId = localStorage.getItem("employeeId");
+window.onload = function () {
+  loadDoctors();
+};
+function getSelectedCategory() {
+  const selected = document.querySelector(
+    'input[name="listCategory"]:checked'
+  );
 
-        fetch(`${BASE_URL}/doctor-visit/unique-doctors/${employeeId}`)
-          .then((response) => response.json())
-          .then((data) => {
-            doctors = data;
-            displayDoctors(doctors);
-          });
-          
+  return selected ? selected.value : "DOCTOR";
+}
+function changeListCategory() {
+  selectedCategory = getSelectedCategory();
+
+  document.getElementById("searchDoctor").value = "";
+
+  if (selectedCategory === "CHEMIST") {
+    document.getElementById("pageTitle").innerText =
+      "Chemist List";
+
+    document.getElementById("pageSubtitle").innerText =
+      "List of all chemists you have visited";
+
+    document.getElementById("searchDoctor").placeholder =
+      "Search chemist by name or area...";
+  } else {
+    document.getElementById("pageTitle").innerText =
+      "Doctor List";
+
+    document.getElementById("pageSubtitle").innerText =
+      "List of all doctors you have visited";
+
+    document.getElementById("searchDoctor").placeholder =
+      "Search doctor by name or area...";
+  }
+
+  loadDoctors();
+}
+
+    function loadDoctors() {
+  const employeeId = localStorage.getItem("employeeId");
+  selectedCategory = getSelectedCategory();
+
+  const container = document.getElementById("doctorList");
+
+  container.innerHTML = `
+    <div class="col-12 text-center py-4">
+      <div class="spinner-border text-primary"></div>
+      <div class="mt-2">Loading...</div>
+    </div>
+  `;
+
+  fetch(
+    `${BASE_URL}/doctor-visit/unique-parties/${employeeId}` +
+    `?category=${encodeURIComponent(selectedCategory)}`
+  )
+    .then(async response => {
+      if (!response.ok) {
+        throw new Error(await response.text());
       }
+
+      return response.json();
+    })
+    .then(data => {
+      doctors = data || [];
+      displayDoctors(doctors);
+    })
+    .catch(error => {
+      console.error("List loading error:", error);
+
+      container.innerHTML = `
+        <div class="col-12">
+          <div class="alert alert-danger text-center">
+            Failed to load records
+          </div>
+        </div>
+      `;
+    });
+}
 
       function displayDoctors(list) {
     const container = document.getElementById("doctorList");
@@ -287,18 +403,38 @@
     container.innerHTML = "";
     currentDoctorList = list;
 
-    if (!list || list.length === 0) {
-        container.innerHTML = `
-            <div class="col-12">
-                <div class="alert alert-warning text-center">
-                    No doctors found
-                </div>
-            </div>
-        `;
-        return;
-    }
+   if (!list || list.length === 0) {
+  const categoryText =
+    selectedCategory === "CHEMIST"
+      ? "chemists"
+      : "doctors";
+
+  container.innerHTML = `
+    <div class="col-12">
+      <div class="alert alert-warning text-center">
+        No ${categoryText} found
+      </div>
+    </div>
+  `;
+
+  return;
+}
 
     list.forEach((doctor, index) => {
+      const isChemist =
+  (doctor.visitCategory || selectedCategory) === "CHEMIST";
+
+const iconClass = isChemist
+  ? "fa-prescription-bottle-medical"
+  : "fa-user-doctor";
+
+const buildingIcon = isChemist
+  ? "fa-shop"
+  : "fa-hospital";
+
+const secondaryText = isChemist
+  ? (doctor.hospitalName || "-")
+  : (doctor.specialization || "-");
         container.innerHTML += `
             <div class="col-md-6 col-lg-4">
                 <div class="card doctor-card h-100"
@@ -308,21 +444,22 @@
 
                         <div class="d-flex align-items-center gap-3 mb-3">
                             <div class="icon-box">
-                                <i class="fa-solid fa-user-doctor"></i>
+                              <i class="fa-solid ${iconClass}"></i>
                             </div>
 
                             <div>
                                 <h5 class="fw-bold mb-1">
                                     ${doctor.doctorName || "-"}
                                 </h5>
-                                <p class="text-muted mb-0">
-                                    ${doctor.specialization || "-"}
-                                </p>
+                               <p class="text-muted mb-0">
+  ${secondaryText}
+</p>
                             </div>
                         </div>
 
                         <p class="mb-1">
-                            <i class="fa-solid fa-hospital me-2 text-primary"></i>
+                           <i class="fa-solid ${buildingIcon} me-2 text-primary"></i>
+${doctor.hospitalName || "-"}mary"></i>
                             ${doctor.hospitalName || "-"}
                         </p>
 
@@ -355,11 +492,21 @@ function openDoctorFromList(index) {
     openDoctorModal(doctor);
 }
  function openDoctorModal(doctor) {
+    const isChemist =
+  (doctor.visitCategory || selectedCategory) === "CHEMIST";
+
+document.getElementById("modalSpecializationLabel").innerText =
+  isChemist ? "Type" : "Specialization";
+
+document.getElementById("modalHospitalLabel").innerText =
+  isChemist ? "Chemist Shop" : "Hospital / Clinic";
     document.getElementById("modalDoctorName").innerText =
         doctor.doctorName || "-";
 
-    document.getElementById("modalSpecialization").innerText =
-        doctor.specialization || "-";
+   document.getElementById("modalSpecialization").innerText =
+  isChemist
+    ? "-"
+    : (doctor.specialization || "-");
 
     document.getElementById("modalHospital").innerText =
         doctor.hospitalName || "-";
@@ -394,20 +541,37 @@ function openDoctorFromList(index) {
     modal.show();
 }      
 
-      function searchDoctors() {
-        const keyword = document
-          .getElementById("searchDoctor")
-          .value.toLowerCase();
+     function searchDoctors() {
+  const keyword = document
+    .getElementById("searchDoctor")
+    .value
+    .trim()
+    .toLowerCase();
 
-        const filtered = doctors.filter(
-          (doctor) =>
-            doctor.doctorName.toLowerCase().includes(keyword) ||
-           (doctor.landmark || doctor.location || "").toLowerCase().includes(keyword) ||
-            doctor.specialization.toLowerCase().includes(keyword),
-        );
+  const filtered = doctors.filter(item => {
+    const name =
+      (item.doctorName || "").toLowerCase();
 
-        displayDoctors(filtered);
-      }
+    const area =
+      (item.landmark || item.location || "")
+        .toLowerCase();
+
+    const specialization =
+      (item.specialization || "").toLowerCase();
+
+    const shopOrHospital =
+      (item.hospitalName || "").toLowerCase();
+
+    return (
+      name.includes(keyword) ||
+      area.includes(keyword) ||
+      specialization.includes(keyword) ||
+      shopOrHospital.includes(keyword)
+    );
+  });
+
+  displayDoctors(filtered);
+}
 
       function openCallHistory() {
         document.getElementById("doctorSection").style.display = "none";
