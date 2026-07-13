@@ -472,6 +472,7 @@
                 <thead class="table-light">
 
                 <tr>
+                    <th>S.No</th>
                    <th>Employee</th>
                    <th>Doctor</th>
                    <th>Products</th>
@@ -480,7 +481,6 @@
                    <th>Due</th>
                    <th>Order Date</th>
                    <th>Order Time</th>
-                   <th>Bill</th>
                 </tr>
 
                 </thead>
@@ -689,11 +689,13 @@ Amount : ₹${order.orderAmount || 0}
 });
 
     let html = '';
-   Object.values(grouped).forEach(order => {
+   Object.values(grouped).forEach((order, index) => {
 
 html += `
 
 <tr>
+
+<td>${currentPage * 20 + index + 1}</td>
 
 <td>${order.employeeName}</td>
 
@@ -720,20 +722,6 @@ View (${order.products.length})
 <td>${order.orderDate}</td>
 
 <td>${order.orderTime || "-"}</td>
-
-<td>
-// ================= BILL PDF BUTTON =================
-<button
-class="btn btn-danger btn-sm"
-onclick="downloadBill(${order.id})">
-
-<i class="fas fa-file-pdf"></i>
-
-PDF
-
-</button>
-
-</td>
 
 </tr>
 
@@ -877,10 +865,12 @@ Amount : ₹${order.orderAmount || 0}
 </div>`;
 });
 
-   Object.values(grouped).forEach(order => {
+   Object.values(grouped).forEach((order, index) => {
 
        html += `
 <tr>
+    
+<td>${currentPage * 20 + index + 1}</td>
 
 <td>${order.employeeName}</td>
 
@@ -908,27 +898,13 @@ View (${order.products.length})
 
 <td>${order.orderTime || "-"}</td>
 
-<td>
-
-<button
-class="btn btn-danger btn-sm"
-onclick="downloadBill(${order.id})">
-
-<i class="fas fa-file-pdf"></i>
-
-PDF
-
-</button>
-
-</td>
-
 </tr>
 
 <tr
 id="products-${order.invoiceNo}"
 style="display:none;">
 
-<td colspan="10">
+<td colspan="9">
 
 <div id="productsBody-${order.invoiceNo}"></div>
 
@@ -991,12 +967,6 @@ function toggleProducts(invoiceNo) {
 
 // ================= SINGLE BILL PDF DOWNLOAD =================
 
-function downloadBill(orderId) {
-    window.open(
-        `/order/bill/${orderId}`,
-        "_blank"
-    );
-}
 
 function resetSummary() {
 

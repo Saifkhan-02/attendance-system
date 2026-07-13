@@ -144,6 +144,8 @@ public class ProductOrderController {
     @GetMapping("/search")
 public Page<ProductOrder> searchOrders(
 
+        
+
         @RequestParam(required = false) Long employeeId,
 
         @RequestParam(required = false) String date,
@@ -162,7 +164,10 @@ public Page<ProductOrder> searchOrders(
             pageable
     );
 
+    
+
 }
+
 
 // SINGLE INVOICE / BILL PDF DOWNLOAD
 
@@ -415,11 +420,6 @@ public Page<ProductOrder> searchOrders(
                         date
                 );
 
-        Long totalInvoices
-                = orderRepository.countDailyInvoices(
-                        employeeId,
-                        date
-                );
 
         if (orders.isEmpty()) {
 
@@ -547,8 +547,6 @@ public Page<ProductOrder> searchOrders(
         summary.addCell("Total Orders");
         summary.addCell(String.valueOf(orders.size()));
 
-        summary.addCell("Total Invoices");
-        summary.addCell(String.valueOf(totalInvoices));
 
         summary.addCell("Total Quantity");
         summary.addCell(String.valueOf(totalQuantity));
@@ -768,11 +766,6 @@ public Page<ProductOrder> searchOrders(
 
         paymentTable.addCell("Due Amount");
         paymentTable.addCell(formatAmount(dueAmount));
-
-        String status = dueAmount > 0 ? "PARTIALLY PAID" : "PAID";
-
-        paymentTable.addCell("Payment Status");
-        paymentTable.addCell(status);
 
         document.add(paymentTable);
 
