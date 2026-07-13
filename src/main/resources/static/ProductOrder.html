@@ -130,6 +130,7 @@ href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.c
               </select>
 
               <input type="hidden" id="doctorName" />
+              <input type="hidden" id="visitCategory" />
             </div>
 
             <div class="col-md-6">
@@ -304,10 +305,15 @@ href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.c
 
             data.forEach((doctor) => {
               dropdown.innerHTML += `
-                <option value="${doctor.id}"
-                        data-name="${doctor.doctorName}">
-                    ${doctor.doctorName} - ${doctor.hospitalName || ""}
-                </option>
+               <option value="${doctor.id}"
+        data-name="${doctor.doctorName}"
+        data-category="${doctor.visitCategory || "DOCTOR"}">
+
+    ${doctor.doctorName}
+    - ${doctor.visitCategory === "CHEMIST" ? "Chemist" : "Doctor"}
+    - ${doctor.hospitalName || ""}
+
+</option>
             `;
             });
 
@@ -508,18 +514,31 @@ href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.c
 
         calculateDueAmount();
       }
+function setDoctorName() {
+  const select = document.getElementById("doctorId");
+  const selected = select.options[select.selectedIndex];
 
-      function setDoctorName() {
-        const select = document.getElementById("doctorId");
-        const selected = select.options[select.selectedIndex];
+  document.getElementById("doctorName").value =
+    selected ? selected.getAttribute("data-name") || "" : "";
 
-        document.getElementById("doctorName").value =
-          selected.getAttribute("data-name") || "";
-      }
+  document.getElementById("visitCategory").value =
+    selected ? selected.getAttribute("data-category") || "" : "";
+}
     
+function getLocalDate() {
+  const now = new Date();
+
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
 function placeOrder() {
   const doctorId = document.getElementById("doctorId").value;
   const doctorName = document.getElementById("doctorName").value;
+    const visitCategory =
+    document.getElementById("visitCategory").value;
   const distributorId = document.getElementById("distributorId").value;
   const distributorName = document.getElementById("distributorName").value;
   const headquarters = document.getElementById("headquarters").value;
@@ -529,6 +548,10 @@ function placeOrder() {
     alert("Please select doctor");
     return;
   }
+  if (!visitCategory) {
+  alert("Selected Doctor/Chemist category is missing");
+  return;
+}
 
   if (!distributorId) {
     alert("Please select distributor");
@@ -625,6 +648,8 @@ function placeOrder() {
 
       doctorId: Number(doctorId),
       doctorName: doctorName,
+      visitCategory: visitCategory,
+
 
       productId: Number(productId),
       productName: selectedProduct.productName,
@@ -637,9 +662,7 @@ function placeOrder() {
       dueAmount: dueAmount,
       paymentMode: paymentMode,
 
-      orderDate: document.getElementById("orderDate")
-        ? document.getElementById("orderDate").value
-        : new Date().toISOString().split("T")[0],
+    orderDate: getLocalDate(),
 
       distributorId: Number(distributorId),
       distributorName: distributorName,
@@ -660,8 +683,9 @@ function placeOrder() {
   placeBtn.disabled = true;
   placeBtn.innerHTML =
     '<i class="fa-solid fa-spinner fa-spin me-2"></i>Order Placing...';
-
+console.log("ORDERS PAYLOAD:", orders);
   fetch(`${BASE_URL}/order/place-multiple`, {
+    
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -730,40 +754,30 @@ function placeOrder() {
   const employeeId = localStorage.getItem("employeeId");
 
   fetch(`${BASE_URL}/order/history/today/${employeeId}`)
-    .then((response) => response.json())
-    .then((data) => {
+  .then(async response => {
+
+    const text = await response.text();
+
+    if (!response.ok) {
+      throw new Error(text);
+    }
+
+    return text ? JSON.parse(text) : [];
+  })
+  .then(data => {
       const table = document.getElementById("orderTable");
       table.innerHTML = "";
 
-      if (!data || data.length === 0) {
-       table.innerHTML += `
-  <tr>
-    <td>
-      <div class="p-3 border rounded-4 bg-light">
-        <div class="d-flex justify-content-between mb-2">
-          <strong>${order.doctorName || "-"}</strong>
-          <span class="status-placed">${order.status}</span>
-        </div>
-
-        <div class="text-muted mb-2">
-          Distributor: ${order.distributorName || "-"}<br>
-          Date: ${order.orderDate || "-"}
-        </div>
-
-        <div class="mb-2">
-          ${order.products.join("")}
-        </div>
-
-        <div class="fw-bold text-end">
-          Total: ₹${order.totalAmount}
-        </div>
-      </div>
-    </td>
-  </tr>
-`;
-        return;
-      }
-
+     if (!data || data.length === 0) {
+  table.innerHTML = `
+    <tr>
+      <td colspan="11" class="text-center text-muted">
+        No orders found
+      </td>
+    </tr>
+  `;
+  return;
+}
       const groupedOrders = {};
 
       data.forEach((order) => {
@@ -819,7 +833,18 @@ function placeOrder() {
           </tr>
         `;
       });
-    });
+    })
+  .catch(error => {
+    console.error("ORDER HISTORY ERROR:", error);
+
+    document.getElementById("orderTable").innerHTML = `
+      <tr>
+        <td colspan="11" class="text-center text-danger">
+          Failed to load order history
+        </td>
+      </tr>
+    `;
+  });
 }
 function formatTime(dateTime) {
 

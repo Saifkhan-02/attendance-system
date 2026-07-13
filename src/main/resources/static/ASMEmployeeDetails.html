@@ -18,9 +18,17 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
 .logo{width:130px;background:white;border-radius:10px;padding:5px 12px}
 .card-box{background:white;border-radius:20px;padding:18px;box-shadow:0 8px 22px rgba(0,0,0,.08);margin-bottom:18px}
 .profile-icon{width:70px;height:70px;border-radius:50%;background:#eef4ff;color:#0d6efd;display:flex;align-items:center;justify-content:center;font-size:32px}
-.stat-card{background:white;border-radius:18px;padding:18px;box-shadow:0 8px 20px rgba(0,0,0,.08)}
-.stat-card i{font-size:25px;color:#0d6efd}
+.stat-card{background:white;border-radius:18px;padding:18px;box-shadow:0 8px 20px rgba(0,0,0,.09)}
+.stat-card i{font-size:22px;color:#0d6efd}
 .stat-card h4{font-weight:900;margin:8px 0 0}
+#filteredSales,
+#filteredCollection,
+#filteredDue{
+
+    font-size:20px;
+    font-weight:700;
+
+}
 .nav-tabs .nav-link{font-weight:700;color:#0f172a}
 .nav-tabs .nav-link.active{color:#0d6efd}
 .table-responsive{font-size:14px}
@@ -179,14 +187,15 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
 
     </div>
 </div>
+    <!-- Tabs -->
     <ul class="nav nav-tabs mb-3">
       <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#attendanceTab">Attendance</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#visitsTab">Visits</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#ordersTab">Orders</button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#expensesTab">Expenses</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#expensesTab">Exp.</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tourPlansTab">Tour Plans </button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#totalSalesTab">Total Sales </button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#leaveHistory">Leaves </button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#leaveTab">Leaves </button></li>
     </ul>
 
     <div class="tab-content">
@@ -206,34 +215,43 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
           </table>
         </div>
       </div>
-
+      <!-- Visits Tab -->
       <div class="tab-pane fade" id="visitsTab">
         <div class="table-responsive">
           <table class="table table-bordered align-middle">
             <thead class="table-light">
-              <tr>
-                <th>Date</th>
-                <th>Doctor</th>
-                <th>Time</th>
-                <th>Working With</th>
-                <th>Remarks</th>
-              </tr>
+             <tr>
+  <th>Date</th>
+  <th>Working With</th>
+  <th>Person Name</th>
+  <th>Category</th>
+  <th>Dr./Chemist</th>
+  <th>Time</th>
+  <th>Route</th>
+  <th>Landmark</th>
+  <th>Location</th>
+  <th>Image</th>
+  <th>Remarks</th>
+</tr>
             </thead>
             <tbody id="visitsTable"></tbody>
           </table>
         </div>
       </div>
-
+      <!-- Orders Tab -->
       <div class="tab-pane fade" id="ordersTab">
         <div class="table-responsive">
           <table class="table table-bordered align-middle">
             <thead class="table-light">
               <tr>
                 <th>Date</th>
-                <th>Doctor</th>
+                 <th>Category</th>
+                <th>Doctor/Chemist</th>
                 <th>Distributor</th>
-                <th>Product</th>
+                <th>Products</th>
                 <th>Amount</th>
+                <th>Paid</th>
+                <th>Due</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -241,7 +259,7 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
           </table>
         </div>
       </div>
-
+      <!-- Expenses Tab -->
       <div class="tab-pane fade" id="expensesTab">
         <div class="table-responsive">
           <table class="table table-bordered align-middle">
@@ -259,7 +277,7 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
           </table>
         </div>
       </div>
-
+      <!-- Tour Plans Tab -->
       <div class="tab-pane fade" id="tourPlansTab">
   <div class="table-responsive">
     <table class="table table-bordered align-middle">
@@ -282,7 +300,7 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
     </table>
   </div>
       </div>
-
+      <!-- Total Sales Tab -->
       <div class="tab-pane fade" id="totalSalesTab">
 
   <div class="row g-3 mb-3">
@@ -317,34 +335,40 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
     <table class="table table-bordered align-middle">
 
       <thead class="table-light">
-        <tr>
-          <th>Date</th>
-          <th>Time</th>
-          <th>Doctor</th>
-          <th>Distributor</th>
-          <th>Sale</th>
-          <th>Collection</th>
-          <th>Due</th>
-          <th>Status</th>
-        </tr>
+       <tr>
+  <th>Date</th>
+  <th>Time</th>
+  <th>Category</th>
+  <th>Doctor / Chemist</th>
+  <th>Distributor</th>
+  <th>Product</th>
+  <th>Sale</th>
+  <th>Collection</th>
+  <th>Due</th>
+  <th>Status</th>
+</tr>
       </thead>
 
       <tbody id="totalSalesTable"></tbody>
 
-      <tfoot class="table-primary">
-        <tr>
-          <th colspan="4" class="text-end">Grand Total</th>
-          <th id="grandSales">₹0</th>
-          <th id="grandCollection">₹0</th>
-          <th id="grandDue">₹0</th>
-          <th></th>
-        </tr>
-      </tfoot>
+    <tfoot class="table-primary">
+  <tr>
+    <th colspan="6" class="text-end">
+      Grand Total
+    </th>
+
+    <th id="grandSales">₹0</th>
+    <th id="grandCollection">₹0</th>
+    <th id="grandDue">₹0</th>
+    <th></th>
+  </tr>
+</tfoot>
 
     </table>
   </div>
-
-  <div id="leaveTab" class="tab-content">
+  </div>
+  <!-- Leave Tab -->
+ <div class="tab-pane fade" id="leaveTab">
 
 <div class="table-responsive">
 
@@ -372,8 +396,6 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
 
 </div>
 
-</div>
-
     </div>
   </div>
 
@@ -395,6 +417,33 @@ function money(value){
     return "₹" + Number(value || 0).toLocaleString("en-IN");
 }
 
+function partyCategoryBadge(category) {
+  const value = String(category || "").trim().toUpperCase();
+
+  if (value === "CHEMIST") {
+    return `
+      <span class="badge bg-success">
+        <i class="fa-solid fa-prescription-bottle-medical me-1"></i>
+        Chemist
+      </span>
+    `;
+  }
+
+  if (value === "DOCTOR") {
+    return `
+      <span class="badge bg-primary">
+        <i class="fa-solid fa-user-doctor me-1"></i>
+        Doctor
+      </span>
+    `;
+  }
+
+  return `
+    <span class="badge bg-secondary">
+      Category Not Available
+    </span>
+  `;
+}
 window.onload = function(){
   loadSummary();
   loadAllDetails();
@@ -486,7 +535,10 @@ function loadSummary(){
       document.getElementById("totalDue").innerText = money(s.totalDue);
       document.getElementById("totalExpense").innerText = money(s.totalExpense);
       document.getElementById("todayTourPlans").innerText = s.todayTourPlans || 0;
-    });
+   })
+.catch(error => {
+  console.error("Employee summary error:", error);
+});
 }
 function resetFilter(){
 
@@ -517,49 +569,172 @@ function renderAttendance(data){
   });
 }
 
-function renderVisits(data){
+function renderVisits(data) {
   const table = document.getElementById("visitsTable");
   table.innerHTML = "";
 
-  if(!data || data.length === 0){
-    table.innerHTML = `<tr><td colspan="5" class="text-center">No visits found</td></tr>`;
+  if (!data || data.length === 0) {
+    table.innerHTML = `
+      <tr>
+        <td colspan="11" class="text-center">
+          No visits found
+        </td>
+      </tr>
+    `;
     return;
   }
 
   data.forEach(v => {
-    table.innerHTML += `
-      <tr>
-        <td>${v.visitDate || "-"}</td>
-        <td>${v.doctorName || "-"}</td>
-        <td>${v.visitTime || "-"}</td>
-        <td>${v.workingWithName || v.workingWith || "Alone"}</td>
-        <td>${v.remarks || "-"}</td>
-      </tr>
-    `;
+   table.innerHTML += `
+<tr>
+
+    <td>${v.visitDate || "-"}</td>
+
+    <td>
+        ${
+            v.workingWith === "Individual"
+            ? "Individual"
+            : (v.workingWith || "-")
+        }
+    </td>
+
+    <td>
+        ${
+            v.workingWith === "Individual"
+            ? "-"
+            : (v.workingPersonName || "-")
+        }
+    </td>
+
+    <td>
+        ${partyCategoryBadge(v.visitCategory)}
+    </td>
+
+    <td>${v.doctorName || "-"}</td>
+
+    <td>${v.visitTime || "-"}</td>
+
+    <td>${v.routeName || "-"}</td>
+
+    <td>${v.landmark || "-"}</td>
+
+    <td>${v.location || "-"}</td> 
+
+    <td>
+        ${
+            v.photo
+            ? `<img src="${v.photo}"
+                    style="width:55px;height:55px;
+                    object-fit:cover;
+                    border-radius:10px;
+                    cursor:pointer"
+                    onclick="window.open('${v.photo}','_blank')">`
+            : "-"
+        }
+    </td>
+
+    <td>${v.remarks || "-"}</td>
+
+</tr>
+`;
   });
 }
 
-function renderOrders(data){
+function renderOrders(data) {
   const table = document.getElementById("ordersTable");
   table.innerHTML = "";
 
-  if(!data || data.length === 0){
-    table.innerHTML = `<tr><td colspan="6" class="text-center">No orders found</td></tr>`;
+  if (!data || data.length === 0) {
+    table.innerHTML = `
+      <tr>
+        <td colspan="9" class="text-center">
+          No orders found
+        </td>
+      </tr>
+    `;
     return;
   }
 
-  data.forEach(o => {
-    table.innerHTML += `
-      <tr>
-        <td>${o.orderDate || "-"}</td>
-        <td>${o.doctorName || "-"}</td>
-        <td>${o.distributorName || "-"}</td>
-        <td>${o.productName || "-"}</td>
-        <td>${money(o.orderAmount)}</td>
-        <td>${o.status || "-"}</td>
-      </tr>
-    `;
-  });
+const groupedOrders = {};
+
+data.forEach(order => {
+
+  const key =
+    `${order.doctorId}_${order.distributorId}_${order.orderDate}_${order.remarks || ""}`;
+
+  if (!groupedOrders[key]) {
+    groupedOrders[key] = {
+      orderDate: order.orderDate,
+      visitCategory: order.visitCategory,
+      doctorName: order.doctorName,
+      distributorName: order.distributorName,
+      status: order.status || "Placed",
+      products: [],
+      totalAmount: 0,
+      totalPaidAmount: 0,
+      totalDueAmount: 0
+    };
+  }
+
+  groupedOrders[key].totalAmount +=
+    Number(order.orderAmount || 0);
+
+groupedOrders[key].totalPaidAmount +=
+  Number(order.paidAmount || 0);
+
+groupedOrders[key].totalDueAmount +=
+  Number(order.dueAmount || 0);
+
+  groupedOrders[key].products.push(`
+    <div class="border-top pt-2 mt-2">
+      <div class="fw-semibold">
+        ${order.productName || "-"}
+      </div>
+
+      <div class="small text-muted">
+        Qty: ${order.orderQuantity || 0}
+        |
+        SP: ${money(order.sellingPrice)}
+        |
+        Amount: ${money(order.orderAmount)}
+      </div>
+    </div>
+  `);
+});
+Object.values(groupedOrders).forEach(order => {
+
+  table.innerHTML += `
+    <tr>
+      <td>${order.orderDate || "-"}</td>
+
+      <td>
+        ${partyCategoryBadge(order.visitCategory)}
+      </td>
+
+      <td>${order.doctorName || "-"}</td>
+
+      <td>${order.distributorName || "-"}</td>
+
+      <td style="min-width:280px">
+        ${order.products.join("")}
+      </td>
+
+<td>
+  <strong>${money(order.totalAmount)}</strong>
+</td>
+
+<td class="text-success fw-bold">
+  ${money(order.totalPaidAmount)}
+</td>
+
+<td class="text-danger fw-bold">
+  ${money(order.totalDueAmount)}
+</td>
+
+<td>${order.status || "-"}</td>
+    </tr>
+  `;
+});
 }
 
 function renderExpenses(data){
@@ -625,7 +800,7 @@ function openTourPlans(){
   }
 }
 
-function renderTotalSales(data){
+function renderTotalSales(data) {
   const table = document.getElementById("totalSalesTable");
   table.innerHTML = "";
 
@@ -633,14 +808,19 @@ function renderTotalSales(data){
   let totalCollection = 0;
   let totalDue = 0;
 
-  if(!data || data.length === 0){
-    table.innerHTML = `<tr>
-      <td colspan="8" class="text-center">No sales history found</td>
-    </tr>`;
-    
+  if (!data || data.length === 0) {
+    table.innerHTML = `
+      <tr>
+        <td colspan="10" class="text-center">
+          No sales history found
+        </td>
+      </tr>
+    `;
+
     updateSalesTotals(0, 0, 0);
     return;
   }
+
   data.forEach(order => {
     const sale = Number(order.orderAmount || 0);
     const collection = Number(order.paidAmount || 0);
@@ -653,21 +833,35 @@ function renderTotalSales(data){
     table.innerHTML += `
       <tr>
         <td>${order.orderDate || "-"}</td>
+
         <td>${order.orderTime || "-"}</td>
+
+        <td>
+          ${partyCategoryBadge(order.visitCategory)}
+        </td>
+
         <td>${order.doctorName || "-"}</td>
+
         <td>${order.distributorName || "-"}</td>
+
         <td>${order.productName || "-"}</td>
+
         <td>${money(sale)}</td>
+
         <td>${money(collection)}</td>
+
         <td>${money(due)}</td>
+
         <td>${order.status || "-"}</td>
       </tr>
     `;
   });
 
-  updateSalesTotals(totalSales,
-                    totalCollection,
-                    totalDue);
+  updateSalesTotals(
+    totalSales,
+    totalCollection,
+    totalDue
+  );
 }
 
 function updateSalesTotals(sales, collection, due) {
@@ -698,7 +892,7 @@ function renderLeaveHistory(leaves){
 
     table.innerHTML = "";
 
-    if(leaves.length===0){
+    if (!leaves || leaves.length === 0) {
 
         table.innerHTML=`
         <tr>
