@@ -433,15 +433,21 @@ function renderRouteTable() {
   }
 
   filtered.forEach(route => {
-    const status = route.status || "Active";
-    const statusClass = status === "Active" ? "status-active" : "status-inactive";
-    const fare = Number(route.distanceKm || 0) * KM_RATE;
+   const status = route.status || "Active";
+const statusClass =
+    status === "Active" ? "status-active" : "status-inactive";
+
+const travelKm = Number(route.distanceKm || 0);
+
+const fare = Number(
+    (travelKm * KM_RATE).toFixed(1)
+);
 
     table.innerHTML += `
       <tr>
         <td>${route.headquarterName || "-"}</td>
         <td class="fw-semibold">${route.routeName || "-"}</td>
-        <td>${route.distanceKm || 0}</td>
+       <td>${travelKm}</td>
         <td>₹${fare.toLocaleString("en-IN")}</td>
         <td>${route.routeType || "-"}</td>
         <td><span class="${statusClass}">${status}</span></td>

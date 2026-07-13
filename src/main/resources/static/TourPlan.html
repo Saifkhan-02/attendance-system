@@ -618,7 +618,7 @@ function generateMonthlyRows() {
 );
 
 const km = route ? Number(route.distanceKm || route.distance || 0) : 0;
-const fare = km * KM_RATE;
+const fare = Number((km * KM_RATE).toFixed(1));
 
         table.innerHTML += `
           <tr class="plan-row"
@@ -636,10 +636,10 @@ const fare = km * KM_RATE;
                      readonly>
             </td>
             <td><input type="number" class="form-control distanceKm" readonly value="${km}"></td>
-            <td><input type="number" class="form-control fareAmount" readonly value="${fare}"></td>
-            <td><input type="number" class="form-control daAmount"    vlaue="0" oninput="updateTotals()"></td>
-            <td><input type="number" class="form-control otherAmount" vlaue="0" oninput="updateTotals()"></td>
-            <td><input type="number" class="form-control totalExpenseAmount" readonly></td>
+            <td><input type="number" class="form-control fareAmount" readonly step="0.1"  value="${fare}"></td>
+            <td><input type="number" class="form-control daAmount"    value="0" oninput="updateTotals()"></td>
+            <td><input type="number" class="form-control otherAmount" value="0" oninput="updateTotals()"></td>
+            <td><input type="number" class="form-control totalExpenseAmount" readonly step="0.1" ></td>
             <td>
               <button class="btn btn-primary btn-sm submitDayBtn"
                       onclick="submitSingleDayPlan(this)">
@@ -676,7 +676,7 @@ function updateTotals() {
 
     const totalInput = row.querySelector(".totalExpenseAmount");
     if (totalInput) {
-      totalInput.value = totalExpense;
+      totalInput.value = totalExpense.toFixed(1);
     }
   });
 }
@@ -699,10 +699,25 @@ function loadSavedMonthlyPlan() {
         if (!row) return;
 
 
-        row.querySelector(".distanceKm").value = plan.travelKm || 0;
-        row.querySelector(".fareAmount").value = plan.fareAmount || 0;
-        row.querySelector(".daAmount").value = plan.daAmount || 0;
-        row.querySelector(".otherAmount").value = plan.otherAmount || 0;
+       row.querySelector(".distanceKm").value =
+  Number(plan.travelKm || 0).toFixed(1);
+
+row.querySelector(".fareAmount").value =
+  Number(plan.fareAmount || 0).toFixed(1);
+
+row.querySelector(".daAmount").value =
+  Number(plan.daAmount || 0).toFixed(1);
+
+row.querySelector(".otherAmount").value =
+  Number(plan.otherAmount || 0).toFixed(1);
+
+  const savedTotal =
+  Number(plan.fareAmount || 0) +
+  Number(plan.daAmount || 0) +
+  Number(plan.otherAmount || 0);
+
+row.querySelector(".totalExpenseAmount").value =
+  savedTotal.toFixed(1);
 
         const btn = row.querySelector(".submitDayBtn");
         if (btn) {
@@ -728,16 +743,17 @@ function loadTourSummary() {
     .then(res => res.json())
     .then(data => {
       document.getElementById("totalKm").innerText =
-        data.totalKm || 0;
+      document.getElementById("totalKm").innerText =
+  Number(data.totalKm || 0).toFixed(1);
 
-      document.getElementById("totalFare").innerText =
-        "₹" + (data.totalFare || 0);
+document.getElementById("totalFare").innerText =
+  "₹" + Number(data.totalFare || 0).toFixed(1);
 
-      document.getElementById("totalDa").innerText =
-        "₹" + (data.totalDa || 0);
+document.getElementById("totalDa").innerText =
+  "₹" + Number(data.totalDa || 0).toFixed(1);
 
-      document.getElementById("totalExpense").innerText =
-        "₹" + (data.totalExpense || 0);
+document.getElementById("totalExpense").innerText =
+  "₹" + Number(data.totalExpense || 0).toFixed(1);
     })
     .catch(err => console.error("Tour summary error:", err));
 }
@@ -818,11 +834,20 @@ if (planDate !== todayDate) {
   alert("Only today's assigned tour can be submitted");
   return;
 }
-const travelKm = Number(row.querySelector(".distanceKm").value || 0);
-const fareAmount = Number(row.querySelector(".fareAmount").value || 0);
-const daAmount = Number(row.querySelector(".daAmount").value || 0);
-const otherAmount = Number(row.querySelector(".otherAmount").value || 0);
-const totalExpense = fareAmount + daAmount + otherAmount;
+const travelKm =
+  Number(Number(row.querySelector(".distanceKm").value || 0).toFixed(1));
+
+const fareAmount =
+  Number(Number(row.querySelector(".fareAmount").value || 0).toFixed(1));
+
+const daAmount =
+  Number(Number(row.querySelector(".daAmount").value || 0).toFixed(1));
+
+const otherAmount =
+  Number(Number(row.querySelector(".otherAmount").value || 0).toFixed(1));
+
+const totalExpense =
+  Number((fareAmount + daAmount + otherAmount).toFixed(1));
   const tourData = {
     employeeId: Number(localStorage.getItem("employeeId")),
     employeeName: localStorage.getItem("employeeName"),
@@ -900,11 +925,11 @@ function loadTourHistory() {
             <td>${tour.weekDay || "-"}</td>
             <td>${tour.headquarter || "-"}</td>
             <td>${tour.routeName || "-"}</td>
-            <td>${tour.travelKm || 0}</td>
-            <td>₹${tour.fareAmount || 0}</td>
-            <td>₹${tour.daAmount || 0}</td>
-            <td>₹${tour.otherAmount || 0}</td>
-            <td>₹${tour.totalExpense || 0}</td>
+          <td>${Number(tour.travelKm || 0).toFixed(1)}</td>
+<td>₹${Number(tour.fareAmount || 0).toFixed(1)}</td>
+<td>₹${Number(tour.daAmount || 0).toFixed(1)}</td>
+<td>₹${Number(tour.otherAmount || 0).toFixed(1)}</td>
+<td>₹${Number(tour.totalExpense || 0).toFixed(1)}</td>
           </tr>
         `;
       });

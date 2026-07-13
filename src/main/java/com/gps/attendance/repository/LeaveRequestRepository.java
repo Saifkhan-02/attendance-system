@@ -55,4 +55,11 @@ List<LeaveRequest> findByEmployeeIdAndStatus(
         String status
 );
 
+
+List<LeaveRequest> findByEmployeeIdAndFromDateBetweenOrderByIdDesc(
+        Long employeeId,
+        LocalDate fromDate,
+        LocalDate toDate
+);
+
 }

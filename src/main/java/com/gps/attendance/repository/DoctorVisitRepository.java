@@ -135,4 +135,9 @@ List<DoctorVisit> findByEmployeeIdAndDoctorNameIgnoreCaseOrderByHospitalNameAsc(
 // Total Visit Count
 long countByDoctorNameIgnoreCase(String doctorName);
 
+List<DoctorVisit> findByEmployeeIdAndVisitDateBetweenOrderByIdDesc(
+        Long employeeId,
+        String fromDate,
+        String toDate
+);
 }

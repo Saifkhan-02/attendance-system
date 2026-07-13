@@ -16,6 +16,7 @@ import com.gps.attendance.repository.TourPlanRepository;
 import com.gps.attendance.entity.Employee;
 import com.gps.attendance.entity.EmployeeHQMapping;
 import com.gps.attendance.entity.Headquarter;
+import com.gps.attendance.entity.LeaveRequest;
 import com.gps.attendance.entity.ProductOrder;
 import com.gps.attendance.repository.EmployeeHQMappingRepository;
 import com.gps.attendance.repository.EmployeeRepository;
@@ -29,6 +30,7 @@ import com.gps.attendance.entity.Expense;
 import com.gps.attendance.repository.AttendanceRepository;
 import com.gps.attendance.repository.DoctorVisitRepository;
 import com.gps.attendance.repository.ExpenseRepository;
+import com.gps.attendance.repository.LeaveRequestRepository;;
 
 @RestController
 @RequestMapping("/asm")
@@ -46,6 +48,8 @@ public class ASMController {
 
     private final TourPlanRepository tourPlanRepository;
 
+    private final LeaveRequestRepository leaveRequestRepository;
+
     public ASMController(
             EmployeeRepository employeeRepository,
             EmployeeHQMappingRepository mappingRepository,
@@ -54,7 +58,8 @@ public class ASMController {
             AttendanceRepository attendanceRepository,
             DoctorVisitRepository doctorVisitRepository,
             ExpenseRepository expenseRepository,
-            TourPlanRepository tourPlanRepository) {
+            TourPlanRepository tourPlanRepository,
+            LeaveRequestRepository leaveRequestRepository) {
 
         this.employeeRepository = employeeRepository;
         this.mappingRepository = mappingRepository;
@@ -65,6 +70,8 @@ public class ASMController {
         this.doctorVisitRepository = doctorVisitRepository;
         this.expenseRepository = expenseRepository;
         this.tourPlanRepository = tourPlanRepository;
+
+        this.leaveRequestRepository = leaveRequestRepository;
     
     }
 
@@ -444,9 +451,8 @@ public List<DoctorVisit> getWorkingWith(@PathVariable Long asmId) {
 @GetMapping("/employee-details-fast/{employeeId}")
 public Map<String, Object> getEmployeeDetailsFast(
         @PathVariable Long employeeId,
-        @RequestParam(defaultValue = "all") String filterType,
-        @RequestParam(required = false) String date,
-        @RequestParam(required = false) String month
+        @RequestParam(required = false) String fromDate,
+        @RequestParam(required = false) String toDate
 ) {
     Employee employee = employeeRepository.findById(employeeId)
             .orElseThrow(() -> new RuntimeException("Employee not found"));
@@ -455,57 +461,100 @@ public Map<String, Object> getEmployeeDetailsFast(
     List<DoctorVisit> visits;
     List<ProductOrder> orders;
     List<Expense> expenses;
-    List<TourPlan> tourPlans = null;
+    List<TourPlan> tourPlans;
+    List<LeaveRequest> leaves;
 
-    if ("date".equalsIgnoreCase(filterType) && date != null && !date.isEmpty()) {
-        attendance = attendanceRepository.findByEmployeeIdAndAttendanceDateOrderByIdDesc(
-                employeeId, LocalDate.parse(date));
-        visits = doctorVisitRepository.findByEmployeeIdAndVisitDateOrderByVisitTimeDesc(
-                employeeId, date);
-        orders = orderRepository.findByEmployeeIdAndOrderDateOrderByIdDesc(
-                employeeId, date);
-        expenses = expenseRepository.findByEmployeeIdAndExpenseDateOrderByIdDesc(
-                employeeId, date);
+    boolean hasFromDate = fromDate != null && !fromDate.isBlank();
+    boolean hasToDate = toDate != null && !toDate.isBlank();
 
-        // tourPlans = tourPlanRepository
-        // .findByEmployeeIdAndTravelDateBetweenOrderByIdDesc(
-        //         employeeId,
-        //         LocalDate.parse(date),
-        //         LocalDate.parse(date)
-        // );
+    if (hasFromDate && hasToDate) {
 
-    } else if ("month".equalsIgnoreCase(filterType) && month != null && !month.isEmpty()) {
-        attendance = attendanceRepository.findByEmployeeIdAndAttendanceDateBetweenOrderByIdDesc(
-                employeeId,
-                LocalDate.parse(month + "-01"),
-                LocalDate.parse(month + "-01").plusMonths(1).minusDays(1));
-        visits = doctorVisitRepository.findByEmployeeIdAndVisitDateStartingWithOrderByIdDesc(
-                employeeId, month);
-        orders = orderRepository.findByEmployeeIdAndOrderDateStartingWithOrderByIdDesc(
-                employeeId, month);
-        expenses = expenseRepository.findByEmployeeIdAndExpenseDateStartingWithOrderByIdDesc(
-                employeeId, month);
-        LocalDate from = LocalDate.parse(month + "-01");
-LocalDate to = from.plusMonths(1).minusDays(1);
+        LocalDate from = LocalDate.parse(fromDate);
+        LocalDate to = LocalDate.parse(toDate);
 
-tourPlans = tourPlanRepository
-        .findByEmployeeIdAndTravelDateBetweenOrderByIdDesc(
+        if (to.isBefore(from)) {
+            throw new IllegalArgumentException(
+                    "To Date cannot be before From Date"
+            );
+        }
+
+        attendance =
+                attendanceRepository
+                        .findByEmployeeIdAndAttendanceDateBetweenOrderByIdDesc(
+                                employeeId,
+                                from,
+                                to
+                        );
+
+        visits =
+                doctorVisitRepository
+                        .findByEmployeeIdAndVisitDateBetweenOrderByIdDesc(
+                                employeeId,
+                                fromDate,
+                                toDate
+                        );
+
+        orders =
+                orderRepository
+                        .findByEmployeeIdAndOrderDateBetweenOrderByIdDesc(
+                                employeeId,
+                                fromDate,
+                                toDate
+                        );
+
+        expenses =
+                expenseRepository
+                        .findByEmployeeIdAndExpenseDateBetweenOrderByIdDesc(
+                                employeeId,
+                                fromDate,
+                                toDate
+                        );
+
+        tourPlans =
+                tourPlanRepository
+                        .findByEmployeeIdAndTravelDateBetweenOrderByIdDesc(
+                                employeeId,
+                                from,
+                                to
+                        );
+        
+     leaves = leaveRequestRepository
+        .findByEmployeeIdAndFromDateBetweenOrderByIdDesc(
                 employeeId,
                 from,
                 to
         );
 
     } else {
-        attendance = attendanceRepository.findByEmployeeIdOrderByIdDesc(employeeId);
-        visits = doctorVisitRepository.findByEmployeeIdOrderByIdDesc(employeeId);
-        orders = orderRepository.findByEmployeeIdOrderByIdDesc(employeeId);
-        expenses = expenseRepository.findByEmployeeIdOrderByIdDesc(employeeId);
-        tourPlans = tourPlanRepository.findByEmployeeIdOrderByIdDesc(employeeId);
+
+        attendance =
+                attendanceRepository
+                        .findByEmployeeIdOrderByIdDesc(employeeId);
+
+        visits =
+                doctorVisitRepository
+                        .findByEmployeeIdOrderByIdDesc(employeeId);
+
+        orders =
+                orderRepository
+                        .findByEmployeeIdOrderByIdDesc(employeeId);
+
+        expenses =
+                expenseRepository
+                        .findByEmployeeIdOrderByIdDesc(employeeId);
+
+        tourPlans =
+                tourPlanRepository
+                        .findByEmployeeIdOrderByIdDesc(employeeId);
+
+       leaves = leaveRequestRepository
+        .findByEmployeeIdOrderByIdDesc(employeeId);
     }
 
     Map<String, Object> summary = getEmployeeSummary(employeeId);
 
     Map<String, Object> result = new HashMap<>();
+
     result.put("employee", employee);
     result.put("summary", summary);
     result.put("attendance", attendance);
@@ -513,6 +562,7 @@ tourPlans = tourPlanRepository
     result.put("orders", orders);
     result.put("expenses", expenses);
     result.put("tourPlans", tourPlans);
+    result.put("leaves", leaves);
 
     return result;
 }
@@ -542,7 +592,6 @@ public List<String> getAsmHeadquarters(@PathVariable Long asmId) {
 public List<Headquarter> getAllHeadquarters() {
     return headquarterRepository.findAll();
 }
-
 
 @PutMapping("/headquarters/{asmId}")
 @Transactional
