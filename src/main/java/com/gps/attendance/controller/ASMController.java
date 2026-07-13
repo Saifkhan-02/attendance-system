@@ -16,6 +16,7 @@ import com.gps.attendance.repository.TourPlanRepository;
 import com.gps.attendance.entity.Employee;
 import com.gps.attendance.entity.EmployeeHQMapping;
 import com.gps.attendance.entity.Headquarter;
+import com.gps.attendance.entity.LeaveRequest;
 import com.gps.attendance.entity.ProductOrder;
 import com.gps.attendance.repository.EmployeeHQMappingRepository;
 import com.gps.attendance.repository.EmployeeRepository;
@@ -29,6 +30,7 @@ import com.gps.attendance.entity.Expense;
 import com.gps.attendance.repository.AttendanceRepository;
 import com.gps.attendance.repository.DoctorVisitRepository;
 import com.gps.attendance.repository.ExpenseRepository;
+import com.gps.attendance.repository.LeaveRequestRepository;;
 
 @RestController
 @RequestMapping("/asm")
@@ -46,6 +48,8 @@ public class ASMController {
 
     private final TourPlanRepository tourPlanRepository;
 
+    private final LeaveRequestRepository leaveRequestRepository;
+
     public ASMController(
             EmployeeRepository employeeRepository,
             EmployeeHQMappingRepository mappingRepository,
@@ -54,7 +58,8 @@ public class ASMController {
             AttendanceRepository attendanceRepository,
             DoctorVisitRepository doctorVisitRepository,
             ExpenseRepository expenseRepository,
-            TourPlanRepository tourPlanRepository) {
+            TourPlanRepository tourPlanRepository,
+            LeaveRequestRepository leaveRequestRepository) {
 
         this.employeeRepository = employeeRepository;
         this.mappingRepository = mappingRepository;
@@ -65,6 +70,8 @@ public class ASMController {
         this.doctorVisitRepository = doctorVisitRepository;
         this.expenseRepository = expenseRepository;
         this.tourPlanRepository = tourPlanRepository;
+
+        this.leaveRequestRepository = leaveRequestRepository;
     
     }
 
@@ -455,6 +462,7 @@ public Map<String, Object> getEmployeeDetailsFast(
     List<ProductOrder> orders;
     List<Expense> expenses;
     List<TourPlan> tourPlans;
+    List<LeaveRequest> leaves;
 
     boolean hasFromDate = fromDate != null && !fromDate.isBlank();
     boolean hasToDate = toDate != null && !toDate.isBlank();
@@ -509,6 +517,13 @@ public Map<String, Object> getEmployeeDetailsFast(
                                 from,
                                 to
                         );
+        
+     leaves = leaveRequestRepository
+        .findByEmployeeIdAndFromDateBetweenOrderByIdDesc(
+                employeeId,
+                from,
+                to
+        );
 
     } else {
 
@@ -531,6 +546,9 @@ public Map<String, Object> getEmployeeDetailsFast(
         tourPlans =
                 tourPlanRepository
                         .findByEmployeeIdOrderByIdDesc(employeeId);
+
+       leaves = leaveRequestRepository
+        .findByEmployeeIdOrderByIdDesc(employeeId);
     }
 
     Map<String, Object> summary = getEmployeeSummary(employeeId);
@@ -544,6 +562,7 @@ public Map<String, Object> getEmployeeDetailsFast(
     result.put("orders", orders);
     result.put("expenses", expenses);
     result.put("tourPlans", tourPlans);
+    result.put("leaves", leaves);
 
     return result;
 }

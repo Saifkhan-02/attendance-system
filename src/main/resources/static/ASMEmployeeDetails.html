@@ -186,6 +186,7 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#expensesTab">Expenses</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tourPlansTab">Tour Plans </button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#totalSalesTab">Total Sales </button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#leaveHistory">Leaves </button></li>
     </ul>
 
     <div class="tab-content">
@@ -343,6 +344,34 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
     </table>
   </div>
 
+  <div id="leaveTab" class="tab-content">
+
+<div class="table-responsive">
+
+<table class="table table-bordered align-middle">
+
+<thead>
+
+<tr>
+    <th>Leave Type</th>
+    <th>From</th>
+    <th>To</th>
+    <th>Reason</th>
+    <th>Status</th>
+</tr>
+
+</thead>
+
+<tbody id="leaveTableBody">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
 </div>
 
     </div>
@@ -422,6 +451,7 @@ function loadAllDetails() {
       renderExpenses(data.tourPlans || []);
       renderTourPlans(data.tourPlans || []);
       renderTotalSales(data.orders || []);
+      renderLeaveHistory(data.leaves || []);
     })
     .catch(error => {
       console.error("Employee details error:", error);
@@ -661,6 +691,53 @@ function updateSalesTotals(sales, collection, due) {
     money(due);
 }
 
+function renderLeaveHistory(leaves){
+
+    const table =
+        document.getElementById("leaveTableBody");
+
+    table.innerHTML = "";
+
+    if(leaves.length===0){
+
+        table.innerHTML=`
+        <tr>
+            <td colspan="5" class="text-center">
+                No Leave History
+            </td>
+        </tr>`;
+        return;
+    }
+
+    leaves.forEach(l=>{
+
+        table.innerHTML += `
+        <tr>
+
+            <td>${l.leaveType || "-"}</td>
+
+            <td>${l.fromDate || "-"}</td>
+
+            <td>${l.toDate || "-"}</td>
+
+            <td>${l.reason || "-"}</td>
+
+            <td>
+                <span class="badge ${
+                    l.status==="Approved"
+                    ? "bg-success"
+                    : l.status==="Rejected"
+                    ? "bg-danger"
+                    : "bg-warning text-dark"
+                }">
+                    ${l.status}
+                </span>
+            </td>
+
+        </tr>`;
+    });
+
+}
 </script>
 
 </body>
