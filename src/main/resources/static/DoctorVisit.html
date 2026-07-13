@@ -137,56 +137,52 @@
 
             <div class="col-md-6">
               <label class="form-label" id="nameFieldLabel">
-  Doctor / Chemist Name
-</label>
+                Doctor / Chemist Name
+              </label>
               <div class="col-md-12">
-  <label class="form-label fw-semibold">
-    Visit Category
-  </label>
+                <label class="form-label fw-semibold"> Visit Category </label>
 
-  <div class="d-flex gap-3 flex-wrap mb-3">
+                <div class="d-flex gap-3 flex-wrap mb-3">
+                  <input
+                    type="radio"
+                    class="btn-check"
+                    name="visitCategory"
+                    id="categoryDoctor"
+                    value="DOCTOR"
+                    autocomplete="off"
+                    onchange="handleVisitCategoryChange()"
+                  />
 
-    <input
-      type="radio"
-      class="btn-check"
-      name="visitCategory"
-      id="categoryDoctor"
-      value="DOCTOR"
-      autocomplete="off"
-      onchange="handleVisitCategoryChange()"
-    />
+                  <label class="btn btn-outline-primary" for="categoryDoctor">
+                    <i class="fa-solid fa-user-doctor me-2"></i>
+                    Doctor
+                  </label>
 
-    <label class="btn btn-outline-primary" for="categoryDoctor">
-      <i class="fa-solid fa-user-doctor me-2"></i>
-      Doctor
-    </label>
+                  <input
+                    type="radio"
+                    class="btn-check"
+                    name="visitCategory"
+                    id="categoryChemist"
+                    value="CHEMIST"
+                    autocomplete="off"
+                    onchange="handleVisitCategoryChange()"
+                  />
 
-    <input
-      type="radio"
-      class="btn-check"
-      name="visitCategory"
-      id="categoryChemist"
-      value="CHEMIST"
-      autocomplete="off"
-      onchange="handleVisitCategoryChange()"
-    />
-
-    <label class="btn btn-outline-success" for="categoryChemist">
-      <i class="fa-solid fa-prescription-bottle-medical me-2"></i>
-      Chemist
-    </label>
-
-  </div>
-</div>
+                  <label class="btn btn-outline-success" for="categoryChemist">
+                    <i class="fa-solid fa-prescription-bottle-medical me-2"></i>
+                    Chemist
+                  </label>
+                </div>
+              </div>
               <input
-  type="text"
-  id="doctorName"
-  class="form-control"
-  placeholder="First select Doctor or Chemist"
-  autocomplete="off"
-  oninput="searchDoctor()"
-  required
-/>
+                type="text"
+                id="doctorName"
+                class="form-control"
+                placeholder="First select Doctor or Chemist"
+                autocomplete="off"
+                oninput="searchDoctor()"
+                required
+              />
 
               <div id="doctorStatus" class="mt-2"></div>
 
@@ -197,10 +193,10 @@
               ></div>
             </div>
 
-           <div class="col-md-6" id="specializationDiv">
-             <label class="form-label" id="specializationLabel">
-  Specialization
-</label>
+            <div class="col-md-6" id="specializationDiv">
+              <label class="form-label" id="specializationLabel">
+                Specialization
+              </label>
               <input
                 type="text"
                 id="specialization"
@@ -221,9 +217,9 @@
             </div>
 
             <div class="col-md-6">
-             <label class="form-label" id="hospitalLabel">
-  Hospital / Clinic / Chemist Shop
-</label>
+              <label class="form-label" id="hospitalLabel">
+                Hospital / Clinic / Chemist Shop
+              </label>
               <input
                 type="text"
                 id="hospitalName"
@@ -233,26 +229,26 @@
               />
             </div>
 
-            <div id="doctorInfoCard"
-     class="alert alert-success mt-3"
-     style="display:none;">
+            <div
+              id="doctorInfoCard"
+              class="alert alert-success mt-3"
+              style="display: none"
+            >
+              <h6 class="mb-2">
+                <i class="fa-solid fa-user-doctor"></i>
+                Existing Doctor
+              </h6>
 
-    <h6 class="mb-2">
-        <i class="fa-solid fa-user-doctor"></i>
-        Existing Doctor
-    </h6>
+              <div>
+                <strong>Last Visit :</strong>
+                <span id="lastVisitDate"></span>
+              </div>
 
-    <div>
-        <strong>Last Visit :</strong>
-        <span id="lastVisitDate"></span>
-    </div>
-
-    <div>
-        <strong>Total Visits :</strong>
-        <span id="totalVisitCount"></span>
-    </div>
-
-</div>
+              <div>
+                <strong>Total Visits :</strong>
+                <span id="totalVisitCount"></span>
+              </div>
+            </div>
 
             <!-- <div class="col-md-6">
               <label class="form-label">Visit Date</label>
@@ -289,6 +285,14 @@
               <input type="hidden" id="latitude" />
               <input type="hidden" id="longitude" />
               <input type="hidden" id="accuracy" />
+            </div>
+
+            <div class="col-md-12">
+              <label class="form-label">Select Route</label>
+
+              <select id="routeName" class="form-select" required>
+                <option value="">Select Route</option>
+              </select>
             </div>
 
             <div class="col-md-12">
@@ -468,28 +472,21 @@
       </div>
 
       <!-- Doctor Selection Modal -->
-<div class="modal fade" id="doctorSelectModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-
+      <div class="modal fade" id="doctorSelectModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+          <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">
-                    Select Doctor
-                </h5>
+              <h5 class="modal-title">Select Doctor</h5>
 
-                <button class="btn-close"
-                        data-bs-dismiss="modal"></button>
+              <button class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
-
-                <div id="doctorListContainer"></div>
-
+              <div id="doctorListContainer"></div>
             </div>
-
+          </div>
         </div>
-    </div>
-</div>
+      </div>
 
       <!-- Visit Image Modal -->
       <div class="modal fade" id="visitImageModal" tabindex="-1">
@@ -535,154 +532,176 @@
       window.onload = function () {
         loadDoctorVisitHistory();
         getCurrentLocation();
+        loadAssignedRoutes();
       };
+
+      async function loadAssignedRoutes() {
+        const employeeId = localStorage.getItem("employeeId");
+
+        const routeDropdown = document.getElementById("routeName");
+
+        routeDropdown.innerHTML = '<option value="">Select Route</option>';
+
+        try {
+          const response = await fetch(
+            `${BASE_URL}/employee/routes/${employeeId}`,
+          );
+
+          if (!response.ok) {
+            throw new Error("Failed to load routes");
+          }
+
+          const routes = await response.json();
+
+          routes.forEach((route) => {
+            routeDropdown.innerHTML += `
+                <option value="${route}">
+                    ${route}
+                </option>
+            `;
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
       function getSelectedVisitCategory() {
-  const selected = document.querySelector(
-    'input[name="visitCategory"]:checked'
-  );
+        const selected = document.querySelector(
+          'input[name="visitCategory"]:checked',
+        );
 
-  return selected ? selected.value : "";
-}
+        return selected ? selected.value : "";
+      }
 
-function handleVisitCategoryChange() {
-  const category = getSelectedVisitCategory();
+      function handleVisitCategoryChange() {
+        const category = getSelectedVisitCategory();
 
-  const nameLabel = document.getElementById("nameFieldLabel");
-  const nameInput = document.getElementById("doctorName");
+        const nameLabel = document.getElementById("nameFieldLabel");
+        const nameInput = document.getElementById("doctorName");
 
-  const specializationDiv =
-    document.getElementById("specializationDiv");
+        const specializationDiv = document.getElementById("specializationDiv");
 
-  const specializationLabel =
-    document.getElementById("specializationLabel");
-  const specializationInput =
-    document.getElementById("specialization");
+        const specializationLabel = document.getElementById(
+          "specializationLabel",
+        );
+        const specializationInput = document.getElementById("specialization");
 
-  const hospitalLabel =
-    document.getElementById("hospitalLabel");
-  const hospitalInput =
-    document.getElementById("hospitalName");
+        const hospitalLabel = document.getElementById("hospitalLabel");
+        const hospitalInput = document.getElementById("hospitalName");
 
-  if (
-    !nameLabel ||
-    !nameInput ||
-    !specializationLabel ||
-    !specializationInput ||
-    !hospitalLabel ||
-    !hospitalInput
-  ) {
-    console.error("Visit category form elements missing");
-    return;
-  }
+        if (
+          !nameLabel ||
+          !nameInput ||
+          !specializationLabel ||
+          !specializationInput ||
+          !hospitalLabel ||
+          !hospitalInput
+        ) {
+          console.error("Visit category form elements missing");
+          return;
+        }
 
-  if (category === "DOCTOR") {
-    nameLabel.innerText = "Doctor Name";
-    nameInput.placeholder = "Enter doctor name";
-    specializationDiv.style.display = "";
-    
-    hospitalLabel.innerText = "Hospital / Clinic";
-    hospitalInput.placeholder = "Enter hospital or clinic";
+        if (category === "DOCTOR") {
+          nameLabel.innerText = "Doctor Name";
+          nameInput.placeholder = "Enter doctor name";
+          specializationDiv.style.display = "";
 
-  } else if (category === "CHEMIST") {
-    nameLabel.innerText = "Chemist Name";
-    nameInput.placeholder = "Enter chemist name";
+          hospitalLabel.innerText = "Hospital / Clinic";
+          hospitalInput.placeholder = "Enter hospital or clinic";
+        } else if (category === "CHEMIST") {
+          nameLabel.innerText = "Chemist Name";
+          nameInput.placeholder = "Enter chemist name";
 
-    specializationDiv.style.display = "none";
+          specializationDiv.style.display = "none";
 
-    hospitalLabel.innerText = "Chemist Shop Name";
-    hospitalInput.placeholder = "Enter chemist shop name";
-  }
+          hospitalLabel.innerText = "Chemist Shop Name";
+          hospitalInput.placeholder = "Enter chemist shop name";
+        }
 
-  clearPartyFields();
-}
+        clearPartyFields();
+      }
 
-function clearPartyFields() {
-  document.getElementById("doctorName").value = "";
-  document.getElementById("specialization").value = "";
-  document.getElementById("dob").value = "";
-  document.getElementById("anniversaryDate").value = "";
-  document.getElementById("hospitalName").value = "";
-  document.getElementById("landmark").value = "";
+      function clearPartyFields() {
+        document.getElementById("doctorName").value = "";
+        document.getElementById("specialization").value = "";
+        document.getElementById("dob").value = "";
+        document.getElementById("anniversaryDate").value = "";
+        document.getElementById("hospitalName").value = "";
+        document.getElementById("landmark").value = "";
 
-  document.getElementById("doctorStatus").innerHTML = "";
-  document.getElementById("doctorSuggestionBox").innerHTML = "";
-  document.getElementById("doctorSuggestionBox").style.display = "none";
-  document.getElementById("doctorInfoCard").style.display = "none";
-}
+        document.getElementById("doctorStatus").innerHTML = "";
+        document.getElementById("doctorSuggestionBox").innerHTML = "";
+        document.getElementById("doctorSuggestionBox").style.display = "none";
+        document.getElementById("doctorInfoCard").style.display = "none";
+      }
 
       async function searchDoctor() {
         const visitCategory = getSelectedVisitCategory();
 
-if (!visitCategory) {
-  alert("Please select Doctor or Chemist first");
-  document.getElementById("doctorName").value = "";
-  return;
-}
+        if (!visitCategory) {
+          alert("Please select Doctor or Chemist first");
+          document.getElementById("doctorName").value = "";
+          return;
+        }
 
-    const keyword = document.getElementById("doctorName").value.trim();
-
-    document.getElementById("doctorStatus").innerHTML = "";
-
-document.getElementById("doctorInfoCard").style.display = "none";
-
-    const suggestionBox = document.getElementById("doctorSuggestionBox");
-
-    if (keyword.length < 2) {
-        suggestionBox.style.display = "none";
-        suggestionBox.innerHTML = "";
-        return;
-    }
-
-    try {
-
-       const employeeId = localStorage.getItem("employeeId");
-
-      const response = await fetch(
-  `${BASE_URL}/doctor-visit/search-party` +
-  `?employeeId=${employeeId}` +
-  `&visitCategory=${encodeURIComponent(visitCategory)}` +
-  `&name=${encodeURIComponent(keyword)}`
-);
-
-        const doctors = await response.json();
+        const keyword = document.getElementById("doctorName").value.trim();
 
         document.getElementById("doctorStatus").innerHTML = "";
 
-        suggestionBox.innerHTML = "";
+        document.getElementById("doctorInfoCard").style.display = "none";
 
-   if (doctors.length === 0) {
+        const suggestionBox = document.getElementById("doctorSuggestionBox");
 
-  const categoryText =
-    visitCategory === "CHEMIST"
-      ? "Chemist"
-      : "Doctor";
+        if (keyword.length < 2) {
+          suggestionBox.style.display = "none";
+          suggestionBox.innerHTML = "";
+          return;
+        }
 
-  document.getElementById("doctorStatus").innerHTML = `
+        try {
+          const employeeId = localStorage.getItem("employeeId");
+
+          const response = await fetch(
+            `${BASE_URL}/doctor-visit/search-party` +
+              `?employeeId=${employeeId}` +
+              `&visitCategory=${encodeURIComponent(visitCategory)}` +
+              `&name=${encodeURIComponent(keyword)}`,
+          );
+
+          const doctors = await response.json();
+
+          document.getElementById("doctorStatus").innerHTML = "";
+
+          suggestionBox.innerHTML = "";
+
+          if (doctors.length === 0) {
+            const categoryText =
+              visitCategory === "CHEMIST" ? "Chemist" : "Doctor";
+
+            document.getElementById("doctorStatus").innerHTML = `
     <div class="alert alert-warning py-2 mb-0">
       <i class="fa-solid fa-circle-plus"></i>
       New ${categoryText}
     </div>
   `;
 
-  suggestionBox.style.display = "none";
-  suggestionBox.innerHTML = "";
-  return;
-}
+            suggestionBox.style.display = "none";
+            suggestionBox.innerHTML = "";
+            return;
+          }
 
-        suggestionBox.style.display = "block";
+          suggestionBox.style.display = "block";
 
-        doctors.forEach((doctor) => {
-          const isChemist = visitCategory === "CHEMIST";
+          doctors.forEach((doctor) => {
+            const isChemist = visitCategory === "CHEMIST";
 
-const iconClass = isChemist
-    ? "fa-prescription-bottle-medical"
-    : "fa-user-doctor";
+            const iconClass = isChemist
+              ? "fa-prescription-bottle-medical"
+              : "fa-user-doctor";
 
-const secondaryLabel = isChemist
-    ? "Shop"
-    : "Hospital";
+            const secondaryLabel = isChemist ? "Shop" : "Hospital";
 
-   suggestionBox.innerHTML += `
+            suggestionBox.innerHTML += `
   <div class="list-group-item list-group-item-action"
        style="cursor:pointer"
        onclick='checkDuplicateDoctor("${doctor.doctorName}")'>
@@ -707,37 +726,27 @@ const secondaryLabel = isChemist
     </div>
   </div>
 `;
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      }
 
-        });
+      function selectDoctor(doctor) {
+        document.getElementById("doctorName").value = doctor.doctorName || "";
 
-    } catch (e) {
+        document.getElementById("specialization").value =
+          doctor.specialization || "";
 
-        console.error(e);
+        document.getElementById("dob").value = doctor.dob || "";
 
-    }
+        document.getElementById("anniversaryDate").value =
+          doctor.anniversaryDate || "";
 
-}
+        document.getElementById("hospitalName").value =
+          doctor.hospitalName || "";
 
-function selectDoctor(doctor) {
-
-    document.getElementById("doctorName").value =
-        doctor.doctorName || "";
-
-    document.getElementById("specialization").value =
-        doctor.specialization || "";
-
-    document.getElementById("dob").value =
-        doctor.dob || "";
-
-    document.getElementById("anniversaryDate").value =
-        doctor.anniversaryDate || "";
-
-    document.getElementById("hospitalName").value =
-        doctor.hospitalName || "";
-
-    document.getElementById("landmark").value =
-        doctor.landmark || "";
-
+        document.getElementById("landmark").value = doctor.landmark || "";
 
         document.getElementById("doctorStatus").innerHTML = `
 <div class="alert alert-success py-2 mb-0">
@@ -746,53 +755,47 @@ function selectDoctor(doctor) {
 </div>
 `;
 
-         document.getElementById("doctorInfoCard").style.display = "block";
+        document.getElementById("doctorInfoCard").style.display = "block";
 
         document.getElementById("lastVisitDate").innerText =
-         doctor.visitDate || "-";
+          doctor.visitDate || "-";
 
-         document.getElementById("totalVisitCount").innerText =
-    doctor.totalVisitCount || 0;
+        document.getElementById("totalVisitCount").innerText =
+          doctor.totalVisitCount || 0;
 
-    document.getElementById("doctorSuggestionBox").style.display = "none";
-    document.getElementById("doctorSuggestionBox").innerHTML = "";
+        document.getElementById("doctorSuggestionBox").style.display = "none";
+        document.getElementById("doctorSuggestionBox").innerHTML = "";
+      }
 
-}
+      async function checkDuplicateDoctor(doctorName) {
+        const employeeId = localStorage.getItem("employeeId");
 
+        const visitCategory = getSelectedVisitCategory();
 
-async function checkDuplicateDoctor(doctorName) {
+        const response = await fetch(
+          `${BASE_URL}/doctor-visit/exact-party` +
+            `?employeeId=${employeeId}` +
+            `&visitCategory=${encodeURIComponent(visitCategory)}` +
+            `&name=${encodeURIComponent(doctorName)}`,
+        );
 
-   const employeeId = localStorage.getItem("employeeId");
+        if (!response.ok) {
+          console.error(await response.text());
+          return;
+        }
 
-const visitCategory = getSelectedVisitCategory();
+        const doctors = await response.json();
 
-const response = await fetch(
-  `${BASE_URL}/doctor-visit/exact-party` +
-  `?employeeId=${employeeId}` +
-  `&visitCategory=${encodeURIComponent(visitCategory)}` +
-  `&name=${encodeURIComponent(doctorName)}`
-);
+        if (doctors.length <= 1) {
+          selectDoctor(doctors[0]);
 
-if (!response.ok) {
-    console.error(await response.text());
-    return;
-}
+          return;
+        }
 
-    const doctors = await response.json();
+        let html = "";
 
-    if (doctors.length <= 1) {
-
-        selectDoctor(doctors[0]);
-
-        return;
-
-    }
-
-    let html = "";
-
-    doctors.forEach((doctor) => {
-
-        html += `
+        doctors.forEach((doctor) => {
+          html += `
         <div class="card mb-2">
 
             <div class="card-body">
@@ -827,24 +830,22 @@ if (!response.ok) {
 
         </div>
         `;
+        });
 
-    });
+        document.getElementById("doctorListContainer").innerHTML = html;
 
-    document.getElementById("doctorListContainer").innerHTML = html;
-
-    new bootstrap.Modal(
-        document.getElementById("doctorSelectModal")
-    ).show();
-
-}
+        new bootstrap.Modal(
+          document.getElementById("doctorSelectModal"),
+        ).show();
+      }
 
       async function submitDoctorVisit() {
         const visitCategory = getSelectedVisitCategory();
 
-if (!visitCategory) {
-  alert("Please select Doctor or Chemist");
-  return;
-}
+        if (!visitCategory) {
+          alert("Please select Doctor or Chemist");
+          return;
+        }
         if (!document.getElementById("workingWith").value) {
           alert("Please select Working With");
           return;
@@ -860,10 +861,11 @@ if (!visitCategory) {
         }
 
         if (!document.getElementById("doctorName").value.trim()) {
-        alert(visitCategory === "CHEMIST"
-                  ? "Chemist name required"
-                  : "Doctor name required"
-              );
+          alert(
+            visitCategory === "CHEMIST"
+              ? "Chemist name required"
+              : "Doctor name required",
+          );
         }
 
        if (
@@ -878,8 +880,6 @@ if (!visitCategory) {
         //   alert("Please select DOB");
         //   return;
         // }
-        
-       
 
         if (!document.getElementById("hospitalName").value.trim()) {
           alert("Please fill Hospital / Clinic First ");
@@ -890,6 +890,12 @@ if (!visitCategory) {
           alert("your Current location is not accurate ");
           return;
         }
+
+        if (!document.getElementById("routeName").value) {
+          alert("Please select Route");
+          return;
+        }
+
         if (!document.getElementById("landmark").value.trim()) {
           alert("Please enter Landmark / Clinic Area");
           return;
@@ -951,6 +957,8 @@ if (!visitCategory) {
 
           landmark: document.getElementById("landmark").value,
 
+          routeName: document.getElementById("routeName").value,
+
           latitude: document.getElementById("latitude").value,
 
           longitude: document.getElementById("longitude").value,
@@ -989,13 +997,14 @@ if (!visitCategory) {
 
             document.getElementById("doctorStatus").innerHTML = "";
 
-document.getElementById("doctorSuggestionBox").innerHTML = "";
-document.getElementById("doctorSuggestionBox").style.display = "none";
+            document.getElementById("doctorSuggestionBox").innerHTML = "";
+            document.getElementById("doctorSuggestionBox").style.display =
+              "none";
 
-document.getElementById("doctorInfoCard").style.display = "none";
+            document.getElementById("doctorInfoCard").style.display = "none";
 
-document.getElementById("lastVisitDate").innerText = "";
-document.getElementById("totalVisitCount").innerText = "";
+            document.getElementById("lastVisitDate").innerText = "";
+            document.getElementById("totalVisitCount").innerText = "";
 
             loadDoctorVisitHistory();
             isSubmittingVisit = false;
@@ -1013,17 +1022,17 @@ document.getElementById("totalVisitCount").innerText = "";
       }
 
       function clearForm() {
-        document.querySelectorAll(
-  'input[name="visitCategory"]'
-).forEach(input => {
-  input.checked = false;
-});
+        document
+          .querySelectorAll('input[name="visitCategory"]')
+          .forEach((input) => {
+            input.checked = false;
+          });
 
-document.getElementById("nameFieldLabel").innerText =
-  "Doctor / Chemist Name";
+        document.getElementById("nameFieldLabel").innerText =
+          "Doctor / Chemist Name";
 
-document.getElementById("doctorName").placeholder =
-  "First select Doctor or Chemist";
+        document.getElementById("doctorName").placeholder =
+          "First select Doctor or Chemist";
         document.getElementById("workingWith").selectedIndex = 0;
         document.getElementById("workingPersonName").value = "";
 
@@ -1099,9 +1108,7 @@ document.getElementById("doctorName").placeholder =
                 <td>${visit.workingPersonName || "-"}</td>
                 <td>
   <span class="badge ${
-    visit.visitCategory === "CHEMIST"
-      ? "bg-success"
-      : "bg-primary"
+    visit.visitCategory === "CHEMIST" ? "bg-success" : "bg-primary"
   }">
     ${visit.visitCategory || "DOCTOR"}
   </span>

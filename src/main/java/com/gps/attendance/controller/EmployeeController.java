@@ -1,12 +1,11 @@
 package com.gps.attendance.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-// import java.util.ArrayList;
-// import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,10 +26,12 @@ import com.gps.attendance.dto.EmployeeRequest;
 import com.gps.attendance.entity.Employee;
 import com.gps.attendance.entity.EmployeeHQMapping;
 import com.gps.attendance.entity.Headquarter;
+import com.gps.attendance.entity.RouteMaster;
 import com.gps.attendance.repository.DoctorVisitRepository;
 import com.gps.attendance.repository.EmployeeHQMappingRepository;
 import com.gps.attendance.repository.EmployeeRepository;
 import com.gps.attendance.repository.HeadquarterRepository;
+import com.gps.attendance.repository.RouteMasterRepository;
 import com.gps.attendance.service.CloudinaryService;
 
 @RestController
@@ -52,6 +53,9 @@ public class EmployeeController {
 
     @Autowired
     private HeadquarterRepository headquarterRepository;
+
+    @Autowired
+    private RouteMasterRepository routeMasterRepository;
 
 
     @PostMapping("/login")
@@ -394,6 +398,38 @@ public ResponseEntity<?> checkEmployeeSession(
     }
 
     return ResponseEntity.ok("VALID");
+}
+
+@GetMapping("/employee/routes/{employeeId}")
+public List<String> getEmployeeRoutes(@PathVariable Long employeeId) {
+
+    List<EmployeeHQMapping> mappings =
+            mappingRepository.findByEmployeeId(employeeId);
+
+    List<String> routes = new ArrayList<>();
+
+    for (EmployeeHQMapping mapping : mappings) {
+
+        Headquarter hq = headquarterRepository
+                .findById(mapping.getHqId())
+                .orElse(null);
+
+        if (hq == null) {
+            continue;
+        }
+
+        List<RouteMaster> routeList =
+                routeMasterRepository.findByHeadquarterNameAndStatus(
+                        hq.getHeadquarterName(),
+                        "Active"
+                );
+
+        for (RouteMaster route : routeList) {
+            routes.add(route.getRouteName());
+        }
+    }
+
+    return routes;
 }
 
 @DeleteMapping("/employee/{id}")
