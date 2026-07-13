@@ -140,4 +140,36 @@ List<DoctorVisit> findByEmployeeIdAndVisitDateBetweenOrderByIdDesc(
         String fromDate,
         String toDate
 );
+
+List<DoctorVisit>
+findByEmployeeIdAndVisitCategoryAndDoctorNameContainingIgnoreCaseOrderByDoctorNameAsc(
+        Long employeeId,
+        String visitCategory,
+        String doctorName
+);
+
+List<DoctorVisit>
+findByEmployeeIdAndVisitCategoryAndDoctorNameIgnoreCaseOrderByHospitalNameAsc(
+        Long employeeId,
+        String visitCategory,
+        String doctorName
+);
+
+List<DoctorVisit>
+findByEmployeeIdAndVisitCategoryOrderByIdDesc(
+        Long employeeId,
+        String visitCategory
+);
+
+long countByEmployeeIdAndVisitCategory(
+        Long employeeId,
+        String visitCategory
+);
+
+List<DoctorVisit>
+findByEmployeeIdAndVisitCategoryOrderByVisitDateDesc(
+        Long employeeId,
+        String visitCategory
+);
+
 }
