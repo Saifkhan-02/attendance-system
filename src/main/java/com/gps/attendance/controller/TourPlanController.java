@@ -274,4 +274,11 @@ public List<Object[]> getExpenseChart() {
     return data;
 }
 
+@GetMapping("/employee/{employeeId}/expense-total")
+public Double getEmployeeTotalExpense(
+        @PathVariable Long employeeId) {
+
+    return repository.getEmployeeTotalExpense(employeeId);
+}
+
 }
