@@ -38,9 +38,15 @@ public class RouteMasterController {
     }
 
     @GetMapping("/active/by-headquarter/{headquarterName}")
-    public List<RouteMaster> getActiveRoutesByHeadquarter(@PathVariable String headquarterName) {
-        return routeMasterRepository.findByHeadquarterNameAndStatus(headquarterName, "Active");
-    }
+public List<RouteMaster> getActiveRoutesByHeadquarter(
+        @PathVariable String headquarterName) {
+
+    return routeMasterRepository
+            .findByHeadquarterNameAndStatusOrderByRouteNameAsc(
+                    headquarterName,
+                    "Active"
+            );
+}
 
     @PostMapping("/save")
     public RouteMaster saveRoute(@RequestBody RouteMaster routeMaster) {
@@ -80,6 +86,13 @@ public class RouteMasterController {
 public ResponseEntity<String> deleteRoute(@PathVariable Long id) {
     routeMasterRepository.deleteById(id);
     return ResponseEntity.ok("Route deleted successfully");
+}
+
+@GetMapping("/headquarters")
+public List<String> getAllHeadquarters() {
+
+    return routeMasterRepository.getAllHeadquarters();
+
 }
 
 }

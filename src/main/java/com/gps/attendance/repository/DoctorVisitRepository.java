@@ -72,6 +72,20 @@ public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> 
             String visitDate
     );
 
+    List<DoctorVisit> findByVisitCategoryOrderByVisitDateDesc(
+        String visitCategory
+);
+
+List<DoctorVisit> findByVisitCategoryAndRouteNameIgnoreCase(
+        String visitCategory,
+        String routeName
+);
+
+List<DoctorVisit> findByVisitCategoryAndRouteNameIgnoreCaseOrderByVisitDateDesc(
+        String visitCategory,
+        String routeName
+);
+
     @Query("""
     SELECT d.visitDate, COUNT(d)
     FROM DoctorVisit d
