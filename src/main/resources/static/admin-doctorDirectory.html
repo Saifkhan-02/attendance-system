@@ -281,10 +281,11 @@
             </div>
 
             <div class="col-lg-3">
-              <button class="btn btn-primary w-100" onclick="loadDoctors()">
-                <i class="fa-solid fa-rotate-right me-2"></i>
-
-                Refresh
+              <button
+                class="btn btn-primary w-100"
+                onclick="window.location.reload()"
+              >
+                <i class="fas fa-rotate"></i> Refresh
               </button>
             </div>
           </div>
@@ -304,6 +305,10 @@
       function goBack() {
         window.location.replace("admin-dashboard.html");
       }
+
+      function refreshPage() {
+    window.location.reload();
+}
 
       function updateTime() {
         document.getElementById("datetime").innerHTML =
@@ -406,6 +411,7 @@
       }
 
       async function loadDoctors() {
+        const search = document.getElementById("searchDoctor").value.trim();
         try {
           const category = selectedCategory;
           const route = document.getElementById("routeFilter").value;
@@ -414,6 +420,10 @@
 
           if (route) {
             url += "&route=" + encodeURIComponent(route);
+          }
+
+          if (search) {
+            url += "&search=" + encodeURIComponent(search);
           }
 
           console.log(url);
