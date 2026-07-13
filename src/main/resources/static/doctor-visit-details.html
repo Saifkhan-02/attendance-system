@@ -245,7 +245,7 @@
           <div class="row g-4 align-items-end">
             <!-- Employee -->
 
-            <div class="col-lg-3 col-md-6">
+            <div class="col-6 col-lg-3 col-md-6">
               <label class="form-label fw-bold"> Employee </label>
 
               <select id="employeeFilter" class="form-select form-select-lg">
@@ -255,7 +255,7 @@
 
             <!-- Doctor -->
 
-            <div class="col-lg-3 col-md-6">
+            <div class="col-6 col-lg-3 col-md-6">
               <label class="form-label fw-bold"> Doctor </label>
 
               <select id="doctorFilter" class="form-select form-select-lg">
@@ -303,6 +303,8 @@
 
     <script>
       let allDoctorVisits = [];
+      let employeeTomSelect = null;
+      let doctorTomSelect = null;
 
       function updateTime() {
         document.getElementById("datetime").innerHTML =
@@ -359,15 +361,32 @@
 
         container.innerHTML = "";
 
-        data.sort((a, b) => {
-          if (a.visitDate !== b.visitDate) {
-            return b.visitDate.localeCompare(a.visitDate);
-          }
+        if (!Array.isArray(data) || data.length === 0) {
+  container.innerHTML = `
+    <div class="alert alert-warning text-center">
+      No doctor visits found
+    </div>
+  `;
+  return;
+}
 
-          return b.visitTime.localeCompare(a.visitTime);
-        });
+       const safeData = Array.isArray(data) ? [...data] : [];
 
-        data.forEach((visit) => {
+safeData.sort((a, b) => {
+  const dateA = String(a.visitDate || "");
+  const dateB = String(b.visitDate || "");
+
+  if (dateA !== dateB) {
+    return dateB.localeCompare(dateA);
+  }
+
+  const timeA = String(a.visitTime || "");
+  const timeB = String(b.visitTime || "");
+
+  return timeB.localeCompare(timeA);
+});
+
+       safeData.forEach((visit) => {
           container.innerHTML += `
         
         <div class="card visit-card shadow-sm">
@@ -509,11 +528,29 @@
         try {
           console.log("BASE_URL =", BASE_URL);
 
-          const response = await fetch(BASE_URL + "/doctor-visit/directory");
+          const response = await fetch(
+  BASE_URL + "/doctor-visit/directory?category=DOCTOR"
+);
 
-          console.log(response);
+console.log("VISIT RESPONSE:", response);
 
-          const data = await response.json();
+const responseText = await response.text();
+
+if (!response.ok) {
+  throw new Error(
+    responseText || "Failed to load doctor visits"
+  );
+}
+
+const data = responseText
+  ? JSON.parse(responseText)
+  : [];
+
+if (!Array.isArray(data)) {
+  throw new Error("Invalid doctor visit response");
+}
+
+console.log("DOCTOR VISITS:", data);
 
           allDoctorVisits = data;
 
@@ -523,20 +560,33 @@
 
           renderDoctorVisits(data);
 
-          new TomSelect("#employeeFilter", {
-            create: false,
-            searchField: ["text"],
-            placeholder: "Search Employee...",
-          });
+     employeeTomSelect = new TomSelect(
+  "#employeeFilter",
+  {
+    create: false,
+    searchField: ["text"],
+    placeholder: "Search Employee..."
+  }
+);
 
-          new TomSelect("#doctorFilter", {
-            create: false,
-            searchField: ["text"],
-            placeholder: "Search Doctor...",
-          });
-        } catch (err) {
-          console.error(err);
-        }
+         doctorTomSelect = new TomSelect(
+  "#doctorFilter",
+  {
+    create: false,
+    searchField: ["text"],
+    placeholder: "Search Doctor..."
+  }
+);
+       } catch (err) {
+  console.error("Doctor Visit Load Error:", err);
+
+  document.getElementById("doctorVisitContainer")
+    .innerHTML = `
+      <div class="alert alert-danger text-center">
+        Failed to load doctor visits
+      </div>
+    `;
+}
       }
       function goBack() {
         window.location.replace("admin-dashboard.html");
@@ -573,6 +623,13 @@
       }
 
       function resetFilters() {
+        if (employeeTomSelect) {
+  employeeTomSelect.clear();
+}
+
+if (doctorTomSelect) {
+  doctorTomSelect.clear();
+}
         document.getElementById("employeeFilter").value = "";
         document.getElementById("doctorFilter").value = "";
         document.getElementById("visitDateFilter").value = "";
