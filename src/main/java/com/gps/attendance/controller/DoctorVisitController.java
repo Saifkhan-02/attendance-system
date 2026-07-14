@@ -408,6 +408,8 @@ return doctors;
 
         visit.setWorkingWith(updatedVisit.getWorkingWith());
         visit.setWorkingPersonName(updatedVisit.getWorkingPersonName());
+        visit.setDOB(updatedVisit.getDOB());
+        visit.setAnniversaryDate(updatedVisit.getAnniversaryDate());
         visit.setRemarks(updatedVisit.getRemarks());
         visit.setLandmark(updatedVisit.getLandmark());
 

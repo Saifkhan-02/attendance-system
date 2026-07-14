@@ -250,17 +250,17 @@
       <div class="card border-0 shadow-sm rounded-4 mb-4">
         <div class="card-body">
           <div class="row g-3">
-            <div class="col-lg-3">
+            <div class="col-6 col-lg-3">
               <input
                 type="text"
                 id="searchDoctor"
                 class="form-control"
-                placeholder="Search Doctor / Chemist"
+                placeholder="Search Dr/Chemist"
                 onkeyup="searchDoctors()"
               />
             </div>
 
-            <div class="col-lg-3">
+            <div class="col-6 col-lg-3">
               <select
                 id="hqFilter"
                 class="form-select"
@@ -325,10 +325,6 @@
       loadHeadquarters();
       loadDoctors();
 
-      function getSelectedCategory() {
-        return document.querySelector('input[name="listCategory"]:checked')
-          .value;
-      }
 
       function getSelectedCategory() {
         if (document.getElementById("listDoctor").checked) {

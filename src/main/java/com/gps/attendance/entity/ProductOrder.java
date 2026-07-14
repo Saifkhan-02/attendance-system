@@ -19,6 +19,8 @@ public class ProductOrder {
 
     private String invoiceNo;
 
+    private String visitCategory;
+
     private Long employeeId;
     private String employeeName;
 
@@ -62,6 +64,13 @@ private String headquarters;
 
     public void setInvoiceNo(String invoiceNo) {
     this.invoiceNo = invoiceNo;
+}
+public String getVisitCategory() {
+    return visitCategory;
+}
+
+public void setVisitCategory(String visitCategory) {
+    this.visitCategory = visitCategory;
 }
 
 

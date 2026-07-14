@@ -25,9 +25,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gps.attendance.entity.DoctorVisit;
 import com.gps.attendance.entity.DistributorStock;
 import com.gps.attendance.entity.PaymentHistory;
 import com.gps.attendance.entity.ProductOrder;
+import com.gps.attendance.repository.DoctorVisitRepository;
 import com.gps.attendance.repository.DistributorStockRepository;
 import com.gps.attendance.repository.PaymentHistoryRepository;
 import com.gps.attendance.repository.ProductOrderRepository;
@@ -50,14 +52,17 @@ public class ProductOrderController {
     private final ProductOrderRepository orderRepository;
     private final DistributorStockRepository distributorStockRepository;
     private final PaymentHistoryRepository paymentHistoryRepository;
+    private final DoctorVisitRepository doctorVisitRepository;
 
     public ProductOrderController(ProductOrderRepository orderRepository,
             DistributorStockRepository distributorStockRepository,
-            PaymentHistoryRepository paymentHistoryRepository) {
+            PaymentHistoryRepository paymentHistoryRepository,
+            DoctorVisitRepository doctorVisitRepository) {
 
         this.orderRepository = orderRepository;
         this.distributorStockRepository = distributorStockRepository;
         this.paymentHistoryRepository = paymentHistoryRepository;
+        this.doctorVisitRepository = doctorVisitRepository;
     }
 
     @GetMapping("/history/today/{employeeId}")
@@ -86,7 +91,6 @@ public class ProductOrderController {
     public List<ProductOrder> getAllOrders() {
 
         return orderRepository.findAll();
-
     }
 
     @GetMapping("/summary")
@@ -831,24 +835,43 @@ public Page<ProductOrder> searchOrders(
             }
         }
 
-        for (ProductOrder order : orders) {
+       for (ProductOrder order : orders) {
 
-            DistributorStock stock = distributorStockRepository
-                    .findByDistributorIdAndProductId(
-                            order.getDistributorId(),
-                            order.getProductId()
-                    )
-                    .orElseThrow(() -> new RuntimeException("Distributor stock not found"));
+    DistributorStock stock = distributorStockRepository
+            .findByDistributorIdAndProductId(
+                    order.getDistributorId(),
+                    order.getProductId()
+            )
+            .orElseThrow(() ->
+                    new RuntimeException("Distributor stock not found"));
 
-            stock.setAvailableUnits(stock.getAvailableUnits() - order.getOrderQuantity());
-            distributorStockRepository.save(stock);
+    stock.setAvailableUnits(
+            stock.getAvailableUnits() - order.getOrderQuantity()
+    );
 
-            order.setStatus("Placed");
+    distributorStockRepository.save(stock);
 
-            order.setInvoiceNo(invoiceNo);
-            order.setOrderTime(orderTime);
+    /*
+     * Doctor/Chemist category DoctorVisit table se uthao.
+     * ProductOrder.doctorId me selected DoctorVisit record ki ID honi chahiye.
+     */
+    if (order.getDoctorId() != null) {
+
+        DoctorVisit doctorVisit = doctorVisitRepository
+                .findById(order.getDoctorId())
+                .orElse(null);
+
+        if (doctorVisit != null) {
+            order.setVisitCategory(
+                    doctorVisit.getVisitCategory()
+            );
         }
-
+    }
+    order.setOrderDate(LocalDate.now().toString());
+    order.setStatus("Placed");
+    order.setInvoiceNo(invoiceNo);
+    order.setOrderTime(orderTime);
+}
         return orderRepository.saveAll(orders);
     }
 

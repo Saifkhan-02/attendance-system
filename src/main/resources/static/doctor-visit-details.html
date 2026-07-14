@@ -292,7 +292,7 @@
           <div class="row g-4 align-items-end">
             <!-- Employee -->
 
-            <div class="col-lg-3 col-md-6">
+            <div class="col-6 col-lg-3 col-md-6">
               <label class="form-label fw-bold"> Employee </label>
 
               <select id="employeeFilter" class="form-select form-select-lg">
@@ -302,7 +302,7 @@
 
             <!-- Doctor -->
 
-            <div class="col-lg-3 col-md-6">
+            <div class="col-6 col-lg-3 col-md-6">
               <label class="form-label fw-bold"> Doctor </label>
 
               <select id="doctorFilter" class="form-select form-select-lg">
@@ -354,6 +354,8 @@
 
       let employeeTS = null;
       let doctorTS = null;
+      let employeeTomSelect = null;
+      let doctorTomSelect = null;
 
       function updateTime() {
         document.getElementById("datetime").innerHTML =
@@ -471,15 +473,32 @@
 
         container.innerHTML = "";
 
-        data.sort((a, b) => {
-          if (a.visitDate !== b.visitDate) {
-            return b.visitDate.localeCompare(a.visitDate);
-          }
+        if (!Array.isArray(data) || data.length === 0) {
+  container.innerHTML = `
+    <div class="alert alert-warning text-center">
+      No doctor visits found
+    </div>
+  `;
+  return;
+}
 
-          return b.visitTime.localeCompare(a.visitTime);
-        });
+       const safeData = Array.isArray(data) ? [...data] : [];
 
-        data.forEach((visit) => {
+safeData.sort((a, b) => {
+  const dateA = String(a.visitDate || "");
+  const dateB = String(b.visitDate || "");
+
+  if (dateA !== dateB) {
+    return dateB.localeCompare(dateA);
+  }
+
+  const timeA = String(a.visitTime || "");
+  const timeB = String(b.visitTime || "");
+
+  return timeB.localeCompare(timeA);
+});
+
+       safeData.forEach((visit) => {
           container.innerHTML += `
         
         <div class="card visit-card shadow-sm">
@@ -638,10 +657,27 @@
           let url =
             BASE_URL + "/doctor-visit/directory?category=" + selectedCategory;
           const response = await fetch(url);
+         
 
-          console.log(response);
+console.log("VISIT RESPONSE:", response);
 
-          const data = await response.json();
+const responseText = await response.text();
+
+if (!response.ok) {
+  throw new Error(
+    responseText || "Failed to load doctor visits"
+  );
+}
+
+const data = responseText
+  ? JSON.parse(responseText)
+  : [];
+
+if (!Array.isArray(data)) {
+  throw new Error("Invalid doctor visit response");
+}
+
+console.log("DOCTOR VISITS:", data);
 
           allDoctorVisits = data;
 
@@ -657,6 +693,7 @@
         } catch (err) {
           console.error(err);
         }
+     
       }
 
       function goBack() {
@@ -707,6 +744,13 @@
       }
 
       function resetFilters() {
+        if (employeeTomSelect) {
+  employeeTomSelect.clear();
+}
+
+if (doctorTomSelect) {
+  doctorTomSelect.clear();
+}
         document.getElementById("employeeFilter").value = "";
         document.getElementById("doctorFilter").value = "";
         document.getElementById("visitDateFilter").value = "";
