@@ -208,7 +208,13 @@
 
       <div class="card border-0 shadow-sm rounded-4 mb-4">
         <div class="card-body">
-          <label class="form-label fw-bold mb-3"> Select Category </label>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <label class="form-label fw-bold mb-0"> Select Category </label>
+
+            <div id="totalCount" class="fw-bold text-success text-end">
+              Total Doctors : 0
+            </div>
+          </div>
 
           <div class="d-flex gap-2 flex-wrap">
             <input
@@ -307,8 +313,8 @@
       }
 
       function refreshPage() {
-    window.location.reload();
-}
+        window.location.reload();
+      }
 
       function updateTime() {
         document.getElementById("datetime").innerHTML =
@@ -324,7 +330,6 @@
       updateTime();
       loadHeadquarters();
       loadDoctors();
-
 
       function getSelectedCategory() {
         if (document.getElementById("listDoctor").checked) {
@@ -432,6 +437,11 @@
 
           const doctors = await response.json();
 
+          document.getElementById("totalCount").innerText =
+            selectedCategory === "CHEMIST"
+              ? "Total Chemists : " + doctors.length
+              : "Total Doctors : " + doctors.length;
+
           console.log("Doctors =", doctors);
 
           let html = "";
@@ -445,16 +455,26 @@
                     <div class="card-body">
 
                         <h5 class="fw-bold text-primary mb-3">
-                            <i class="fas fa-user-doctor me-2"></i>
-                            ${doc.doctorName || "-"}
-                        </h5>
+                          <i class="fas ${
+                            selectedCategory === "CHEMIST"
+                              ? "fa-prescription-bottle-medical"
+                              : "fa-user-doctor"
+                          } me-2"></i>
+                                  ${doc.doctorName || "-"}
+                                  </h5>
 
                         <p><strong>Specialization:</strong> ${doc.specialization || "-"}</p>
-                        <p><strong>Hospital:</strong> ${doc.hospitalName || "-"}</p>
+                        <p> <strong>${selectedCategory === "CHEMIST" ? "Medical" : "Hospital"}:</strong>
+                          ${doc.hospitalName || "-"}</p>
                         <p><strong>Landmark:</strong> ${doc.landmark || "-"}</p>
                         <p><strong>DOB:</strong> ${doc.dob || "-"}</p>
                         <p><strong>Anniversary:</strong> ${doc.anniversaryDate || "-"}</p>
                         <p><strong>Employee:</strong> ${doc.employeeName || "-"}</p>
+
+<p>
+    <strong>Route:</strong>
+    ${doc.routeName || "-"}
+</p>
 
                         <p>
                             <strong>Status:</strong>
