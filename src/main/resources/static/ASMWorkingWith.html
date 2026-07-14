@@ -28,6 +28,25 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
 .form-control,.form-select{border-radius:12px;padding:11px}
 .badge-role{background:#eaf1ff;color:#0d6efd;padding:6px 10px;border-radius:8px;font-weight:700}
 .table-responsive{font-size:14px}
+
+.visit-report-table{
+    max-height: 500px;   /* apne hisab se 400/450/500 kar sakte ho */
+    overflow-y: auto;
+    overflow-x: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+.visit-report-table table{
+    margin-bottom: 0;
+}
+
+.visit-report-table thead th{
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 10;
+}
 </style>
 </head>
 
@@ -90,7 +109,7 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
       <span class="badge bg-primary" id="totalCount">0 Records</span>
     </div>
 
-    <div class="table-responsive">
+    <div class="table-responsive visit-report-table">
       <table class="table table-bordered align-middle">
         <thead class="table-light">
           <tr>
