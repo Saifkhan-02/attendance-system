@@ -408,10 +408,10 @@
           alert("Please enter distributor name");
           return;
         }
-        if (!/^[6-9]\d{9}$/.test(mobile)) {
-            alert("Enter valid 10 digit mobile number");
-            return;
-        }
+      if (!/^\d{10}$/.test(mobile)) {
+  alert("Enter valid 10 digit mobile number");
+  return;
+}
 
         const payload = {
           distributorName: distributorName,
