@@ -25,7 +25,7 @@
       /* Navbar */
 
       .top-navbar {
-         height: 80px;
+        height: 80px;
         min-height: 80px;
         padding: 0 16px;
         background: #fff;
@@ -37,8 +37,8 @@
         z-index: 1050;
       }
       .navbar-logo {
-       width: 130px;
-       height: 74px;
+        width: 130px;
+        height: 74px;
         object-fit: contain;
       }
 
@@ -89,106 +89,103 @@
 
       /* ================= Professional Mobile Filter UI ================= */
 
-@media (max-width:768px){
+      @media (max-width: 768px) {
+        .top-navbar {
+          height: 80px;
+          min-height: 80px;
+        }
 
-  .top-navbar {
-    height: 80px;
-    min-height: 80px;
-}
+        .navbar-logo {
+          width: 120px;
+          height: 68px;
+        }
 
-.navbar-logo {
-    width: 120px;
-    height: 68px;
-}
+        /* Main Content */
+        .main-content {
+          padding: 12px !important;
+          margin-top: 95px !important;
+        }
 
-    /* Main Content */
-    .main-content{
-        padding:12px !important;
-        margin-top:95px !important;
-    }
+        /* Title Card */
+        .card.rounded-4 {
+          border-radius: 14px !important;
+          margin-bottom: 14px !important;
+        }
 
-    /* Title Card */
-    .card.rounded-4{
-        border-radius:14px !important;
-        margin-bottom:14px !important;
-    }
+        .card.rounded-4 .card-body {
+          padding: 14px !important;
+        }
 
-    .card.rounded-4 .card-body{
-        padding:14px !important;
-    }
+        .card h2 {
+          font-size: 28px !important;
+          margin-bottom: 4px !important;
+        }
 
-    .card h2{
-        font-size:28px !important;
-        margin-bottom:4px !important;
-    }
+        .card p {
+          font-size: 15px !important;
+          margin-bottom: 0 !important;
+        }
 
-    .card p{
-        font-size:15px !important;
-        margin-bottom:0 !important;
-    }
+        /* Filter Gap */
+        .row.g-4 {
+          --bs-gutter-x: 8px;
+          --bs-gutter-y: 8px;
+        }
 
-    /* Filter Gap */
-    .row.g-4{
-        --bs-gutter-x:8px;
-        --bs-gutter-y:8px;
-    }
+        /* Label */
+        .form-label {
+          font-size: 15px !important;
+          font-weight: 600 !important;
+          margin-bottom: 4px !important;
+        }
 
-    /* Label */
-    .form-label{
-        font-size:15px !important;
-        font-weight:600 !important;
-        margin-bottom:4px !important;
-    }
+        /* Tom Select */
+        .ts-wrapper .ts-control {
+          min-height: 40px !important;
+          height: 40px !important;
+          padding: 6px 12px !important;
+          border-radius: 10px !important;
+          font-size: 14px !important;
+        }
 
-    /* Tom Select */
-    .ts-wrapper .ts-control{
-        min-height:40px !important;
-        height:40px !important;
-        padding:6px 12px !important;
-        border-radius:10px !important;
-        font-size:14px !important;
-    }
+        .ts-wrapper.single .ts-control input {
+          font-size: 14px !important;
+        }
 
-    .ts-wrapper.single .ts-control input{
-        font-size:14px !important;
-    }
+        /* Date */
+        .form-control-lg {
+          min-height: 40px !important;
+          height: 40px !important;
+          font-size: 14px !important;
+          padding: 6px 12px !important;
+          border-radius: 10px !important;
+        }
 
-    /* Date */
-    .form-control-lg{
-        min-height:40px !important;
-        height:40px !important;
-        font-size:14px !important;
-        padding:6px 12px !important;
-        border-radius:10px !important;
-    }
-
-    /* Reset Button */
-    #resetBtn{
-        height:40px !important;
-        font-size:14px !important;
-        border-radius:10px !important;
-        padding:6px !important;
-    }
-    /*Input Text */
-    .ts-control{
-      font-size: 15px !important;
-      min-height: 42px !important;
-      padding: 6px 10px !important;
-    }
-    .ts-dropdown{
-      font-size: 13px !important;
-    }
-    .ts-dropdown .option{
-      font-size: 13px !important;
-      padding: 8px 12px !important;
-      line-height: 1.3 !important;
-    }
-    .ts-control .item{
-      font-size: 14px !important;
-    }
-
-
-}
+        /* Reset Button */
+        #resetBtn {
+          height: 40px !important;
+          font-size: 14px !important;
+          border-radius: 10px !important;
+          padding: 6px !important;
+        }
+        /*Input Text */
+        .ts-control {
+          font-size: 15px !important;
+          min-height: 42px !important;
+          padding: 6px 10px !important;
+        }
+        .ts-dropdown {
+          font-size: 13px !important;
+        }
+        .ts-dropdown .option {
+          font-size: 13px !important;
+          padding: 8px 12px !important;
+          line-height: 1.3 !important;
+        }
+        .ts-control .item {
+          font-size: 14px !important;
+        }
+      }
     </style>
     <link
       href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.bootstrap5.min.css"
@@ -235,6 +232,56 @@
           <p class="text-muted mb-0">
             List of all doctor visits conducted by employees
           </p>
+        </div>
+      </div>
+
+      <!-- Doctor / Chemist Category -->
+
+      <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body">
+         <div class="d-flex justify-content-between align-items-center mb-3">
+
+    <label class="form-label fw-bold mb-0">
+        Select Category
+    </label>
+
+    <div id="todayVisitCount"
+         class="fw-bold text-success text-end">
+        Today's Visits : 0
+    </div>
+
+</div>
+
+          <div class="d-flex gap-2 flex-wrap">
+            <input
+              type="radio"
+              class="btn-check"
+              name="visitCategory"
+              id="visitDoctor"
+              value="DOCTOR"
+              checked
+              onchange="changeVisitCategory()"
+            />
+
+            <label class="btn btn-outline-primary" for="visitDoctor">
+              <i class="fa-solid fa-user-doctor me-2"></i>
+              Doctors
+            </label>
+
+            <input
+              type="radio"
+              class="btn-check"
+              name="visitCategory"
+              id="visitChemist"
+              value="CHEMIST"
+              onchange="changeVisitCategory()"
+            />
+
+            <label class="btn btn-outline-success" for="visitChemist">
+              <i class="fa-solid fa-prescription-bottle-medical me-2"></i>
+              Chemists
+            </label>
+          </div>
         </div>
       </div>
 
@@ -303,6 +350,10 @@
 
     <script>
       let allDoctorVisits = [];
+      let selectedCategory = "DOCTOR";
+
+      let employeeTS = null;
+      let doctorTS = null;
 
       function updateTime() {
         document.getElementById("datetime").innerHTML =
@@ -316,42 +367,103 @@
           localStorage.getItem("adminName") || "Admin";
       }
 
-      async function loadEmployeeFilter() {
-        const employeeSelect = document.getElementById("employeeFilter");
-
-        employeeSelect.innerHTML = '<option value="">All Employees</option>';
-
-        try {
-          const response = await fetch(BASE_URL + "/get-employees");
-
-          const employees = await response.json();
-
-          employees.forEach((emp) => {
-            employeeSelect.innerHTML += `<option value="${emp.name}">
-                    ${emp.name}
-                </option>`;
-          });
-        } catch (error) {
-          console.error("Employee Load Error :", error);
+      function getSelectedCategory() {
+        if (document.getElementById("visitDoctor").checked) {
+          return "DOCTOR";
         }
+
+        return "CHEMIST";
       }
 
-      function loadDoctorFilter() {
-        const doctorSelect = document.getElementById("doctorFilter");
+      function changeVisitCategory() {
+        selectedCategory = getSelectedCategory();
 
-        doctorSelect.innerHTML = '<option value="">All Doctors</option>';
+        document.getElementById("employeeFilter").value = "";
+        document.getElementById("doctorFilter").value = "";
+        document.getElementById("visitDateFilter").value = "";
 
-        const doctors = [
+        loadDoctorVisits();
+      }
+
+      function loadEmployeeFilter() {
+        const employeeSelect = document.getElementById("employeeFilter");
+
+        const employees = [
           ...new Set(
-            allDoctorVisits.map((v) => v.doctorName).filter((name) => name),
+            allDoctorVisits.map((v) => v.employeeName).filter(Boolean),
           ),
         ];
 
-        doctors.sort();
+        employees.sort();
 
-        doctors.forEach((doc) => {
-          doctorSelect.innerHTML += `<option value="${doc}">${doc}</option>`;
-        });
+        // TomSelect initialized hai
+        if (employeeTS) {
+          employeeTS.clear(true);
+          employeeTS.clearOptions();
+
+          employeeTS.addOption({
+            value: "",
+            text: "All Employees",
+          });
+
+          employees.forEach((emp) => {
+            employeeTS.addOption({
+              value: emp,
+              text: emp,
+            });
+          });
+
+          employeeTS.refreshOptions(false);
+        } else {
+          employeeSelect.innerHTML = `<option value="">All Employees</option>`;
+
+          employees.forEach((emp) => {
+            employeeSelect.innerHTML += `
+                <option value="${emp}">
+                    ${emp}
+                </option>`;
+          });
+        }
+      }
+      function loadDoctorFilter() {
+        const doctorSelect = document.getElementById("doctorFilter");
+
+        const title =
+          selectedCategory === "CHEMIST" ? "All Chemists" : "All Doctors";
+
+        const names = [
+          ...new Set(allDoctorVisits.map((v) => v.doctorName).filter(Boolean)),
+        ];
+
+        names.sort();
+
+        if (doctorTS) {
+          doctorTS.clear(true);
+          doctorTS.clearOptions();
+
+          doctorTS.addOption({
+            value: "",
+            text: title,
+          });
+
+          names.forEach((name) => {
+            doctorTS.addOption({
+              value: name,
+              text: name,
+            });
+          });
+
+          doctorTS.refreshOptions(false);
+        } else {
+          doctorSelect.innerHTML = `<option value="">${title}</option>`;
+
+          names.forEach((name) => {
+            doctorSelect.innerHTML += `
+                <option value="${name}">
+                    ${name}
+                </option>`;
+          });
+        }
       }
 
       function renderDoctorVisits(data) {
@@ -448,6 +560,20 @@
         ${visit.landmark || "-"}
          </div>
 
+         <div class="col-md-6 mb-3">
+    <strong>Category :</strong>
+    <span class="badge ${
+      visit.visitCategory === "CHEMIST" ? "bg-success" : "bg-primary"
+    }">
+        ${visit.visitCategory || "-"}
+    </span>
+</div>
+
+<div class="col-md-6 mb-3">
+    <strong>Route :</strong>
+    ${visit.routeName || "-"}
+</div>
+
         <div class="col-md-12 mb-3">
           <strong>Visit Time :</strong>
           ${formatTime(visit.visitTime)}
@@ -509,7 +635,9 @@
         try {
           console.log("BASE_URL =", BASE_URL);
 
-          const response = await fetch(BASE_URL + "/doctor-visit/directory");
+          let url =
+            BASE_URL + "/doctor-visit/directory?category=" + selectedCategory;
+          const response = await fetch(url);
 
           console.log(response);
 
@@ -517,27 +645,20 @@
 
           allDoctorVisits = data;
 
+          console.table(allDoctorVisits);
+
           await loadEmployeeFilter();
 
           loadDoctorFilter();
 
-          renderDoctorVisits(data);
+          renderDoctorVisits(allDoctorVisits);
 
-          new TomSelect("#employeeFilter", {
-            create: false,
-            searchField: ["text"],
-            placeholder: "Search Employee...",
-          });
-
-          new TomSelect("#doctorFilter", {
-            create: false,
-            searchField: ["text"],
-            placeholder: "Search Doctor...",
-          });
+          updateTodayVisitCount();
         } catch (err) {
           console.error(err);
         }
       }
+
       function goBack() {
         window.location.replace("admin-dashboard.html");
       }
@@ -572,6 +693,19 @@
         return hour + ":" + minute + " " + ampm;
       }
 
+      function updateTodayVisitCount() {
+        const today = new Date().toISOString().split("T")[0];
+
+        const todayCount = allDoctorVisits.filter(
+          (v) => v.visitDate === today,
+        ).length;
+
+        document.getElementById("todayVisitCount").innerText =
+          selectedCategory === "CHEMIST"
+            ? `Today's Chemist Visits : ${todayCount}`
+            : `Today's Doctor Visits : ${todayCount}`;
+      }
+
       function resetFilters() {
         document.getElementById("employeeFilter").value = "";
         document.getElementById("doctorFilter").value = "";
@@ -596,7 +730,20 @@
 
       updateTime();
       loadAdminInfo();
-      loadDoctorVisits();
+
+      loadDoctorVisits().then(() => {
+        employeeTS = new TomSelect("#employeeFilter", {
+          create: false,
+          searchField: ["text"],
+          placeholder: "Search Employee...",
+        });
+
+        doctorTS = new TomSelect("#doctorFilter", {
+          create: false,
+          searchField: ["text"],
+          placeholder: "Search Doctor / Chemist...",
+        });
+      });
     </script>
   </body>
 </html>
