@@ -39,7 +39,7 @@
 
       .navbar-logo {
         width: 130px;
-       height: 74px;
+        height: 74px;
         object-fit: contain;
       }
 
@@ -74,14 +74,14 @@
           display: none !important;
         }
         .top-navbar {
-         height: 80px;
-         min-height: 80px; 
+          height: 80px;
+          min-height: 80px;
         }
 
-         .navbar-logo {
+        .navbar-logo {
           width: 120px;
           height: 68px;
-          }
+        }
       }
     </style>
   </head>
@@ -192,7 +192,7 @@
 
             <!-- Reset -->
 
-           <div class="col-lg-3 col-md-6">
+            <div class="col-lg-3 col-md-6">
               <button id="resetFilter" class="btn btn-secondary w-100">
                 <i class="fas fa-rotate-left"></i>
 
@@ -217,7 +217,7 @@
             >
               <thead class="table-primary">
                 <tr>
-                  <th>ID</th>
+                  <th>S.No</th>
                   <th>Employee Name</th>
                   <th>Time</th>
                   <th>Date</th>
@@ -233,6 +233,9 @@
         </div>
       </div>
     </div>
+    <nav class="mt-4">
+      <ul class="pagination justify-content-center" id="pagination"></ul>
+    </nav>
 
     <!-- Bootstrap JS -->
 
@@ -241,6 +244,11 @@
     <script src="js/config.js"></script>
 
     <script>
+      let allAttendances = [];
+      let filteredAttendances = [];
+      let currentPage = 1;
+      const rowsPerPage = 20;
+
       window.onload = function () {
         updateTime();
         setInterval(updateTime, 1000);
@@ -304,8 +312,12 @@
         // Table
         fetch(`${BASE_URL}/attendance-list`)
           .then((response) => response.json())
+
           .then((attendances) => {
-            renderAttendanceTable(attendances);
+            allAttendances = attendances;
+            filteredAttendances = attendances;
+            currentPage = 1;
+            renderAttendanceTable(filteredAttendances);
           })
           .catch((error) => {
             console.error("Attendance Load Error:", error);
@@ -327,10 +339,15 @@
           return;
         }
 
-        attendances.forEach((attendance) => {
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        const pageData = attendances.slice(start, end);
+
+        pageData.forEach((attendance, index) => {
           table.innerHTML += `
         <tr>
-          <td>${attendance.id || "-"}</td>
+          <td>${start + index + 1}</td>
           <td>${attendance.employeeName || "-"}</td>
           <td>${formatTime(attendance.attendanceTime)}</td>
           <td>${attendance.attendanceDate || "-"}</td>
@@ -350,39 +367,80 @@
         </tr>
       `;
         });
+
+        loadPagination();
+
       }
 
+      function loadPagination() {
+
+    const pagination = document.getElementById("pagination");
+    pagination.innerHTML = "";
+
+    const totalPages = Math.ceil(filteredAttendances.length / rowsPerPage);
+
+    pagination.innerHTML += `
+        <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+            <a class="page-link" href="#" onclick="changePage(${currentPage-1});return false;">Previous</a>
+        </li>
+    `;
+
+    for(let i=1;i<=totalPages;i++){
+
+        pagination.innerHTML += `
+            <li class="page-item ${currentPage===i?"active":""}">
+                <a class="page-link" href="#" onclick="changePage(${i});return false;">${i}</a>
+            </li>
+        `;
+    }
+
+    pagination.innerHTML += `
+        <li class="page-item ${currentPage===totalPages?"disabled":""}">
+            <a class="page-link" href="#" onclick="changePage(${currentPage+1});return false;">Next</a>
+        </li>
+    `;
+
+}
+
+function changePage(page){
+
+    const totalPages = Math.ceil(filteredAttendances.length / rowsPerPage);
+
+    if(page < 1 || page > totalPages) return;
+
+    currentPage = page;
+
+    renderAttendanceTable(filteredAttendances);
+
+}
+
       function getStatusBadge(status) {
+        if (status === "Present") {
+          return `<span class="badge bg-success">Present</span>`;
+        }
 
-    if (status === "Present") {
-        return `<span class="badge bg-success">Present</span>`;
-    }
+        if (status === "Absent") {
+          return `<span class="badge bg-danger">Absent</span>`;
+        }
 
-    if (status === "Absent") {
-        return `<span class="badge bg-danger">Absent</span>`;
-    }
+        if (status === "Leave") {
+          return `<span class="badge bg-info text-dark">Leave</span>`;
+        }
 
-    if (status === "Leave") {
-        return `<span class="badge bg-info text-dark">Leave</span>`;
-    }
+        return `<span class="badge bg-secondary">-</span>`;
+      }
 
-    return `<span class="badge bg-secondary">-</span>`;
-}
+      function formatTime(time) {
+        if (!time) return "-";
 
-function formatTime(time) {
+        const [hour, minute] = time.split(":");
 
-    if (!time) return "-";
-
-    const [hour, minute] = time.split(":");
-
-    return new Date(0, 0, 0, hour, minute)
-        .toLocaleTimeString("en-IN", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true
+        return new Date(0, 0, 0, hour, minute).toLocaleTimeString("en-IN", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
         });
-
-}
+      }
 
       function loadEmployees() {
         fetch(`${BASE_URL}/get-employees`)
@@ -467,8 +525,6 @@ function formatTime(time) {
             console.error(error);
           });
       }
-
-      
     </script>
   </body>
 </html>
