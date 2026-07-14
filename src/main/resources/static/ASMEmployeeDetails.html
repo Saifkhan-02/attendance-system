@@ -32,6 +32,25 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
 .nav-tabs .nav-link{font-weight:700;color:#0f172a}
 .nav-tabs .nav-link.active{color:#0d6efd}
 .table-responsive{font-size:14px}
+
+.tab-table-scroll{
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+}
+
+.tab-table-scroll table{
+    margin-bottom: 0;
+}
+
+.tab-table-scroll thead th{
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 10;
+}
 </style>
 </head>
 
@@ -199,9 +218,9 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
     </ul>
 
     <div class="tab-content">
-
+      <!-- Attendance Tab -->
       <div class="tab-pane fade show active" id="attendanceTab">
-        <div class="table-responsive">
+        <div class="table-responsive tab-table-scroll">
           <table class="table table-bordered align-middle">
             <thead class="table-light">
               <tr>
@@ -217,7 +236,7 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
       </div>
       <!-- Visits Tab -->
       <div class="tab-pane fade" id="visitsTab">
-        <div class="table-responsive">
+        <div class="table-responsive tab-table-scroll">
           <table class="table table-bordered align-middle">
             <thead class="table-light">
              <tr>
@@ -240,7 +259,7 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
       </div>
       <!-- Orders Tab -->
       <div class="tab-pane fade" id="ordersTab">
-        <div class="table-responsive">
+        <div class="table-responsive tab-table-scroll">
           <table class="table table-bordered align-middle">
             <thead class="table-light">
               <tr>
@@ -261,7 +280,7 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
       </div>
       <!-- Expenses Tab -->
       <div class="tab-pane fade" id="expensesTab">
-        <div class="table-responsive">
+        <div class="table-responsive tab-table-scroll">
           <table class="table table-bordered align-middle">
             <thead class="table-light">
              <tr>
@@ -279,7 +298,7 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
       </div>
       <!-- Tour Plans Tab -->
       <div class="tab-pane fade" id="tourPlansTab">
-  <div class="table-responsive">
+  <div class="table-responsive tab-table-scroll">
     <table class="table table-bordered align-middle">
       <thead class="table-light">
         <tr>
@@ -331,7 +350,7 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
 
   </div>
 
-  <div class="table-responsive">
+  <div class="table-responsive tab-table-scroll">
     <table class="table table-bordered align-middle">
 
       <thead class="table-light">
@@ -370,7 +389,7 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
   <!-- Leave Tab -->
  <div class="tab-pane fade" id="leaveTab">
 
-<div class="table-responsive">
+<div class="table-responsive tab-table-scroll">
 
 <table class="table table-bordered align-middle">
 
