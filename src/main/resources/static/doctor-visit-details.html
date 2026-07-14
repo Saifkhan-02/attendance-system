@@ -239,18 +239,13 @@
 
       <div class="card shadow-sm border-0 rounded-4 mb-4">
         <div class="card-body">
-         <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <label class="form-label fw-bold mb-0"> Select Category </label>
 
-    <label class="form-label fw-bold mb-0">
-        Select Category
-    </label>
-
-    <div id="todayVisitCount"
-         class="fw-bold text-success text-end">
-        Today's Visits : 0
-    </div>
-
-</div>
+            <div id="todayVisitCount" class="fw-bold text-success text-end">
+              Today's Visits : 0
+            </div>
+          </div>
 
           <div class="d-flex gap-2 flex-wrap">
             <input
@@ -380,9 +375,42 @@
       function changeVisitCategory() {
         selectedCategory = getSelectedCategory();
 
+        // Page Heading
+        document.querySelector("h2").innerText =
+          selectedCategory === "CHEMIST"
+            ? "Chemist Visit List"
+            : "Doctor Visit List";
+
+        // Description
+        document.querySelector(".card-body p").innerText =
+          selectedCategory === "CHEMIST"
+            ? "List of all chemist visits conducted by employees"
+            : "List of all doctor visits conducted by employees";
+
+        // Filter Label
+        document.querySelector("label[for='doctorFilter'], #doctorFilter")
+          ?.previousElementSibling &&
+          (document.querySelector(
+            "#doctorFilter",
+          ).previousElementSibling.innerText =
+            selectedCategory === "CHEMIST" ? "Chemist" : "Doctor");
+
+        // Placeholder (TomSelect banne se pehle)
+        document.querySelector("#doctorFilter option").text =
+          selectedCategory === "CHEMIST" ? "All Chemists" : "All Doctors";
+
         document.getElementById("employeeFilter").value = "";
         document.getElementById("doctorFilter").value = "";
         document.getElementById("visitDateFilter").value = "";
+
+        if (doctorTS) {
+    doctorTS.settings.placeholder =
+        selectedCategory === "CHEMIST"
+            ? "Search Chemist..."
+            : "Search Doctor...";
+
+    doctorTS.inputState();
+}
 
         loadDoctorVisits();
       }
@@ -433,6 +461,11 @@
         const title =
           selectedCategory === "CHEMIST" ? "All Chemists" : "All Doctors";
 
+        document.querySelector(
+          "#doctorFilter",
+        ).previousElementSibling.innerText =
+          selectedCategory === "CHEMIST" ? "Chemist" : "Doctor";
+
         const names = [
           ...new Set(allDoctorVisits.map((v) => v.doctorName).filter(Boolean)),
         ];
@@ -474,31 +507,31 @@
         container.innerHTML = "";
 
         if (!Array.isArray(data) || data.length === 0) {
-  container.innerHTML = `
+          container.innerHTML = `
     <div class="alert alert-warning text-center">
       No doctor visits found
     </div>
   `;
-  return;
-}
+          return;
+        }
 
-       const safeData = Array.isArray(data) ? [...data] : [];
+        const safeData = Array.isArray(data) ? [...data] : [];
 
-safeData.sort((a, b) => {
-  const dateA = String(a.visitDate || "");
-  const dateB = String(b.visitDate || "");
+        safeData.sort((a, b) => {
+          const dateA = String(a.visitDate || "");
+          const dateB = String(b.visitDate || "");
 
-  if (dateA !== dateB) {
-    return dateB.localeCompare(dateA);
-  }
+          if (dateA !== dateB) {
+            return dateB.localeCompare(dateA);
+          }
 
-  const timeA = String(a.visitTime || "");
-  const timeB = String(b.visitTime || "");
+          const timeA = String(a.visitTime || "");
+          const timeB = String(b.visitTime || "");
 
-  return timeB.localeCompare(timeA);
-});
+          return timeB.localeCompare(timeA);
+        });
 
-       safeData.forEach((visit) => {
+        safeData.forEach((visit) => {
           container.innerHTML += `
         
         <div class="card visit-card shadow-sm">
@@ -529,7 +562,8 @@ safeData.sort((a, b) => {
 
                         <div><strong>Employee :</strong> ${visit.employeeName || "-"}</div>
 
-                        <div><strong>Hospital :</strong> ${visit.hospitalName || "-"}</div>
+                        <div><strong>${visit.visitCategory === "CHEMIST" ? "Medical" : "Hospital"} :</strong>
+                           ${visit.hospitalName || "-"}</div>
 
                         <div><strong>Location :</strong> ${visit.location || "-"}</div>
 
@@ -657,27 +691,22 @@ safeData.sort((a, b) => {
           let url =
             BASE_URL + "/doctor-visit/directory?category=" + selectedCategory;
           const response = await fetch(url);
-         
 
-console.log("VISIT RESPONSE:", response);
+          console.log("VISIT RESPONSE:", response);
 
-const responseText = await response.text();
+          const responseText = await response.text();
 
-if (!response.ok) {
-  throw new Error(
-    responseText || "Failed to load doctor visits"
-  );
-}
+          if (!response.ok) {
+            throw new Error(responseText || "Failed to load doctor visits");
+          }
 
-const data = responseText
-  ? JSON.parse(responseText)
-  : [];
+          const data = responseText ? JSON.parse(responseText) : [];
 
-if (!Array.isArray(data)) {
-  throw new Error("Invalid doctor visit response");
-}
+          if (!Array.isArray(data)) {
+            throw new Error("Invalid doctor visit response");
+          }
 
-console.log("DOCTOR VISITS:", data);
+          console.log("DOCTOR VISITS:", data);
 
           allDoctorVisits = data;
 
@@ -693,7 +722,6 @@ console.log("DOCTOR VISITS:", data);
         } catch (err) {
           console.error(err);
         }
-     
       }
 
       function goBack() {
@@ -745,12 +773,12 @@ console.log("DOCTOR VISITS:", data);
 
       function resetFilters() {
         if (employeeTomSelect) {
-  employeeTomSelect.clear();
-}
+          employeeTomSelect.clear();
+        }
 
-if (doctorTomSelect) {
-  doctorTomSelect.clear();
-}
+        if (doctorTomSelect) {
+          doctorTomSelect.clear();
+        }
         document.getElementById("employeeFilter").value = "";
         document.getElementById("doctorFilter").value = "";
         document.getElementById("visitDateFilter").value = "";
@@ -785,7 +813,10 @@ if (doctorTomSelect) {
         doctorTS = new TomSelect("#doctorFilter", {
           create: false,
           searchField: ["text"],
-          placeholder: "Search Doctor / Chemist...",
+          placeholder:
+            selectedCategory === "CHEMIST"
+              ? "Search Chemist..."
+              : "Search Doctor...",
         });
       });
     </script>
