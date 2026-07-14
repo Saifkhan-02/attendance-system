@@ -15,6 +15,7 @@ import com.gps.attendance.entity.TourPlan;
 import com.gps.attendance.repository.TourPlanRepository;
 import com.gps.attendance.entity.Employee;
 import com.gps.attendance.entity.EmployeeHQMapping;
+
 import com.gps.attendance.entity.Headquarter;
 import com.gps.attendance.entity.LeaveRequest;
 import com.gps.attendance.entity.ProductOrder;
@@ -26,11 +27,11 @@ import com.gps.attendance.repository.ProductOrderRepository;
 import java.time.LocalDate;
 import com.gps.attendance.entity.Attendance;
 import com.gps.attendance.entity.DoctorVisit;
-import com.gps.attendance.entity.Expense;
+
 import com.gps.attendance.repository.AttendanceRepository;
 import com.gps.attendance.repository.DoctorVisitRepository;
-import com.gps.attendance.repository.ExpenseRepository;
-import com.gps.attendance.repository.LeaveRequestRepository;;
+
+import com.gps.attendance.repository.LeaveRequestRepository;
 
 @RestController
 @RequestMapping("/asm")
@@ -44,7 +45,7 @@ public class ASMController {
 
     private final AttendanceRepository attendanceRepository;
     private final DoctorVisitRepository doctorVisitRepository;
-    private final ExpenseRepository expenseRepository;
+   
 
     private final TourPlanRepository tourPlanRepository;
 
@@ -57,7 +58,7 @@ public class ASMController {
             ProductOrderRepository orderRepository,
             AttendanceRepository attendanceRepository,
             DoctorVisitRepository doctorVisitRepository,
-            ExpenseRepository expenseRepository,
+          
             TourPlanRepository tourPlanRepository,
             LeaveRequestRepository leaveRequestRepository) {
 
@@ -68,7 +69,7 @@ public class ASMController {
 
         this.attendanceRepository = attendanceRepository;
         this.doctorVisitRepository = doctorVisitRepository;
-        this.expenseRepository = expenseRepository;
+
         this.tourPlanRepository = tourPlanRepository;
 
         this.leaveRequestRepository = leaveRequestRepository;
@@ -187,7 +188,20 @@ if (todaySalesRows != null && !todaySalesRows.isEmpty()) {
     todayDue = ((Number) row[2]).doubleValue();
 }
 
-Double todayExpense = expenseRepository.getTodayExpenseByEmployee(employeeId, today);
+List<TourPlan> todayPlans =
+        tourPlanRepository
+                .findByEmployeeIdAndTravelDateOrderByIdDesc(
+                        employeeId,
+                        todayDate
+                );
+
+double todayExpense = todayPlans.stream()
+        .mapToDouble(plan ->
+                plan.getTotalExpense() == null
+                        ? 0.0
+                        : plan.getTotalExpense()
+        )
+        .sum();
     List<Attendance> todayAttendance =
             attendanceRepository.findByEmployeeId(employeeId);
 
@@ -219,7 +233,7 @@ Double todayExpense = expenseRepository.getTodayExpenseByEmployee(employeeId, to
     result.put("totalSales", todaySales);
     result.put("totalCollection", todayCollection);
     result.put("totalDue", todayDue);
-    result.put("totalExpense", todayExpense == null ? 0 : todayExpense);
+   result.put("totalExpense", todayExpense);
 
     result.put("todayTourPlans", todayTourPlans);
 
@@ -297,8 +311,8 @@ public List<ProductOrder> getMrOrders(@PathVariable Long employeeId) {
 }
 
 @GetMapping("/mr-expenses/{employeeId}")
-public List<Expense> getMrExpenses(@PathVariable Long employeeId) {
-    return expenseRepository.findByEmployeeIdOrderByIdDesc(employeeId);
+public List<TourPlan> getMrExpenses(@PathVariable Long employeeId) {
+    return tourPlanRepository.findByEmployeeIdOrderByIdDesc(employeeId);
 }
 
 @GetMapping("/dashboard-fast/{asmId}")
@@ -348,10 +362,16 @@ public Map<String, Object> getDashboardFast(@PathVariable Long asmId) {
         salesMap.put((Long) row[0], row);
     }
 
-    Map<Long, Double> expenseMap = new HashMap<>();
-    for (Object[] row : expenseRepository.getExpenseSummaryByEmployees(employeeIds)) {
-        expenseMap.put((Long) row[0], ((Number) row[1]).doubleValue());
-    }
+  Map<Long, Double> expenseMap = new HashMap<>();
+
+for (Object[] row :
+        tourPlanRepository.getExpenseSummaryByEmployees(employeeIds)) {
+
+    expenseMap.put(
+            (Long) row[0],
+            ((Number) row[1]).doubleValue()
+    );
+}
 
     List<Map<String, Object>> leaderboard = new ArrayList<>();
 
@@ -460,7 +480,6 @@ public Map<String, Object> getEmployeeDetailsFast(
     List<Attendance> attendance;
     List<DoctorVisit> visits;
     List<ProductOrder> orders;
-    List<Expense> expenses;
     List<TourPlan> tourPlans;
     List<LeaveRequest> leaves;
 
@@ -502,14 +521,6 @@ public Map<String, Object> getEmployeeDetailsFast(
                                 toDate
                         );
 
-        expenses =
-                expenseRepository
-                        .findByEmployeeIdAndExpenseDateBetweenOrderByIdDesc(
-                                employeeId,
-                                fromDate,
-                                toDate
-                        );
-
         tourPlans =
                 tourPlanRepository
                         .findByEmployeeIdAndTravelDateBetweenOrderByIdDesc(
@@ -539,9 +550,6 @@ public Map<String, Object> getEmployeeDetailsFast(
                 orderRepository
                         .findByEmployeeIdOrderByIdDesc(employeeId);
 
-        expenses =
-                expenseRepository
-                        .findByEmployeeIdOrderByIdDesc(employeeId);
 
         tourPlans =
                 tourPlanRepository
@@ -560,7 +568,7 @@ public Map<String, Object> getEmployeeDetailsFast(
     result.put("attendance", attendance);
     result.put("visits", visits);
     result.put("orders", orders);
-    result.put("expenses", expenses);
+  
     result.put("tourPlans", tourPlans);
     result.put("leaves", leaves);
 

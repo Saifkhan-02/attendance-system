@@ -1,5 +1,6 @@
 package com.gps.attendance.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -65,5 +66,20 @@ WHERE employee_id = :employeeId
 """, nativeQuery = true)
     Double getEmployeeTotalExpense(
             @Param("employeeId") Long employeeId);
+
+List<TourPlan> findByEmployeeIdAndTravelDateOrderByIdDesc(
+        Long employeeId,
+        LocalDate travelDate
+);
+@Query("""
+    SELECT t.employeeId,
+           COALESCE(SUM(t.totalExpense), 0)
+    FROM TourPlan t
+    WHERE t.employeeId IN :employeeIds
+    GROUP BY t.employeeId
+""")
+List<Object[]> getExpenseSummaryByEmployees(
+        @Param("employeeIds") List<Long> employeeIds
+);
 
 }
