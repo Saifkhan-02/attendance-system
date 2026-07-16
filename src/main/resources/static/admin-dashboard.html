@@ -46,41 +46,98 @@
 
       /* Sidebar */
 
-      .sidebar {
-        position: fixed;
-        top: 80px;
-        left: 0;
-        width: 250px;
-        height: 100vh;
-        background: #0f172a;
-        transition: 0.3s;
-        overflow-y: auto;
-        z-index: 1000;
-      }
+      .sidebar{
+    position: fixed;
+    top: 80px;
+    left: 0;
+    width: 260px;
+    height: calc(100vh - 80px);
+    background: #ffffff;
+    border-right: 1px solid #e5e7eb;
+    border-top-right-radius: 22px;
+    border-bottom-right-radius: 22px;
+    box-shadow: 0 15px 40px rgba(15,23,42,.12);
+    transition: all .35s ease;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 1000;
+    padding: 15px 12px;
+}
 
-      .sidebar.hide {
-        margin-left: -250px;
-      }
+.sidebar.hide{
+    transform: translateX(-105%);
+}
 
-      .sidebar .nav-link {
-        color: #fff;
-        padding: 12px 20px;
-        margin: 5px 10px;
-        border-radius: 8px;
-      }
-      .sidebar .nav-link:hover {
-        background: #1e293b;
-      }
+.sidebar.show{
+    transform: translateX(0);
+}
 
-      .sidebar .nav-link.active {
-        background: #0d6efd;
-      }
+.sidebar::-webkit-scrollbar{
+    width:5px;
+}
+
+.sidebar::-webkit-scrollbar-thumb{
+    background:#d1d5db;
+    border-radius:20px;
+}
+
+    .sidebar .nav-link{
+
+    display:flex;
+    align-items:center;
+    gap:14px;
+
+    padding:13px 16px;
+    margin:6px 0;
+
+    color:#374151;
+    font-size:15px;
+    font-weight:600;
+
+    border-radius:14px;
+
+    transition:.25s ease;
+}
+
+.sidebar .nav-link i{
+
+    width:24px;
+    text-align:center;
+    font-size:18px;
+    color:#2563eb;
+
+}
+
+.sidebar .nav-link:hover{
+
+    background:#eff6ff;
+    color:#2563eb;
+
+    transform:translateX(5px);
+
+}
+
+.sidebar .nav-link.active{
+
+    background:linear-gradient(90deg,#2563eb,#3b82f6);
+
+    color:#fff;
+
+    box-shadow:0 8px 20px rgba(37,99,235,.28);
+
+}
+
+.sidebar .nav-link.active i{
+
+    color:#fff;
+
+}
 
       /* Main Content */
 
       .main-content {
         position: relative;
-        margin-left: 250px;
+        margin-left: 260px;
         margin-top: 100px;
         padding: 20px;
         transition: 0.3s;
@@ -362,13 +419,42 @@
       /* Mobile */
 
       @media (max-width: 768px) {
-        .sidebar {
-          margin-left: -250px;
-        }
+       .sidebar{
 
-        .sidebar.show {
-          margin-left: 0;
-        }
+    transform:translateX(-100%);
+    width:230px;
+
+    border-top-right-radius:20px;
+    border-bottom-right-radius:20px;
+
+}
+
+.sidebar.show{
+
+    transform:translateX(0);
+
+}
+
+         .sidebar .nav-link{
+
+        padding:11px 14px;
+        font-size:13px;
+        gap:10px;
+        border-radius:12px;
+
+    }
+
+    .sidebar .nav-link i{
+
+        font-size:15px;
+        width:20px;
+
+    }
+
+    .sidebar hr{
+        margin:12px 0;
+    }
+
 
         .main-content {
           margin-left: 0;
@@ -432,6 +518,35 @@
   line-height: 1.2 !important;
   text-align: center;
   word-break: break-word;
+}
+.logout-link{
+
+    margin-top:18px;
+
+    border:1px solid #fecaca;
+
+    color:#dc2626 !important;
+
+}
+
+.logout-link i{
+
+    color:#dc2626 !important;
+
+}
+
+.logout-link:hover{
+
+    background:#dc2626 !important;
+
+    color:#fff !important;
+
+}
+
+.logout-link:hover i{
+
+    color:#fff !important;
+
 }
 
       }
@@ -549,10 +664,15 @@
 </li>
 
         <li class="nav-item">
-          <a href="index.html" class="nav-link text-danger" id="logoutBtn">
-            <i class="fas fa-sign-out-alt me-2"></i>
-            Logout
-           </a>
+         <a href="index.html"
+   class="nav-link logout-link"
+   id="logoutBtn">
+
+    <i class="fas fa-sign-out-alt"></i>
+
+    Logout
+
+</a>
           </li>
       </ul>
     </div>
@@ -740,9 +860,14 @@
             </div>
 
             <div class="card-body">
-              <canvas id="attendanceChart"></canvas>
 
-              <div class="mt-3 small text-center">
+    <div style="height:270px;">
+
+        <canvas id="attendanceChart"></canvas>
+
+    </div>
+
+    <div class="mt-3 small text-center">
                 <div>Present: <span id="presentCount">0</span></div>
                 <div>Absent: <span id="absentCount">0</span></div>
                 <div>Leave: <span id="leaveCount">0</span></div>
@@ -888,7 +1013,7 @@ function updateTime() {
       loadAdminInfo();
       updateTime();
 
- window.addEventListener("load", function () {
+document.addEventListener("DOMContentLoaded", function () {
 
     fetch(`${BASE_URL}/get-employees`)
         .then(response => response.json())
@@ -1035,6 +1160,8 @@ if(profileBtn && profileModal && closeModal){
 
       let doctorVisitChart = null;
 
+      
+
       async function loadDoctorVisitChart(
         url = `${BASE_URL}/doctor-visit/chart-data`,
       ) {
@@ -1083,9 +1210,17 @@ if(profileBtn && profileModal && closeModal){
 
         const ctx = document.getElementById("doctorVisitChart");
 
-        if (doctorVisitChart) {
-          doctorVisitChart.destroy();
-        }
+       if (doctorVisitChart) {
+
+    doctorVisitChart.data.labels = labels;
+
+    doctorVisitChart.data.datasets[0].data = data;
+
+    doctorVisitChart.update();
+
+    return;
+
+}
 
         doctorVisitChart = new Chart(ctx, {
           type: "line",
@@ -1106,26 +1241,39 @@ if(profileBtn && profileModal && closeModal){
               ],
           },
 
-          options: {
-            responsive: true,
+          options:{
 
-            maintainAspectRatio: false,
-          },
+    responsive:true,
+
+    maintainAspectRatio:false,
+
+    animation:{
+        duration:1200,
+        easing:"easeOutQuart"
+    }
+
+},
         });
       }
 
     const chartType = document.getElementById("chartType");
 
 if (chartType) {
-  chartType.addEventListener("change", function () {
-    if (this.value === "daily") {
-      loadDoctorVisitChart(`${BASE_URL}/doctor-visit/chart-data-weekly`);
-    } else {
-      loadDoctorVisitChart(
-        `${BASE_URL}/doctor-visit/chart-data`
-      );
-    }
-  });
+
+    chartType.addEventListener("change", function () {
+
+        if(this.value==="daily"){
+
+            loadDoctorVisitChart(`${BASE_URL}/doctor-visit/chart-data-weekly`);
+
+        }else{
+
+            loadDoctorVisitChart(`${BASE_URL}/doctor-visit/chart-data`);
+
+        }
+
+    });
+
 }
 
       let attendanceChart = null;
@@ -1137,8 +1285,21 @@ if (chartType) {
 
         const ctx = document.getElementById("attendanceChart");
 
-        if (attendanceChart) {
-    attendanceChart.destroy();
+ if (attendanceChart) {
+
+    attendanceChart.data.datasets[0].data = [
+        data.present,
+        data.absent,
+        data.leave
+    ];
+
+    attendanceChart.update();
+
+    document.getElementById("presentCount").innerText = data.present;
+    document.getElementById("absentCount").innerText = data.absent;
+    document.getElementById("leaveCount").innerText = data.leave;
+
+    return;
 }
 
        attendanceChart = new Chart(ctx, {
@@ -1156,15 +1317,24 @@ if (chartType) {
             ],
           },
 
-          options: {
-            responsive: true,
+          options:{
 
-            plugins: {
-              legend: {
-                position: "bottom",
-              },
-            },
-          },
+    responsive:true,
+
+    maintainAspectRatio:false,
+
+    animation:{
+        duration:1200,
+        easing:"easeOutQuart"
+    },
+
+    plugins:{
+        legend:{
+            position:"bottom"
+        }
+    }
+
+},
         });
 
         document.getElementById("presentCount").innerText = data.present;
@@ -1194,8 +1364,16 @@ if (chartType) {
         //Chart.register(ChartDataLabels);
         const ctx = document.getElementById("expenseChart");
 
-        if (expenseChart) {
-    expenseChart.destroy();
+  if (expenseChart) {
+
+    expenseChart.data.labels = labels;
+
+    expenseChart.data.datasets[0].data = amounts;
+
+    expenseChart.update();
+
+    return;
+
 }
 
         expenseChart = new Chart(ctx,{
@@ -1220,7 +1398,13 @@ if (chartType) {
 
           options: {
             responsive: true,
+
             maintainAspectRatio: false,
+
+            animation:{
+    duration:1200,
+    easing:"easeOutQuart"
+},
 
             plugins: {
               legend: {
@@ -1251,9 +1435,21 @@ if (chartType) {
       }
 
 
-      loadDoctorVisitChart(`${BASE_URL}/doctor-visit/chart-data-weekly`);
-      loadAttendanceChart();
-      loadExpenseChart();
+   setInterval(() => {
+
+    loadDoctorVisitChart(`${BASE_URL}/doctor-visit/chart-data-weekly`);
+
+    loadAttendanceChart();
+
+    loadExpenseChart();
+
+    loadDoctorVisitCount();
+
+    loadDoctorVisits();
+
+    loadAdminTotalSale();
+
+},30000);
 
       // show Employees
 
