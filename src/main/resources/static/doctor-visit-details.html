@@ -404,13 +404,13 @@
         document.getElementById("visitDateFilter").value = "";
 
         if (doctorTS) {
-    doctorTS.settings.placeholder =
-        selectedCategory === "CHEMIST"
-            ? "Search Chemist..."
-            : "Search Doctor...";
+          doctorTS.settings.placeholder =
+            selectedCategory === "CHEMIST"
+              ? "Search Chemist..."
+              : "Search Doctor...";
 
-    doctorTS.inputState();
-}
+          doctorTS.inputState();
+        }
 
         loadDoctorVisits();
       }
@@ -558,7 +558,21 @@
                         <h4 class="fw-bold">
                             ${visit.doctorName || "-"}
                         </h4>
-                        <div class="mt-1"><span class="badge bg-primary"> ${visit.specialization || "Doctor"}</span></div>
+                        <div class="mt-1">
+
+    <span class="badge ${
+      visit.visitCategory === "CHEMIST" ? "bg-success" : "bg-primary"
+    }">
+
+        ${
+          visit.visitCategory === "CHEMIST"
+            ? "Chemist"
+            : visit.specialization || "-"
+        }
+
+    </span>
+
+</div>
 
                         <div><strong>Employee :</strong> ${visit.employeeName || "-"}</div>
 
