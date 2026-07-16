@@ -55,4 +55,15 @@ public Headquarter toggleStatus(@PathVariable Long id) {
 
     return headquarterRepository.save(headquarter);
 }
+@org.springframework.web.bind.annotation.DeleteMapping("/delete/{id}")
+public String deleteHeadquarter(@PathVariable Long id) {
+
+    if (!headquarterRepository.existsById(id)) {
+        throw new RuntimeException("Headquarter not found");
+    }
+
+    headquarterRepository.deleteById(id);
+
+    return "Headquarter Deleted Successfully";
+}
 }

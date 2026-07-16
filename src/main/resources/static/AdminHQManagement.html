@@ -278,7 +278,7 @@
                 <table class="table table-hover align-middle">
                   <thead class="table-primary">
                     <tr>
-                      <th>ID</th>
+                      <th>S.No</th>
                       <th>headquarter Name</th>
                       <th>Status</th>
                       <th>Action</th>
@@ -367,22 +367,34 @@
             return;
           }
 
-          headquarters.forEach((headquarter) => {
+          headquarters.forEach((headquarter, index) => {
             const status = (headquarter.status || "Active").trim();
             const statusClass =
               status === "Active" ? "status-active" : "status-inactive";
 
             table.innerHTML += `
         <tr>
-          <td>${headquarter.id}</td>
+          <td>${index + 1}</td>
           <td class="fw-semibold">${headquarter.headquarterName || "-"}</td>
           <td><span class="${statusClass}">${status}</span></td>
-         <td>
-  <button class="btn btn-sm ${
-    status === "Active" ? "btn-danger" : "btn-success"
-  }" onclick="toggleHQStatus(${headquarter.id})">
-    <i class="fa-solid ${status === "Active" ? "fa-ban" : "fa-check"}"></i>
-  </button>
+   <td>
+  <div class="d-flex gap-2">
+
+    <button class="btn btn-sm ${
+      status === "Active" ? "btn-danger" : "btn-success"
+    }"
+    onclick="toggleHQStatus(${headquarter.id})"
+    title="${status === "Active" ? "Deactivate" : "Activate"}">
+      <i class="fa-solid ${status === "Active" ? "fa-ban" : "fa-check"}"></i>
+    </button>
+
+    <button class="btn btn-sm btn-outline-danger"
+      onclick="deleteheadquarter(${headquarter.id})"
+      title="Delete">
+      <i class="fa-solid fa-trash"></i>
+    </button>
+
+  </div>
 </td>
         </tr>
       `;
@@ -407,7 +419,7 @@
             <table class="table table-hover align-middle">
               <thead class="table-primary">
                 <tr>
-                  <th>ID</th>
+                  <th>S.No</th>
                   <th>headquarter Name</th>
                  
                   <th>Status</th>
@@ -415,10 +427,9 @@
               </thead>
               <tbody>
                 ${headquarters
-                  .map(
-                    (headquarter) => `
+                  .map( (headquarter, index) => `
                   <tr>
-                    <td>${headquarter.id}</td>
+                    <td>${index + 1}</td>
                     <td>${headquarter.headquarterName || "-"}</td>
                  
                    <td>
