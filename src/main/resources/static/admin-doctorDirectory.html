@@ -428,19 +428,27 @@
           }
 
           if (search) {
-            url += "&search=" + encodeURIComponent(search);
+            url += "&doctorName=" + encodeURIComponent(search);
           }
 
           console.log(url);
 
           const response = await fetch(url);
 
-          const doctors = await response.json();
+          const data = await response.json();
+
+          const doctors = data.content;
+
+          const countResponse = await fetch(
+            BASE_URL + "/doctor-visit/unique-count?category=" + category,
+          );
+
+          const total = await countResponse.json();
 
           document.getElementById("totalCount").innerText =
-            selectedCategory === "CHEMIST"
-              ? "Total Chemists : " + doctors.length
-              : "Total Doctors : " + doctors.length;
+            category === "CHEMIST"
+              ? "Total Chemists : " + total
+              : "Total Doctors : " + total;
 
           console.log("Doctors =", doctors);
 

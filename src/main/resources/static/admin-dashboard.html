@@ -1025,15 +1025,15 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("totalEmployees").innerText = "0";
         });
 
-    fetch(`${BASE_URL}/doctor-visit/directory`)
-        .then(response => response.json())
-        .then(doctors => {
-            document.getElementById("totalDoctors").innerText = doctors.length;
-        })
-        .catch(error => {
-            console.error("Doctor Count Error:", error);
-            document.getElementById("totalDoctors").innerText = "0";
-        });
+   fetch(`${BASE_URL}/doctor-visit/unique-count?category=DOCTOR`)
+    .then(response => response.text())
+    .then(count => {
+        document.getElementById("totalDoctors").innerText = count;
+    })
+    .catch(error => {
+        console.error("Doctor Count Error:", error);
+        document.getElementById("totalDoctors").innerText = "0";
+    });
 
     loadDoctorVisitCount();
     loadDoctorVisits();

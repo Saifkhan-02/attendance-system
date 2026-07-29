@@ -3,6 +3,7 @@ package com.gps.attendance.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -73,18 +74,18 @@ public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> 
     );
 
     List<DoctorVisit> findByVisitCategoryOrderByVisitDateDesc(
-        String visitCategory
-);
+            String visitCategory
+    );
 
-List<DoctorVisit> findByVisitCategoryAndRouteNameIgnoreCase(
-        String visitCategory,
-        String routeName
-);
+    List<DoctorVisit> findByVisitCategoryAndRouteNameIgnoreCase(
+            String visitCategory,
+            String routeName
+    );
 
-List<DoctorVisit> findByVisitCategoryAndRouteNameIgnoreCaseOrderByVisitDateDesc(
-        String visitCategory,
-        String routeName
-);
+    List<DoctorVisit> findByVisitCategoryAndRouteNameIgnoreCaseOrderByVisitDateDesc(
+            String visitCategory,
+            String routeName
+    );
 
     @Query("""
     SELECT d.visitDate, COUNT(d)
@@ -108,82 +109,117 @@ List<DoctorVisit> findByVisitCategoryAndRouteNameIgnoreCaseOrderByVisitDateDesc(
     long getCurrentMonthVisitCount();
 
     @Query(
-    value = """
+            value = """
     SELECT COUNT(*)
     FROM doctor_visit
     WHERE visit_date = TO_CHAR(CURRENT_DATE,'YYYY-MM-DD')
     """,
-    nativeQuery = true
-)
-long getTodayVisitCount();
+            nativeQuery = true
+    )
+    long getTodayVisitCount();
 
-List<DoctorVisit> findByEmployeeIdInOrderByIdDesc(List<Long> employeeIds);
+    List<DoctorVisit> findByEmployeeIdInOrderByIdDesc(List<Long> employeeIds);
 
-@Query("""
+    @Query("""
 SELECT d.employeeId, COUNT(d)
 FROM DoctorVisit d
 WHERE d.employeeId IN :employeeIds
 AND d.visitDate = :today
 GROUP BY d.employeeId
 """)
-List<Object[]> countTodayVisitsByEmployees(
-        @Param("employeeIds") List<Long> employeeIds,
-        @Param("today") String today
-);
+    List<Object[]> countTodayVisitsByEmployees(
+            @Param("employeeIds") List<Long> employeeIds,
+            @Param("today") String today
+    );
 
-List<DoctorVisit> findByEmployeeIdAndVisitDateStartingWithOrderByIdDesc(
-        Long employeeId,
-        String month
-);
+    List<DoctorVisit> findByEmployeeIdAndVisitDateStartingWithOrderByIdDesc(
+            Long employeeId,
+            String month
+    );
 
 // Doctor Search (Autocomplete + Auto Fill)
-List<DoctorVisit> findByEmployeeIdAndDoctorNameContainingIgnoreCaseOrderByDoctorNameAsc(
-        Long employeeId,
-        String doctorName
-);
+    List<DoctorVisit> findByEmployeeIdAndDoctorNameContainingIgnoreCaseOrderByDoctorNameAsc(
+            Long employeeId,
+            String doctorName
+    );
 
-List<DoctorVisit> findByEmployeeIdAndDoctorNameIgnoreCaseOrderByHospitalNameAsc(
-        Long employeeId,
-        String doctorName
-);
+    List<DoctorVisit> findByEmployeeIdAndDoctorNameIgnoreCaseOrderByHospitalNameAsc(
+            Long employeeId,
+            String doctorName
+    );
 // Total Visit Count
-long countByDoctorNameIgnoreCase(String doctorName);
 
-List<DoctorVisit> findByEmployeeIdAndVisitDateBetweenOrderByIdDesc(
-        Long employeeId,
-        String fromDate,
-        String toDate
-);
+    long countByDoctorNameIgnoreCase(String doctorName);
 
-List<DoctorVisit>
-findByEmployeeIdAndVisitCategoryAndDoctorNameContainingIgnoreCaseOrderByDoctorNameAsc(
-        Long employeeId,
-        String visitCategory,
-        String doctorName
-);
+    List<DoctorVisit> findByEmployeeIdAndVisitDateBetweenOrderByIdDesc(
+            Long employeeId,
+            String fromDate,
+            String toDate
+    );
 
-List<DoctorVisit>
-findByEmployeeIdAndVisitCategoryAndDoctorNameIgnoreCaseOrderByHospitalNameAsc(
-        Long employeeId,
-        String visitCategory,
-        String doctorName
-);
+    List<DoctorVisit>
+            findByEmployeeIdAndVisitCategoryAndDoctorNameContainingIgnoreCaseOrderByDoctorNameAsc(
+                    Long employeeId,
+                    String visitCategory,
+                    String doctorName
+            );
 
-List<DoctorVisit>
-findByEmployeeIdAndVisitCategoryOrderByIdDesc(
-        Long employeeId,
-        String visitCategory
-);
+    List<DoctorVisit>
+            findByEmployeeIdAndVisitCategoryAndDoctorNameIgnoreCaseOrderByHospitalNameAsc(
+                    Long employeeId,
+                    String visitCategory,
+                    String doctorName
+            );
 
-long countByEmployeeIdAndVisitCategory(
-        Long employeeId,
-        String visitCategory
-);
+    List<DoctorVisit>
+            findByEmployeeIdAndVisitCategoryOrderByIdDesc(
+                    Long employeeId,
+                    String visitCategory
+            );
 
-List<DoctorVisit>
-findByEmployeeIdAndVisitCategoryOrderByVisitDateDesc(
-        Long employeeId,
-        String visitCategory
+    long countByEmployeeIdAndVisitCategory(
+            Long employeeId,
+            String visitCategory
+    );
+
+    List<DoctorVisit>
+            findByEmployeeIdAndVisitCategoryOrderByVisitDateDesc(
+                    Long employeeId,
+                    String visitCategory
+            );
+
+   @Query("""
+SELECT COUNT(DISTINCT LOWER(TRIM(d.doctorName)))
+FROM DoctorVisit d
+WHERE d.doctorName IS NOT NULL
+AND TRIM(d.doctorName) <> ''
+AND d.visitCategory = :category
+""")
+long countUniqueByCategory(@Param("category") String category);
+
+ @Query("""
+SELECT d
+FROM DoctorVisit d
+WHERE d.id IN (
+    SELECT MAX(d2.id)
+    FROM DoctorVisit d2
+    WHERE d2.visitCategory = :visitCategory
+    GROUP BY LOWER(TRIM(d2.doctorName))
+)
+AND (:employeeName IS NULL OR :employeeName='' 
+     OR LOWER(d.employeeName) LIKE LOWER(CONCAT('%',:employeeName,'%')))
+AND (:doctorName IS NULL OR :doctorName=''
+     OR LOWER(d.doctorName) LIKE LOWER(CONCAT('%',:doctorName,'%')))
+AND (:visitDate IS NULL OR :visitDate=''
+     OR d.visitDate = :visitDate)
+ORDER BY d.id DESC
+""")
+Page<DoctorVisit> findDoctorVisits(
+        @Param("visitCategory") String visitCategory,
+        @Param("employeeName") String employeeName,
+        @Param("doctorName") String doctorName,
+        @Param("visitDate") String visitDate,
+        Pageable pageable
 );
 
 }

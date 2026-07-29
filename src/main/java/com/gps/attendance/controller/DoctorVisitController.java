@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -50,8 +51,6 @@ public class DoctorVisitController {
 
     @Autowired
     private CloudinaryService cloudinaryService;
-
-    
 
     @PostMapping("/doctor-visit/save")
     public ResponseEntity<?> saveDoctorVisit(
@@ -109,6 +108,13 @@ public class DoctorVisitController {
     public long getDoctorVisitCount() {
         return repository.count();
     }
+
+  @GetMapping("/doctor-visit/unique-count")
+public long getUniqueCount(
+        @RequestParam String category
+) {
+    return repository.countUniqueByCategory(category);
+}
 
     @GetMapping("/doctor-visit/monthly-count")
     public long getMonthlyVisitCount() {
@@ -211,61 +217,26 @@ public class DoctorVisitController {
                 .toList();
     }
 
-@GetMapping("/doctor-visit/directory")
-public List<DoctorVisit> getDoctorDirectory(
+    @GetMapping("/doctor-visit/directory")
+    public Page<DoctorVisit> getDoctorDirectory(
+            @RequestParam String category,
+            @RequestParam(required = false) String employeeName,
+            @RequestParam(required = false) String doctorName,
+            @RequestParam(required = false) String visitDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
 
-        @RequestParam(required = false) String category,
+       
 
-        @RequestParam(required = false) String route
-
-) {
-
-List<DoctorVisit> visits;
-
-// Dashboard ke liye (koi category nahi aayi)
-if (category == null || category.isBlank()) {
-
-    visits = repository.findAll();
-
-}
-
-// Category + Route
-else if (route != null && !route.isBlank()) {
-
-    visits = repository
-            .findByVisitCategoryAndRouteNameIgnoreCaseOrderByVisitDateDesc(
-                    category,
-                    route
-            );
-
-}
-
-// Sirf Category
-else {
-
-    visits = repository
-            .findByVisitCategoryOrderByVisitDateDesc(
-                    category
-            );
-
-}
-
-return visits
-        .stream()
-        .filter(v -> v.getDoctorName() != null
-                && !v.getDoctorName().isBlank())
-        .collect(Collectors.toMap(
-                d -> (
-                        d.getDoctorName() + "|" +
-                        (d.getHospitalName() == null ? "" : d.getHospitalName())
-                ).toLowerCase(),
-                d -> d,
-                (oldValue, newValue) -> oldValue
-        ))
-        .values()
-        .stream()
-        .toList();
-}
+        return repository.findDoctorVisits(
+                category,
+                employeeName,
+                doctorName,
+                visitDate,
+                PageRequest.of(page, size)
+        );
+    }
 
     @GetMapping("/doctor-visit/daily-target/{employeeId}")
     public Map<String, Object> getDailyTarget(@PathVariable Long employeeId) {
@@ -287,7 +258,6 @@ return visits
         // System.out.println("EMPLOYEE ID: " + employeeId);
         // System.out.println("TODAY: " + today);
         // System.out.println("ACHIEVEMENT: " + achievement);
-
         Map<String, Object> data = new HashMap<>();
 
         data.put("target", target);
@@ -314,89 +284,81 @@ return visits
         return cloudinaryService.uploadDoctorVisitImage(file, employeeId);
     }
 
-@GetMapping("/doctor-visit/search-doctor")
-public List<DoctorVisit> searchDoctor(
-       @RequestParam Long employeeId,
-@RequestParam String doctorName) {
+    @GetMapping("/doctor-visit/search-doctor")
+    public List<DoctorVisit> searchDoctor(
+            @RequestParam Long employeeId,
+            @RequestParam String doctorName) {
 
-    List<DoctorVisit> doctors = repository
-            .findByEmployeeIdAndDoctorNameContainingIgnoreCaseOrderByDoctorNameAsc(
-        employeeId,
-        doctorName
-)
-            .stream()
-            .collect(Collectors.toMap(
-                    d -> (d.getDoctorName() + "|" +
-                          d.getHospitalName() + "|" +
-                          d.getSpecialization()).toLowerCase(),
-                    d -> d,
-                    (oldValue, newValue) ->
-                            oldValue.getVisitDate().compareTo(newValue.getVisitDate()) >= 0
-                                    ? oldValue
-                                    : newValue
-            ))
-            .values()
-            .stream()
-            .toList();
+        List<DoctorVisit> doctors = repository
+                .findByEmployeeIdAndDoctorNameContainingIgnoreCaseOrderByDoctorNameAsc(
+                        employeeId,
+                        doctorName
+                )
+                .stream()
+                .collect(Collectors.toMap(
+                        d -> (d.getDoctorName() + "|"
+                                + d.getHospitalName() + "|"
+                                + d.getSpecialization()).toLowerCase(),
+                        d -> d,
+                        (oldValue, newValue)
+                        -> oldValue.getVisitDate().compareTo(newValue.getVisitDate()) >= 0
+                        ? oldValue
+                        : newValue
+                ))
+                .values()
+                .stream()
+                .toList();
 
-    for (DoctorVisit doctor : doctors) {
+        for (DoctorVisit doctor : doctors) {
 
-        long totalVisits =
-                repository.countByDoctorNameIgnoreCase(
-                        doctor.getDoctorName());
+            long totalVisits
+                    = repository.countByDoctorNameIgnoreCase(
+                            doctor.getDoctorName());
 
-        doctor.setTotalVisitCount(totalVisits);
+            doctor.setTotalVisitCount(totalVisits);
 
+        }
+
+        return doctors;
     }
 
-    return doctors;
-}
+    @GetMapping("/doctor-visit/exact-doctor")
+    public List<DoctorVisit> getExactDoctor(
+            @RequestParam Long employeeId,
+            @RequestParam String doctorName) {
 
-@GetMapping("/doctor-visit/exact-doctor")
-public List<DoctorVisit> getExactDoctor(
+        List<DoctorVisit> doctors = repository
+                .findByEmployeeIdAndDoctorNameIgnoreCaseOrderByHospitalNameAsc(
+                        employeeId,
+                        doctorName)
+                .stream()
+                .collect(Collectors.toMap(
+                        d -> (d.getDoctorName() + "|"
+                                + d.getHospitalName() + "|"
+                                + d.getSpecialization()).toLowerCase(),
+                        d -> d,
+                        (oldValue, newValue)
+                        -> oldValue.getVisitDate().compareTo(newValue.getVisitDate()) >= 0
+                        ? oldValue
+                        : newValue
+                ))
+                .values()
+                .stream()
+                .toList();
 
-        @RequestParam Long employeeId,
-        @RequestParam String doctorName) {
+        for (DoctorVisit doctor : doctors) {
 
-   List<DoctorVisit> doctors = repository
-        .findByEmployeeIdAndDoctorNameIgnoreCaseOrderByHospitalNameAsc(
-                employeeId,
-                doctorName)
-        .stream()
-        .collect(Collectors.toMap(
+            doctor.setTotalVisitCount(
+                    repository.countByDoctorNameIgnoreCase(
+                            doctor.getDoctorName()
+                    )
+            );
 
-                d -> (
-                        d.getDoctorName() + "|" +
-                        d.getHospitalName() + "|" +
-                        d.getSpecialization()
-                ).toLowerCase(),
+        }
 
-                d -> d,
+        return doctors;
 
-                (oldValue, newValue) ->
-
-                        oldValue.getVisitDate().compareTo(newValue.getVisitDate()) >= 0
-                                ? oldValue
-                                : newValue
-
-        ))
-        .values()
-        .stream()
-        .toList();
-
-for (DoctorVisit doctor : doctors) {
-
-    doctor.setTotalVisitCount(
-            repository.countByDoctorNameIgnoreCase(
-                    doctor.getDoctorName()
-            )
-    );
-
-}
-
-return doctors;
-        
-}
+    }
 
     @PutMapping("/doctor-visit/update/{id}")
     public DoctorVisit updateDoctorVisit(
@@ -421,107 +383,107 @@ return doctors;
         return repository.countByEmployeeId(id);
     }
 
-@GetMapping("/doctor-visit/search-party")
-public List<DoctorVisit> searchParty(
-        @RequestParam Long employeeId,
-        @RequestParam String visitCategory,
-        @RequestParam String name
-) {
-    return repository
-            .findByEmployeeIdAndVisitCategoryAndDoctorNameContainingIgnoreCaseOrderByDoctorNameAsc(
-                    employeeId,
-                    visitCategory,
-                    name
-            );
-}
-
-@GetMapping("/doctor-visit/exact-party")
-public List<DoctorVisit> getExactParty(
-        @RequestParam Long employeeId,
-        @RequestParam String visitCategory,
-        @RequestParam String name
-) {
-    return repository
-            .findByEmployeeIdAndVisitCategoryAndDoctorNameIgnoreCaseOrderByHospitalNameAsc(
-                    employeeId,
-                    visitCategory,
-                    name
-            );
-}
-
-@GetMapping("/doctor-visit/category-summary/{employeeId}")
-public Map<String, Long> getCategorySummary(
-        @PathVariable Long employeeId
-) {
-    Map<String, Long> result = new HashMap<>();
-
-    result.put(
-            "doctors",
-            repository.countByEmployeeIdAndVisitCategory(
-                    employeeId,
-                    "DOCTOR"
-            )
-    );
-
-    result.put(
-            "chemists",
-            repository.countByEmployeeIdAndVisitCategory(
-                    employeeId,
-                    "CHEMIST"
-            )
-    );
-
-    return result;
-}
-
-@GetMapping("/doctor-visit/list/{employeeId}")
-public List<DoctorVisit> getPartyList(
-        @PathVariable Long employeeId,
-        @RequestParam(required = false) String category
-) {
-    if (category != null && !category.isBlank()) {
+    @GetMapping("/doctor-visit/search-party")
+    public List<DoctorVisit> searchParty(
+            @RequestParam Long employeeId,
+            @RequestParam String visitCategory,
+            @RequestParam String name
+    ) {
         return repository
-                .findByEmployeeIdAndVisitCategoryOrderByIdDesc(
+                .findByEmployeeIdAndVisitCategoryAndDoctorNameContainingIgnoreCaseOrderByDoctorNameAsc(
                         employeeId,
-                        category
+                        visitCategory,
+                        name
                 );
     }
 
-    return repository.findByEmployeeIdOrderByIdDesc(employeeId);
-}
+    @GetMapping("/doctor-visit/exact-party")
+    public List<DoctorVisit> getExactParty(
+            @RequestParam Long employeeId,
+            @RequestParam String visitCategory,
+            @RequestParam String name
+    ) {
+        return repository
+                .findByEmployeeIdAndVisitCategoryAndDoctorNameIgnoreCaseOrderByHospitalNameAsc(
+                        employeeId,
+                        visitCategory,
+                        name
+                );
+    }
 
-@GetMapping("/doctor-visit/unique-parties/{employeeId}")
-public List<DoctorVisit> getUniqueParties(
-        @PathVariable Long employeeId,
-        @RequestParam String category
-) {
-    List<DoctorVisit> visits =
-            repository
-                    .findByEmployeeIdAndVisitCategoryOrderByVisitDateDesc(
+    @GetMapping("/doctor-visit/category-summary/{employeeId}")
+    public Map<String, Long> getCategorySummary(
+            @PathVariable Long employeeId
+    ) {
+        Map<String, Long> result = new HashMap<>();
+
+        result.put(
+                "doctors",
+                repository.countByEmployeeIdAndVisitCategory(
+                        employeeId,
+                        "DOCTOR"
+                )
+        );
+
+        result.put(
+                "chemists",
+                repository.countByEmployeeIdAndVisitCategory(
+                        employeeId,
+                        "CHEMIST"
+                )
+        );
+
+        return result;
+    }
+
+    @GetMapping("/doctor-visit/list/{employeeId}")
+    public List<DoctorVisit> getPartyList(
+            @PathVariable Long employeeId,
+            @RequestParam(required = false) String category
+    ) {
+        if (category != null && !category.isBlank()) {
+            return repository
+                    .findByEmployeeIdAndVisitCategoryOrderByIdDesc(
                             employeeId,
                             category
                     );
-
-    Map<String, DoctorVisit> uniqueMap = new LinkedHashMap<>();
-
-    for (DoctorVisit visit : visits) {
-        String name = visit.getDoctorName();
-
-        if (name == null || name.isBlank()) {
-            continue;
         }
 
-        String uniqueKey =
-                name.trim().toLowerCase()
-                + "|"
-                + (visit.getHospitalName() == null
+        return repository.findByEmployeeIdOrderByIdDesc(employeeId);
+    }
+
+    @GetMapping("/doctor-visit/unique-parties/{employeeId}")
+    public List<DoctorVisit> getUniqueParties(
+            @PathVariable Long employeeId,
+            @RequestParam String category
+    ) {
+        List<DoctorVisit> visits
+                = repository
+                        .findByEmployeeIdAndVisitCategoryOrderByVisitDateDesc(
+                                employeeId,
+                                category
+                        );
+
+        Map<String, DoctorVisit> uniqueMap = new LinkedHashMap<>();
+
+        for (DoctorVisit visit : visits) {
+            String name = visit.getDoctorName();
+
+            if (name == null || name.isBlank()) {
+                continue;
+            }
+
+            String uniqueKey
+                    = name.trim().toLowerCase()
+                    + "|"
+                    + (visit.getHospitalName() == null
                     ? ""
                     : visit.getHospitalName().trim().toLowerCase());
 
-        uniqueMap.putIfAbsent(uniqueKey, visit);
-    }
+            uniqueMap.putIfAbsent(uniqueKey, visit);
+        }
 
-    return new ArrayList<>(uniqueMap.values());
-}
+        return new ArrayList<>(uniqueMap.values());
+    }
 
 }

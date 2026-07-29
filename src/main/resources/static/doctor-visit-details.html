@@ -333,8 +333,17 @@
         </div>
       </div>
       <!-- Doctor Visit Cards -->
-
       <div id="doctorVisitContainer"></div>
+
+      <div class="d-flex justify-content-center align-items-center gap-3 mt-4">
+        <button class="btn btn-primary" onclick="previousPage()">
+          Previous
+        </button>
+
+        <span id="pageInfo"> Page 1 </span>
+
+        <button class="btn btn-primary" onclick="nextPage()">Next</button>
+      </div>
     </div>
 
     <!-- ================= BOOTSTRAP JS ================= -->
@@ -345,12 +354,13 @@
 
     <script>
       let allDoctorVisits = [];
+      let currentPage = 0;
+      let pageSize = 20;
+      let totalPages = 0;
       let selectedCategory = "DOCTOR";
 
       let employeeTS = null;
       let doctorTS = null;
-      let employeeTomSelect = null;
-      let doctorTomSelect = null;
 
       function updateTime() {
         document.getElementById("datetime").innerHTML =
@@ -668,22 +678,11 @@
       }
 
       function applyFilters() {
-        const employee = document.getElementById("employeeFilter").value;
-        const doctor = document.getElementById("doctorFilter").value;
-        const date = document.getElementById("visitDateFilter").value;
+        currentPage = 0;
 
-        const filtered = allDoctorVisits.filter((visit) => {
-          const employeeMatch = !employee || visit.employeeName === employee;
-
-          const doctorMatch = !doctor || visit.doctorName === doctor;
-
-          const dateMatch = !date || visit.visitDate === date;
-
-          return employeeMatch && doctorMatch && dateMatch;
-        });
-
-        renderDoctorVisits(filtered);
+        loadDoctorVisits();
       }
+
       document
         .getElementById("employeeFilter")
         .addEventListener("change", applyFilters);
@@ -697,45 +696,51 @@
         .addEventListener("change", applyFilters);
 
       async function loadDoctorVisits() {
-        console.log("Function Called");
+        const employee = document.getElementById("employeeFilter").value;
 
-        try {
-          console.log("BASE_URL =", BASE_URL);
+        const doctor = document.getElementById("doctorFilter").value;
 
-          let url =
-            BASE_URL + "/doctor-visit/directory?category=" + selectedCategory;
-          const response = await fetch(url);
+        const date = document.getElementById("visitDateFilter").value;
 
-          console.log("VISIT RESPONSE:", response);
+        let url =
+          BASE_URL +
+          "/doctor-visit/directory?" +
+          "category=" +
+          selectedCategory +
+          "&page=" +
+          currentPage +
+          "&size=" +
+          pageSize;
 
-          const responseText = await response.text();
-
-          if (!response.ok) {
-            throw new Error(responseText || "Failed to load doctor visits");
-          }
-
-          const data = responseText ? JSON.parse(responseText) : [];
-
-          if (!Array.isArray(data)) {
-            throw new Error("Invalid doctor visit response");
-          }
-
-          console.log("DOCTOR VISITS:", data);
-
-          allDoctorVisits = data;
-
-          console.table(allDoctorVisits);
-
-          await loadEmployeeFilter();
-
-          loadDoctorFilter();
-
-          renderDoctorVisits(allDoctorVisits);
-
-          updateTodayVisitCount();
-        } catch (err) {
-          console.error(err);
+        if (employee) {
+          url += "&employeeName=" + encodeURIComponent(employee);
         }
+
+        if (doctor) {
+          url += "&doctorName=" + encodeURIComponent(doctor);
+        }
+
+        if (date) {
+          url += "&visitDate=" + date;
+        }
+
+        const response = await fetch(url);
+
+        const page = await response.json();
+
+        allDoctorVisits = page.content;
+
+        totalPages = page.totalPages;
+
+        loadEmployeeFilter();
+        loadDoctorFilter();
+
+        renderDoctorVisits(allDoctorVisits);
+
+        updateTodayVisitCount();
+
+        document.getElementById("pageInfo").innerHTML =
+          "Page " + (currentPage + 1) + " of " + totalPages;
       }
 
       function goBack() {
@@ -786,18 +791,19 @@
       }
 
       function resetFilters() {
-        if (employeeTomSelect) {
-          employeeTomSelect.clear();
+        if (employeeTS) {
+          employeeTS.clear();
         }
 
-        if (doctorTomSelect) {
-          doctorTomSelect.clear();
+        if (doctorTS) {
+          doctorTS.clear();
         }
         document.getElementById("employeeFilter").value = "";
         document.getElementById("doctorFilter").value = "";
         document.getElementById("visitDateFilter").value = "";
 
-        renderDoctorVisits(allDoctorVisits);
+        currentPage = 0;
+        loadDoctorVisits();
       }
 
       function toggleDetails(button) {
@@ -833,6 +839,22 @@
               : "Search Doctor...",
         });
       });
+
+      function nextPage() {
+        if (currentPage < totalPages - 1) {
+          currentPage++;
+
+          loadDoctorVisits();
+        }
+      }
+
+      function previousPage() {
+        if (currentPage > 0) {
+          currentPage--;
+
+          loadDoctorVisits();
+        }
+      }
     </script>
   </body>
 </html>
