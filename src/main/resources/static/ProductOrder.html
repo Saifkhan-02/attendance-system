@@ -148,6 +148,16 @@
               <input type="hidden" id="headquarters" />
             </div>
 
+            <div class="col-md-6">
+              <label class="form-label">Area</label>
+              <input
+                type="text"
+                id="area"
+                class="form-control"
+                placeholder="Enter Area"
+              />
+            </div>
+
             <div class="col-md-12">
               <label class="form-label fw-bold">Products</label>
 
@@ -312,9 +322,10 @@
 
             data.forEach((doctor) => {
               dropdown.innerHTML += `
-               <option value="${doctor.id}"
-        data-name="${doctor.doctorName}"
-        data-category="${doctor.visitCategory || "DOCTOR"}">
+              <option value="${doctor.id}"
+    data-name="${doctor.doctorName}"
+    data-category="${doctor.visitCategory || "DOCTOR"}"
+    data-landmark="${doctor.landmark || ""}">
 
     ${doctor.doctorName}
     - ${doctor.visitCategory === "CHEMIST" ? "Chemist" : "Doctor"}
@@ -532,6 +543,10 @@
         document.getElementById("visitCategory").value = selected
           ? selected.getAttribute("data-category") || ""
           : "";
+
+        document.getElementById("area").value = selected
+          ? selected.getAttribute("data-landmark") || ""
+          : "";
       }
 
       function getLocalDate() {
@@ -544,6 +559,7 @@
         return `${year}-${month}-${day}`;
       }
       function placeOrder() {
+        const area = document.getElementById("area").value.trim();
         const doctorId = document.getElementById("doctorId").value;
         const doctorName = document.getElementById("doctorName").value;
         const visitCategory = document.getElementById("visitCategory").value;
@@ -569,6 +585,11 @@
 
         if (!paymentMode) {
           alert("Please select payment mode");
+          return;
+        }
+
+        if (!area) {
+          alert("Please enter area");
           return;
         }
 
@@ -692,6 +713,7 @@
             remarks: document.getElementById("remarks")
               ? document.getElementById("remarks").value
               : "",
+            area: area,
           });
         }
 
@@ -733,6 +755,7 @@
             document.getElementById("paidAmount").value = "";
             document.getElementById("dueAmount").value = "";
             document.getElementById("remarks").value = "";
+            document.getElementById("area").value = "";
 
             loadDistributorProducts();
             loadOrderHistory();

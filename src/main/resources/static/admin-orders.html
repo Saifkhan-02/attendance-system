@@ -473,14 +473,15 @@
 
                 <tr>
                     <th>S.No</th>
-                   <th>Employee</th>
-                   <th>Doctor</th>
-                   <th>Products</th>
-                   <th>Total Amount</th>
-                   <th>Paid</th>
-                   <th>Due</th>
-                   <th>Order Date</th>
-                   <th>Order Time</th>
+<th>Employee</th>
+<th>Doctor</th>
+<th>Area</th>
+<th>Products</th>
+<th>Total Amount</th>
+<th>Paid</th>
+<th>Due</th>
+<th>Order Date</th>
+<th>Order Time</th>
                 </tr>
 
                 </thead>
@@ -646,6 +647,7 @@ orders.forEach(order => {
     invoiceNo: order.invoiceNo,
     employeeName: order.employeeName,
     doctorName: order.doctorName,
+    area: order.area,
     orderDate: order.orderDate,
     orderTime: order.orderTime,
     paidAmount: 0,
@@ -701,6 +703,8 @@ html += `
 
 <td>${order.doctorName}</td>
 
+<td>${order.area || "-"}</td>
+
 <td>
 
 <button
@@ -729,7 +733,7 @@ View (${order.products.length})
 id="products-${order.invoiceNo}"
 style="display:none;">
 
-<td colspan="9">
+<td colspan="10">
 
 <div id="productsBody-${order.invoiceNo}"></div>
 
@@ -837,6 +841,7 @@ currentPage = pageData.number;
             invoiceNo: order.invoiceNo,
             employeeName: order.employeeName,
             doctorName: order.doctorName,
+            area: order.area,
             orderDate: order.orderDate,
             orderTime: order.orderTime,
             paidAmount: 0,
@@ -876,6 +881,8 @@ Amount : ₹${order.orderAmount || 0}
 
 <td>${order.doctorName}</td>
 
+<td>${order.area || ""}</td>
+
 <td>
 
 <button
@@ -904,7 +911,7 @@ View (${order.products.length})
 id="products-${order.invoiceNo}"
 style="display:none;">
 
-<td colspan="9">
+<td colspan="10">
 
 <div id="productsBody-${order.invoiceNo}"></div>
 
