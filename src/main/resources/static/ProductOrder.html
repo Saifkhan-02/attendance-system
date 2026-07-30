@@ -250,6 +250,7 @@
                   <th>Pay Mode</th>
                   <th>Remarks</th>
                   <th>Status</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody id="orderTable"></tbody>
@@ -258,6 +259,214 @@
         </div>
       </div>
     </div>
+
+    <!-- Edit Order Modal -->
+    <div
+    class="modal fade"
+    id="editOrderModal"
+    tabindex="-1"
+    aria-hidden="true">
+
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+
+        <div class="modal-content">
+
+            <div class="modal-header bg-warning">
+
+                <h5 class="modal-title">
+
+                    <i class="fa-solid fa-pen-to-square me-2"></i>
+
+                    Edit Order
+
+                </h5>
+
+                <button
+                    class="btn-close"
+                    data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <input
+                    type="hidden"
+                    id="editOrderGroupId">
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+
+                            Doctor / Chemist
+
+                        </label>
+
+                        <select
+                            id="editDoctor"
+                            class="form-select">
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+
+                            Distributor
+
+                        </label>
+
+                        <input
+                            type="text"
+                            id="editDistributor"
+                            class="form-control"
+                            readonly>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+
+                            Payment Mode
+
+                        </label>
+
+                        <select
+                            id="editPaymentMode"
+                            class="form-select">
+
+                            <option value="Pending">Pending</option>
+
+                            <option value="Cash">Cash</option>
+
+                            <option value="UPI">UPI</option>
+
+                            <option value="Cheque">Cheque</option>
+
+                            <option value="Bank Transfer">Bank Transfer</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+
+                            Remarks
+
+                        </label>
+
+                        <input
+                            id="editRemarks"
+                            class="form-control">
+
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+
+                    <h5 class="mb-0">
+
+                        Products
+
+                    </h5>
+
+                    <button
+                        class="btn btn-success"
+                        onclick="addProductRow()">
+
+                        <i class="fa fa-plus"></i>
+
+                        Add Product
+
+                    </button>
+
+                </div>
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered">
+
+                        <thead class="table-light">
+
+                        <tr>
+
+                            <th width="35%">Product</th>
+
+                            <th width="12%">Qty</th>
+
+                            <th width="18%">Selling Price</th>
+
+                            <th width="18%">Amount</th>
+
+                            <th width="8%">Action</th>
+
+                        </tr>
+
+                        </thead>
+
+                        <tbody id="editProductTable">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <div class="text-end mt-3">
+
+                    <h4>
+
+                        Total :
+
+                        ₹
+
+                        <span id="editGrandTotal">
+
+                            0
+
+                        </span>
+
+                    </h4>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+
+                    Close
+
+                </button>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="saveOrderChanges()">
+
+                    Save Changes
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Tom Select search option -->
@@ -278,11 +487,27 @@
       let productRowIndex = 0;
 
       let productChoices = null;
+      let historyList = [];
+      let editingOrderId = null;
+
+      let editOrderModal;
+
+let editingOrderGroupId = "";
+
+let editingOrders = [];
+
+let allProducts = [];
+
+let allDoctors = [];
+
 
       window.onload = function () {
         loadAssignedDoctors();
         loadEmployeeAndDistributors();
         loadOrderHistory();
+
+        loadAllProducts();
+         loadAllDoctors();
 
         const orderDateInput = document.getElementById("orderDate");
 
@@ -293,6 +518,11 @@
         setTimeout(() => {
           addProductRow();
         }, 500);
+
+        editOrderModal =
+new bootstrap.Modal(
+    document.getElementById("editOrderModal")
+);
       };
 
       function loadAssignedDoctors() {
@@ -800,10 +1030,12 @@
             const groupedOrders = {};
 
             data.forEach((order) => {
-              const key = `${order.doctorId}_${order.distributorId}_${order.orderDate}_${order.remarks || ""}`;
+              historyList = data;
+             const key = order.orderGroupId;
 
               if (!groupedOrders[key]) {
                 groupedOrders[key] = {
+                  orderGroupId: order.orderGroupId,
                   doctorName: order.doctorName,
                   visitCategory: order.visitCategory,
                   distributorName: order.distributorName,
@@ -859,6 +1091,13 @@
             <td>
               <span class="status-placed">${order.status}</span>
             </td>
+            <td class="text-center">
+    <button
+        class="btn btn-sm btn-warning"
+        onclick="editOrder('${order.orderGroupId}')">
+        <i class="fa-solid fa-pen"></i>
+    </button>
+</td>
           </tr>
         `;
             });
@@ -875,7 +1114,455 @@
     `;
           });
       }
-      function formatTime(dateTime) {
+
+      function editOrder(groupId) {
+
+    editingOrderGroupId = groupId;
+
+    editingOrders = historyList.filter(
+        o => o.orderGroupId === groupId
+    );
+
+    if (editingOrders.length === 0) {
+        alert("Order not found");
+        return;
+    }
+
+    const first = editingOrders[0];
+
+    document.getElementById("editOrderGroupId").value = groupId;
+
+    document.getElementById("editDistributor").value =
+        first.distributorName || "";
+
+    document.getElementById("editPaymentMode").value =
+        first.paymentMode || "Pending";
+
+    document.getElementById("editRemarks").value =
+        first.remarks || "";
+
+    loadDoctorsForEdit();
+    renderProductRows();
+
+    editOrderModal.show();
+}
+function renderProductRows() {
+
+    const tbody =
+        document.getElementById("editProductTable");
+
+    tbody.innerHTML = "";
+
+    editingOrders.forEach((order,index)=>{
+
+        tbody.innerHTML += `
+
+<tr>
+
+<td>
+
+<select
+class="form-select edit-product"
+data-index="${index}">
+
+</select>
+
+</td>
+
+<td>
+
+<input
+type="number"
+class="form-control edit-qty"
+value="${order.orderQuantity}"
+min="1"
+data-index="${index}"
+oninput="calculateRow(${index})">
+
+</td>
+
+<td>
+
+<input
+type="number"
+class="form-control edit-price"
+value="${order.sellingPrice}"
+min="0"
+step="0.01"
+data-index="${index}"
+oninput="calculateRow(${index})">
+
+</td>
+
+<td>
+
+<input
+class="form-control edit-amount"
+value="${order.orderAmount}"
+readonly>
+
+</td>
+
+<td class="text-center">
+
+<button
+class="btn btn-danger btn-sm"
+onclick="removeProductRow(${index})">
+
+<i class="fa fa-trash"></i>
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+    });
+
+    fillProductDropdowns();
+
+    updateGrandTotal();
+
+}
+      
+function calculateRow(index){
+
+    const qty =
+        Number(document.querySelectorAll(".edit-qty")[index].value);
+
+    const price =
+        Number(document.querySelectorAll(".edit-price")[index].value);
+
+    const amount = qty * price;
+
+    document.querySelectorAll(".edit-amount")[index].value =
+        amount.toFixed(2);
+
+    editingOrders[index].orderQuantity = qty;
+
+    editingOrders[index].sellingPrice = price;
+
+    editingOrders[index].orderAmount = amount;
+
+    updateGrandTotal();
+
+}
+function updateGrandTotal(){
+
+    let total = 0;
+
+    editingOrders.forEach(order=>{
+
+        total += Number(order.orderAmount || 0);
+
+    });
+
+    document.getElementById("editGrandTotal").innerText =
+        total.toFixed(2);
+
+}
+function removeProductRow(index){
+
+    if(!confirm("Remove this product?"))
+        return;
+
+    editingOrders.splice(index,1);
+
+    renderProductRows();
+
+}
+function addProductRow(){
+
+    editingOrders.push({
+
+        id:null,
+
+        orderGroupId:editingOrderGroupId,
+
+        doctorId:editingOrders[0].doctorId,
+
+        doctorName:editingOrders[0].doctorName,
+
+        distributorId:editingOrders[0].distributorId,
+
+        distributorName:editingOrders[0].distributorName,
+
+        employeeId:editingOrders[0].employeeId,
+
+        employeeName:editingOrders[0].employeeName,
+
+        visitCategory:editingOrders[0].visitCategory,
+
+        orderDate:editingOrders[0].orderDate,
+
+        orderTime:editingOrders[0].orderTime,
+
+        paymentMode:
+            editingOrders[0].paymentMode,
+
+        remarks:
+            editingOrders[0].remarks,
+
+        productId:"",
+
+        productName:"",
+
+        orderQuantity:1,
+
+        sellingPrice:0,
+
+        orderAmount:0
+
+    });
+
+    renderProductRows();
+
+}
+function fillProductDropdowns() {
+
+    const productSelects =
+        document.querySelectorAll(".edit-product");
+
+    productSelects.forEach((select,index)=>{
+
+        select.innerHTML =
+            '<option value="">Select Product</option>';
+
+        allProducts.forEach(product=>{
+
+            const option =
+                document.createElement("option");
+
+            option.value = product.id;
+
+            option.text =
+                product.productName;
+
+            if(product.id == editingOrders[index].productId){
+
+                option.selected = true;
+
+            }
+
+            select.appendChild(option);
+
+        });
+
+        select.onchange = function(){
+
+            const product =
+                allProducts.find(
+                    p=>p.id==this.value
+                );
+
+            if(!product)
+                return;
+
+            editingOrders[index].productId =
+                product.id;
+
+            editingOrders[index].productName =
+                product.productName;
+
+            editingOrders[index].sellingPrice =
+                Number(product.sellingPrice);
+
+            document.querySelectorAll(".edit-price")[index].value =
+                product.sellingPrice;
+
+            calculateRow(index);
+
+        };
+
+    });
+
+}
+function loadDoctorsForEdit(){
+
+    const select =
+        document.getElementById("editDoctor");
+
+    select.innerHTML="";
+
+    allDoctors.forEach(doc=>{
+
+        const option =
+            document.createElement("option");
+
+        option.value=doc.id;
+
+        option.text=doc.doctorName;
+
+        if(doc.id==editingOrders[0].doctorId){
+
+            option.selected=true;
+
+        }
+
+        select.appendChild(option);
+
+    });
+
+}
+function loadAllProducts(){
+
+    fetch(`${BASE_URL}/product/all`)
+
+    .then(r=>r.json())
+
+    .then(data=>{
+
+        allProducts=data;
+
+    });
+
+}
+function loadAllDoctors(){
+
+    const employeeId =
+        localStorage.getItem("employeeId");
+
+    fetch(`${BASE_URL}/doctor-visit/history/today/${employeeId}`)
+
+    .then(r=>r.json())
+
+    .then(data=>{
+
+        allDoctors=data;
+
+    });
+
+}
+function saveOrderChanges() {
+
+    const doctorSelect =
+        document.getElementById("editDoctor");
+
+    const doctorId =
+        Number(doctorSelect.value);
+
+    const doctorName =
+        doctorSelect.options[
+            doctorSelect.selectedIndex
+        ].text;
+
+    const paymentMode =
+        document.getElementById("editPaymentMode").value;
+
+    const remarks =
+        document.getElementById("editRemarks").value;
+
+    editingOrders.forEach(order=>{
+
+        order.doctorId = doctorId;
+
+        order.doctorName = doctorName;
+
+        order.paymentMode = paymentMode;
+
+        order.remarks = remarks;
+
+    });
+
+    fetch(
+        `${BASE_URL}/order/update-group/${editingOrderGroupId}`,
+        {
+
+            method:"PUT",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify(editingOrders)
+
+        }
+
+    )
+
+    .then(async response=>{
+
+        const text =
+            await response.text();
+
+        if(!response.ok){
+
+            throw new Error(text);
+
+        }
+
+        return text
+            ? JSON.parse(text)
+            : [];
+
+    })
+
+    .then(()=>{
+
+        editOrderModal.hide();
+
+        loadOrderHistory();
+
+        alert("Order Updated Successfully");
+
+    })
+
+    .catch(error=>{
+
+        console.error(error);
+
+        alert(error.message);
+
+    });
+
+}
+function clearEditModal(){
+
+    editingOrders=[];
+
+    editingOrderGroupId="";
+
+    document.getElementById("editProductTable").innerHTML="";
+
+    document.getElementById("editGrandTotal").innerText="0";
+
+}
+document
+.getElementById("editOrderModal")
+.addEventListener(
+
+"hidden.bs.modal",
+
+function(){
+
+    clearEditModal();
+
+});
+function removeProductRow(index){
+
+    if(editingOrders.length==1){
+
+        alert("At least one product is required.");
+
+        return;
+
+    }
+
+    if(!confirm("Remove this product?")){
+
+        return;
+
+    }
+
+    editingOrders.splice(index,1);
+
+    renderProductRows();
+
+}
+
+function formatTime(dateTime) {
         if (!dateTime) return "-";
 
         const d = new Date(dateTime);

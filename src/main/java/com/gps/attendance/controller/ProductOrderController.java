@@ -816,9 +816,11 @@ public Page<ProductOrder> searchOrders(
     public List<ProductOrder> placeMultipleOrders(@RequestBody List<ProductOrder> orders) {
 
         String invoiceNo = "INV-" + System.currentTimeMillis();
+        String orderGroupId = "GRP-" + System.currentTimeMillis();
         String orderTime = java.time.LocalTime.now()
                 .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
 
+        
         for (ProductOrder order : orders) {
 
             DistributorStock stock = distributorStockRepository
@@ -870,6 +872,7 @@ public Page<ProductOrder> searchOrders(
     order.setOrderDate(LocalDate.now().toString());
     order.setStatus("Placed");
     order.setInvoiceNo(invoiceNo);
+    order.setOrderGroupId(orderGroupId);
     order.setOrderTime(orderTime);
 }
         return orderRepository.saveAll(orders);
@@ -1022,4 +1025,43 @@ public Page<ProductOrder> searchOrders(
 
     }
 
+   @PutMapping("/update-group/{groupId}")
+public List<ProductOrder> updateOrderGroup(
+        @PathVariable String groupId,
+        @RequestBody List<ProductOrder> requestOrders) {
+
+    List<ProductOrder> dbOrders =
+            orderRepository.findByOrderGroupId(groupId);
+
+    if (dbOrders.isEmpty()) {
+        throw new RuntimeException("Order group not found");
+    }
+
+    orderRepository.deleteAll(dbOrders);
+
+    for(ProductOrder order : requestOrders){
+
+        order.setId(null);
+
+        order.setOrderGroupId(groupId);
+
+        order.setInvoiceNo(dbOrders.get(0).getInvoiceNo());
+
+        order.setEmployeeId(dbOrders.get(0).getEmployeeId());
+        order.setEmployeeName(dbOrders.get(0).getEmployeeName());
+
+        order.setDoctorId(dbOrders.get(0).getDoctorId());
+        order.setDoctorName(dbOrders.get(0).getDoctorName());
+
+        order.setDistributorId(dbOrders.get(0).getDistributorId());
+        order.setDistributorName(dbOrders.get(0).getDistributorName());
+
+        order.setOrderDate(dbOrders.get(0).getOrderDate());
+        order.setOrderTime(dbOrders.get(0).getOrderTime());
+
+        order.setVisitCategory(dbOrders.get(0).getVisitCategory());
+    }
+
+    return orderRepository.saveAll(requestOrders);
+}
 }

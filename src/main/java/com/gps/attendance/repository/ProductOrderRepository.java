@@ -248,4 +248,6 @@ List<ProductOrder> findByEmployeeIdAndOrderDateBetweenOrderByIdDesc(
         String fromDate,
         String toDate
 );
+
+List<ProductOrder> findByOrderGroupId(String orderGroupId);
 }

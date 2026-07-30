@@ -49,6 +49,9 @@ private String headquarters;
 
     private String status = "Placed";
 
+    @Column(name = "order_group_id")
+    private String orderGroupId;
+
     public Long getId() {
         return id;
     }
@@ -225,5 +228,12 @@ public void setPaymentMode(String paymentMode) {
         this.status = status;
     }
 
+public String getOrderGroupId() {
+    return orderGroupId;
+}
+
+public void setOrderGroupId(String orderGroupId) {
+    this.orderGroupId = orderGroupId;
+}
  
 }

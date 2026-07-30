@@ -336,6 +336,17 @@
                   <i class="fa-solid fa-rotate-right me-2"></i>
                   Retake Image
                 </button>
+                <button
+    type="button"
+    class="btn btn-secondary"
+    id="switchCameraBtn"
+    onclick="switchCamera()">
+
+    <i class="fa-solid fa-camera-rotate me-2"></i>
+
+    Switch Camera
+
+</button>
               </div>
 
               <video
@@ -548,6 +559,8 @@
       let capturedVisitBlob = null;
 
       let isSubmittingVisit = false;
+
+      let currentFacingMode = "user";
 
       window.onload = function () {
         loadDoctorVisitHistory();
@@ -1185,30 +1198,51 @@
           });
       }
       // Camera function
-      function openCamera() {
-        navigator.mediaDevices
-          .getUserMedia({
-            video: {
-              facingMode: "environment",
-            },
-            audio: false,
-          })
-          .then(function (stream) {
-            cameraStream = stream;
+ function openCamera() {
 
-            const video = document.getElementById("cameraPreview");
-            video.srcObject = stream;
-            video.classList.remove("d-none");
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+  }
 
-            document.getElementById("captureBtn").classList.remove("d-none");
-            document.getElementById("capturedImage").classList.add("d-none");
-            document.getElementById("retakeBtn").classList.add("d-none");
-          })
-          .catch(function (error) {
-            console.error(error);
-            alert("Camera doesn't open, Plese allow Permission.");
-          });
-      }
+  navigator.mediaDevices.getUserMedia({
+
+    video: {
+      facingMode: currentFacingMode
+    },
+
+    audio: false
+
+  })
+  .then(function(stream) {
+
+    cameraStream = stream;
+
+    const video =
+      document.getElementById("cameraPreview");
+
+    video.srcObject = stream;
+
+    video.classList.remove("d-none");
+
+    document.getElementById("captureBtn")
+      .classList.remove("d-none");
+
+    document.getElementById("capturedImage")
+      .classList.add("d-none");
+
+    document.getElementById("retakeBtn")
+      .classList.add("d-none");
+
+  })
+  .catch(function(error) {
+
+    console.error(error);
+
+    alert("Unable to open camera.");
+
+  });
+
+}
 
       function capturePhoto() {
         const video = document.getElementById("cameraPreview");
@@ -1263,6 +1297,17 @@
 
         openCamera();
       }
+
+      function switchCamera() {
+
+    currentFacingMode =
+        currentFacingMode === "user"
+            ? "environment"
+            : "user";
+
+    openCamera();
+
+}
 
       function getCurrentLocation() {
         const locationInput = document.getElementById("locationName");
