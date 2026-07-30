@@ -25,12 +25,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gps.attendance.entity.DoctorVisit;
 import com.gps.attendance.entity.DistributorStock;
+import com.gps.attendance.entity.DoctorVisit;
 import com.gps.attendance.entity.PaymentHistory;
 import com.gps.attendance.entity.ProductOrder;
-import com.gps.attendance.repository.DoctorVisitRepository;
 import com.gps.attendance.repository.DistributorStockRepository;
+import com.gps.attendance.repository.DoctorVisitRepository;
 import com.gps.attendance.repository.PaymentHistoryRepository;
 import com.gps.attendance.repository.ProductOrderRepository;
 import com.lowagie.text.Document;
@@ -146,35 +146,24 @@ public class ProductOrderController {
     }
 
     @GetMapping("/search")
-public Page<ProductOrder> searchOrders(
+    public Page<ProductOrder> searchOrders(
+            @RequestParam(required = false) Long employeeId,
+            @RequestParam(required = false) String date,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
 
-        
+        Pageable pageable = PageRequest.of(page, size);
 
-        @RequestParam(required = false) Long employeeId,
+        return orderRepository.searchOrdersWithPagination(
+                employeeId,
+                date,
+                pageable
+        );
 
-        @RequestParam(required = false) String date,
-
-        @RequestParam(defaultValue = "0") int page,
-
-        @RequestParam(defaultValue = "20") int size
-
-) {
-
-    Pageable pageable = PageRequest.of(page, size);
-
-    return orderRepository.searchOrdersWithPagination(
-            employeeId,
-            date,
-            pageable
-    );
-
-    
-
-}
-
+    }
 
 // SINGLE INVOICE / BILL PDF DOWNLOAD
-
     @GetMapping("/bill/{id}")
     public ResponseEntity<byte[]> downloadBill(
             @PathVariable Long id) throws Exception {
@@ -299,7 +288,11 @@ public Page<ProductOrder> searchOrders(
         customerBox.addCell(firstOrder.getEmployeeName());
 
         customerBox.addCell("Doctor");
-        customerBox.addCell(firstOrder.getDoctorName());
+        customerBox.addCell(
+                firstOrder.getDoctorName()
+                + "\nArea : "
+                + (firstOrder.getArea() == null ? "" : firstOrder.getArea())
+        );
 
         customerBox.addCell("Order Date");
         customerBox.addCell(firstOrder.getOrderDate());
@@ -411,7 +404,6 @@ public Page<ProductOrder> searchOrders(
     }
 
 // EMPLOYEE DAILY REPORT PDF DOWNLOAD
-
     @GetMapping("/employee-report")
     public ResponseEntity<byte[]> employeeReport(
             @RequestParam Long employeeId,
@@ -423,7 +415,6 @@ public Page<ProductOrder> searchOrders(
                         employeeId,
                         date
                 );
-
 
         if (orders.isEmpty()) {
 
@@ -551,18 +542,9 @@ public Page<ProductOrder> searchOrders(
         summary.addCell("Total Orders");
         summary.addCell(String.valueOf(orders.size()));
 
-
         summary.addCell("Total Quantity");
         summary.addCell(String.valueOf(totalQuantity));
 
-        summary.addCell("Total Amount");
-        summary.addCell(formatAmount(totalAmount));
-
-        summary.addCell("Paid Amount");
-        summary.addCell(formatAmount(paidAmount));
-
-        summary.addCell("Due Amount");
-        summary.addCell(formatAmount(dueAmount));
 
         document.add(summary);
 
@@ -575,7 +557,6 @@ public Page<ProductOrder> searchOrders(
         );
 
         document.add(orderTitle);
-
 
 // ================= GROUP BY DOCTOR =================
         Map<String, List<ProductOrder>> doctorWiseOrders
@@ -604,21 +585,38 @@ public Page<ProductOrder> searchOrders(
 
             List<ProductOrder> doctorOrders = entry.getValue();
 
-            Paragraph doctorHeading
-                    = new Paragraph(
-                            "Doctor : " + doctorName,
-                            new Font(
-                                    Font.HELVETICA,
-                                    13,
-                                    Font.BOLD,
-                                    new Color(0, 102, 51)
-                            )
-                    );
+            String area = doctorOrders.get(0).getArea();
+
+           Font doctorFont = new Font(
+        Font.HELVETICA,
+        13,
+        Font.BOLD,
+        new Color(0, 102, 51)
+);
+
+Font areaFont = new Font(
+        Font.HELVETICA,
+        10,
+        Font.BOLD,
+        Color.BLACK
+);
+
+Paragraph doctorHeading = new Paragraph();
+
+doctorHeading.add(new com.lowagie.text.Chunk(
+        "Doctor : " + doctorName + "\n",
+        doctorFont
+));
+
+doctorHeading.add(new com.lowagie.text.Chunk(
+        "Area : " + (area == null ? "" : area),
+        areaFont
+));
 
             document.add(doctorHeading);
 
- document.add(new Paragraph(" "));
- 
+            document.add(new Paragraph(" "));
+
             PdfPTable table = new PdfPTable(5);
 
             table.setWidthPercentage(100);
@@ -754,7 +752,7 @@ public Page<ProductOrder> searchOrders(
 
         document.add(paymentTitle);
 
- document.add(new Paragraph(" "));
+        document.add(new Paragraph(" "));
 
         PdfPTable paymentTable = new PdfPTable(2);
 
@@ -772,8 +770,6 @@ public Page<ProductOrder> searchOrders(
         paymentTable.addCell(formatAmount(dueAmount));
 
         document.add(paymentTable);
-
-
 
 // ================= GRAND TOTAL =================
         Paragraph grandTotal = new Paragraph(
@@ -837,44 +833,45 @@ public Page<ProductOrder> searchOrders(
             }
         }
 
-       for (ProductOrder order : orders) {
+        for (ProductOrder order : orders) {
 
-    DistributorStock stock = distributorStockRepository
-            .findByDistributorIdAndProductId(
-                    order.getDistributorId(),
-                    order.getProductId()
-            )
-            .orElseThrow(() ->
-                    new RuntimeException("Distributor stock not found"));
+            DistributorStock stock = distributorStockRepository
+                    .findByDistributorIdAndProductId(
+                            order.getDistributorId(),
+                            order.getProductId()
+                    )
+                    .orElseThrow(()
+                            -> new RuntimeException("Distributor stock not found"));
 
-    stock.setAvailableUnits(
-            stock.getAvailableUnits() - order.getOrderQuantity()
-    );
+            stock.setAvailableUnits(
+                    stock.getAvailableUnits() - order.getOrderQuantity()
+            );
 
-    distributorStockRepository.save(stock);
+            distributorStockRepository.save(stock);
 
-    /*
+            /*
      * Doctor/Chemist category DoctorVisit table se uthao.
      * ProductOrder.doctorId me selected DoctorVisit record ki ID honi chahiye.
-     */
-    if (order.getDoctorId() != null) {
+             */
+            if (order.getDoctorId() != null) {
 
-        DoctorVisit doctorVisit = doctorVisitRepository
-                .findById(order.getDoctorId())
-                .orElse(null);
+                DoctorVisit doctorVisit = doctorVisitRepository
+                        .findById(order.getDoctorId())
+                        .orElse(null);
 
-        if (doctorVisit != null) {
-            order.setVisitCategory(
-                    doctorVisit.getVisitCategory()
-            );
-        }
-    }
-    order.setOrderDate(LocalDate.now().toString());
+                if (doctorVisit != null) {
+                    order.setVisitCategory(
+                            doctorVisit.getVisitCategory()
+                    );
+                }
+            }
+            order.setOrderDate(LocalDate.now().toString());
     order.setStatus("Placed");
     order.setInvoiceNo(invoiceNo);
     order.setOrderGroupId(orderGroupId);
     order.setOrderTime(orderTime);
-}
+        }
+    
         return orderRepository.saveAll(orders);
     }
 
@@ -1018,7 +1015,6 @@ public Page<ProductOrder> searchOrders(
     }
 
 // PDF AMOUNT FORMATTER
-
     private String formatAmount(double amount) {
 
         return String.format("₹%,.2f", amount);

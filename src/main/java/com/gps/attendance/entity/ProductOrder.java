@@ -21,6 +21,8 @@ public class ProductOrder {
 
     private String visitCategory;
 
+    private String area;
+
     private Long employeeId;
     private String employeeName;
 
@@ -40,8 +42,8 @@ public class ProductOrder {
     private Double dueAmount = 0.0;
 
     private Long distributorId;
-private String distributorName;
-private String headquarters;
+    private String distributorName;
+    private String headquarters;
 
     private String paymentMode = "Pending";
     @Column(length = 1000)
@@ -57,25 +59,24 @@ private String headquarters;
     }
 
     public String getInvoiceNo() {
-    return invoiceNo;
-}
-
+        return invoiceNo;
+    }
 
     public void setId(Long id) {
         this.id = id;
     }
 
     public void setInvoiceNo(String invoiceNo) {
-    this.invoiceNo = invoiceNo;
-}
-public String getVisitCategory() {
-    return visitCategory;
-}
+        this.invoiceNo = invoiceNo;
+    }
 
-public void setVisitCategory(String visitCategory) {
-    this.visitCategory = visitCategory;
-}
+    public String getVisitCategory() {
+        return visitCategory;
+    }
 
+    public void setVisitCategory(String visitCategory) {
+        this.visitCategory = visitCategory;
+    }
 
     public Long getEmployeeId() {
         return employeeId;
@@ -107,6 +108,14 @@ public void setVisitCategory(String visitCategory) {
 
     public void setDoctorName(String doctorName) {
         this.doctorName = doctorName;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
     }
 
     public Long getProductId() {
@@ -166,52 +175,53 @@ public void setVisitCategory(String visitCategory) {
     }
 
     public Double getPaidAmount() {
-    return paidAmount;
-}
+        return paidAmount;
+    }
 
-public void setPaidAmount(Double paidAmount) {
-    this.paidAmount = paidAmount;
-}
+    public void setPaidAmount(Double paidAmount) {
+        this.paidAmount = paidAmount;
+    }
 
-public Double getDueAmount() {
-    return dueAmount;
-}
+    public Double getDueAmount() {
+        return dueAmount;
+    }
 
-public void setDueAmount(Double dueAmount) {
-    this.dueAmount = dueAmount;
-}
+    public void setDueAmount(Double dueAmount) {
+        this.dueAmount = dueAmount;
+    }
 
-public Long getDistributorId() {
-    return distributorId;
-}
+    public Long getDistributorId() {
+        return distributorId;
+    }
 
-public void setDistributorId(Long distributorId) {
-    this.distributorId = distributorId;
-}
+    public void setDistributorId(Long distributorId) {
+        this.distributorId = distributorId;
+    }
 
-public String getDistributorName() {
-    return distributorName;
-}
+    public String getDistributorName() {
+        return distributorName;
+    }
 
-public void setDistributorName(String distributorName) {
-    this.distributorName = distributorName;
-}
+    public void setDistributorName(String distributorName) {
+        this.distributorName = distributorName;
+    }
 
-public String getHeadquarters() {
-    return headquarters;
-}
+    public String getHeadquarters() {
+        return headquarters;
+    }
 
-public void setHeadquarters(String headquarters) {
-    this.headquarters = headquarters;
-}
+    public void setHeadquarters(String headquarters) {
+        this.headquarters = headquarters;
+    }
 
-public String getPaymentMode() {
-    return paymentMode;
-}
+    public String getPaymentMode() {
+        return paymentMode;
+    }
 
-public void setPaymentMode(String paymentMode) {
-    this.paymentMode = paymentMode;
-}
+    public void setPaymentMode(String paymentMode) {
+        this.paymentMode = paymentMode;
+    }
+
     public String getRemarks() {
         return remarks;
     }
