@@ -164,245 +164,7 @@ public class ProductOrderController {
     }
 
 // SINGLE INVOICE / BILL PDF DOWNLOAD
-    @GetMapping("/bill/{id}")
-    public ResponseEntity<byte[]> downloadBill(
-            @PathVariable Long id) throws Exception {
-
-        ProductOrder firstOrder
-                = orderRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Order not found"));
-
-        List<ProductOrder> orders
-                = orderRepository.findByInvoiceNoOrderByIdAsc(
-                        firstOrder.getInvoiceNo()
-                );
-        if (orders.isEmpty()) {
-            orders.add(firstOrder);
-        }
-
-        double totalAmount = 0;
-        double paidAmount = 0;
-        double dueAmount = 0;
-
-        for (ProductOrder order : orders) {
-
-            totalAmount
-                    += order.getOrderAmount() == null
-                    ? 0
-                    : order.getOrderAmount();
-
-            paidAmount
-                    += order.getPaidAmount() == null
-                    ? 0
-                    : order.getPaidAmount();
-
-            dueAmount
-                    += order.getDueAmount() == null
-                    ? 0
-                    : order.getDueAmount();
-        }
-
-        ByteArrayOutputStream out
-                = new ByteArrayOutputStream();
-
-        Document document
-                = new Document(PageSize.A4);
-
-        PdfWriter writer
-                = PdfWriter.getInstance(document, out);
-
-        document.open();
-
-        PdfContentByte canvas
-                = writer.getDirectContent();
-
-        Rectangle border
-                = new Rectangle(
-                        20,
-                        20,
-                        PageSize.A4.getWidth() - 20,
-                        PageSize.A4.getHeight() - 20
-                );
-
-        border.setBorder(Rectangle.BOX);
-        border.setBorderWidth(2);
-        border.setBorderColor(new Color(0, 102, 51));
-
-        canvas.rectangle(border);
-
-        Image logo = Image.getInstance(
-                "src/main/resources/static/images/Inflix-logo-web.png"
-        );
-
-        logo.scaleToFit(120, 60);
-        logo.setAlignment(Image.ALIGN_CENTER);
-
-        document.add(logo);
-
-        Font titleFont = new Font(
-                Font.HELVETICA,
-                18,
-                Font.BOLD,
-                Color.GREEN
-        );
-
-        Paragraph title = new Paragraph(
-                "PHARMAWEB PRODUCT ORDER INVOICE",
-                titleFont
-        );
-
-        title.setAlignment(Paragraph.ALIGN_CENTER);
-
-        document.add(title);
-
-        document.add(new Paragraph(" "));
-        PdfPTable invoiceBox = new PdfPTable(2);
-        invoiceBox.setWidthPercentage(40);
-        invoiceBox.setHorizontalAlignment(PdfPTable.ALIGN_LEFT);
-
-        invoiceBox.addCell("Invoice No");
-        invoiceBox.addCell(firstOrder.getInvoiceNo());
-
-        invoiceBox.addCell("Generated Date");
-        invoiceBox.addCell(String.valueOf(java.time.LocalDate.now()));
-
-        document.add(invoiceBox);
-
-        document.add(new Paragraph(" "));
-        document.add(new Paragraph(" "));
-
-        document.add(new Paragraph(" "));
-
-        document.add(new Paragraph("CUSTOMER DETAILS"));
-        document.add(new Paragraph("================================"));
-        document.add(new Paragraph(" "));
-
-        PdfPTable customerBox = new PdfPTable(2);
-        customerBox.setWidthPercentage(80);
-        customerBox.setHorizontalAlignment(PdfPTable.ALIGN_LEFT);
-
-        customerBox.addCell("Order ID");
-        customerBox.addCell(firstOrder.getInvoiceNo());
-
-        customerBox.addCell("Employee");
-        customerBox.addCell(firstOrder.getEmployeeName());
-
-        customerBox.addCell("Doctor");
-        customerBox.addCell(
-                firstOrder.getDoctorName()
-                + "\nArea : "
-                + (firstOrder.getArea() == null ? "" : firstOrder.getArea())
-        );
-
-        customerBox.addCell("Order Date");
-        customerBox.addCell(firstOrder.getOrderDate());
-
-        document.add(customerBox);
-
-        document.add(new Paragraph(" "));
-        document.add(new Paragraph("PRODUCT DETAILS"));
-        document.add(new Paragraph("================================"));
-        document.add(new Paragraph(" "));
-
-        PdfPTable table = new PdfPTable(4);
-
-        table.setWidthPercentage(100);
-
-        PdfPCell h1 = new PdfPCell(new Paragraph("Product"));
-        h1.setBackgroundColor(Color.GREEN);
-
-        PdfPCell h2 = new PdfPCell(new Paragraph("Quantity"));
-        h2.setBackgroundColor(Color.GREEN);
-
-        PdfPCell h3 = new PdfPCell(new Paragraph("Price"));
-        h3.setBackgroundColor(Color.GREEN);
-
-        PdfPCell h4 = new PdfPCell(new Paragraph("Amount"));
-        h4.setBackgroundColor(Color.GREEN);
-
-        table.addCell(h1);
-        table.addCell(h2);
-        table.addCell(h3);
-        table.addCell(h4);
-
-        for (ProductOrder order : orders) {
-
-            table.addCell(order.getProductName());
-
-            table.addCell(String.valueOf(
-                    order.getOrderQuantity()
-            ));
-
-            table.addCell(
-                    "₹" + (order.getSellingPrice() == null
-                    ? 0
-                    : order.getSellingPrice())
-            );
-
-            table.addCell(
-                    "₹" + (order.getOrderAmount() == null
-                    ? 0
-                    : order.getOrderAmount())
-            );
-
-        }
-        document.add(table);
-
-        document.add(new Paragraph(" "));
-        document.add(new Paragraph("PAYMENT SUMMARY"));
-        document.add(new Paragraph("================================"));
-
-        document.add(
-                new Paragraph(
-                        "Total Amount : ₹" + totalAmount
-                )
-        );
-
-        document.add(
-                new Paragraph(
-                        "Paid Amount : ₹" + paidAmount
-                )
-        );
-
-        document.add(
-                new Paragraph(
-                        "Due Amount : ₹" + dueAmount
-                )
-        );
-
-        String status
-                = dueAmount > 0
-                        ? "PARTIAL"
-                        : "PAID";
-        document.add(new Paragraph("Status : " + status));
-
-        document.add(new Paragraph(" "));
-        document.add(new Paragraph(" "));
-        document.add(new Paragraph("================================"));
-
-        Paragraph sign = new Paragraph(
-                "________________________\nAuthorized Signature"
-        );
-        sign.setAlignment(Paragraph.ALIGN_RIGHT);
-
-        document.add(sign);
-
-        document.add(new Paragraph(" "));
-        document.add(new Paragraph("Generated By PharmaWEB System"));
-        document.add(new Paragraph("Inflix Pharma Pvt Ltd"));
-        document.add(new Paragraph("Email : inflixpharma@gmail.com"));
-        document.add(new Paragraph("Phone : +91 8874438874"));
-        document.close();
-
-        return ResponseEntity.ok()
-                .header(
-                        HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=" + firstOrder.getInvoiceNo() + ".pdf"
-                )
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(out.toByteArray());
-    }
-
+   
 // EMPLOYEE DAILY REPORT PDF DOWNLOAD
     @GetMapping("/employee-report")
     public ResponseEntity<byte[]> employeeReport(
@@ -810,55 +572,38 @@ doctorHeading.add(new com.lowagie.text.Chunk(
 
     @PostMapping("/place-multiple")
     public List<ProductOrder> placeMultipleOrders(@RequestBody List<ProductOrder> orders) {
-
         String invoiceNo = "INV-" + System.currentTimeMillis();
         String orderGroupId = "GRP-" + System.currentTimeMillis();
         String orderTime = java.time.LocalTime.now()
                 .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
-
-        
         for (ProductOrder order : orders) {
-
-            DistributorStock stock = distributorStockRepository
-                    .findByDistributorIdAndProductId(
+            DistributorStock stock = distributorStockRepository.findByDistributorIdAndProductId(
                             order.getDistributorId(),
                             order.getProductId()
                     )
                     .orElseThrow(() -> new RuntimeException("Distributor stock not found for " + order.getProductName()));
-
             Integer availableUnits = stock.getAvailableUnits() == null ? 0 : stock.getAvailableUnits();
-
             if (order.getOrderQuantity() > availableUnits) {
                 throw new RuntimeException("Insufficient stock for " + order.getProductName());
             }
         }
-
         for (ProductOrder order : orders) {
-
-            DistributorStock stock = distributorStockRepository
-                    .findByDistributorIdAndProductId(
+            DistributorStock stock = distributorStockRepository.findByDistributorIdAndProductId(
                             order.getDistributorId(),
                             order.getProductId()
                     )
                     .orElseThrow(()
                             -> new RuntimeException("Distributor stock not found"));
-
             stock.setAvailableUnits(
                     stock.getAvailableUnits() - order.getOrderQuantity()
             );
-
             distributorStockRepository.save(stock);
-
-            /*
-     * Doctor/Chemist category DoctorVisit table se uthao.
-     * ProductOrder.doctorId me selected DoctorVisit record ki ID honi chahiye.
-             */
+            /* * Doctor/Chemist category DoctorVisit table se uthao.
+     * ProductOrder.doctorId me selected DoctorVisit record ki ID honi chahiye. */
             if (order.getDoctorId() != null) {
-
                 DoctorVisit doctorVisit = doctorVisitRepository
                         .findById(order.getDoctorId())
                         .orElse(null);
-
                 if (doctorVisit != null) {
                     order.setVisitCategory(
                             doctorVisit.getVisitCategory()
@@ -871,7 +616,6 @@ doctorHeading.add(new com.lowagie.text.Chunk(
     order.setOrderGroupId(orderGroupId);
     order.setOrderTime(orderTime);
         }
-    
         return orderRepository.saveAll(orders);
     }
 
@@ -940,6 +684,7 @@ doctorHeading.add(new com.lowagie.text.Chunk(
     public Long getOrderCount(@PathVariable Long id) {
         return orderRepository.countOrdersByEmployeeId(id);
     }
+
 
     @PutMapping("/collect-payment/{orderId}")
     public ProductOrder collectPayment(
@@ -1046,8 +791,6 @@ public List<ProductOrder> updateOrderGroup(
         order.setEmployeeId(dbOrders.get(0).getEmployeeId());
         order.setEmployeeName(dbOrders.get(0).getEmployeeName());
 
-        order.setDoctorId(dbOrders.get(0).getDoctorId());
-        order.setDoctorName(dbOrders.get(0).getDoctorName());
 
         order.setDistributorId(dbOrders.get(0).getDistributorId());
         order.setDistributorName(dbOrders.get(0).getDistributorName());
