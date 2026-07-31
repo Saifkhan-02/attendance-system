@@ -372,6 +372,7 @@ public long getUniqueCount(
         visit.setWorkingPersonName(updatedVisit.getWorkingPersonName());
         visit.setDOB(updatedVisit.getDOB());
         visit.setAnniversaryDate(updatedVisit.getAnniversaryDate());
+        visit.setMobileNumber(updatedVisit.getMobileNumber());
         visit.setRemarks(updatedVisit.getRemarks());
         visit.setLandmark(updatedVisit.getLandmark());
 

@@ -229,6 +229,17 @@
               />
             </div>
 
+            <div class="col-md-6">
+              <label class="form-label">Mobile Number</label>
+              <input
+                type="tel"
+                id="mobileNumber"
+                class="form-control"
+                placeholder="Enter Mobile Number"
+                maxlength="10"
+              />
+            </div>
+
             <div
               id="doctorInfoCard"
               class="alert alert-success mt-3"
@@ -436,7 +447,7 @@
             </div>
 
             <div class="modal-body">
-              <input type="hidden" id="editVisitId"/>
+              <input type="hidden" id="editVisitId" />
 
               <label class="form-label">Working With</label>
               <select id="editWorkingWith" class="form-select mb-3">
@@ -451,28 +462,31 @@
               <input
                 type="text"
                 id="editWorkingPersonName"
-                class="form-control mb-3"/>
-                <div class="row g-3 mb-3">
+                class="form-control mb-3"
+              />
+              <div class="row g-3 mb-3">
+                <div class="col-6 col-md-6">
+                  <label class="form-label">DOB</label>
+                  <input type="date" id="editDob" class="form-control" />
+                </div>
 
-  <div class="col-6 col-md-6">
-    <label class="form-label">DOB</label>
-    <input
-      type="date"
-      id="editDob"
-      class="form-control"
-    />
-  </div>
+                <div class="col-6 col-md-6">
+                  <label class="form-label">Date of Anniversary</label>
+                  <input
+                    type="date"
+                    id="editAnniversaryDate"
+                    class="form-control"
+                  />
+                </div>
+              </div>
 
-  <div class="col-6 col-md-6">
-    <label class="form-label">Date of Anniversary</label>
-    <input
-      type="date"
-      id="editAnniversaryDate"
-      class="form-control"
-    />
-  </div>
-
-</div>
+              <label class="form-label">Mobile Number</label>
+              <input
+                type="tel"
+                id="editMobileNumber"
+                class="form-control mb-3"
+                maxlength="10"
+              />
 
               <label class="form-label">Landmark</label>
               <input type="text" id="editLandmark" class="form-control mb-3" />
@@ -766,6 +780,9 @@
         document.getElementById("hospitalName").value =
           doctor.hospitalName || "";
 
+        document.getElementById("mobileNumber").value =
+          doctor.mobileNumber || "";
+
         document.getElementById("landmark").value = doctor.landmark || "";
 
         document.getElementById("doctorStatus").innerHTML = `
@@ -888,13 +905,13 @@
           );
         }
 
-       if (
-  visitCategory === "DOCTOR" &&
-  !document.getElementById("specialization").value.trim()
-) {
-  alert("Please fill Specialization First");
-  return;
-}
+        if (
+          visitCategory === "DOCTOR" &&
+          !document.getElementById("specialization").value.trim()
+        ) {
+          alert("Please fill Specialization First");
+          return;
+        }
 
         // if (!document.getElementById("dob").value) {
         //   alert("Please select DOB");
@@ -961,15 +978,18 @@
 
           doctorName: document.getElementById("doctorName").value,
 
-         specialization:
-                 visitCategory === "DOCTOR"
-                   ? document.getElementById("specialization").value.trim() : "",
+          specialization:
+            visitCategory === "DOCTOR"
+              ? document.getElementById("specialization").value.trim()
+              : "",
 
           dob: document.getElementById("dob").value,
 
           anniversaryDate: document.getElementById("anniversaryDate").value,
 
           hospitalName: document.getElementById("hospitalName").value,
+
+          mobileNumber: document.getElementById("mobileNumber").value.trim(),
 
           // visitDate: document.getElementById("visitDate").value,
 
@@ -1057,6 +1077,7 @@
         document.getElementById("workingPersonName").value = "";
 
         document.getElementById("doctorName").value = "";
+        document.getElementById("mobileNumber").value = "";
         document.getElementById("specialization").value = "";
 
         document.getElementById("dob").value = "";
@@ -1358,11 +1379,12 @@
           visit.workingWith || "Individual";
         document.getElementById("editWorkingPersonName").value =
           visit.workingPersonName || "";
-        document.getElementById("editDob").value =
-  visit.dob || "";
+        document.getElementById("editDob").value = visit.dob || "";
 
-document.getElementById("editAnniversaryDate").value =
-  visit.anniversaryDate || "";
+        document.getElementById("editAnniversaryDate").value =
+          visit.anniversaryDate || "";
+        document.getElementById("editMobileNumber").value =
+          visit.mobileNumber || "";
         document.getElementById("editLandmark").value = visit.landmark || "";
         document.getElementById("editRemarks").value = visit.remarks || "";
 
@@ -1375,25 +1397,22 @@ document.getElementById("editAnniversaryDate").value =
       function updateDoctorVisit() {
         const visitId = document.getElementById("editVisitId").value;
 
-      const updatedVisit = {
-  workingWith:
-    document.getElementById("editWorkingWith").value,
+        const updatedVisit = {
+          workingWith: document.getElementById("editWorkingWith").value,
 
-  workingPersonName:
-    document.getElementById("editWorkingPersonName").value,
+          workingPersonName: document.getElementById("editWorkingPersonName")
+            .value,
 
-  dob:
-    document.getElementById("editDob").value,
+          dob: document.getElementById("editDob").value,
 
-  anniversaryDate:
-    document.getElementById("editAnniversaryDate").value,
+          anniversaryDate: document.getElementById("editAnniversaryDate").value,
 
-  landmark:
-    document.getElementById("editLandmark").value,
+          mobileNumber:document.getElementById("editMobileNumber").value,
 
-  remarks:
-    document.getElementById("editRemarks").value
-};
+          landmark: document.getElementById("editLandmark").value,
+
+          remarks: document.getElementById("editRemarks").value,
+        };
 
         fetch(`${BASE_URL}/doctor-visit/update/${visitId}`, {
           method: "PUT",
