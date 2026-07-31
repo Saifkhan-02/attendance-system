@@ -29,6 +29,7 @@ public class DoctorVisit {
     private String dob;
     private String anniversaryDate;
     private String hospitalName;
+    private String mobileNumber;
     private String visitDate;
 
     private LocalTime visitTime;
@@ -133,8 +134,16 @@ public class DoctorVisit {
         return hospitalName;
     }
 
+    public String getMobileNumber() {
+        return mobileNumber;
+    }
+
     public void setHospitalName(String hospitalName) {
         this.hospitalName = hospitalName;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
     }
 
     public String getVisitDate() {
