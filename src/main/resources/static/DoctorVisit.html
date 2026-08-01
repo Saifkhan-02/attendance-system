@@ -423,6 +423,7 @@
                   <th>Category</th>
                   <th>Dr./Chemist</th>
                   <th>Specialization</th>
+                  <th>Mob NO.</th>
                   <th>DOB</th>
                   <th>DOA</th>
                   <th>Hospital/Clinic</th>
@@ -1134,7 +1135,7 @@
             if (data.length === 0) {
               table.innerHTML = `
                 <tr>
-                    <td colspan="17" class="text-center">
+                    <td colspan="18" class="text-center">
                         No Doctor Visits Found
                     </td>
                 </tr>
@@ -1167,34 +1168,22 @@
     ${visit.visitCategory || "DOCTOR"}
   </span>
 </td>
-
                 <td>${visit.doctorName || "-"}</td>
-
                 <td>${visit.specialization || "-"}</td>
-
-
+                <td>${visit.mobileNumber || "-"}</td>
                 <td>${visit.dob || "-"}</td>
-                
                 <td>${visit.anniversaryDate || "-"}</td>
-
                 <td>${visit.hospitalName || "-"}</td>
-
                 <td>${visit.visitDate || "-"}</td>
-
                 <td>${visit.visitTime || "-"}</td>
-
                 <td>${visit.location || "-"}</td>
-
                 <td>${visit.landmark || "-"}</td>
                 <td>${visit.accuracy ? visit.accuracy + " m" : "-"}</td>
-
                 <td>  <img src="${visit.photo}"
                 onclick="openVisitImage('${visit.photo}')"
                 style="width:55px;height:55px;object-fit:cover;border-radius:10px;cursor:pointer;">
                 </td>
-
                 <td>${visit.remarks || "-"}</td>
-
                 <td>
                     <span class="${statusClass}">
                         ${visit.status || "Completed"}
