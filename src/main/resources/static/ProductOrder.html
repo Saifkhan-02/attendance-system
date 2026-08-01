@@ -4,9 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create Order</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-    <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet" /><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
+    />
     <style>
       body {
         background: #f4f6fb;
@@ -69,84 +82,87 @@
         overflow-y: auto;
         z-index: 9999;
       }
-      #editOrderModal table{
-    table-layout: fixed;
-    width:100%;
-}
-#editOrderModal input[type=number]{
-    min-width:55px;
-    font-size:13px;
-    padding:6px;
-}
-#editOrderModal select{
-    font-size:13px;
-    padding:6px;
-}
-#editOrderModal th{
-    font-size:13px;
-    padding:8px 4px;
-}
-#editOrderModal td{
-    padding:6px 3px;
-}
-@media(max-width:576px){
-#editOrderModal .modal-dialog{
-    margin:8px;
-    max-width:100%;
-}
-#editOrderModal table{
-    font-size:12px;
-}
-#editOrderModal select{
-    font-size:12px;
-}
-#editOrderModal input{
-    font-size:12px;
-    padding:5px;
-}
-#editOrderModal .btn{
-    font-size:12px;
-    padding:6px 10px;
-}
-}
-.product-col{
-    width:42%;
-}
-.qty-col{
-    width:12%;
-}
-.price-col{
-    width:18%;
-}
-.amount-col{
-    width:18%;
-}
-.action-col{
-    width:10%;
-}
-.edit-product{
-font-size:13px;
-font-weight:500;
-}
-#editPaidAmount,
-#editDueAmount{
-    height:44px;
-}
-#editPaidAmount::-webkit-outer-spin-button,
-#editPaidAmount::-webkit-inner-spin-button{
-    -webkit-appearance:none;
-    margin:0;
-}
-#editPaidAmount{
-    appearance:textfield;
-    -moz-appearance:textfield;
-}
+      #editOrderModal table {
+        table-layout: fixed;
+        width: 100%;
+      }
+      #editOrderModal input[type="number"] {
+        min-width: 55px;
+        font-size: 13px;
+        padding: 6px;
+      }
+      #editOrderModal select {
+        font-size: 13px;
+        padding: 6px;
+      }
+      #editOrderModal th {
+        font-size: 13px;
+        padding: 8px 4px;
+      }
+      #editOrderModal td {
+        padding: 6px 3px;
+      }
+      @media (max-width: 576px) {
+        #editOrderModal .modal-dialog {
+          margin: 8px;
+          max-width: 100%;
+        }
+        #editOrderModal table {
+          font-size: 12px;
+        }
+        #editOrderModal select {
+          font-size: 12px;
+        }
+        #editOrderModal input {
+          font-size: 12px;
+          padding: 5px;
+        }
+        #editOrderModal .btn {
+          font-size: 12px;
+          padding: 6px 10px;
+        }
+      }
+      .product-col {
+        width: 42%;
+      }
+      .qty-col {
+        width: 12%;
+      }
+      .price-col {
+        width: 18%;
+      }
+      .amount-col {
+        width: 18%;
+      }
+      .action-col {
+        width: 10%;
+      }
+      .edit-product {
+        font-size: 13px;
+        font-weight: 500;
+      }
+      #editPaidAmount,
+      #editDueAmount {
+        height: 44px;
+      }
+      #editPaidAmount::-webkit-outer-spin-button,
+      #editPaidAmount::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      #editPaidAmount {
+        appearance: textfield;
+        -moz-appearance: textfield;
+      }
     </style>
   </head>
   <body>
     <div class="top-header">
       <div class="d-flex align-items-center justify-content-between">
-        <button class="back-btn" onclick="window.location.href = 'Dashboard.html'">
+        <button
+          class="back-btn"
+          onclick="window.location.href = 'Dashboard.html'"
+        >
           <i class="fa-solid fa-arrow-left"></i>
         </button>
         <div class="text-center flex-grow-1">
@@ -163,7 +179,11 @@ font-weight:500;
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Select Doctor</label>
-              <select id="doctorId" class="form-select" onchange="setDoctorName()" >
+              <select
+                id="doctorId"
+                class="form-select"
+                onchange="setDoctorName()"
+              >
                 <option value=""></option>
               </select>
               <input type="hidden" id="doctorName" />
@@ -171,7 +191,11 @@ font-weight:500;
             </div>
             <div class="col-md-6">
               <label class="form-label">Select Distributor</label>
-              <select id="distributorId" class="form-select" onchange="loadDistributorProducts()" >
+              <select
+                id="distributorId"
+                class="form-select"
+                onchange="loadDistributorProducts()"
+              >
                 <option value="">Select Distributor</option>
               </select>
               <input type="hidden" id="distributorName" />
@@ -179,27 +203,52 @@ font-weight:500;
             </div>
             <div class="col-md-6">
               <label class="form-label">Area</label>
-              <input type="text" id="area" class="form-control" placeholder="Enter Area"/>
+              <input
+                type="text"
+                id="area"
+                class="form-control"
+                placeholder="Enter Area"
+              />
             </div>
             <div class="col-md-12">
               <label class="form-label fw-bold">Products</label>
               <div id="productItems"></div>
-              <button type="button" class="btn btn-outline-primary mt-2" onclick="addCreateProductRow()" >
+              <button
+                type="button"
+                class="btn btn-outline-primary mt-2"
+                onclick="addCreateProductRow()"
+              >
                 <i class="fa-solid fa-plus me-2"></i> Add Product
               </button>
             </div>
             <div class="col-md-6">
               <label class="form-label">Total Order Amount</label>
-              <input type="number" id="orderAmount" class="form-control" readonly />
+              <input
+                type="number"
+                id="orderAmount"
+                class="form-control"
+                readonly
+              />
             </div>
             <!-- Add due amount and payment mode -->
             <div class="col-6 col-md-6">
               <label class="form-label">Paid Amount</label>
-              <input type="number" id="paidAmount" class="form-control" placeholder="Enter paid amount" oninput="calculateDueAmount()"/>
+              <input
+                type="number"
+                id="paidAmount"
+                class="form-control"
+                placeholder="Enter paid amount"
+                oninput="calculateDueAmount()"
+              />
             </div>
             <div class="col-6 col-md-6">
               <label class="form-label">Due Amount</label>
-              <input type="number" id="dueAmount" class="form-control" readonly />
+              <input
+                type="number"
+                id="dueAmount"
+                class="form-control"
+                readonly
+              />
             </div>
             <div class="col-md-6">
               <label class="form-label required">Payment Mode</label>
@@ -214,10 +263,19 @@ font-weight:500;
             </div>
             <div class="col-md-12">
               <label class="form-label">Remarks</label>
-              <textarea id="remarks" rows="3" class="form-control" placeholder="Enter order remarks"></textarea>
+              <textarea
+                id="remarks"
+                rows="3"
+                class="form-control"
+                placeholder="Enter order remarks"
+              ></textarea>
             </div>
             <div class="col-md-12">
-              <button class="btn btn-submit text-white" id="placeOrderBtn" onclick="placeOrder()">
+              <button
+                class="btn btn-submit text-white"
+                id="placeOrderBtn"
+                onclick="placeOrder()"
+              >
                 <i class="fa-solid fa-cart-shopping me-2"></i> Place Order
               </button>
             </div>
@@ -254,92 +312,120 @@ font-weight:500;
     </div>
     <!-- Edit Order Modal -->
     <div
-    class="modal fade" id="editOrderModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      class="modal fade"
+      id="editOrderModal"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header bg-warning">
-                <h5 class="modal-title"><i class="fa-solid fa-pen-to-square me-2"></i> Edit Order </h5>
-                <button class="btn-close" data-bs-dismiss="modal"></button>
+          <div class="modal-header bg-warning">
+            <h5 class="modal-title">
+              <i class="fa-solid fa-pen-to-square me-2"></i> Edit Order
+            </h5>
+            <button class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="editOrderGroupId" />
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Doctor / Chemist</label>
+                <input
+                  type="text"
+                  id="editDoctor"
+                  class="form-control"
+                  readonly
+                />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label"> Distributor </label>
+                <input
+                  type="text"
+                  id="editDistributor"
+                  class="form-control"
+                  readonly
+                />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label"> Payment Mode </label>
+                <select id="editPaymentMode" class="form-select">
+                  <option value="Pending">Pending</option>
+                  <option value="Cash">Cash</option>
+                  <option value="UPI">UPI</option>
+                  <option value="Cheque">Cheque</option>
+                  <option value="Bank Transfer">Bank Transfer</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Remarks </label>
+                <input id="editRemarks" class="form-control" />
+              </div>
             </div>
-            <div class="modal-body">
-                <input type="hidden" id="editOrderGroupId">
-                <div class="row g-3">
-                   <div class="col-md-6">
-    <label class="form-label">Doctor / Chemist</label>
-    <input type="text" id="editDoctor" class="form-control" readonly>
-</div>
-                    <div class="col-md-6">
-                        <label class="form-label">
-                            Distributor
-                        </label>
-                        <input type="text" id="editDistributor" class="form-control" readonly>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">
-                            Payment Mode
-                        </label>
-                        <select id="editPaymentMode" class="form-select">
-                            <option value="Pending">Pending</option>
-                            <option value="Cash">Cash</option>
-                            <option value="UPI">UPI</option>
-                            <option value="Cheque">Cheque</option>
-                            <option value="Bank Transfer">Bank Transfer</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Remarks </label>
-                        <input id="editRemarks" class="form-control">
-                    </div>
-                </div>
-                <hr>
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0"> Products </h5>
-                    <button class="btn btn-success" onclick="addEditProductRow()">
-                        <i class="fa fa-plus"></i> Add Product
-                    </button>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead class="table-light">
-                        <tr>
-                            <th class="product-col">Product</th>
-                            <th class="qty-col">Qty</th>
-                            <th class="price-col">S.P</th>
-                            <th class="amount-col">Amount</th>
-                            <th class="action-col">Action</th>
-                        </tr>
-                        </thead>
-                        <tbody id="editProductTable">
-                        </tbody>
-                    </table>
-                </div>
-                <div class="row mt-3">
-    <div class="col-6 col-md-4">
-        <label class="form-label">Paid Amount</label>
-        <input type="number" id="editPaidAmount" class="form-control" min="0" value="0" oninput="calculateEditDueAmount()">
-    </div>
-    <div class="col-6 col-md-4">
-        <label class="form-label">Due Amount</label>
-        <input type="number" id="editDueAmount" class="form-control" readonly>
-    </div>
-</div>
-                <div class="text-end mt-3">
-                    <h4>Total : ₹
-                        <span id="editGrandTotal">0</span>
-                    </h4>
-                </div>
+            <hr />
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">Products</h5>
+              <button class="btn btn-success" onclick="addEditProductRow()">
+                <i class="fa fa-plus"></i> Add Product
+              </button>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">
-                    Close
-                </button>
-                <button id="submitBtn" class="btn btn-primary" onclick="saveOrderChanges()">
-                    Save Changes
-                </button>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead class="table-light">
+                  <tr>
+                    <th class="product-col">Product</th>
+                    <th class="qty-col">Qty</th>
+                    <th class="price-col">S.P</th>
+                    <th class="amount-col">Amount</th>
+                    <th class="action-col">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="editProductTable"></tbody>
+              </table>
             </div>
+            <div class="row mt-3">
+              <div class="col-6 col-md-4">
+                <label class="form-label">Paid Amount</label>
+                <input
+                  type="number"
+                  id="editPaidAmount"
+                  class="form-control"
+                  min="0"
+                  value="0"
+                  oninput="calculateEditDueAmount()"
+                />
+              </div>
+              <div class="col-6 col-md-4">
+                <label class="form-label">Due Amount</label>
+                <input
+                  type="number"
+                  id="editDueAmount"
+                  class="form-control"
+                  readonly
+                />
+              </div>
+            </div>
+            <div class="text-end mt-3">
+              <h4>
+                Total : ₹
+                <span id="editGrandTotal">0</span>
+              </h4>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">
+              Close
+            </button>
+            <button
+              id="submitBtn"
+              class="btn btn-primary"
+              onclick="saveOrderChanges()"
+            >
+              Save Changes
+            </button>
+          </div>
         </div>
+      </div>
     </div>
-</div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Tom Select search option -->
     <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
@@ -358,16 +444,16 @@ font-weight:500;
       let historyList = [];
       let editingOrderId = null;
       let editOrderModal;
-let editingOrderGroupId = null;
-let editingOrders = [];
-let allProducts = [];
-let allDoctors = [];
+      let editingOrderGroupId = null;
+      let editingOrders = [];
+      let allProducts = [];
+      let allDoctors = [];
       window.onload = function () {
         loadAssignedDoctors();
         loadEmployeeAndDistributors();
         loadOrderHistory();
         loadAllProducts();
-         loadAllDoctors();
+        loadAllDoctors();
         const orderDateInput = document.getElementById("orderDate");
         if (orderDateInput) {
           orderDateInput.value = new Date().toISOString().split("T")[0];
@@ -375,9 +461,9 @@ let allDoctors = [];
         setTimeout(() => {
           addCreateProductRow();
         }, 500);
-        editOrderModal =
-new bootstrap.Modal(document.getElementById("editOrderModal")
-);
+        editOrderModal = new bootstrap.Modal(
+          document.getElementById("editOrderModal"),
+        );
       };
 
       function loadAssignedDoctors() {
@@ -418,7 +504,11 @@ new bootstrap.Modal(document.getElementById("editOrderModal")
         fetch(`${BASE_URL}/employee/${employeeId}`)
           .then((response) => response.json())
           .then((employee) => {
-            employeeHeadquarters = employee.headquarters ||  employee.headQuarters || employee.headQuarter || "";
+            employeeHeadquarters =
+              employee.headquarters ||
+              employee.headQuarters ||
+              employee.headQuarter ||
+              "";
             document.getElementById("headquarters").value =
               employeeHeadquarters;
             return fetch(
@@ -441,7 +531,8 @@ new bootstrap.Modal(document.getElementById("editOrderModal")
       }
       function loadDistributorProducts() {
         const distributorId = document.getElementById("distributorId").value;
-        const selected = document.getElementById("distributorId").selectedOptions[0];
+        const selected =
+          document.getElementById("distributorId").selectedOptions[0];
         document.getElementById("distributorName").value = selected
           ? selected.getAttribute("data-name")
           : "";
@@ -581,7 +672,8 @@ new bootstrap.Modal(document.getElementById("editOrderModal")
         const doctorName = document.getElementById("doctorName").value;
         const visitCategory = document.getElementById("visitCategory").value;
         const distributorId = document.getElementById("distributorId").value;
-        const distributorName =document.getElementById("distributorName").value;
+        const distributorName =
+          document.getElementById("distributorName").value;
         const headquarters = document.getElementById("headquarters").value;
         const paymentMode = document.getElementById("paymentMode").value;
         if (!doctorId) {
@@ -609,12 +701,16 @@ new bootstrap.Modal(document.getElementById("editOrderModal")
           alert("Please add at least one product");
           return;
         }
-        const paidAmountInput = document.getElementById("paidAmount").value.trim();
+        const paidAmountInput = document
+          .getElementById("paidAmount")
+          .value.trim();
         if (paidAmountInput === "") {
           alert("Please enter paid amount (enter 0 if no payment received)");
           return;
         }
-        const totalOrderAmount = Number(document.getElementById("orderAmount").value || 0,);
+        const totalOrderAmount = Number(
+          document.getElementById("orderAmount").value || 0,
+        );
         const totalPaidAmount = Number(paidAmountInput || 0);
         if (totalOrderAmount <= 0) {
           alert("Please select product and enter quantity/price");
@@ -632,10 +728,18 @@ new bootstrap.Modal(document.getElementById("editOrderModal")
         const orders = [];
         for (const row of rows) {
           const productId = row.querySelector(".productSelect").value;
-          const orderQuantity = Number(row.querySelector(".orderQuantity").value || 0,);
-          const sellingPrice = Number(row.querySelector(".sellingPrice").value || 0,);
-          const orderAmount = Number(row.querySelector(".rowAmount").value || 0,);
-          const selectedProduct = stockList.find((product) => String(product.productId) === String(productId),);
+          const orderQuantity = Number(
+            row.querySelector(".orderQuantity").value || 0,
+          );
+          const sellingPrice = Number(
+            row.querySelector(".sellingPrice").value || 0,
+          );
+          const orderAmount = Number(
+            row.querySelector(".rowAmount").value || 0,
+          );
+          const selectedProduct = stockList.find(
+            (product) => String(product.productId) === String(productId),
+          );
           if (!selectedProduct) {
             alert("Please select product in all rows");
             return;
@@ -697,7 +801,7 @@ new bootstrap.Modal(document.getElementById("editOrderModal")
         placeBtn.innerHTML =
           '<i class="fa-solid fa-spinner fa-spin me-2"></i>Order Placing...';
         console.log("ORDER PAYLOAD");
-console.log(JSON.stringify(orders, null, 2));
+        console.log(JSON.stringify(orders, null, 2));
         fetch(`${BASE_URL}/order/place-multiple`, {
           method: "POST",
           headers: {
@@ -712,7 +816,8 @@ console.log(JSON.stringify(orders, null, 2));
             }
             alert("Orders Placed Successfully");
             placeBtn.disabled = false;
-            placeBtn.innerHTML = '<i class="fa-solid fa-cart-shopping me-2"></i>Place Order';
+            placeBtn.innerHTML =
+              '<i class="fa-solid fa-cart-shopping me-2"></i>Place Order';
             document.getElementById("productItems").innerHTML = "";
             productRowIndex = 0;
             addCreateProductRow();
@@ -736,18 +841,22 @@ console.log(JSON.stringify(orders, null, 2));
             }
           });
       }
-function calculateEditDueAmount() {
-    const total =Number(document.getElementById("editGrandTotal").innerText);
-    let paid = Number(document.getElementById("editPaidAmount").value || 0);
-console.log("TOTAL =", total);
-    console.log("PAID =", paid);
-    if (paid > total) {
-        alert("Paid amount cannot be greater than Total Amount");
-        paid = total;
-        document.getElementById("editPaidAmount").value = total;
-    }
-    document.getElementById("editDueAmount").value = (total - paid).toFixed(2);
-}
+      function calculateEditDueAmount() {
+        const total = Number(
+          document.getElementById("editGrandTotal").innerText,
+        );
+        let paid = Number(document.getElementById("editPaidAmount").value || 0);
+        console.log("TOTAL =", total);
+        console.log("PAID =", paid);
+        if (paid > total) {
+          alert("Paid amount cannot be greater than Total Amount");
+          paid = total;
+          document.getElementById("editPaidAmount").value = total;
+        }
+        document.getElementById("editDueAmount").value = (total - paid).toFixed(
+          2,
+        );
+      }
       function loadOrderHistory() {
         const employeeId = localStorage.getItem("employeeId");
         fetch(`${BASE_URL}/order/history/today/${employeeId}`)
@@ -761,16 +870,16 @@ console.log("TOTAL =", total);
           .then((data) => {
             console.log("History API Response", data);
             console.table(
-    data.map(order => ({
-        id: order.id,
-        groupId: order.orderGroupId,
-        product: order.productName,
-        amount: order.orderAmount,
-        paid: order.paidAmount,
-        due: order.dueAmount
-    }))
-);
-             historyList = data;
+              data.map((order) => ({
+                id: order.id,
+                groupId: order.orderGroupId,
+                product: order.productName,
+                amount: order.orderAmount,
+                paid: order.paidAmount,
+                due: order.dueAmount,
+              })),
+            );
+            historyList = data;
             const table = document.getElementById("orderTable");
             table.innerHTML = "";
             if (!data || data.length === 0) {
@@ -785,7 +894,7 @@ console.log("TOTAL =", total);
             }
             const groupedOrders = {};
             data.forEach((order) => {
-             const key = order.orderGroupId;
+              const key = order.orderGroupId;
               if (!groupedOrders[key]) {
                 groupedOrders[key] = {
                   orderGroupId: order.orderGroupId,
@@ -805,21 +914,23 @@ console.log("TOTAL =", total);
                   products: [],
                 };
               }
-// Initialization (jab naya group bane) ke time null ki jagah 0 set karo
-if (!groupedOrders[key]) {
-    groupedOrders[key] = {
-        // ... tumhara baaki purana code ...
-        totalAmount: 0,
-        totalPaidAmount: 0,  // <-- null ki jagah 0
-        totalDueAmount: 0,   // <-- null ki jagah 0
-        products: [],
-    };
-}
+              // Initialization (jab naya group bane) ke time null ki jagah 0 set karo
+              if (!groupedOrders[key]) {
+                groupedOrders[key] = {
+                  // ... tumhara baaki purana code ...
+                  totalAmount: 0,
+                  totalPaidAmount: 0, // <-- null ki jagah 0
+                  totalDueAmount: 0, // <-- null ki jagah 0
+                  products: [],
+                };
+              }
 
-// Grouping ke time plus (+) lagao taaki saare products ka total amount add ho jaye
-groupedOrders[key].totalAmount += Number(order.orderAmount || 0);
-groupedOrders[key].totalPaidAmount += Number(order.paidAmount || 0); // Naya code
-groupedOrders[key].totalDueAmount += Number(order.dueAmount || 0);   // Naya code
+              // Grouping ke time plus (+) lagao taaki saare products ka total amount add ho jaye
+              groupedOrders[key].totalAmount += Number(order.orderAmount || 0);
+              groupedOrders[key].totalPaidAmount += Number(
+                order.paidAmount || 0,
+              ); // Naya code
+              groupedOrders[key].totalDueAmount += Number(order.dueAmount || 0); // Naya code
               groupedOrders[key].products.push(`
   <div class="border-top pt-2 mt-2">
     <div class="fw-semibold">${order.productName}</div>
@@ -835,9 +946,11 @@ groupedOrders[key].totalDueAmount += Number(order.dueAmount || 0);   // Naya cod
             <td>${order.orderDate || "-"}</td>
             <td>${order.orderTime || "-"}</td>
             <td>${order.doctorName || "-"}</td>
-            <td>${order.visitCategory === "CHEMIST"
-        ? '<span class="badge bg-warning text-dark">Chemist</span>'
-        : '<span class="badge bg-primary">Doctor</span>'}</td>
+            <td>${
+              order.visitCategory === "CHEMIST"
+                ? '<span class="badge bg-warning text-dark">Chemist</span>'
+                : '<span class="badge bg-primary">Doctor</span>'
+            }</td>
             <td>${order.distributorName || "-"}</td>
             <td>${order.products.join("")}</td>
             <td><strong>₹${order.totalAmount.toFixed(2)}</strong></td>
@@ -867,44 +980,61 @@ groupedOrders[key].totalDueAmount += Number(order.dueAmount || 0);   // Naya cod
       }
 
       function editOrder(groupId) {
-    editingOrderGroupId = groupId;
-    editingOrders = historyList.filter(
-        o => o.orderGroupId === groupId
-    );
-console.table(editingOrders);
-    if (editingOrders.length === 0) {
-        alert("Order not found");
-        return;
-    }
-    const first = editingOrders[0];
-    document.getElementById("editOrderGroupId").value = groupId;
-    document.getElementById("editDistributor").value = first.distributorName || "";
-    document.getElementById("editPaymentMode").value = first.paymentMode || "Pending";
-    document.getElementById("editRemarks").value = first.remarks || "";
-    document.getElementById("editPaidAmount").value = first.paidAmount ?? 0;
-    document.getElementById("editDueAmount").value = first.dueAmount ?? 0;
-    document.getElementById("submitBtn").innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Order';
-    document.getElementById("editDoctor").value = first.doctorName || "";
-    renderProductRows();
-    calculateEditDueAmount();
-    loadDistributorProductsForEdit(first.distributorId);
-    editOrderModal.show();
-}
-function calculateDueAmount() {
-console.log("calculateDueAmount called");
-    const orderAmount = Number(document.getElementById("orderAmount").value || 0);
-    let paidAmount = Number(document.getElementById("paidAmount").value || 0);
-    if (paidAmount > orderAmount) {
-        alert("Paid amount cannot be greater than Total Amount");
-        paidAmount = orderAmount;
-        document.getElementById("paidAmount").value = orderAmount;
-    }
-    document.getElementById("dueAmount").value = (orderAmount - paidAmount).toFixed(2);
-}
-function renderProductRows() {
-    const tbody =document.getElementById("editProductTable");
-    tbody.innerHTML = "";
-    editingOrders.forEach((order,index)=>{ tbody.innerHTML += `
+        editingOrderGroupId = groupId;
+        editingOrders = historyList.filter((o) => o.orderGroupId === groupId);
+        console.table(editingOrders);
+        if (editingOrders.length === 0) {
+          alert("Order not found");
+          return;
+        }
+        const first = editingOrders[0];
+        document.getElementById("editOrderGroupId").value = groupId;
+        document.getElementById("editDistributor").value =
+          first.distributorName || "";
+        document.getElementById("editPaymentMode").value =
+          first.paymentMode || "Pending";
+        document.getElementById("editRemarks").value = first.remarks || "";
+        const totalPaid = editingOrders.reduce(
+          (sum, order) => sum + Number(order.paidAmount || 0),
+          0,
+        );
+
+        const totalDue = editingOrders.reduce(
+          (sum, order) => sum + Number(order.dueAmount || 0),
+          0,
+        );
+
+        document.getElementById("editPaidAmount").value = totalPaid;
+        document.getElementById("editDueAmount").value = totalDue;
+        document.getElementById("submitBtn").innerHTML =
+          '<i class="fa-solid fa-floppy-disk"></i> Update Order';
+        document.getElementById("editDoctor").value = first.doctorName || "";
+        renderProductRows();
+        loadDistributorProductsForEdit(first.distributorId);
+        editOrderModal.show();
+      }
+      function calculateDueAmount() {
+        console.log("calculateDueAmount called");
+        const orderAmount = Number(
+          document.getElementById("orderAmount").value || 0,
+        );
+        let paidAmount = Number(
+          document.getElementById("paidAmount").value || 0,
+        );
+        if (paidAmount > orderAmount) {
+          alert("Paid amount cannot be greater than Total Amount");
+          paidAmount = orderAmount;
+          document.getElementById("paidAmount").value = orderAmount;
+        }
+        document.getElementById("dueAmount").value = (
+          orderAmount - paidAmount
+        ).toFixed(2);
+      }
+      function renderProductRows() {
+        const tbody = document.getElementById("editProductTable");
+        tbody.innerHTML = "";
+        editingOrders.forEach((order, index) => {
+          tbody.innerHTML += `
 <tr>
 <td><select class="form-select edit-product" data-index="${index}"> </select></td>
 <td><input type="number" class="form-control edit-qty"
@@ -922,223 +1052,212 @@ oninput="calculateRow(${index})"></td>
 </td>
 </tr>
 `;
-    });
-    fillProductDropdowns();
-    updateGrandTotal();
-}
-function calculateRow(index){
-    const qty = Number(document.querySelectorAll(".edit-qty")[index].value);
-    const price =  Number(document.querySelectorAll(".edit-price")[index].value);
-    const amount = qty * price;
-    document.querySelectorAll(".edit-amount")[index].value = amount.toFixed(2);
-    editingOrders[index].orderQuantity = qty;
-    editingOrders[index].sellingPrice = price;
-    editingOrders[index].orderAmount = amount;
-    updateGrandTotal();
-}
-function updateGrandTotal(){
-    let total = 0;
-    editingOrders.forEach(order=>{
-        total += Number(order.orderAmount || 0);
-    });
-    document.getElementById("editGrandTotal").innerText =total.toFixed(2);
-    calculateEditDueAmount();
-}
-function addEditProductRow(){
-    editingOrders.push({
-        id:null,
-        orderGroupId:editingOrderGroupId,
-        doctorId:editingOrders[0].doctorId,
-        doctorName:editingOrders[0].doctorName,
-        distributorId:editingOrders[0].distributorId,
-        distributorName:editingOrders[0].distributorName,
-        employeeId:editingOrders[0].employeeId,
-        employeeName:editingOrders[0].employeeName,
-        visitCategory:editingOrders[0].visitCategory,
-        orderDate:editingOrders[0].orderDate,
-        orderTime:editingOrders[0].orderTime,
-        paymentMode:editingOrders[0].paymentMode,
-        remarks: editingOrders[0].remarks,
-        productId:"",
-        productName:"",
-        orderQuantity:1,
-        sellingPrice:0,
-        orderAmount:0
-    });
-    renderProductRows();
-}
-function fillProductDropdowns() {
-    const productSelects = document.querySelectorAll(".edit-product");
-    productSelects.forEach((select,index)=>{
-        select.innerHTML = '<option value="">Select Product</option>';
-        allProducts.forEach(product=>{
+        });
+        fillProductDropdowns();
+        updateGrandTotal();
+      }
+      function calculateRow(index) {
+        const qty = Number(document.querySelectorAll(".edit-qty")[index].value);
+        const price = Number(
+          document.querySelectorAll(".edit-price")[index].value,
+        );
+        const amount = qty * price;
+        document.querySelectorAll(".edit-amount")[index].value =
+          amount.toFixed(2);
+        editingOrders[index].orderQuantity = qty;
+        editingOrders[index].sellingPrice = price;
+        editingOrders[index].orderAmount = amount;
+        updateGrandTotal();
+      }
+      function updateGrandTotal() {
+        let total = 0;
+        editingOrders.forEach((order) => {
+          total += Number(order.orderAmount || 0);
+        });
+        document.getElementById("editGrandTotal").innerText = total.toFixed(2);
+        calculateEditDueAmount();
+      }
+      function addEditProductRow() {
+        editingOrders.push({
+          id: null,
+          orderGroupId: editingOrderGroupId,
+          doctorId: editingOrders[0].doctorId,
+          doctorName: editingOrders[0].doctorName,
+          distributorId: editingOrders[0].distributorId,
+          distributorName: editingOrders[0].distributorName,
+          employeeId: editingOrders[0].employeeId,
+          employeeName: editingOrders[0].employeeName,
+          visitCategory: editingOrders[0].visitCategory,
+          orderDate: editingOrders[0].orderDate,
+          orderTime: editingOrders[0].orderTime,
+          paymentMode: editingOrders[0].paymentMode,
+          remarks: editingOrders[0].remarks,
+          productId: "",
+          productName: "",
+          orderQuantity: 1,
+          sellingPrice: 0,
+          orderAmount: 0,
+        });
+        renderProductRows();
+      }
+      function fillProductDropdowns() {
+        const productSelects = document.querySelectorAll(".edit-product");
+        productSelects.forEach((select, index) => {
+          select.innerHTML = '<option value="">Select Product</option>';
+          allProducts.forEach((product) => {
             const option = document.createElement("option");
             option.value = product.productId;
-           option.text =`${product.productName} - ${product.availableUnits} Qty`;
-          if(product.productId == editingOrders[index].productId){ option.selected = true;}
+            option.text = `${product.productName} - ${product.availableUnits} Qty`;
+            if (product.productId == editingOrders[index].productId) {
+              option.selected = true;
+            }
             select.appendChild(option);
-        });
-        select.onchange = function(){
-            const product = allProducts.find(p=>p.productId==this.value);
-            if(!product)
-                return;
+          });
+          select.onchange = function () {
+            const product = allProducts.find((p) => p.productId == this.value);
+            if (!product) return;
             editingOrders[index].productId = product.productId;
             editingOrders[index].productName = product.productName;
-            document.querySelectorAll(".edit-price")[index].value = product.sellingPrice;
+            document.querySelectorAll(".edit-price")[index].value =
+              product.sellingPrice;
             calculateRow(index);
-        };
-    });
-}
+          };
+        });
+      }
 
-function loadAllProducts(){
+      function loadAllProducts() {
+        fetch(`${BASE_URL}/order/all`)
+          .then((r) => r.json())
 
-fetch(`${BASE_URL}/order/all`)
+          .then((data) => {
+            allProducts = data;
+          })
 
-.then(r=>r.json())
+          .catch((err) => {
+            console.error(err);
+          });
+      }
+      function loadAllDoctors() {
+        const employeeId = localStorage.getItem("employeeId");
 
-.then(data=>{
+        fetch(`${BASE_URL}/doctor-visit/history/today/${employeeId}`)
+          .then((r) => r.json())
 
-allProducts=data;
+          .then((data) => {
+            allDoctors = data;
+          });
+      }
+      function loadDistributorProductsForEdit(distributorId) {
+        console.log("Loading distributor stock for :", distributorId);
+        fetch(`${BASE_URL}/distributor-stock/${distributorId}`)
+          .then((r) => r.json())
+          .then((data) => {
+            console.log("EDIT STOCK", data);
+            allProducts = data;
+            fillProductDropdowns();
+          })
+          .catch(console.error);
+      }
+      function saveOrderChanges() {
+        console.log(
+          "INPUT VALUE =",
+          document.getElementById("editPaidAmount").value,
+        );
 
-})
+        console.log(
+          "INPUT DUE =",
+          document.getElementById("editDueAmount").value,
+        );
+        const btn = document.getElementById("submitBtn");
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span>Updating...`;
+        const paymentMode = document.getElementById("editPaymentMode").value;
+        const remarks = document.getElementById("editRemarks").value;
+        const paidAmount = Number(
+          document.getElementById("editPaidAmount").value || 0,
+        );
+        const dueAmount = Number(
+          document.getElementById("editDueAmount").value || 0,
+        );
+        let remainingPaid = paidAmount;
+        editingOrders.forEach((order, index) => {
+          order.paymentMode = paymentMode;
+          order.remarks = remarks;
 
-.catch(err=>{
+          // Amount distribution logic
+          let rowPaidAmount = 0;
+          let orderAmt = Number(order.orderAmount || 0);
 
-console.error(err);
-
-});
-
-}
-function loadAllDoctors(){
-
-    const employeeId =
-        localStorage.getItem("employeeId");
-
-    fetch(`${BASE_URL}/doctor-visit/history/today/${employeeId}`)
-
-    .then(r=>r.json())
-
-    .then(data=>{
-
-        allDoctors=data;
-
-    });
-
-}
-function loadDistributorProductsForEdit(distributorId){
-console.log("Loading distributor stock for :", distributorId);
-    fetch(`${BASE_URL}/distributor-stock/${distributorId}`)
-    .then(r => r.json())
-    .then(data => {
-        console.log("EDIT STOCK", data);
-        allProducts = data;
-        fillProductDropdowns();
-    })
-    .catch(console.error);
-}
-function saveOrderChanges() {
-  console.log(
-    "INPUT VALUE =",
-    document.getElementById("editPaidAmount").value
-);
-
-console.log(
-    "INPUT DUE =",
-    document.getElementById("editDueAmount").value
-);
-  const btn = document.getElementById("submitBtn");
-btn.disabled = true;
-btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span>Updating...`;
-    const paymentMode = document.getElementById("editPaymentMode").value;
-    const remarks = document.getElementById("editRemarks").value;
-    const paidAmount = Number(document.getElementById("editPaidAmount").value || 0);
-    const dueAmount = Number(document.getElementById("editDueAmount").value || 0);
-let remainingPaid = paidAmount;
-editingOrders.forEach((order, index) => {
-    order.paymentMode = paymentMode;
-    order.remarks = remarks;
-    
-    // Amount distribution logic
-    let rowPaidAmount = 0;
-    let orderAmt = Number(order.orderAmount || 0);
-    
-    if (remainingPaid > 0) {
-        rowPaidAmount = Math.min(remainingPaid, orderAmt);
-        remainingPaid -= rowPaidAmount;
-    }
-    order.paidAmount = rowPaidAmount;
-    order.dueAmount = orderAmt - rowPaidAmount;
-    console.log("UPDATED ORDER", index, order);
-});
-console.table(editingOrders);
-    document.querySelectorAll(".edit-product").forEach((select,index)=>{
-    const product = allProducts.find(
-        p=>p.productId==select.value
-    );
-    if(product){
-        editingOrders[index].productId = product.productId;
-        editingOrders[index].productName = product.productName;
-    }
-});
-console.log("UPDATE PAYLOAD");
-console.log(JSON.stringify(editingOrders, null, 2));
-console.log("Before foreach");
-console.table(editingOrders);
-    fetch(`${BASE_URL}/order/update-group/${editingOrderGroupId}`,
-        {
-            method:"PUT",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify(editingOrders)
+          if (remainingPaid > 0) {
+            rowPaidAmount = Math.min(remainingPaid, orderAmt);
+            remainingPaid -= rowPaidAmount;
+          }
+          order.paidAmount = rowPaidAmount;
+          order.dueAmount = orderAmt - rowPaidAmount;
+          console.log("UPDATED ORDER", index, order);
+        });
+        console.table(editingOrders);
+        document.querySelectorAll(".edit-product").forEach((select, index) => {
+          const product = allProducts.find((p) => p.productId == select.value);
+          if (product) {
+            editingOrders[index].productId = product.productId;
+            editingOrders[index].productName = product.productName;
+          }
+        });
+        console.log("UPDATE PAYLOAD");
+        console.log(JSON.stringify(editingOrders, null, 2));
+        console.log("Before foreach");
+        console.table(editingOrders);
+        fetch(`${BASE_URL}/order/update-group/${editingOrderGroupId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(editingOrders),
+        })
+          .then(async (response) => {
+            const text = await response.text();
+            if (!response.ok) {
+              throw new Error(text);
+            }
+            return text ? JSON.parse(text) : [];
+          })
+          .then(() => {
+            editOrderModal.hide();
+            loadOrderHistory();
+            alert("Order Updated Successfully");
+            btn.disabled = false;
+            btn.innerHTML =
+              '<i class="fa-solid fa-floppy-disk"></i> Update Order';
+          })
+          .catch((error) => {
+            console.error(error);
+            alert(error.message);
+          });
+      }
+      function clearEditModal() {
+        editingOrders = [];
+        editingOrderGroupId = "";
+        document.getElementById("editProductTable").innerHTML = "";
+        document.getElementById("editGrandTotal").innerText = "0";
+      }
+      document
+        .getElementById("editOrderModal")
+        .addEventListener("hidden.bs.modal", function () {
+          clearEditModal();
+        });
+      function removeEditProductRow(index) {
+        if (editingOrders.length == 1) {
+          alert("At least one product is required.");
+          return;
         }
-    )
-    .then(async response=>{
-        const text =
-            await response.text();
-        if(!response.ok){
-            throw new Error(text);
+        if (!confirm("Remove this product?")) {
+          return;
         }
-        return text
-            ? JSON.parse(text)
-            : [];
-    })
-    .then(()=>{
-        editOrderModal.hide();
-        loadOrderHistory();
-        alert("Order Updated Successfully");
-        btn.disabled = false;
-btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update Order';
-    })
-    .catch(error=>{
-        console.error(error);
-        alert(error.message);
-    });
-}
-function clearEditModal(){
-    editingOrders=[];
-    editingOrderGroupId="";
-    document.getElementById("editProductTable").innerHTML="";
-    document.getElementById("editGrandTotal").innerText="0";
-}
-document.getElementById("editOrderModal")
-.addEventListener(
-"hidden.bs.modal",
-function(){
-    clearEditModal();
-});
-function removeEditProductRow(index){
-    if(editingOrders.length==1){
-        alert("At least one product is required.");
-        return;
-    }
-    if(!confirm("Remove this product?")){
-        return;
-    }
-    editingOrders.splice(index,1);
-    renderProductRows();
-}
-function formatTime(dateTime) {
+        editingOrders.splice(index, 1);
+        renderProductRows();
+      }
+      function formatTime(dateTime) {
         if (!dateTime) return "-";
         const d = new Date(dateTime);
         return d.toLocaleTimeString("en-IN", {

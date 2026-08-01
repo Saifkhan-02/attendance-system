@@ -48,10 +48,12 @@ import com.lowagie.text.pdf.PdfWriter;
 @RequestMapping("/order")
 @CrossOrigin("*")
 public class ProductOrderController {
+
     private final ProductOrderRepository orderRepository;
     private final DistributorStockRepository distributorStockRepository;
     private final PaymentHistoryRepository paymentHistoryRepository;
     private final DoctorVisitRepository doctorVisitRepository;
+
     public ProductOrderController(ProductOrderRepository orderRepository,
             DistributorStockRepository distributorStockRepository,
             PaymentHistoryRepository paymentHistoryRepository,
@@ -61,6 +63,7 @@ public class ProductOrderController {
         this.paymentHistoryRepository = paymentHistoryRepository;
         this.doctorVisitRepository = doctorVisitRepository;
     }
+
     @GetMapping("/history/today/{employeeId}")
     public List<ProductOrder> getTodayOrders(@PathVariable Long employeeId) {
         String today = LocalDate.now().toString();
@@ -75,10 +78,12 @@ public class ProductOrderController {
         return orderRepository
                 .findByEmployeeIdAndOrderDateStartingWithOrderByIdDesc(employeeId, month);
     }
+
     @GetMapping("/history/{employeeId}")
     public List<ProductOrder> getOrderHistory(@PathVariable Long employeeId) {
         return orderRepository.findByEmployeeId(employeeId);
     }
+
     @GetMapping("/all")
     public List<ProductOrder> getAllOrders() {
 
@@ -136,14 +141,13 @@ public class ProductOrderController {
     }
 
 // SINGLE INVOICE / BILL PDF DOWNLOAD
-   
 // EMPLOYEE DAILY REPORT PDF DOWNLOAD
     @GetMapping("/employee-report")
     public ResponseEntity<byte[]> employeeReport(
             @RequestParam Long employeeId,
             @RequestParam String date
     ) throws Exception {
-        List<ProductOrder> orders= orderRepository.findEmployeeDailyOrders(employeeId, date);
+        List<ProductOrder> orders = orderRepository.findEmployeeDailyOrders(employeeId, date);
         if (orders.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -153,7 +157,7 @@ public class ProductOrderController {
         double dueAmount = 0;
         int totalQuantity = 0;
         for (ProductOrder order : orders) {
-            totalAmount+= order.getOrderAmount() == null
+            totalAmount += order.getOrderAmount() == null
                     ? 0
                     : order.getOrderAmount();
             paidAmount
@@ -176,11 +180,11 @@ public class ProductOrderController {
         // ================= BORDER =================
         PdfContentByte canvas = writer.getDirectContent();
         Rectangle border = new Rectangle(
-                        20,
-                        20,
-                        PageSize.A4.getWidth() - 20,
-                        PageSize.A4.getHeight() - 20
-                );
+                20,
+                20,
+                PageSize.A4.getWidth() - 20,
+                PageSize.A4.getHeight() - 20
+        );
         border.setBorder(Rectangle.BOX);
         border.setBorderWidth(2);
         border.setBorderColor(new Color(0, 102, 51));
@@ -193,12 +197,12 @@ public class ProductOrderController {
         logo.setAlignment(Image.ALIGN_CENTER);
         document.add(logo);
 // ================= TITLE =================
-        Font titleFont= new Font(
-                        Font.HELVETICA,
-                        18,
-                        Font.BOLD,
-                        new Color(0, 102, 51)
-                );
+        Font titleFont = new Font(
+                Font.HELVETICA,
+                18,
+                Font.BOLD,
+                new Color(0, 102, 51)
+        );
         Paragraph title = new Paragraph("EMPLOYEE DAILY ORDER REPORT", titleFont);
         title.setAlignment(Paragraph.ALIGN_CENTER);
         document.add(title);
@@ -252,31 +256,31 @@ public class ProductOrderController {
 
             String area = doctorOrders.get(0).getArea();
 
-           Font doctorFont = new Font(
-        Font.HELVETICA,
-        13,
-        Font.BOLD,
-        new Color(0, 102, 51)
-);
+            Font doctorFont = new Font(
+                    Font.HELVETICA,
+                    13,
+                    Font.BOLD,
+                    new Color(0, 102, 51)
+            );
 
-Font areaFont = new Font(
-        Font.HELVETICA,
-        10,
-        Font.BOLD,
-        Color.BLACK
-);
+            Font areaFont = new Font(
+                    Font.HELVETICA,
+                    10,
+                    Font.BOLD,
+                    Color.BLACK
+            );
 
-Paragraph doctorHeading = new Paragraph();
+            Paragraph doctorHeading = new Paragraph();
 
-doctorHeading.add(new com.lowagie.text.Chunk(
-        "Doctor : " + doctorName + "\n",
-        doctorFont
-));
+            doctorHeading.add(new com.lowagie.text.Chunk(
+                    "Doctor : " + doctorName + "\n",
+                    doctorFont
+            ));
 
-doctorHeading.add(new com.lowagie.text.Chunk(
-        "Area : " + (area == null ? "" : area),
-        areaFont
-));
+            doctorHeading.add(new com.lowagie.text.Chunk(
+                    "Area : " + (area == null ? "" : area),
+                    areaFont
+            ));
 
             document.add(doctorHeading);
 
@@ -304,17 +308,17 @@ doctorHeading.add(new com.lowagie.text.Chunk(
 
             for (String h : headers) {
 
-                PdfPCell cell
-                        = new PdfPCell(
-                                new Paragraph(
-                                        h,
-                                        new Font(
-                                                Font.HELVETICA,
-                                                11,
-                                                Font.BOLD
-                                        )
+                PdfPCell cell = new PdfPCell(
+                        new Paragraph(
+                                h,
+                                new Font(
+                                        Font.HELVETICA,
+                                        11,
+                                        Font.BOLD,
+                                        Color.WHITE
                                 )
-                        );
+                        )
+                );
 
                 cell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
 
@@ -380,7 +384,7 @@ doctorHeading.add(new com.lowagie.text.Chunk(
 
             Paragraph subtotal
                     = new Paragraph(
-                            "Doctor Total : "
+                            "Total Doctor Amount : "
                             + formatAmount(doctorTotal),
                             new Font(
                                     Font.HELVETICA,
@@ -481,9 +485,9 @@ doctorHeading.add(new com.lowagie.text.Chunk(
                 .format(java.time.format.DateTimeFormatter.ofPattern("hh:mm:ss a"));
         for (ProductOrder order : orders) {
             DistributorStock stock = distributorStockRepository.findByDistributorIdAndProductId(
-                            order.getDistributorId(),
-                            order.getProductId()
-                    )
+                    order.getDistributorId(),
+                    order.getProductId()
+            )
                     .orElseThrow(() -> new RuntimeException("Distributor stock not found for " + order.getProductName()));
             Integer availableUnits = stock.getAvailableUnits() == null ? 0 : stock.getAvailableUnits();
             if (order.getOrderQuantity() > availableUnits) {
@@ -492,9 +496,9 @@ doctorHeading.add(new com.lowagie.text.Chunk(
         }
         for (ProductOrder order : orders) {
             DistributorStock stock = distributorStockRepository.findByDistributorIdAndProductId(
-                            order.getDistributorId(),
-                            order.getProductId()
-                    )
+                    order.getDistributorId(),
+                    order.getProductId()
+            )
                     .orElseThrow(()
                             -> new RuntimeException("Distributor stock not found"));
             stock.setAvailableUnits(
@@ -514,10 +518,10 @@ doctorHeading.add(new com.lowagie.text.Chunk(
                 }
             }
             order.setOrderDate(LocalDate.now().toString());
-    order.setStatus("Placed");
-    order.setInvoiceNo(invoiceNo);
-    order.setOrderGroupId(orderGroupId);
-    order.setOrderTime(orderTime);
+            order.setStatus("Placed");
+            order.setInvoiceNo(invoiceNo);
+            order.setOrderGroupId(orderGroupId);
+            order.setOrderTime(orderTime);
         }
         return orderRepository.saveAll(orders);
     }
@@ -540,6 +544,7 @@ doctorHeading.add(new com.lowagie.text.Chunk(
                 orderRepository.count());
         return result;
     }
+
     @GetMapping("/admin/sales-payment/employee/{employeeId}")
     public Map<String, Object> getEmployeeSales(
             @PathVariable Long employeeId) {
@@ -565,10 +570,12 @@ doctorHeading.add(new com.lowagie.text.Chunk(
         result.put("orders", orders.size());
         return result;
     }
+
     @GetMapping("/employee/{id}/order-count")
     public Long getOrderCount(@PathVariable Long id) {
         return orderRepository.countOrdersByEmployeeId(id);
     }
+
     @PutMapping("/collect-payment/{orderId}")
     public ProductOrder collectPayment(
             @PathVariable Long orderId,
@@ -586,7 +593,7 @@ doctorHeading.add(new com.lowagie.text.Chunk(
         if (receivedAmount > currentDue) {
             throw new RuntimeException("Received amount cannot be greater than due amount");
         }
-        double oldPaid  = order.getPaidAmount() == null ? 0 : order.getPaidAmount();
+        double oldPaid = order.getPaidAmount() == null ? 0 : order.getPaidAmount();
         order.setPaidAmount(oldPaid + receivedAmount);
         order.setDueAmount(currentDue - receivedAmount);
         order.setPaymentMode(paymentMode);
@@ -612,6 +619,7 @@ doctorHeading.add(new com.lowagie.text.Chunk(
         paymentHistoryRepository.save(history);
         return orderRepository.save(order);
     }
+
     @GetMapping("/admin/payment-history")
     public List<PaymentHistory> getPaymentHistory() {
 
@@ -623,27 +631,28 @@ doctorHeading.add(new com.lowagie.text.Chunk(
     private String formatAmount(double amount) {
         return String.format("₹%,.2f", amount);
     }
-   @PutMapping("/update-group/{groupId}")
-public List<ProductOrder> updateOrderGroup(
-        @PathVariable String groupId,
-        @RequestBody List<ProductOrder> requestOrders) {
-    List<ProductOrder> dbOrders = orderRepository.findByOrderGroupId(groupId);
-    if (dbOrders.isEmpty()) {
-        throw new RuntimeException("Order group not found");
+
+    @PutMapping("/update-group/{groupId}")
+    public List<ProductOrder> updateOrderGroup(
+            @PathVariable String groupId,
+            @RequestBody List<ProductOrder> requestOrders) {
+        List<ProductOrder> dbOrders = orderRepository.findByOrderGroupId(groupId);
+        if (dbOrders.isEmpty()) {
+            throw new RuntimeException("Order group not found");
+        }
+        orderRepository.deleteAll(dbOrders);
+        for (ProductOrder order : requestOrders) {
+            order.setId(null);
+            order.setOrderGroupId(groupId);
+            order.setInvoiceNo(dbOrders.get(0).getInvoiceNo());
+            order.setEmployeeId(dbOrders.get(0).getEmployeeId());
+            order.setEmployeeName(dbOrders.get(0).getEmployeeName());
+            order.setDistributorId(dbOrders.get(0).getDistributorId());
+            order.setDistributorName(dbOrders.get(0).getDistributorName());
+            order.setOrderDate(dbOrders.get(0).getOrderDate());
+            order.setOrderTime(dbOrders.get(0).getOrderTime());
+            order.setVisitCategory(dbOrders.get(0).getVisitCategory());
+        }
+        return orderRepository.saveAll(requestOrders);
     }
-    orderRepository.deleteAll(dbOrders);
-    for(ProductOrder order : requestOrders){
-        order.setId(null);
-        order.setOrderGroupId(groupId);
-        order.setInvoiceNo(dbOrders.get(0).getInvoiceNo());
-        order.setEmployeeId(dbOrders.get(0).getEmployeeId());
-        order.setEmployeeName(dbOrders.get(0).getEmployeeName());
-        order.setDistributorId(dbOrders.get(0).getDistributorId());
-        order.setDistributorName(dbOrders.get(0).getDistributorName());
-        order.setOrderDate(dbOrders.get(0).getOrderDate());
-        order.setOrderTime(dbOrders.get(0).getOrderTime());
-        order.setVisitCategory(dbOrders.get(0).getVisitCategory());
-    }
-    return orderRepository.saveAll(requestOrders);
-}
 }
