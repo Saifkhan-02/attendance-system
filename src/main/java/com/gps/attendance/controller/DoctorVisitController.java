@@ -109,12 +109,12 @@ public class DoctorVisitController {
         return repository.count();
     }
 
-  @GetMapping("/doctor-visit/unique-count")
-public long getUniqueCount(
-        @RequestParam String category
-) {
-    return repository.countUniqueByCategory(category);
-}
+    @GetMapping("/doctor-visit/unique-count")
+    public long getUniqueCount(
+            @RequestParam String category
+    ) {
+        return repository.countUniqueByCategory(category);
+    }
 
     @GetMapping("/doctor-visit/monthly-count")
     public long getMonthlyVisitCount() {
@@ -226,8 +226,6 @@ public long getUniqueCount(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-
-       
 
         return repository.findDoctorVisits(
                 category,
@@ -485,6 +483,20 @@ public long getUniqueCount(
         }
 
         return new ArrayList<>(uniqueMap.values());
+    }
+
+    @GetMapping("/doctor-visit/employees")
+    public List<String> getEmployees(
+            @RequestParam String category
+    ) {
+        return repository.findAllEmployeeNames(category);
+    }
+
+    @GetMapping("/doctor-visit/doctors")
+    public List<String> getDoctors(
+            @RequestParam String category
+    ) {
+        return repository.findAllDoctorNames(category);
     }
 
 }

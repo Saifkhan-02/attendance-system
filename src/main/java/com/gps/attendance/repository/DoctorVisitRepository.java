@@ -197,7 +197,32 @@ AND d.visitCategory = :category
 """)
 long countUniqueByCategory(@Param("category") String category);
 
- @Query("""
+@Query("""
+SELECT DISTINCT d.employeeName
+FROM DoctorVisit d
+WHERE d.visitCategory = :category
+AND d.employeeName IS NOT NULL
+AND TRIM(d.employeeName) <> ''
+ORDER BY d.employeeName
+""")
+List<String> findAllEmployeeNames(
+        @Param("category") String category
+);
+
+@Query("""
+SELECT DISTINCT d.doctorName
+FROM DoctorVisit d
+WHERE d.visitCategory = :category
+AND d.doctorName IS NOT NULL
+AND TRIM(d.doctorName) <> ''
+ORDER BY d.doctorName
+""")
+List<String> findAllDoctorNames(
+        @Param("category") String category
+);
+
+ @Query(
+value = """
 SELECT d
 FROM DoctorVisit d
 WHERE d.id IN (
@@ -206,14 +231,33 @@ WHERE d.id IN (
     WHERE d2.visitCategory = :visitCategory
     GROUP BY LOWER(TRIM(d2.doctorName))
 )
-AND (:employeeName IS NULL OR :employeeName='' 
+AND (:employeeName IS NULL OR :employeeName=''
      OR LOWER(d.employeeName) LIKE LOWER(CONCAT('%',:employeeName,'%')))
 AND (:doctorName IS NULL OR :doctorName=''
      OR LOWER(d.doctorName) LIKE LOWER(CONCAT('%',:doctorName,'%')))
 AND (:visitDate IS NULL OR :visitDate=''
      OR d.visitDate = :visitDate)
 ORDER BY d.id DESC
-""")
+""",
+countQuery = """
+SELECT COUNT(*)
+FROM DoctorVisit d
+WHERE d.id IN (
+    SELECT MAX(d2.id)
+    FROM DoctorVisit d2
+    WHERE d2.visitCategory = :visitCategory
+    GROUP BY LOWER(TRIM(d2.doctorName))
+)
+AND (:employeeName IS NULL OR :employeeName=''
+     OR LOWER(d.employeeName) LIKE LOWER(CONCAT('%',:employeeName,'%')))
+AND (:doctorName IS NULL OR :doctorName=''
+     OR LOWER(d.doctorName) LIKE LOWER(CONCAT('%',:doctorName,'%')))
+AND (:visitDate IS NULL OR :visitDate=''
+     OR d.visitDate = :visitDate)
+"""
+)
+
+
 Page<DoctorVisit> findDoctorVisits(
         @Param("visitCategory") String visitCategory,
         @Param("employeeName") String employeeName,
@@ -221,5 +265,4 @@ Page<DoctorVisit> findDoctorVisits(
         @Param("visitDate") String visitDate,
         Pageable pageable
 );
-
 }
