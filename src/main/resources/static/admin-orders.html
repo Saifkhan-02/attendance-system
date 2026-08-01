@@ -779,9 +779,14 @@ if (params.length > 0) {
     const data = await response.json();
 
     document.getElementById("totalOrders").innerText = data.totalOrders;
-    document.getElementById("totalAmount").innerText = "₹" + data.totalAmount;
-    document.getElementById("paidAmount").innerText = "₹" + data.paidAmount;
-    document.getElementById("dueAmount").innerText = "₹" + data.dueAmount;
+document.getElementById("totalAmount").innerText =
+    "₹" + Number(Number(data.totalAmount || 0).toFixed(2));
+
+document.getElementById("paidAmount").innerText =
+    "₹" + Number(Number(data.paidAmount || 0).toFixed(2));
+
+document.getElementById("dueAmount").innerText =
+    "₹" + Number(Number(data.dueAmount || 0).toFixed(2));
 }
 
 async function searchOrders() {
