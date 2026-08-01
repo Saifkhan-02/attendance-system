@@ -110,13 +110,16 @@ public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> 
 
     @Query(
             value = """
-    SELECT COUNT(*)
-    FROM doctor_visit
-    WHERE visit_date = TO_CHAR(CURRENT_DATE,'YYYY-MM-DD')
-    """,
+SELECT COUNT(*)
+FROM doctor_visit
+WHERE visit_date = TO_CHAR(CURRENT_DATE,'YYYY-MM-DD')
+AND visit_category = :category
+""",
             nativeQuery = true
     )
-    long getTodayVisitCount();
+    long getTodayVisitCount(
+            @Param("category") String category
+    );
 
     List<DoctorVisit> findByEmployeeIdInOrderByIdDesc(List<Long> employeeIds);
 
@@ -188,16 +191,36 @@ GROUP BY d.employeeId
                     String visitCategory
             );
 
-   @Query("""
-SELECT COUNT(DISTINCT LOWER(TRIM(d.doctorName)))
-FROM DoctorVisit d
-WHERE d.doctorName IS NOT NULL
-AND TRIM(d.doctorName) <> ''
-AND d.visitCategory = :category
-""")
+  @Query(value = """
+SELECT COUNT(
+DISTINCT CONCAT(
+LOWER(TRIM(doctor_name)),
+'|',
+LOWER(TRIM(COALESCE(hospital_name,'')))
+))
+FROM doctor_visit
+WHERE UPPER(TRIM(visit_category)) = UPPER(TRIM(:category))
+AND doctor_name IS NOT NULL
+AND TRIM(doctor_name) <> ''
+""", nativeQuery = true)
 long countUniqueByCategory(@Param("category") String category);
 
-@Query("""
+@Query(value = """
+SELECT COUNT(
+DISTINCT CONCAT(
+LOWER(TRIM(doctor_name)),
+'|',
+LOWER(TRIM(COALESCE(hospital_name,''))),
+'|',
+UPPER(TRIM(visit_category))
+))
+FROM doctor_visit
+WHERE doctor_name IS NOT NULL
+AND TRIM(doctor_name) <> ''
+""", nativeQuery = true)
+long countAllUniqueParties();
+
+    @Query("""
 SELECT DISTINCT d.employeeName
 FROM DoctorVisit d
 WHERE d.visitCategory = :category
@@ -205,11 +228,11 @@ AND d.employeeName IS NOT NULL
 AND TRIM(d.employeeName) <> ''
 ORDER BY d.employeeName
 """)
-List<String> findAllEmployeeNames(
-        @Param("category") String category
-);
+    List<String> findAllEmployeeNames(
+            @Param("category") String category
+    );
 
-@Query("""
+    @Query("""
 SELECT DISTINCT d.doctorName
 FROM DoctorVisit d
 WHERE d.visitCategory = :category
@@ -217,20 +240,15 @@ AND d.doctorName IS NOT NULL
 AND TRIM(d.doctorName) <> ''
 ORDER BY d.doctorName
 """)
-List<String> findAllDoctorNames(
-        @Param("category") String category
-);
+    List<String> findAllDoctorNames(
+            @Param("category") String category
+    );
 
- @Query(
-value = """
+   @Query(
+    value = """
 SELECT d
 FROM DoctorVisit d
-WHERE d.id IN (
-    SELECT MAX(d2.id)
-    FROM DoctorVisit d2
-    WHERE d2.visitCategory = :visitCategory
-    GROUP BY LOWER(TRIM(d2.doctorName))
-)
+WHERE d.visitCategory = :visitCategory
 AND (:employeeName IS NULL OR :employeeName=''
      OR LOWER(d.employeeName) LIKE LOWER(CONCAT('%',:employeeName,'%')))
 AND (:doctorName IS NULL OR :doctorName=''
@@ -239,15 +257,10 @@ AND (:visitDate IS NULL OR :visitDate=''
      OR d.visitDate = :visitDate)
 ORDER BY d.id DESC
 """,
-countQuery = """
-SELECT COUNT(*)
+    countQuery = """
+SELECT COUNT(d)
 FROM DoctorVisit d
-WHERE d.id IN (
-    SELECT MAX(d2.id)
-    FROM DoctorVisit d2
-    WHERE d2.visitCategory = :visitCategory
-    GROUP BY LOWER(TRIM(d2.doctorName))
-)
+WHERE d.visitCategory = :visitCategory
 AND (:employeeName IS NULL OR :employeeName=''
      OR LOWER(d.employeeName) LIKE LOWER(CONCAT('%',:employeeName,'%')))
 AND (:doctorName IS NULL OR :doctorName=''
@@ -257,12 +270,77 @@ AND (:visitDate IS NULL OR :visitDate=''
 """
 )
 
+    Page<DoctorVisit> findDoctorVisits(
+            @Param("visitCategory") String visitCategory,
+            @Param("employeeName") String employeeName,
+            @Param("doctorName") String doctorName,
+            @Param("visitDate") String visitDate,
+            Pageable pageable
+    );
 
-Page<DoctorVisit> findDoctorVisits(
+    @Query(
+    value = """
+SELECT d
+FROM DoctorVisit d
+WHERE d.id IN (
+    SELECT MAX(d2.id)
+    FROM DoctorVisit d2
+    WHERE d2.visitCategory = :visitCategory
+    GROUP BY
+        LOWER(TRIM(d2.doctorName)),
+        LOWER(TRIM(COALESCE(d2.hospitalName,'')))
+)
+AND (:employeeName IS NULL OR :employeeName=''
+     OR LOWER(d.employeeName) LIKE LOWER(CONCAT('%',:employeeName,'%')))
+AND (:doctorName IS NULL OR :doctorName=''
+     OR LOWER(d.doctorName) LIKE LOWER(CONCAT('%',:doctorName,'%')))
+     AND (
+    :headquarter IS NULL
+    OR :headquarter = ''
+    OR UPPER(TRIM(d.headquarter)) = UPPER(TRIM(:headquarter))
+)
+
+AND (
+    :route IS NULL
+    OR :route = ''
+    OR UPPER(TRIM(d.routeName)) = UPPER(TRIM(:route))
+)
+ORDER BY d.id DESC
+""",
+countQuery = """
+SELECT COUNT(*)
+FROM DoctorVisit d
+WHERE d.id IN (
+    SELECT MAX(d2.id)
+    FROM DoctorVisit d2
+    WHERE d2.visitCategory = :visitCategory
+    GROUP BY
+        LOWER(TRIM(d2.doctorName)),
+        LOWER(TRIM(COALESCE(d2.hospitalName,'')))
+)
+AND (:employeeName IS NULL OR :employeeName=''
+     OR LOWER(d.employeeName) LIKE LOWER(CONCAT('%',:employeeName,'%')))
+AND (:doctorName IS NULL OR :doctorName=''
+     OR LOWER(d.doctorName) LIKE LOWER(CONCAT('%',:doctorName,'%')))
+    AND (
+    :headquarter IS NULL
+    OR :headquarter = ''
+    OR UPPER(TRIM(d.headquarter)) = UPPER(TRIM(:headquarter))
+)
+
+AND (
+    :route IS NULL
+    OR :route = ''
+    OR UPPER(TRIM(d.routeName)) = UPPER(TRIM(:route))
+)
+"""
+)
+Page<DoctorVisit> findUniqueDoctors(
         @Param("visitCategory") String visitCategory,
         @Param("employeeName") String employeeName,
         @Param("doctorName") String doctorName,
-        @Param("visitDate") String visitDate,
+        @Param("headquarter") String headquarter,
+        @Param("route") String route,
         Pageable pageable
 );
 }

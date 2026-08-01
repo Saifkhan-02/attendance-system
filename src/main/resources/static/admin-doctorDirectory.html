@@ -280,7 +280,10 @@
               <select
                 id="routeFilter"
                 class="form-select"
-                onchange="loadDoctors()"
+                onchange="
+                  currentPage = 0;
+                  loadDoctors();
+                "
               >
                 <option value="">All Routes</option>
               </select>
@@ -301,12 +304,25 @@
       <div class="row g-4" id="doctorContainer">
         <!-- Doctor Cards yaha aayenge -->
       </div>
+      <div class="text-center mt-4 mb-5">
+        <button
+          id="loadMoreBtn"
+          class="btn btn-primary px-5 py-2"
+          onclick="loadMore()"
+        >
+          Load More
+        </button>
+      </div>
     </div>
 
     <script src="js/config.js"></script>
     <script>
       let doctors = [];
       let selectedCategory = "DOCTOR";
+
+      let currentPage = 0;
+      let pageSize = 20;
+      let totalPages = 0;
 
       function goBack() {
         window.location.replace("admin-dashboard.html");
@@ -341,6 +357,8 @@
 
       function changeListCategory() {
         selectedCategory = getSelectedCategory();
+
+        currentPage = 0;
 
         console.log("Category =", selectedCategory);
 
@@ -379,6 +397,7 @@
                       <option value="${hq}">
                           ${hq}
                       </option>
+                      
                   `;
           });
 
@@ -394,7 +413,11 @@
 
         routeDropdown.innerHTML = `<option value="">All Routes</option>`;
 
-        if (!hqId) return;
+        if (!hqId) {
+          currentPage = 0;
+          loadDoctors();
+          return;
+        }
 
         try {
           const response = await fetch(
@@ -409,6 +432,7 @@
                   ${route.routeName}
               </option>`;
           });
+          currentPage = 0;
           loadDoctors();
         } catch (e) {
           console.error(e);
@@ -419,9 +443,21 @@
         const search = document.getElementById("searchDoctor").value.trim();
         try {
           const category = selectedCategory;
+          const headquarter = document.getElementById("hqFilter").value;
           const route = document.getElementById("routeFilter").value;
 
-          let url = BASE_URL + "/doctor-visit/directory?category=" + category;
+          let url =
+            BASE_URL +
+            "/doctor-visit/unique-directory?category=" +
+            category +
+            "&page=" +
+            currentPage +
+            "&size=" +
+            pageSize;
+
+          if (headquarter) {
+            url += "&headquarter=" + encodeURIComponent(headquarter);
+          }
 
           if (route) {
             url += "&route=" + encodeURIComponent(route);
@@ -439,6 +475,8 @@
 
           const doctors = data.content;
 
+          totalPages = data.totalPages;
+
           const countResponse = await fetch(
             BASE_URL + "/doctor-visit/unique-count?category=" + category,
           );
@@ -451,6 +489,10 @@
               : "Total Doctors : " + total;
 
           console.log("Doctors =", doctors);
+
+          if (currentPage === 0) {
+            document.getElementById("doctorContainer").innerHTML = "";
+          }
 
           let html = "";
 
@@ -503,7 +545,14 @@
             </div>`;
           });
 
-          document.getElementById("doctorContainer").innerHTML = html;
+          document.getElementById("doctorContainer").innerHTML += html;
+
+          if (currentPage >= totalPages - 1) {
+            document.getElementById("loadMoreBtn").style.display = "none";
+          } else {
+            document.getElementById("loadMoreBtn").style.display =
+              "inline-block";
+          }
         } catch (error) {
           console.error(error);
         }
@@ -513,19 +562,17 @@
       }
 
       function searchDoctors() {
-        let input = document.getElementById("searchDoctor").value.toLowerCase();
+        currentPage = 0;
 
-        let cards = document.querySelectorAll(".doctor-card");
+        loadDoctors();
+      }
 
-        cards.forEach((card) => {
-          let text = card.innerText.toLowerCase();
+      function loadMore() {
+        if (currentPage < totalPages - 1) {
+          currentPage++;
 
-          if (text.includes(input)) {
-            card.parentElement.style.display = "";
-          } else {
-            card.parentElement.style.display = "none";
-          }
-        });
+          loadDoctors();
+        }
       }
     </script>
   </body>

@@ -45,6 +45,7 @@ public class DoctorVisit {
     private String photo;
     private String remarks;
     private String status;
+    private String headquarter;
 
     @Transient
     private long totalVisitCount;
@@ -241,4 +242,12 @@ public class DoctorVisit {
     public void setTotalVisitCount(long totalVisitCount) {
         this.totalVisitCount = totalVisitCount;
     }
+
+    public String getHeadquarter() {
+    return headquarter;
+}
+
+public void setHeadquarter(String headquarter) {
+    this.headquarter = headquarter;
+}
 }

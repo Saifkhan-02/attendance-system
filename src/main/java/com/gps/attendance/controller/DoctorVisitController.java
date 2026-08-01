@@ -116,14 +116,21 @@ public class DoctorVisitController {
         return repository.countUniqueByCategory(category);
     }
 
+    @GetMapping("/doctor-visit/total-party-count")
+    public long getTotalPartyCount() {
+        return repository.countAllUniqueParties();
+    }
+
     @GetMapping("/doctor-visit/monthly-count")
     public long getMonthlyVisitCount() {
         return repository.getCurrentMonthVisitCount();
     }
 
     @GetMapping("/doctor-visit/today-count")
-    public long getTodayVisitCount() {
-        return repository.getTodayVisitCount();
+    public long getTodayVisitCount(
+            @RequestParam String category
+    ) {
+        return repository.getTodayVisitCount(category);
     }
 
     @GetMapping("/doctor-visit/top10")
@@ -235,6 +242,27 @@ public class DoctorVisitController {
                 PageRequest.of(page, size)
         );
     }
+
+@GetMapping("/doctor-visit/unique-directory")
+public Page<DoctorVisit> getUniqueDoctorDirectory(
+        @RequestParam String category,
+        @RequestParam(required = false) String employeeName,
+        @RequestParam(required = false) String doctorName,
+        @RequestParam(required = false) String headquarter,
+        @RequestParam(required = false) String route,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size
+) {
+
+    return repository.findUniqueDoctors(
+            category,
+            employeeName,
+            doctorName,
+            headquarter,
+            route,
+            PageRequest.of(page, size)
+    );
+}
 
     @GetMapping("/doctor-visit/daily-target/{employeeId}")
     public Map<String, Object> getDailyTarget(@PathVariable Long employeeId) {

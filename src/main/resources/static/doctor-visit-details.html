@@ -789,18 +789,33 @@
         return hour + ":" + minute + " " + ampm;
       }
 
-      function updateTodayVisitCount() {
-        const today = new Date().toISOString().split("T")[0];
+    async function updateTodayVisitCount() {
 
-        const todayCount = allDoctorVisits.filter(
-          (v) => v.visitDate === today,
-        ).length;
+    try {
+
+        const response = await fetch(
+            BASE_URL +
+            "/doctor-visit/today-count?category=" +
+            selectedCategory
+        );
+
+        const todayCount = await response.json();
 
         document.getElementById("todayVisitCount").innerText =
-          selectedCategory === "CHEMIST"
-            ? `Today's Chemist Visits : ${todayCount}`
-            : `Today's Doctor Visits : ${todayCount}`;
-      }
+            selectedCategory === "CHEMIST"
+                ? `Today's Chemist Visits : ${todayCount}`
+                : `Today's Doctor Visits : ${todayCount}`;
+
+    } catch (e) {
+
+        console.error(e);
+
+        document.getElementById("todayVisitCount").innerText =
+            selectedCategory === "CHEMIST"
+                ? "Today's Chemist Visits : 0"
+                : "Today's Doctor Visits : 0";
+    }
+}
 
       function resetFilters() {
         if (employeeTS) {
@@ -822,6 +837,7 @@
         const details = button
           .closest(".visit-card")
           .querySelector(".visit-details");
+
 
         details.classList.toggle("d-none");
 

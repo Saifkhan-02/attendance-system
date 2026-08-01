@@ -1025,13 +1025,13 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("totalEmployees").innerText = "0";
         });
 
-   fetch(`${BASE_URL}/doctor-visit/unique-count?category=DOCTOR`)
+   fetch(`${BASE_URL}/doctor-visit/total-party-count`)
     .then(response => response.text())
     .then(count => {
         document.getElementById("totalDoctors").innerText = count;
     })
     .catch(error => {
-        console.error("Doctor Count Error:", error);
+        console.error(error);
         document.getElementById("totalDoctors").innerText = "0";
     });
 
