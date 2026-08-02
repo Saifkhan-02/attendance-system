@@ -1,6 +1,7 @@
 package com.gps.attendance.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,10 +20,12 @@ FROM RouteMaster r
 WHERE r.status = 'Active'
 ORDER BY r.headquarterName
 """)
-List<String> getAllHeadquarters();
+    List<String> getAllHeadquarters();
 
-List<RouteMaster> findByHeadquarterNameAndStatusOrderByRouteNameAsc(
-        String headquarterName,
-        String status
-);
+    List<RouteMaster> findByHeadquarterNameAndStatusOrderByRouteNameAsc(
+            String headquarterName,
+            String status
+    );
+
+    Optional<RouteMaster> findByRouteNameIgnoreCase(String routeName);
 }

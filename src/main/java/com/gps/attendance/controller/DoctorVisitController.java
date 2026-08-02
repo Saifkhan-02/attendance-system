@@ -32,6 +32,8 @@ import com.gps.attendance.repository.DoctorVisitRepository;
 import com.gps.attendance.repository.EmployeeRepository;
 import com.gps.attendance.repository.LeaveRequestRepository;
 import com.gps.attendance.service.CloudinaryService;
+import com.gps.attendance.entity.RouteMaster;
+import com.gps.attendance.repository.RouteMasterRepository;
 
 @RestController
 @CrossOrigin("*")
@@ -51,6 +53,9 @@ public class DoctorVisitController {
 
     @Autowired
     private CloudinaryService cloudinaryService;
+
+    @Autowired
+    private RouteMasterRepository routeMasterRepository;
 
     @PostMapping("/doctor-visit/save")
     public ResponseEntity<?> saveDoctorVisit(
@@ -78,6 +83,18 @@ public class DoctorVisitController {
         visit.setDoctorName(doctorName);
         visit.setVisitDate(LocalDate.now(ZoneId.of("Asia/Kolkata")).toString());
         visit.setVisitTime(LocalTime.now(ZoneId.of("Asia/Kolkata")));
+        String route = visit.getRouteName();
+
+        if (route != null && !route.isBlank()) {
+
+            RouteMaster routeMaster = routeMasterRepository
+                    .findByRouteNameIgnoreCase(route)
+                    .orElse(null);
+
+            if (routeMaster != null) {
+                visit.setHeadquarter(routeMaster.getHeadquarterName());
+            }
+        }
         visit.setStatus("Completed");
 
         DoctorVisit savedVisit = repository.save(visit);
@@ -243,26 +260,26 @@ public class DoctorVisitController {
         );
     }
 
-@GetMapping("/doctor-visit/unique-directory")
-public Page<DoctorVisit> getUniqueDoctorDirectory(
-        @RequestParam String category,
-        @RequestParam(required = false) String employeeName,
-        @RequestParam(required = false) String doctorName,
-        @RequestParam(required = false) String headquarter,
-        @RequestParam(required = false) String route,
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "20") int size
-) {
+    @GetMapping("/doctor-visit/unique-directory")
+    public Page<DoctorVisit> getUniqueDoctorDirectory(
+            @RequestParam String category,
+            @RequestParam(required = false) String employeeName,
+            @RequestParam(required = false) String doctorName,
+            @RequestParam(required = false) String headquarter,
+            @RequestParam(required = false) String route,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
 
-    return repository.findUniqueDoctors(
-            category,
-            employeeName,
-            doctorName,
-            headquarter,
-            route,
-            PageRequest.of(page, size)
-    );
-}
+        return repository.findUniqueDoctors(
+                category,
+                employeeName,
+                doctorName,
+                headquarter,
+                route,
+                PageRequest.of(page, size)
+        );
+    }
 
     @GetMapping("/doctor-visit/daily-target/{employeeId}")
     public Map<String, Object> getDailyTarget(@PathVariable Long employeeId) {
