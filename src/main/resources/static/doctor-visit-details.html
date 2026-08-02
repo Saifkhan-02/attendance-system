@@ -430,91 +430,92 @@
         })();
       }
 
-      function loadEmployeeFilter() {
-        const employeeSelect = document.getElementById("employeeFilter");
+async function loadEmployeeFilter() {
 
-        const employees = [
-          ...new Set(
-            allDoctorVisits.map((v) => v.employeeName).filter(Boolean),
-          ),
-        ];
+    const response = await fetch(
+        BASE_URL +
+        "/doctor-visit/employees?category=" +
+        selectedCategory
+    );
 
-        employees.sort();
+    const employees = await response.json();
 
-        // TomSelect initialized hai
-        if (employeeTS) {
-          employeeTS.clear(true);
-          employeeTS.clearOptions();
+    if (employeeTS) {
 
-          employeeTS.addOption({
+        employeeTS.clear(true);
+        employeeTS.clearOptions();
+
+        employeeTS.addOption({
             value: "",
-            text: "All Employees",
-          });
+            text: "All Employees"
+        });
 
-          employees.forEach((emp) => {
+        employees.forEach(emp => {
             employeeTS.addOption({
-              value: emp,
-              text: emp,
+                value: emp,
+                text: emp
             });
-          });
+        });
 
-          employeeTS.refreshOptions(false);
-        } else {
-          employeeSelect.innerHTML = `<option value="">All Employees</option>`;
+        employeeTS.refreshOptions(false);
+    }
+}
+async function loadDoctorFilter() {
 
-          employees.forEach((emp) => {
-            employeeSelect.innerHTML += `
-                <option value="${emp}">
-                    ${emp}
-                </option>`;
-          });
-        }
-      }
-      function loadDoctorFilter() {
+    const title =
+        selectedCategory === "CHEMIST"
+            ? "All Chemists"
+            : "All Doctors";
+
+    document.querySelector("#doctorFilter").previousElementSibling.innerText =
+        selectedCategory === "CHEMIST"
+            ? "Chemist"
+            : "Doctor";
+
+    const response = await fetch(
+        BASE_URL +
+        "/doctor-visit/doctors?category=" +
+        selectedCategory
+    );
+
+    const names = await response.json();
+
+    if (doctorTS) {
+
+        doctorTS.clear(true);
+        doctorTS.clearOptions();
+
+        doctorTS.addOption({
+            value: "",
+            text: title
+        });
+
+        names.forEach(name => {
+
+            doctorTS.addOption({
+                value: name,
+                text: name
+            });
+
+        });
+
+        doctorTS.refreshOptions(false);
+
+    } else {
+
         const doctorSelect = document.getElementById("doctorFilter");
 
-        const title =
-          selectedCategory === "CHEMIST" ? "All Chemists" : "All Doctors";
+        doctorSelect.innerHTML = `<option value="">${title}</option>`;
 
-        document.querySelector(
-          "#doctorFilter",
-        ).previousElementSibling.innerText =
-          selectedCategory === "CHEMIST" ? "Chemist" : "Doctor";
+        names.forEach(name => {
 
-        const names = [
-          ...new Set(allDoctorVisits.map((v) => v.doctorName).filter(Boolean)),
-        ];
+            doctorSelect.innerHTML +=
+                `<option value="${name}">${name}</option>`;
 
-        names.sort();
+        });
 
-        if (doctorTS) {
-          doctorTS.clear(true);
-          doctorTS.clearOptions();
-
-          doctorTS.addOption({
-            value: "",
-            text: title,
-          });
-
-          names.forEach((name) => {
-            doctorTS.addOption({
-              value: name,
-              text: name,
-            });
-          });
-
-          doctorTS.refreshOptions(false);
-        } else {
-          doctorSelect.innerHTML = `<option value="">${title}</option>`;
-
-          names.forEach((name) => {
-            doctorSelect.innerHTML += `
-                <option value="${name}">
-                    ${name}
-                </option>`;
-          });
-        }
-      }
+    }
+}
 
       function renderDoctorVisits(data) {
         const container = document.getElementById("doctorVisitContainer");
@@ -738,11 +739,6 @@
         allDoctorVisits = page.content;
 
         totalPages = page.totalPages;
-
-        if (currentPage === 0) {
-          await loadEmployeeFilter();
-          await loadDoctorFilter();
-        }
 
         renderDoctorVisits(page.content);
 
