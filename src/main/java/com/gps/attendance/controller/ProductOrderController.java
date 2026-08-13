@@ -576,49 +576,98 @@ public class ProductOrderController {
         return orderRepository.countOrdersByEmployeeId(id);
     }
 
-    @PutMapping("/collect-payment/{orderId}")
-    public ProductOrder collectPayment(
-            @PathVariable Long orderId,
-            @RequestBody Map<String, Object> request) {
-        ProductOrder order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
-        Double receivedAmount = Double.valueOf(request.get("receivedAmount").toString());
-        String paymentMode = request.get("paymentMode") == null
-                ? order.getPaymentMode()
-                : request.get("paymentMode").toString();
-        if (receivedAmount <= 0) {
-            throw new RuntimeException("Received amount must be greater than 0");
-        }
-        Double currentDue = order.getDueAmount() == null ? 0.0 : order.getDueAmount();
-        if (receivedAmount > currentDue) {
-            throw new RuntimeException("Received amount cannot be greater than due amount");
-        }
-        double oldPaid = order.getPaidAmount() == null ? 0 : order.getPaidAmount();
-        order.setPaidAmount(oldPaid + receivedAmount);
-        order.setDueAmount(currentDue - receivedAmount);
-        order.setPaymentMode(paymentMode);
-        if (order.getDueAmount() == 0) {
-            order.setStatus("PAID");
-        } else {
-            order.setStatus("PARTIAL");
-        }
-        PaymentHistory history = new PaymentHistory();
-        history.setOrderId(order.getId());
-        history.setEmployeeId(order.getEmployeeId());
-        history.setEmployeeName(order.getEmployeeName());
-        history.setDoctorId(order.getDoctorId());
-        history.setDoctorName(order.getDoctorName());
-        history.setReceivedAmount(receivedAmount);
-        history.setPaymentMode(paymentMode);
-        history.setRemarks(
-                request.get("remarks") == null
-                ? ""
-                : request.get("remarks").toString()
+   @PutMapping("/collect-payment/{orderId}")
+public ProductOrder collectPayment(
+        @PathVariable Long orderId,
+        @RequestBody Map<String, Object> request) {
+
+    ProductOrder order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new RuntimeException("Order not found"));
+
+    double receivedAmount = Double.parseDouble(
+            String.valueOf(request.get("receivedAmount"))
+    );
+
+    if (receivedAmount <= 0) {
+        throw new RuntimeException(
+                "Received amount must be greater than 0"
         );
-        history.setPaymentDate(LocalDateTime.now());
-        paymentHistoryRepository.save(history);
-        return orderRepository.save(order);
     }
+
+    double orderAmount = order.getOrderAmount() == null
+            ? 0.0
+            : order.getOrderAmount();
+
+    double oldPaid = order.getPaidAmount() == null
+            ? 0.0
+            : order.getPaidAmount();
+
+    /*
+     * IMPORTANT:
+     * Due database ke dueAmount se nahi,
+     * Order Amount - Paid Amount se calculate hoga.
+     */
+    double actualDue = orderAmount - oldPaid;
+
+    if (actualDue < 0) {
+        throw new RuntimeException(
+                "Invalid payment data for order " + orderId
+                        + ". Paid amount cannot be greater than order amount."
+        );
+    }
+
+    if (receivedAmount > actualDue) {
+        throw new RuntimeException(
+                "Received amount cannot be greater than pending due amount ₹"
+                        + actualDue
+        );
+    }
+
+    double newPaid = oldPaid + receivedAmount;
+    double newDue = orderAmount - newPaid;
+
+    if (newDue < 0) {
+        newDue = 0;
+    }
+
+    String paymentMode = request.get("paymentMode") == null
+            ? order.getPaymentMode()
+            : request.get("paymentMode").toString();
+
+    order.setPaidAmount(newPaid);
+    order.setDueAmount(newDue);
+    order.setPaymentMode(paymentMode);
+
+    if (newDue == 0) {
+        order.setStatus("PAID");
+    } else if (newPaid > 0) {
+        order.setStatus("PARTIAL");
+    } else {
+        order.setStatus("Placed");
+    }
+
+    PaymentHistory history = new PaymentHistory();
+
+    history.setOrderId(order.getId());
+    history.setEmployeeId(order.getEmployeeId());
+    history.setEmployeeName(order.getEmployeeName());
+    history.setDoctorId(order.getDoctorId());
+    history.setDoctorName(order.getDoctorName());
+    history.setReceivedAmount(receivedAmount);
+    history.setPaymentMode(paymentMode);
+
+    history.setRemarks(
+            request.get("remarks") == null
+                    ? ""
+                    : request.get("remarks").toString()
+    );
+
+    history.setPaymentDate(LocalDateTime.now());
+
+    paymentHistoryRepository.save(history);
+
+    return orderRepository.save(order);
+}
 
     @GetMapping("/admin/payment-history")
     public List<PaymentHistory> getPaymentHistory() {
