@@ -13,17 +13,11 @@ public class RouteMaster {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String headquarterName;
-
     private String routeName;
-
     private Double distanceKm = 0.0;
-
     private String routeType = "Field Route"; // Field Route / Activity
-
     private String status = "Active";
-
     public Long getId() {
         return id;
     }

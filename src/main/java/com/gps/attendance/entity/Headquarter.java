@@ -13,9 +13,7 @@ public class Headquarter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String headquarterName;
-
     private String status = "Active";
 
     public Long getId() {

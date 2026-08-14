@@ -10,21 +10,13 @@ public class MonthlyTourAssignment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Long employeeId;
-
     private String employeeName;
-
     private LocalDate tourDate;
-
     private String dayName;
-
     private String routeName;
-
     private String month;
-
     private String status = "ASSIGNED";
-
     public Long getId() {
         return id;
     }

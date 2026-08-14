@@ -9,21 +9,11 @@ import com.gps.attendance.entity.Employee;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
-
-    Employee findByUsernameAndPassword(
-            String username,
-            String password);
-
+    Employee findByUsernameAndPassword(String username, String password);
     Employee findByUsername(String username);
-
-    
-
     Employee findByEmail(String email);
-
     Employee findByMobile(String mobile);
-
     List<Employee> findAllByOrderByNameAsc();
     List<Employee> findAllByOrderByIdDesc();
-
     List<Employee> findByHeadquartersInAndRoleIgnoreCase(List<String> headquarters, String role);
 }
