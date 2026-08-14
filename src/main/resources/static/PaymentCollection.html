@@ -204,9 +204,8 @@ function showDoctorDue() {
   const doctorId = document.getElementById("doctorSelect").value;
 
   selectedDoctorOrders = allOrders.filter(order =>
-    String(order.doctorId) === String(doctorId) &&
-    Number(order.dueAmount || 0) > 0
-  );
+  String(order.doctorId) === String(doctorId)
+);
 
   const sale = selectedDoctorOrders.reduce((s,o) => s + Number(o.orderAmount || 0), 0);
   const paid = selectedDoctorOrders.reduce((s,o) => s + Number(o.paidAmount || 0), 0);
