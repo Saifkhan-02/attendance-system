@@ -514,14 +514,19 @@ const totalOrders = await orderResponse.json();
 
 document.getElementById("totalOrders").innerText = totalOrders;
 
-const expenseResponse = await fetch(
-`${BASE_URL}/employee/${employeeId}/expense-total`
-);
-
-const totalExpense = await expenseResponse.json();
-
-document.getElementById("totalExpenses").innerText =
-  "₹" + totalExpense;
+// ----------- TOTAL EXPENSE FETCH LOGIC -----------
+    try {
+        const expenseResponse = await fetch(`${BASE_URL}/employee/${employeeId}/expense-total`);
+        if (expenseResponse.ok) {
+            const totalExpense = await expenseResponse.json();
+            document.getElementById("totalExpenses").innerText = "₹" + (totalExpense || 0);
+        } else {
+            // Agar 404 aata hai (no expense), toh chup-chap 0 dikha do
+            document.getElementById("totalExpenses").innerText = "₹0";
+        }
+    } catch (e) {
+        document.getElementById("totalExpenses").innerText = "₹0";
+    }
 
   const doctorResponse = await fetch(
 `${BASE_URL}/employee/${employeeId}/doctor-count`
@@ -604,32 +609,99 @@ async function loadOrders() {
 }
 //load Expenses table 
 
+//load Expenses table (100% Safe for MR, dynamic for ASM)
 async function loadExpenses() {
+    const employeeId = new URLSearchParams(window.location.search).get("id");
+    const table = document.getElementById("expenseTable");
 
-    const employeeId =
-        new URLSearchParams(window.location.search).get("id");
+    try {
+        // Step 1: Employee ka Role check karo
+        const empRes = await fetch(`${BASE_URL}/get-employees`);
+        const employees = await empRes.json();
+        const employee = employees.find(emp => String(emp.id) === String(employeeId));
+        const role = employee ? (employee.role || "").toUpperCase() : "MR";
 
-    const response = await fetch(
-        `${BASE_URL}/expense/history/${employeeId}`
-    );
+        table.innerHTML = "";
 
-    const expenses = await response.json();
+        // ==========================================
+        // ASM LOGIC (Tour Plan se expense uthayega)
+        // ==========================================
+        if (role === "ASM") {
+            const now = new Date();
+            // Current Month
+            const currentMonth = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, '0');
+            
+            let asmExpenses = [];
+            let response = await fetch(`${BASE_URL}/tour-plan/monthly/history/${employeeId}/${currentMonth}`);
+            
+            if (response.ok) {
+                asmExpenses = await response.json();
+            }
 
-    const table =
-        document.getElementById("expenseTable");
+            // Agar naye mahine (September) me tour nahi hai, toh pichle mahine (August) ka check karo
+            if (!Array.isArray(asmExpenses) || asmExpenses.length === 0) {
+                const prevMonth = now.getMonth() === 0 ? (now.getFullYear() - 1) + "-12" : now.getFullYear() + "-" + String(now.getMonth()).padStart(2, '0');
+                const prevResponse = await fetch(`${BASE_URL}/tour-plan/monthly/history/${employeeId}/${prevMonth}`);
+                if (prevResponse.ok) {
+                    asmExpenses = await prevResponse.json();
+                }
+            }
 
-    table.innerHTML = "";
+            if (!Array.isArray(asmExpenses) || asmExpenses.length === 0) {
+                table.innerHTML = `<tr><td colspan="3" class="text-center text-muted">No expenses found</td></tr>`;
+                return;
+            }
 
-    expenses.slice(0, 5).forEach(e => {
+            // Latest date ko upar dikhane ke liye sort
+            asmExpenses.sort((a, b) => new Date(b.travelDate) - new Date(a.travelDate));
 
-        table.innerHTML += `
-            <tr>
-                <td>${e.expenseType || "-"}</td>
-                <td>₹${e.amount || 0}</td>
-                <td>${e.expenseDate || "-"}</td>
-            </tr>
-        `;
-    });
+            asmExpenses.slice(0, 5).forEach(e => {
+                const totalAmt = Number(e.totalExpense || (e.fareAmount + e.daAmount + e.otherAmount) || 0);
+                table.innerHTML += `
+                    <tr>
+                        <td>Tour - ${e.routeName || "HQ"}</td>
+                        <td>₹${totalAmt.toFixed(1)}</td>
+                        <td>${e.travelDate || "-"}</td>
+                    </tr>
+                `;
+            });
+
+        } 
+        // ==========================================
+        // MR LOGIC (Bilkul purana code, no changes)
+        // ==========================================
+        else {
+            const response = await fetch(`${BASE_URL}/expense/history/${employeeId}`);
+            
+            if (!response.ok) {
+                table.innerHTML = `<tr><td colspan="3" class="text-center text-muted">No expenses found</td></tr>`;
+                return;
+            }
+
+            const expenses = await response.json();
+
+            if (!Array.isArray(expenses) || expenses.length === 0) {
+                table.innerHTML = `<tr><td colspan="3" class="text-center text-muted">No expenses found</td></tr>`;
+                return;
+            }
+
+            expenses.slice(0, 5).forEach(e => {
+                table.innerHTML += `
+                    <tr>
+                        <td>${e.expenseType || "-"}</td>
+                        <td>₹${e.amount || 0}</td>
+                        <td>${e.expenseDate || "-"}</td>
+                    </tr>
+                `;
+            });
+        }
+
+    } catch (error) {
+        console.error("Expense API issue safely handled:", error);
+        if (table) {
+            table.innerHTML = `<tr><td colspan="3" class="text-center text-muted">No expenses found</td></tr>`;
+        }
+    }
 }
 //load target bar
 async function loadTarget() {

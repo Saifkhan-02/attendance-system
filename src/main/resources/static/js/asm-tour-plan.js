@@ -6,8 +6,14 @@ window.onload = function () {
   document.getElementById("employeeId").value = localStorage.getItem("employeeId") || "";
   document.getElementById("employeeName").value = localStorage.getItem("employeeName") || "";
 
-  document.getElementById("planMonth").value = new Date().toISOString().slice(0, 7);
-  document.getElementById("monthFilter").value = new Date().toISOString().slice(0, 7);
+  // Local time ke hisab se current year aur month nikalna
+  const now = new Date();
+  const localYear = now.getFullYear();
+  const localMonth = String(now.getMonth() + 1).padStart(2, '0'); // Month 0-11 hota hai, isliye +1 kiya
+  const currentMonthStr = `${localYear}-${localMonth}`; // Output: "2026-09"
+
+  document.getElementById("planMonth").value = currentMonthStr;
+  document.getElementById("monthFilter").value = currentMonthStr;
 
   loadASMHeadquarters();
 };
@@ -31,7 +37,7 @@ function loadASMHeadquarters() {
         dropdown.innerHTML += `<option value="${hq.headquarterName}">${hq.headquarterName}</option>`;
       });
 
-      // By default first HQ select karke routes load kar lo
+      // Default first HQ select karlo agar available ho
       if (hqs.length > 0) {
         dropdown.value = hqs[0].headquarterName;
         onHeadquarterChange();
@@ -46,106 +52,97 @@ function loadASMHeadquarters() {
 // 2. Triggered when ASM changes HQ from dropdown
 function onHeadquarterChange() {
   employeeHQ = document.getElementById("hqDropdown").value;
-  if (!employeeHQ) return;
+  if (!employeeHQ) {
+    routeList = [];
+    document.getElementById("monthlyPlanTable").innerHTML = `
+      <tr><td colspan="9" class="text-center text-muted">Please select a headquarter</td></tr>
+    `;
+    return;
+  }
 
-  // Load routes for the selected HQ
-  fetch(`${BASE_URL}/route-master/active/by-headquarter/${encodeURIComponent(employeeHQ)}`)
+  // Fetch active routes for the selected HQ
+  fetch(`${BASE_URL}/asm/routes?headquarterName=${encodeURIComponent(employeeHQ)}`)
     .then(res => res.json())
     .then(routes => {
       routeList = routes || [];
-      generateMonthlyRows();
-      loadTourHistory();
+      generateMonthlyRows(); // Iske andar automatically loadSavedMonthlyPlan() call ho jayega
     })
     .catch(err => {
       console.error(err);
       alert("Failed to load routes for this HQ");
     });
 }
+// 3. Generate Calendar Rows for the Selected Month with Route Dropdowns
 function generateMonthlyRows() {
-  const employeeId = localStorage.getItem("employeeId");
   const month = document.getElementById("planMonth").value;
   const table = document.getElementById("monthlyPlanTable");
 
-  if (!month) return;
+  if (!month || !employeeHQ) return;
 
   table.innerHTML = `
     <tr>
-      <td colspan="9" class="text-center text-muted">Loading assigned routes...</td>
+      <td colspan="9" class="text-center text-muted">Generating schedule...</td>
     </tr>
   `;
 
-  fetch(`${BASE_URL}/tour-assignment/${employeeId}/${month}`)
-    .then(res => res.json())
-    .then(assignments => {
-      table.innerHTML = "";
+  // Get days in the selected month
+  const [year, m] = month.split("-");
+  const daysInMonth = new Date(year, m, 0).getDate();
+  
+  table.innerHTML = "";
 
-      if (!assignments || assignments.length === 0) {
-        table.innerHTML = `
-          <tr>
-            <td colspan="9" class="text-center text-danger">
-              No route assigned for this month. Please contact admin.
-            </td>
-          </tr>
-        `;
-        return;
-      }
+  const daysNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-      assignments.forEach(item => {
-        const route = routeList.find(r =>
-          (r.routeName || "").trim().toLowerCase() ===
-          (item.routeName || "").trim().toLowerCase()
-        );
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dayStr = String(day).padStart(2, "0");
+    const tourDate = `${month}-${dayStr}`;
+    const dateObj = new Date(tourDate);
+    const dayName = daysNames[dateObj.getDay()];
 
-        const km = route ? Number(route.distanceKm || route.distance || 0) : 0;
-        const fare = Number((km * KM_RATE).toFixed(1));
-
-        table.innerHTML += `
-          <tr class="plan-row"
-              data-date="${item.tourDate}"
-              data-weekday="${item.dayName}"
-              data-route="${item.routeName}"
-              data-km="${km}"
-              data-fare="${fare}">
-            <td>${item.tourDate}</td>
-            <td>${item.dayName}</td>
-            <td>
-              <input type="text"
-                     class="form-control routeName"
-                     value="${item.routeName}"
-                     readonly>
-            </td>
-            <td><input type="number" class="form-control distanceKm" readonly value="${km}"></td>
-            <td><input type="number" class="form-control fareAmount" readonly step="0.1" value="${fare}"></td>
-            <td><input type="number" class="form-control daAmount" value="0" oninput="updateTotals()"></td>
-            <td><input type="number" class="form-control otherAmount" value="0" oninput="updateTotals()"></td>
-            <td><input type="number" class="form-control totalExpenseAmount" readonly step="0.1"></td>
-            <td>
-              <button class="btn btn-primary btn-sm submitDayBtn"
-                      onclick="submitSingleDayPlan(this)">
-                <i class="fa-solid fa-paper-plane me-1"></i>
-                Submit
-              </button>
-            </td>
-          </tr>
-        `;
-      });
-
-      updateCoverage();
-      loadSavedMonthlyPlan();
-      loadTourSummary();
-    })
-    .catch(error => {
-      console.error(error);
-      table.innerHTML = `
-        <tr>
-          <td colspan="9" class="text-center text-danger">
-            Failed to load assigned routes
-          </td>
-        </tr>
-      `;
+    // Dropdown options for routes
+    let routeOptions = '<option value="">Select Route</option>';
+    routeList.forEach(r => {
+      routeOptions += `<option value="${r.routeName}" data-km="${r.distanceKm || r.distance || 0}">${r.routeName} (${r.distanceKm || r.distance || 0} KM)</option>`;
     });
-}
 
+    table.innerHTML += `
+      <tr class="plan-row" data-date="${tourDate}" data-weekday="${dayName}">
+        <td>${tourDate}</td>
+        <td>${dayName}</td>
+        <td>
+          <select class="form-select routeSelect" onchange="onRouteSelect(this)">
+            ${routeOptions}
+          </select>
+        </td>
+        <td><input type="number" class="form-control distanceKm" readonly value="0"></td>
+        <td><input type="number" class="form-control fareAmount" readonly step="0.1" value="0"></td>
+        <td><input type="number" class="form-control daAmount" value="0" oninput="updateTotals()"></td>
+        <td><input type="number" class="form-control otherAmount" value="0" oninput="updateTotals()"></td>
+        <td><input type="number" class="form-control totalExpenseAmount" readonly step="0.1" value="0"></td>
+        <td>
+          <button class="btn btn-primary btn-sm submitDayBtn" onclick="submitSingleDayPlan(this)">
+            <i class="fa-solid fa-paper-plane me-1"></i> Submit
+          </button>
+        </td>
+      </tr>
+    `;
+  }
+
+  loadSavedMonthlyPlan();
+}
+// 4. Update KM and Fare automatically when ASM selects a route from dropdown
+function onRouteSelect(selectElement) {
+  const row = selectElement.closest(".plan-row");
+  const selectedOption = selectElement.options[selectElement.selectedIndex];
+  const km = Number(selectedOption.getAttribute("data-km") || 0);
+  const fare = Number((km * KM_RATE).toFixed(1));
+
+  row.querySelector(".distanceKm").value = km;
+  row.querySelector(".fareAmount").value = fare;
+
+  updateTotals();
+  updateCoverage();
+}
 function updateTotals() {
   document.querySelectorAll(".plan-row").forEach(row => {
     const fare = Number(row.querySelector(".fareAmount").value || 0);
@@ -153,14 +150,12 @@ function updateTotals() {
     const other = Number(row.querySelector(".otherAmount").value || 0);
 
     const totalExpense = fare + da + other;
-
     const totalInput = row.querySelector(".totalExpenseAmount");
     if (totalInput) {
       totalInput.value = totalExpense.toFixed(1);
     }
   });
 }
-
 function loadSavedMonthlyPlan() {
   const employeeId = localStorage.getItem("employeeId");
   const month = document.getElementById("planMonth").value;
@@ -173,12 +168,18 @@ function loadSavedMonthlyPlan() {
       const submittedPlans = data || [];
 
       submittedPlans.forEach(plan => {
-        const row = document.querySelector(
-          `.plan-row[data-date="${plan.travelDate}"]`
-        );
-
+        const row = document.querySelector(`.plan-row[data-date="${plan.travelDate}"]`);
         if (!row) return;
 
+        // Agar route dropdown me woh route available nahi hai (kyunki doosre HQ ka hai), 
+        // toh usko dynamically option me add kar denge taaki naam dikh sake
+        const routeDropdown = row.querySelector(".routeSelect");
+        let optionExists = Array.from(routeDropdown.options).some(opt => opt.value === plan.routeName);
+        if (!optionExists && plan.routeName) {
+          routeDropdown.innerHTML += `<option value="${plan.routeName}">${plan.routeName}</option>`;
+        }
+
+        routeDropdown.value = plan.routeName;
         row.querySelector(".distanceKm").value = Number(plan.travelKm || 0).toFixed(1);
         row.querySelector(".fareAmount").value = Number(plan.fareAmount || 0).toFixed(1);
         row.querySelector(".daAmount").value = Number(plan.daAmount || 0).toFixed(1);
@@ -191,6 +192,7 @@ function loadSavedMonthlyPlan() {
 
         row.querySelector(".totalExpenseAmount").value = savedTotal.toFixed(1);
 
+        // Disable button & mark completed
         const btn = row.querySelector(".submitDayBtn");
         if (btn) {
           btn.disabled = true;
@@ -205,7 +207,6 @@ function loadSavedMonthlyPlan() {
     })
     .catch(err => console.error("Saved monthly plan error:", err));
 }
-
 function loadTourSummary() {
   const employeeId = localStorage.getItem("employeeId");
   const month = document.getElementById("planMonth").value;
@@ -222,12 +223,11 @@ function loadTourSummary() {
     })
     .catch(err => console.error("Tour summary error:", err));
 }
-
 function updateCoverage() {
   const selectedRoutes = [];
 
   document.querySelectorAll(".plan-row").forEach(row => {
-    const routeName = row.dataset.route;
+    const routeName = row.querySelector(".routeSelect").value;
     if (routeName) selectedRoutes.push(routeName);
   });
 
@@ -245,16 +245,17 @@ function updateCoverage() {
     `;
   });
 
-  document.getElementById("coverageText").innerText = `${selectedRoutes.length} assigned tour days`;
+  document.getElementById("coverageText").innerText = `${selectedRoutes.length} tour days planned`;
   document.getElementById("coverageList").innerHTML = html;
 }
-
 function submitSingleDayPlan(button) {
   const row = button.closest(".plan-row");
-  const routeName = row.dataset.route;
+  const routeDropdown = row.querySelector(".routeSelect");
+  const routeName = routeDropdown.value;
 
   if (!routeName) {
-    alert("No route assigned for this date");
+    alert("Please select a route for this date");
+    routeDropdown.focus();
     return;
   }
 
@@ -262,29 +263,6 @@ function submitSingleDayPlan(button) {
   if (da <= 0) {
     alert("Please enter D.A amount");
     row.querySelector(".daAmount").focus();
-    return;
-  }
-
-  const other = Number(row.querySelector(".otherAmount").value || 0);
-  if (other < 0) {
-    alert("Other Amount cannot be negative");
-    return;
-  }
-
-  const selectedMonth = document.getElementById("planMonth").value;
-  const currentMonth = new Date().toISOString().slice(0, 7);
-
-  if (selectedMonth !== currentMonth) {
-    alert("Only current month tour can be submitted");
-    return;
-  }
-
-  const planDate = row.dataset.date;
-  const today = new Date();
-  const todayDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-
-  if (planDate !== todayDate) {
-    alert("Only today's assigned tour can be submitted");
     return;
   }
 
@@ -334,13 +312,12 @@ function submitSingleDayPlan(button) {
     .catch(error => {
       console.error(error);
       if (error.message.includes("already submitted")) {
-        alert("Today tour has already submitted");
+        alert("Today's tour has already been submitted");
       } else {
         alert("Failed to submit day tour");
       }
     });
 }
-
 function loadTourHistory() {
   const employeeId = localStorage.getItem("employeeId");
   const month = document.getElementById("monthFilter").value || document.getElementById("planMonth").value;

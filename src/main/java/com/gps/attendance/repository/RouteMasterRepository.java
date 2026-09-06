@@ -20,4 +20,8 @@ ORDER BY r.headquarterName
     List<String> getAllHeadquarters();
     List<RouteMaster> findByHeadquarterNameAndStatusOrderByRouteNameAsc(String headquarterName, String status);
     Optional<RouteMaster> findByRouteNameIgnoreCase(String routeName);
+
+    List<RouteMaster> findByHeadquarterNameInAndStatus(List<String> headquarterNames, String status);
+   
+
 }

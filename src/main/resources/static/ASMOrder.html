@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ASM Orders</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <link rel="stylesheet" href="css/asm-common.css">
+
+    <style>
+      body {
+        background: #f4f6fb;
+      }
+      .top-header {
+        background: linear-gradient(135deg, #0d4f9c, #3f7fe0);
+        color: white;
+        padding: 25px;
+        border-radius: 0 0 25px 25px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+      }
+      .back-btn {
+        width: 42px;
+        height: 42px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.3s;
+      }
+      .back-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+      .order-card, .history-card {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      }
+      .form-control, .form-select {
+        border-radius: 12px;
+        padding: 12px;
+      }
+      .btn-submit {
+        background: #0d6efd;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 30px;
+      }
+      .btn-submit:hover {
+        background: #0b5ed7;
+      }
+      .stock-box {
+        background: #e9f2ff;
+        color: #0d4f9c;
+        border-radius: 15px;
+        padding: 15px;
+        font-weight: 700;
+      }
+      .status-placed {
+        color: #198754;
+        font-weight: 600;
+      }
+      .status-pending {
+        color: #fd7e14;
+        font-weight: 600;
+      }
+      .choices__list--dropdown {
+        max-height: 220px;
+        overflow-y: auto;
+        z-index: 9999;
+      }
+      #editOrderModal table {
+        table-layout: fixed;
+        width: 100%;
+      }
+      #editOrderModal input[type="number"] {
+        min-width: 55px;
+        font-size: 13px;
+        padding: 6px;
+      }
+      #editOrderModal select, #editOrderModal th {
+        font-size: 13px;
+        padding: 6px;
+      }
+      #editOrderModal td {
+        padding: 6px 3px;
+      }
+      @media (max-width: 576px) {
+        #editOrderModal .modal-dialog {
+          margin: 8px;
+          max-width: 100%;
+        }
+        #editOrderModal table, #editOrderModal select, #editOrderModal input, #editOrderModal .btn {
+          font-size: 12px;
+        }
+      }
+      .product-col { width: 42%; }
+      .qty-col { width: 12%; }
+      .price-col { width: 18%; }
+      .amount-col { width: 18%; }
+      .action-col { width: 10%; }
+      .edit-product {
+        font-size: 13px;
+        font-weight: 500;
+      }
+      #editPaidAmount, #editDueAmount {
+        height: 44px;
+      }
+      #editPaidAmount::-webkit-outer-spin-button, #editPaidAmount::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      #editPaidAmount {
+        appearance: textfield;
+        -moz-appearance: textfield;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ASM Header -->
+    <div class="top-header">
+      <div class="d-flex align-items-center justify-content-between">
+        <button class="back-btn" onclick="window.location.href = 'ASMDashboard.html'">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <div class="text-center flex-grow-1">
+          <h2 class="fw-bold mb-1">My Orders</h2>
+          <p class="mb-0">Place doctor orders and update stock automatically</p>
+        </div>
+        <div style="width: 42px"></div>
+      </div>
+    </div>
+
+    <div class="container py-4">
+      <!-- Create Order Form -->
+      <div class="card order-card">
+        <div class="card-body p-4">
+          <h4 class="fw-bold mb-4"><i class="fa-solid fa-cart-plus me-2 text-primary"></i> Order Details</h4>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Select Doctor</label>
+              <select id="doctorId" class="form-select" onchange="setDoctorName()">
+                <option value=""></option>
+              </select>
+              <input type="hidden" id="doctorName" />
+              <input type="hidden" id="visitCategory" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Select Distributor</label>
+              <select id="distributorId" class="form-select" onchange="loadDistributorProducts()">
+                <option value="">Select Distributor</option>
+              </select>
+              <input type="hidden" id="distributorName" />
+              <input type="hidden" id="headquarters" />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Area</label>
+              <input type="text" id="area" class="form-control" placeholder="Enter Area" />
+            </div>
+            
+            <div class="col-md-12 mt-4">
+              <label class="form-label fw-bold">Products</label>
+              <div id="productItems"></div>
+              <button type="button" class="btn btn-outline-primary mt-2" onclick="addCreateProductRow()">
+                <i class="fa-solid fa-plus me-2"></i> Add Product
+              </button>
+            </div>
+
+            <div class="col-md-6 mt-4">
+              <label class="form-label fw-bold">Total Order Amount</label>
+              <input type="number" id="orderAmount" class="form-control" readonly />
+            </div>
+
+            <div class="col-6 col-md-6 mt-4">
+              <label class="form-label fw-bold">Paid Amount</label>
+              <input type="number" id="paidAmount" class="form-control" placeholder="Enter paid amount" oninput="calculateDueAmount()" />
+            </div>
+            <div class="col-6 col-md-6">
+              <label class="form-label fw-bold">Due Amount</label>
+              <input type="number" id="dueAmount" class="form-control" readonly />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold required">Payment Mode</label>
+              <select id="paymentMode" class="form-select">
+                <option value="">Select Payment Mode</option>
+                <option value="Cash">Cash</option>
+                <option value="UPI">UPI</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+              </select>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">Remarks</label>
+              <textarea id="remarks" rows="3" class="form-control" placeholder="Enter order remarks"></textarea>
+            </div>
+            
+            <div class="col-md-12 mt-4">
+              <button class="btn btn-submit text-white w-100" id="placeOrderBtn" onclick="placeOrder()">
+                <i class="fa-solid fa-cart-shopping me-2"></i> Place Order
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order History -->
+      <div class="card history-card mt-4">
+        <div class="card-body p-4">
+          <h4 class="fw-bold mb-4"><i class="fa-solid fa-clock-rotate-left me-2 text-success"></i> Order History</h4>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-primary">
+                <tr>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Dr./Chemist Name</th>
+                  <th>Category</th>
+                  <th>Distributor</th>
+                  <th>Order Details</th>
+                  <th>Total Amt.</th>
+                  <th>Paid Amt.</th>
+                  <th>Due Amt.</th>
+                  <th>Pay Mode</th>
+                  <th>Remarks</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="orderTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Order Modal -->
+    <div class="modal fade" id="editOrderModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header bg-warning">
+            <h5 class="modal-title"><i class="fa-solid fa-pen-to-square me-2"></i> Edit Order</h5>
+            <button class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="editOrderGroupId" />
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Doctor / Chemist</label>
+                <input type="text" id="editDoctor" class="form-control" readonly />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Distributor</label>
+                <input type="text" id="editDistributor" class="form-control" readonly />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Payment Mode</label>
+                <select id="editPaymentMode" class="form-select">
+                  <option value="Pending">Pending</option>
+                  <option value="Cash">Cash</option>
+                  <option value="UPI">UPI</option>
+                  <option value="Cheque">Cheque</option>
+                  <option value="Bank Transfer">Bank Transfer</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Remarks</label>
+                <input id="editRemarks" class="form-control" />
+              </div>
+            </div>
+            <hr />
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">Products</h5>
+              <button class="btn btn-success btn-sm" onclick="addEditProductRow()">
+                <i class="fa fa-plus"></i> Add Product
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead class="table-light">
+                  <tr>
+                    <th class="product-col">Product</th>
+                    <th class="qty-col">Qty</th>
+                    <th class="price-col">S.P</th>
+                    <th class="amount-col">Amount</th>
+                    <th class="action-col text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="editProductTable"></tbody>
+              </table>
+            </div>
+            <div class="row mt-3">
+              <div class="col-6 col-md-4">
+                <label class="form-label">Paid Amount</label>
+                <input type="number" id="editPaidAmount" class="form-control" min="0" value="0" oninput="calculateEditDueAmount()" />
+              </div>
+              <div class="col-6 col-md-4">
+                <label class="form-label">Due Amount</label>
+                <input type="number" id="editDueAmount" class="form-control" readonly />
+              </div>
+            </div>
+            <div class="text-end mt-3">
+              <h4>Total : ₹<span id="editGrandTotal">0</span></h4>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button id="submitBtn" class="btn btn-primary" onclick="saveOrderChanges()">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/asm-common.js"></script>
+    <script src="js/asm-order.js"></script>
+  </body>
+</html>

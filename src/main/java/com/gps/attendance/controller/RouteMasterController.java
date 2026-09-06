@@ -48,7 +48,7 @@ public List<RouteMaster> getActiveRoutesByHeadquarter(
             );
 }
 
-    @PostMapping("/save")
+@PostMapping("/save")
     public RouteMaster saveRoute(@RequestBody RouteMaster routeMaster) {
         routeMaster.setStatus("Active");
         return routeMasterRepository.save(routeMaster);

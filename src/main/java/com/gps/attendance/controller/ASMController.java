@@ -298,7 +298,7 @@ public class ASMController {
                 return tourPlanRepository.findByEmployeeIdOrderByIdDesc(employeeId);
         }
 
-        @GetMapping("/dashboard-fast/{asmId}")
+@GetMapping("/dashboard-fast/{asmId}")
         public Map<String, Object> getDashboardFast(@PathVariable Long asmId) {
                 List<Employee> team = getAsmTeam(asmId);
                 String todayStr = LocalDate.now().toString();
@@ -320,28 +320,64 @@ public class ASMController {
                 List<Long> employeeIds = team.stream()
                                 .map(Employee::getId)
                                 .collect(Collectors.toList());
+                
                 Map<Long, Long> attendanceMap = new HashMap<>();
                 for (Object[] row : attendanceRepository.countTodayAttendanceByEmployees(employeeIds, todayDate)) {
                         attendanceMap.put((Long) row[0], (Long) row[1]);
                 }
+                
                 Map<Long, Long> visitMap = new HashMap<>();
                 for (Object[] row : doctorVisitRepository.countTodayVisitsByEmployees(employeeIds, todayStr)) {
                         visitMap.put((Long) row[0], (Long) row[1]);
                 }
+                
                 Map<Long, Long> todayOrderMap = new HashMap<>();
                 for (Object[] row : orderRepository.countTodayOrdersByEmployees(employeeIds, todayStr)) {
                         todayOrderMap.put((Long) row[0], (Long) row[1]);
                 }
+
+                // 1. Initialize salesMap here
                 Map<Long, Object[]> salesMap = new HashMap<>();
                 for (Object[] row : orderRepository.getSalesSummaryByEmployees(employeeIds)) {
                         salesMap.put((Long) row[0], row);
                 }
-                Map<Long, Double> expenseMap = new HashMap<>();
+                
+      // 1. Team ke har employee ki Aaj ki (Today) aur Monthly sales nikalne ke liye sahi logic
+String monthStr = todayStr.substring(0, 7); // e.g., "2026-08"
+Map<Long, Double> todaySalesMap = new HashMap<>();
+Map<Long, Double> monthlySalesMap = new HashMap<>();
+
+for (Employee e : team) {
+    List<ProductOrder> empOrders = orderRepository.findByEmployeeId(e.getId());
+    double todaySum = 0;
+    double monthlySum = 0;
+
+    if (empOrders != null) {
+        for (ProductOrder ord : empOrders) {
+            if (ord.getOrderDate() != null) {
+                String ordDate = ord.getOrderDate().trim();
+                
+                // Monthly Sale (Match YYYY-MM)
+                if (ordDate.startsWith(monthStr)) {
+                    monthlySum += (ord.getOrderAmount() != null ? ord.getOrderAmount() : 0.0);
+                }
+                
+                // Today's Order Value (Match exact YYYY-MM-DD)
+                if (ordDate.equals(todayStr.trim())) {
+                    todaySum += (ord.getOrderAmount() != null ? ord.getOrderAmount() : 0.0);
+                }
+            }
+        }
+    }
+    todaySalesMap.put(e.getId(), todaySum);
+    monthlySalesMap.put(e.getId(), monthlySum);
+}        Map<Long, Double> expenseMap = new HashMap<>();
                 for (Object[] row : tourPlanRepository.getExpenseSummaryByEmployees(employeeIds)) {
                         expenseMap.put(
                                         (Long) row[0],
                                         ((Number) row[1]).doubleValue());
                 }
+
                 List<Map<String, Object>> leaderboard = new ArrayList<>();
                 long totalPresent = 0;
                 long totalVisits = 0;
@@ -350,6 +386,7 @@ public class ASMController {
                 double totalCollection = 0;
                 double totalDue = 0;
                 double totalExpense = 0;
+
                 for (Employee e : team) {
                         Long id = e.getId();
                         long present = attendanceMap.getOrDefault(id, 0L);
@@ -358,42 +395,53 @@ public class ASMController {
                         double sales = 0;
                         double collection = 0;
                         double due = 0;
+                        
                         Object[] salesRow = salesMap.get(id);
                         if (salesRow != null) {
                                 sales = ((Number) salesRow[2]).doubleValue();
                                 collection = ((Number) salesRow[3]).doubleValue();
                                 due = ((Number) salesRow[4]).doubleValue();
                         }
+                        
+                        double monthlySales = monthlySalesMap.getOrDefault(id, 0.0);
                         double expense = expenseMap.getOrDefault(id, 0.0);
+                         double todayOrderVal = todaySalesMap.getOrDefault(id, 0.0);
+                
+
                         if (present > 0)
                                 totalPresent++;
                         totalVisits += visits;
                         totalOrders += orders;
-                        totalSales += sales;
+                        totalSales += monthlySales; 
                         totalCollection += collection;
                         totalDue += due;
                         totalExpense += expense;
+
                         Map<String, Object> row = new HashMap<>();
                         row.put("employeeId", id);
                         row.put("employeeName", e.getName());
                         row.put("headquarters", e.getHeadquarters());
-                        row.put("date", todayStr);
+                       // row.put("date", orderDateStr); // Ab yahan aaj ki date ki jagah order ki real date dikhegi
                         row.put("attendance", present > 0 ? "Present" : "Not Marked Yet");
                         row.put("visits", visits);
                         row.put("orders", orders);
-                        row.put("sales", sales);
+                        row.put("todayOrderValue", todayOrderVal); 
+                        row.put("sales", monthlySales);            
                         row.put("collection", collection);
                         row.put("due", due);
                         row.put("expense", expense);
                         leaderboard.add(row);
                 }
+
                 leaderboard.sort((a, b) -> Double.compare(
                                 Double.parseDouble(b.get("sales").toString()),
                                 Double.parseDouble(a.get("sales").toString())));
+                
                 int rank = 1;
                 for (Map<String, Object> row : leaderboard) {
                         row.put("rank", rank++);
                 }
+
                 response.put("date", todayStr);
                 response.put("team", team.size());
                 response.put("present", totalPresent);
@@ -658,5 +706,30 @@ public class ASMController {
         return tourPlanRepository.findByEmployeeIdOrderByIdDesc(asmId);
     }
 
+    // Get all active routes for all assigned HQs of an ASM
+    @GetMapping("/routes/{asmId}")
+    public List<RouteMaster> getAsmRoutes(@PathVariable Long asmId) {
+        // 1. Get all assigned HQs for the ASM
+        List<EmployeeHQMapping> mappings = mappingRepository.findByEmployeeId(asmId);
+        if (mappings == null || mappings.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Long> hqIds = mappings.stream()
+                        .map(EmployeeHQMapping::getHqId)
+                        .collect(Collectors.toList());
+
+        List<Headquarter> hqs = headquarterRepository.findAllById(hqIds);
+        if (hqs.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<String> hqNames = hqs.stream()
+                        .map(Headquarter::getHeadquarterName)
+                        .collect(Collectors.toList());
+
+        // 2. Return active routes belonging to these headquarters
+        return routeRepository.findByHeadquarterNameInAndStatus(hqNames, "Active");
+    }
 
 }

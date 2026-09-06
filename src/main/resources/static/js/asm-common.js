@@ -73,10 +73,11 @@ function renderAsmSidebar(activePage = "dashboard") {
         <i class="fa-solid fa-user"></i> My Tour Plan
       </a> 
 
-      <a href="ASMTeam.html" class="asm-link ${activePage === "team" ? "active" : ""}">
+     <!-- <a href="ASMTeam.html" class="asm-link ${activePage === "team" ? "active" : ""}">
         <i class="fa-solid fa-users"></i> My Team
       </a>
-
+      -->
+    
       <a href="ASMWorkingWith.html" class="asm-link ${activePage === "working" ? "active" : ""}">
         <i class="fa-solid fa-user-group"></i> Working With
       </a>

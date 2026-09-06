@@ -11,21 +11,32 @@
 <link rel="stylesheet" href="css/asm-common.css">
 
 <style>
-.welcome-box h2{
-  color:#0d6efd;
-  font-weight:900;
-  margin-bottom:6px;
+.welcome-box h2 {
+  color: #0d6efd;
+  font-weight: 900;
+ /* Chipakne se rokne ke liye gap kam kiya */
+  line-height: 1.2;
 }
 
-.welcome-box h3{
-  font-weight:900;
-  color:#111827;
+.welcome-box h3 {
+  font-weight: 900;
+  color: #111827;
+  margin-top: 5px; /* Name ko thoda niche push kiya */
+  line-height: 1.2;
 }
 
-.welcome-box p{
-  color:#475569;
-  font-size:16px;
+.welcome-box p {
+  color: #475569;
+  font-size: 16px;
+  margin-top: 8px;
 }
+/* Table columns ko ek line me fix karne ke liye */
+.table th, 
+.table td {
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
 </style>
 </head>
 
@@ -39,70 +50,74 @@
     <p>Track your team performance and field activity</p>
   </div>
 
-  <div class="row g-3">
+<div class="row g-3">
 
-    <div class="col-6">
-      <div class="asm-feature-card" onclick="window.location.href='ASMTeam.html'">
+    <!-- My Team Card (Count ke sath) -->
+    <div class="col-6 col-md-4">
+      <div class="asm-feature-card h-100" onclick="window.location.href='ASMTeam.html'">
         <div class="asm-icon-box">
           <i class="fa-solid fa-users"></i>
         </div>
         <h5>My Team</h5>
-        <i class="fa-solid fa-arrow-right"></i>
-        <div class="count" id="teamCount">0</div>
+        <!-- <div class="count" id="teamCount">0</div> -->
+          <div class="count invisible">0</div> 
       </div>
     </div>
 
-    <div class="col-6">
-      <div class="asm-feature-card"
-           onclick="window.location.href='ASMTeamAttendance.html'"
-           style="cursor: pointer;">
+    <!-- Attendance Card (Count ke sath) -->
+    <div class="col-6 col-md-4">
+      <div class="asm-feature-card h-100" onclick="window.location.href='ASMTeamAttendance.html'">
         <div class="asm-icon-box" style="color:#16a34a">
           <i class="fa-solid fa-calendar-check"></i>
-          
         </div>
-        <h5>Attendance</h5>
-        <i class="fa-solid fa-arrow-right"></i>
-        <div class="count" id="attendanceCount">0</div>
+        <h5>Team Attendance</h5>
+        <!-- <div class="count" id="attendanceCount">0</div> -->
+          <div class="count invisible">0</div> 
       </div>
     </div>
 
-    <div class="col-6">
-      <div class="asm-feature-card">
+    <!-- My Visits Card (Hidden Count for Equal Height) -->
+    <div class="col-6 col-md-4">
+      <div class="asm-feature-card h-100" onclick="window.location.href='ASMDoctorVisit.html'">
         <div class="asm-icon-box" style="color:#7c3aed">
           <i class="fa-solid fa-user-doctor"></i>
         </div>
-        <h5>Doctor Visits</h5>
-        <div class="count" id="visitCount">0</div>
+        <h5>My Visits</h5>
+        <!-- invisible class isko hide kar degi par height barabar rakhegi -->
+        <div class="count invisible">0</div> 
       </div>
     </div>
 
-    <div class="col-6">
-      <div class="asm-feature-card">
+    <!-- My Orders Card (Hidden Count for Equal Height) -->
+    <div class="col-6 col-md-4">
+      <div class="asm-feature-card h-100" onclick="window.location.href='ASMOrder.html'">
         <div class="asm-icon-box" style="color:#f97316">
           <i class="fa-solid fa-cart-shopping"></i>
         </div>
-        <h5>Orders</h5>
-        <div class="count" id="orderCount">0</div>
+        <h5>My Orders</h5>
+        <div class="count invisible">0</div>
       </div>
     </div>
 
-    <div class="col-6">
-      <div class="asm-feature-card">
+    <!-- Sales & Payment Card (Hidden Count for Equal Height) -->
+    <div class="col-6 col-md-4">
+      <div class="asm-feature-card h-100" onclick="window.location.href='ASMSalesPayment.html'">
         <div class="asm-icon-box" style="color:#0d6efd">
           <i class="fa-solid fa-indian-rupee-sign"></i>
         </div>
-        <h5>Sales</h5>
-        <div class="count" id="saleAmount">₹0</div>
+        <h5>Sales & Payment</h5>
+        <div class="count invisible">0</div>
       </div>
     </div>
 
-    <div class="col-6">
-      <div class="asm-feature-card">
+    <!-- My Expenses Card (Hidden Count for Equal Height) -->
+    <div class="col-6 col-md-4">
+      <div class="asm-feature-card h-100" onclick="window.location.href='ASMExpenses.html'">
         <div class="asm-icon-box" style="color:#ef4444">
           <i class="fa-solid fa-receipt"></i>
         </div>
-        <h5>Expenses</h5>
-        <div class="count" id="expenseAmount">₹0</div>
+        <h5>My Expenses</h5>
+        <div class="count invisible">0</div>
       </div>
     </div>
 
@@ -138,12 +153,13 @@
       <table class="table align-middle">
         <thead class="table-light">
           <tr>
-            <th>Date</th>
+            <!-- <th>Date</th> -->
             <th>MR</th>
             <th>HQ</th>
             <th>Visits</th>
-            <th>Orders</th>
-            <th>Sales</th>
+            <th>Today Ords.</th>
+            <th>Today Ords. Value</th>
+            <th>Monthly Sale</th>
             <th>Attendance</th>
           </tr>
         </thead>
@@ -155,43 +171,25 @@
       </table>
     </div>
   </div>
-
 </div>
-
 <script src="js/config.js"></script>
 <script src="js/asm-common.js"></script>
-
 <script>
 if (checkAsmSession()) {
   renderAsmSidebar("dashboard");
   renderAsmHeader("Welcome to Inflix Pharma");
 }
-
 const asmId = getAsmId();
-
 setText("asmName", getAsmName());
-
 window.onload = function(){
   loadFastDashboard();
-  //setText("teamCount", "TEST");
-  //loadDashboardSummary();
- // loadTopPerformer();
- // loadTeamSummary();
 };
 function loadFastDashboard(){
   fetch(`${BASE_URL}/asm/dashboard-fast/${asmId}`)
     .then(res => res.json())
     .then(data => {
-      setText("teamCount", data.team || 0);
-      setText("attendanceCount", data.present || 0);
-      setText("visitCount", data.visits || 0);
-      setText("orderCount", data.orders || 0);
-      setText("saleAmount", money(data.sales));
-      setText("expenseAmount", money(data.expense));
-
       const top = data.leaderboard && data.leaderboard.length > 0
-        ? data.leaderboard[0]
-        : null;
+        ? data.leaderboard[0] : null;
       if (top) {
         setText("topName", top.employeeName || "-");
         setText("topHq", top.headquarters || "-");
@@ -199,13 +197,10 @@ function loadFastDashboard(){
         setText("topVisits", top.visits || 0);
         setText("topOrders", top.orders || 0);
       }
-
       renderTeamSummary(data.leaderboard || []);
     })
     .catch(err => console.error("Fast Dashboard Error:", err));
 }
-
-
 function loadTopPerformer(){
   fetch(`${BASE_URL}/asm/top-performer/${asmId}`)
     .then(res => res.json())
@@ -221,7 +216,6 @@ function loadTopPerformer(){
 function renderTeamSummary(data){
   const table = document.getElementById("teamSummaryTable");
   table.innerHTML = "";
-
   if(!data || data.length === 0){
     table.innerHTML = `
       <tr>
@@ -230,27 +224,27 @@ function renderTeamSummary(data){
     `;
     return;
   }
-
   data.forEach(row => {
+    // Per day order value (aap chahein toh row.todayOrderValue ya calculation bhej sakte hain)
+    const todayOrderVal = row.todayOrderValue !== undefined? row.todayOrderValue: 0; 
+    const monthlySaleVal = row.sales !== undefined ? row.sales : 0;
     table.innerHTML += `
       <tr onclick="openEmployee(${row.employeeId})" style="cursor:pointer">
-        <td>${row.date || "-"}</td>
         <td><strong>${row.employeeName || "-"}</strong></td>
         <td>${row.headquarters || "-"}</td>
         <td>${row.visits || 0}</td>
         <td>${row.orders || 0}</td>
-        <td>${money(row.sales)}</td>
+        <td>${money(todayOrderVal)}</td>       <!-- Per Day Order Value -->
+        <td>${money(monthlySaleVal)}</td>      <!-- Monthly Sales -->
         <td>${row.attendance || "-"}</td>
       </tr>
     `;
   });
 }
-
 function openEmployee(id){
   localStorage.setItem("selectedEmployeeId", id);
   window.location.href = "ASMEmployeeDetails.html";
 }
 </script>
-
 </body>
 </html>

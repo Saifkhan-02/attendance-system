@@ -78,6 +78,16 @@
         justify-content: center;
         font-size: 24px;
       }
+      /* Specific column minimum widths for mobile view */
+      .monthly-plan-table th:nth-child(1), .monthly-plan-table td:nth-child(1) { min-width: 90px; } /* Date */
+      .monthly-plan-table th:nth-child(2), .monthly-plan-table td:nth-child(2) { min-width: 70px; } /* Weekday */
+      .monthly-plan-table th:nth-child(3), .monthly-plan-table td:nth-child(3) { min-width: 150px; } /* Route Select */
+      .monthly-plan-table th:nth-child(4), .monthly-plan-table td:nth-child(4) { min-width: 80px; } /* KM */
+      .monthly-plan-table th:nth-child(5), .monthly-plan-table td:nth-child(5) { min-width: 80px; } /* Fare */
+      .monthly-plan-table th:nth-child(6), .monthly-plan-table td:nth-child(6) { min-width: 80px; } /* D.A */
+      .monthly-plan-table th:nth-child(7), .monthly-plan-table td:nth-child(7) { min-width: 80px; } /* Other */
+      .monthly-plan-table th:nth-child(8), .monthly-plan-table td:nth-child(8) { min-width: 90px; } /* Total */
+      .monthly-plan-table th:nth-child(9), .monthly-plan-table td:nth-child(9) { min-width: 100px; } /* Action */
 
       .km-icon { background: #dbeafe; color: #2563eb; }
       .fare-icon { background: #dcfce7; color: #16a34a; }
@@ -122,15 +132,59 @@
       }
 
       #coverageList .badge {
-        font-size: 12px;
-        padding: 8px 12px;
+        font-size: 11px;
+        padding: 6px 10px;
         border-radius: 8px;
+        white-space: normal !important; /* Allow text to wrap inside badge */
+        text-align: left;
+        word-break: break-word;
+        max-width: 100%;
       }
 
-      @media(max-width: 768px) {
-        .dashboard-card h6 { font-size: 12px; }
-        .dashboard-card h2 { font-size: 18px; }
-        .icon-circle { width: 45px; height: 45px; font-size: 18px; }
+/* Mobile responsiveness improvements */
+      @media (max-width: 768px) {
+        .top-header h2 {
+          font-size: 20px;
+        }
+        
+        .top-header p {
+          font-size: 12px;
+        }
+
+        /* Reduce font size inside table cells on mobile */
+        .monthly-plan-table th,
+        .monthly-plan-table td {
+          font-size: 12px;
+          padding: 6px 8px;
+        }
+
+        /* Adjust input sizes inside table for mobile */
+        .monthly-plan-table .form-control, 
+        .monthly-plan-table .form-select {
+          height: 38px;
+          font-size: 12px;
+          padding: 4px 8px;
+          min-width: 70px;
+        }
+
+        /* Dashboard card text adjustment */
+        .dashboard-card h6 { 
+          font-size: 11px; 
+        }
+        .dashboard-card h2 { 
+          font-size: 16px; 
+        }
+        .icon-circle { 
+          width: 40px; 
+          height: 40px; 
+          font-size: 16px; 
+        }
+      }
+
+      /* Prevent table text wrapping issues and handle small screens smoothly */
+      .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
       }
     </style>
   </head>
