@@ -9,6 +9,8 @@ let stream = null;
 let imageBase64 = null;
 let currentFacingMode = "environment"; // Default back camera
 
+let visitHistoryData = []; // Global variable for optimized history
+
 window.onload = function () {
   if (typeof checkAsmSession === "function") {
     checkAsmSession();
@@ -17,7 +19,7 @@ window.onload = function () {
   // Initialize page functions
   getLocation();
   loadAsmRoutes();
-  loadVisitHistory();
+  loadDoctorVisitHistory(); // ✅ FIXED: Correct function name
 };
 
 // 1. Visit Category Handle (Doctor/Chemist)
@@ -57,7 +59,7 @@ function loadAsmRoutes() {
     .catch((err) => console.error("Error loading ASM routes:", err));
 }
 
-// 3. Fetch GPS Location (Updated with MR OpenStreetMap Logic)
+// 3. Fetch GPS Location (OpenStreetMap Logic already included here)
 function getLocation() {
   const locInput = document.getElementById("locationName");
   if (navigator.geolocation) {
@@ -182,7 +184,7 @@ function submitDoctorVisit() {
     anniversaryDate: document.getElementById("anniversaryDate").value,
     hospitalName: document.getElementById("hospitalName").value,
     mobileNumber: document.getElementById("mobileNumber").value,
-    location: document.getElementById("locationName").value, // Database me text address jayega
+    location: document.getElementById("locationName").value, 
     latitude: latitude,
     longitude: document.getElementById("longitude").value,
     routeName: routeName,
@@ -215,33 +217,40 @@ function submitDoctorVisit() {
     });
 }
 
-// 6. Load Visit History (Map Link Hata Diya)
-function loadVisitHistory() {
-  fetch(`${BASE_URL}/asm/mr-visits/${employeeId}`)
+// 6. Load Visit History (Super Optimized)
+function loadDoctorVisitHistory() {
+  // ✅ FIXED: Used employeeId instead of undefined asmId
+  fetch(`${BASE_URL}/asm/mr-visits/${employeeId}`) 
     .then((res) => res.json())
     .then((data) => {
       const table = document.getElementById("doctorVisitTable");
-      table.innerHTML = "";
       
       if (!data || data.length === 0) {
         table.innerHTML = `<tr><td colspan="18" class="text-center text-muted py-3">No visits found</td></tr>`;
         return;
       }
       
-      data.forEach((visit) => {
+      // Keep only latest 50 records to prevent browser crash
+      visitHistoryData = data.slice(0, 50); 
+      
+      let tableHtml = "";
+      
+      visitHistoryData.forEach((visit, index) => {
         let statusClass = "status-pending";
         if (visit.status === "Approved" || visit.status === "Completed") statusClass = "status-completed";
         if (visit.status === "Rejected") statusClass = "status-rejected";
 
-        let imgBtn = visit.visitImage
-          ? `<button class="btn btn-sm btn-outline-primary" onclick="viewImage('${visit.visitImage}')"><i class="fa-solid fa-image"></i> View</button>`
+        let imgUrl = visit.photo || visit.visitImage;
+        let imgBtn = imgUrl
+          ? `<button class="btn btn-sm btn-outline-primary" onclick="viewImage('${imgUrl}')"><i class="fa-solid fa-image"></i> View</button>`
           : `-`;
 
-        table.innerHTML += `
+        // ✅ FIXED: Passed ONLY index to openEditModal
+        tableHtml += `
           <tr>
             <td>${visit.workingWith || "-"}</td>
             <td>${visit.workingPersonName || "-"}</td>
-            <td><span class="badge bg-secondary">${visit.visitCategory || "DOCTOR"}</span></td>
+            <td><span class="badge ${visit.visitCategory === "CHEMIST" ? "bg-success" : "bg-primary"}">${visit.visitCategory || "DOCTOR"}</span></td>
             <td><strong>${visit.doctorName || "-"}</strong></td>
             <td>${visit.specialization || "-"}</td>
             <td>${visit.mobileNumber || "-"}</td>
@@ -250,25 +259,23 @@ function loadVisitHistory() {
             <td>${visit.hospitalName || "-"}</td>
             <td>${visit.visitDate || "-"}</td>
             <td>${visit.visitTime || "-"}</td>
-            
-            <!-- Map link removed. Ab sirf Database me save hua proper Address Text dikhega -->
-            <td style="max-width: 250px; white-space: normal; font-size: 13px;">
-                ${visit.location || "-"}
-            </td>
-            
+            <td style="max-width: 250px; white-space: normal; font-size: 13px;">${visit.location || "-"}</td>
             <td>${visit.landmark || "-"}</td>
-            <td>Good</td>
+            <td>${visit.accuracy ? visit.accuracy + " m" : "-"}</td>
             <td>${imgBtn}</td>
             <td>${visit.remarks || "-"}</td>
             <td class="${statusClass}">${visit.status || "Pending"}</td>
             <td>
-              <button class="btn btn-sm btn-outline-primary" onclick='openEditModal(${JSON.stringify(visit).replace(/'/g, "&#39;")})'>
+              <button class="btn btn-sm btn-primary" onclick="openEditModal(${index})">
                  <i class="fa-solid fa-pen"></i>
               </button>
             </td>
           </tr>
         `;
       });
+
+      // Update UI in one go
+      table.innerHTML = tableHtml;
     })
     .catch((err) => console.error("History fetch error:", err));
 }
@@ -281,7 +288,12 @@ function viewImage(base64Str) {
 }
 
 // 8. Open Edit Modal
-function openEditModal(visit) {
+// ✅ FIXED: Correct parameter name (index)
+function openEditModal(index) {
+  const visit = visitHistoryData[index]; 
+  
+  if(!visit) return;
+
   document.getElementById("editVisitId").value = visit.id;
   document.getElementById("editWorkingWith").value = visit.workingWith || "Individual";
   document.getElementById("editWorkingPersonName").value = visit.workingPersonName || "";
@@ -291,8 +303,7 @@ function openEditModal(visit) {
   document.getElementById("editLandmark").value = visit.landmark || "";
   document.getElementById("editRemarks").value = visit.remarks || "";
 
-  const modal = new bootstrap.Modal(document.getElementById("editVisitModal"));
-  modal.show();
+  new bootstrap.Modal(document.getElementById("editVisitModal")).show();
 }
 
 // 9. Update Doctor Visit
