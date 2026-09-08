@@ -435,24 +435,29 @@ function clearForm() {
 }
 
 // 7. Load Visit History (ASM Specific)
+// 7. Load Visit History (Optimized for Mobile Performance)
 function loadDoctorVisitHistory() {
-  fetch(`${BASE_URL}/asm/mr-visits/${asmId}`)
+  // Update this URL if your MR uses a different endpoint for visits
+  fetch(`${BASE_URL}/asm/mr-visits/${asmId}`) 
     .then((response) => response.json())
     .then((data) => {
       const table = document.getElementById("doctorVisitTable");
-      table.innerHTML = "";
-
+      
       if (data.length === 0) {
         table.innerHTML = `<tr><td colspan="18" class="text-center">No Doctor Visits Found</td></tr>`;
         return;
       }
+
+      // ✅ STEP 1: Ek khali string banayein
+      let tableHtml = "";
 
       data.forEach((visit) => {
         let statusClass = "status-completed";
         if (visit.status === "Rejected") statusClass = "status-rejected";
         if (visit.status === "Pending") statusClass = "status-pending";
 
-        table.innerHTML += `
+        // ✅ STEP 2: HTML ko table me nahi, balki is string variable me add karein
+        tableHtml += `
           <tr>
             <td>${visit.workingWith || "-"}</td>
             <td>${visit.workingPersonName || "-"}</td>
@@ -479,6 +484,9 @@ function loadDoctorVisitHistory() {
           </tr>
         `;
       });
+
+      // ✅ STEP 3: Loop khatam hone ke baad ek hi baar me DOM ko update karein
+      table.innerHTML = tableHtml;
     })
     .catch((error) => console.error(error));
 }
