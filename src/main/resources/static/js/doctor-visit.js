@@ -436,33 +436,48 @@ function clearForm() {
 
 // 7. Load Visit History (ASM Specific)
 // 7. Load Visit History (Optimized for Mobile Performance)
+// 6. Load Visit History (Filtered for TODAY only)
 function loadDoctorVisitHistory() {
-  // Update this URL if your MR uses a different endpoint for visits
+  // 1. Aaj ki date nikalenge (YYYY-MM-DD format me, jaisa DB me save hota hai)
+  const now = new Date();
+  const pad = (n) => (n < 10 ? "0" + n : n);
+  const todayDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+
+  // API call (MR file me asmId ya employeeId jo aap use kar rahe hain)
   fetch(`${BASE_URL}/asm/mr-visits/${asmId}`) 
-    .then((response) => response.json())
+    .then((res) => res.json())
     .then((data) => {
       const table = document.getElementById("doctorVisitTable");
       
-      if (data.length === 0) {
-        table.innerHTML = `<tr><td colspan="18" class="text-center">No Doctor Visits Found</td></tr>`;
+      // ✅ 2. Sirf aaj ki date (todayDate) wale visits filter kar lenge
+      const todaysVisits = data.filter(visit => visit.visitDate === todayDate);
+      
+      if (!todaysVisits || todaysVisits.length === 0) {
+        table.innerHTML = `<tr><td colspan="18" class="text-center text-muted py-3">No visits found for today</td></tr>`;
         return;
       }
-
-      // ✅ STEP 1: Ek khali string banayein
+      
+      // Browser safety ke liye filtered data ko global variable me daalenge
+      visitHistoryData = todaysVisits.slice(0, 50); 
+      
       let tableHtml = "";
-
-      data.forEach((visit) => {
-        let statusClass = "status-completed";
+      
+      visitHistoryData.forEach((visit, index) => {
+        let statusClass = "status-pending";
+        if (visit.status === "Approved" || visit.status === "Completed") statusClass = "status-completed";
         if (visit.status === "Rejected") statusClass = "status-rejected";
-        if (visit.status === "Pending") statusClass = "status-pending";
 
-        // ✅ STEP 2: HTML ko table me nahi, balki is string variable me add karein
+        let imgUrl = visit.photo || visit.visitImage;
+        let imgBtn = imgUrl
+          ? `<button class="btn btn-sm btn-outline-primary" onclick="viewImage('${imgUrl}')"><i class="fa-solid fa-image"></i> View</button>`
+          : `-`;
+
         tableHtml += `
           <tr>
             <td>${visit.workingWith || "-"}</td>
             <td>${visit.workingPersonName || "-"}</td>
             <td><span class="badge ${visit.visitCategory === "CHEMIST" ? "bg-success" : "bg-primary"}">${visit.visitCategory || "DOCTOR"}</span></td>
-            <td>${visit.doctorName || "-"}</td>
+            <td><strong>${visit.doctorName || "-"}</strong></td>
             <td>${visit.specialization || "-"}</td>
             <td>${visit.mobileNumber || "-"}</td>
             <td>${visit.dob || "-"}</td>
@@ -470,25 +485,25 @@ function loadDoctorVisitHistory() {
             <td>${visit.hospitalName || "-"}</td>
             <td>${visit.visitDate || "-"}</td>
             <td>${visit.visitTime || "-"}</td>
-            <td>${visit.location || "-"}</td>
+            <td style="max-width: 250px; white-space: normal; font-size: 13px;">${visit.location || "-"}</td>
             <td>${visit.landmark || "-"}</td>
             <td>${visit.accuracy ? visit.accuracy + " m" : "-"}</td>
-            <td><img src="${visit.photo}" onclick="openVisitImage('${visit.photo}')" style="width:55px;height:55px;object-fit:cover;border-radius:10px;cursor:pointer;"></td>
+            <td>${imgBtn}</td>
             <td>${visit.remarks || "-"}</td>
-            <td><span class="${statusClass}">${visit.status || "Completed"}</span></td>
+            <td class="${statusClass}">${visit.status || "Pending"}</td>
             <td>
-                <button class="btn btn-sm btn-primary" onclick='openEditVisitModal(${JSON.stringify(visit).replace(/'/g, "&#39;")})'>
-                  <i class="fa-solid fa-pen"></i>
-                </button>
+              <button class="btn btn-sm btn-primary" onclick="openEditVisitModal(${index})">
+                 <i class="fa-solid fa-pen"></i>
+              </button>
             </td>
           </tr>
         `;
       });
 
-      // ✅ STEP 3: Loop khatam hone ke baad ek hi baar me DOM ko update karein
+      // Ek sath table update
       table.innerHTML = tableHtml;
     })
-    .catch((error) => console.error(error));
+    .catch((err) => console.error("History fetch error:", err));
 }
 
 // 8. Edit / Modals
