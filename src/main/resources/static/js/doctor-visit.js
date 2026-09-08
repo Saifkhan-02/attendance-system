@@ -1,3 +1,6 @@
+// ==========================================
+// MR DOCTOR VISIT JAVASCRIPT
+// ==========================================
 
 const asmId = localStorage.getItem("asmId") || localStorage.getItem("employeeId");
 const asmName = localStorage.getItem("asmName") || localStorage.getItem("employeeName");
@@ -8,22 +11,24 @@ let capturedVisitBlob = null;
 let isSubmittingVisit = false;
 let currentFacingMode = "user";
 
+// ✅ 1. Naya global variable add kar diya gaya hai
+let visitHistoryData = []; 
+
 window.onload = function () {
   if (typeof checkAsmSession === "function") {
     checkAsmSession();
   }
   loadDoctorVisitHistory();
   getCurrentLocation();
-  loadAssignedRoutes(); // ASM specific routes
+  loadAssignedRoutes(); 
 };
 
-// 1. Load ASM Routes
+// 1. Load Routes
 async function loadAssignedRoutes() {
   const routeDropdown = document.getElementById("routeName");
   routeDropdown.innerHTML = '<option value="">Select Route</option>';
 
   try {
-    // ASM Specific Route API
     const response = await fetch(`${BASE_URL}/asm/routes/${asmId}`);
     if (!response.ok) throw new Error("Failed to load routes");
 
@@ -66,8 +71,8 @@ function handleVisitCategoryChange() {
     nameLabel.innerText = "Chemist Name";
     nameInput.placeholder = "Enter chemist name";
     specializationDiv.style.display = "none";
-    hospitalLabel.innerText = "Chemist Shop Name";
-    hospitalInput.placeholder = "Enter chemist shop name";
+    hospLabel.innerText = "Chemist Shop Name";
+    document.getElementById("specialization").value = "N/A";
   }
 
   clearPartyFields();
@@ -434,22 +439,17 @@ function clearForm() {
   getCurrentLocation();
 }
 
-// 7. Load Visit History (ASM Specific)
-// 7. Load Visit History (Optimized for Mobile Performance)
-// 6. Load Visit History (Filtered for TODAY only)
+// 7. Load Visit History (Filtered for TODAY only & Optimized)
 function loadDoctorVisitHistory() {
-  // 1. Aaj ki date nikalenge (YYYY-MM-DD format me, jaisa DB me save hota hai)
   const now = new Date();
   const pad = (n) => (n < 10 ? "0" + n : n);
   const todayDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 
-  // API call (MR file me asmId ya employeeId jo aap use kar rahe hain)
   fetch(`${BASE_URL}/asm/mr-visits/${asmId}`) 
     .then((res) => res.json())
     .then((data) => {
       const table = document.getElementById("doctorVisitTable");
       
-      // ✅ 2. Sirf aaj ki date (todayDate) wale visits filter kar lenge
       const todaysVisits = data.filter(visit => visit.visitDate === todayDate);
       
       if (!todaysVisits || todaysVisits.length === 0) {
@@ -457,7 +457,6 @@ function loadDoctorVisitHistory() {
         return;
       }
       
-      // Browser safety ke liye filtered data ko global variable me daalenge
       visitHistoryData = todaysVisits.slice(0, 50); 
       
       let tableHtml = "";
@@ -468,10 +467,13 @@ function loadDoctorVisitHistory() {
         if (visit.status === "Rejected") statusClass = "status-rejected";
 
         let imgUrl = visit.photo || visit.visitImage;
+        
+        // ✅ 2. Sirf index pass kar rahe hain image open karne ke liye
         let imgBtn = imgUrl
-          ? `<button class="btn btn-sm btn-outline-primary" onclick="viewImage('${imgUrl}')"><i class="fa-solid fa-image"></i> View</button>`
+          ? `<button type="button" class="btn btn-sm btn-outline-primary" onclick="openVisitImage(${index})"><i class="fa-solid fa-image"></i> View</button>`
           : `-`;
 
+        // ✅ 3. Edit me bhi sirf index pass ho raha hai
         tableHtml += `
           <tr>
             <td>${visit.workingWith || "-"}</td>
@@ -492,7 +494,7 @@ function loadDoctorVisitHistory() {
             <td>${visit.remarks || "-"}</td>
             <td class="${statusClass}">${visit.status || "Pending"}</td>
             <td>
-              <button class="btn btn-sm btn-primary" onclick="openEditVisitModal(${index})">
+              <button type="button" class="btn btn-sm btn-primary" onclick="openEditVisitModal(${index})">
                  <i class="fa-solid fa-pen"></i>
               </button>
             </td>
@@ -500,19 +502,31 @@ function loadDoctorVisitHistory() {
         `;
       });
 
-      // Ek sath table update
       table.innerHTML = tableHtml;
     })
     .catch((err) => console.error("History fetch error:", err));
 }
 
 // 8. Edit / Modals
-function openVisitImage(imageUrl) {
-  document.getElementById("visitFullImage").src = imageUrl;
-  new bootstrap.Modal(document.getElementById("visitImageModal")).show();
+
+// ✅ 4. Function ab directly Array se image fetch karke popup chalayega
+function openVisitImage(index) {
+  const visit = visitHistoryData[index];
+  if (visit) {
+    const imageUrl = visit.photo || visit.visitImage;
+    if (imageUrl) {
+      document.getElementById("visitFullImage").src = imageUrl;
+      new bootstrap.Modal(document.getElementById("visitImageModal")).show();
+    }
+  }
 }
 
-function openEditVisitModal(visit) {
+// ✅ 5. Edit modal ab array se index ke zariye poora data uthayega
+function openEditVisitModal(index) {
+  const visit = visitHistoryData[index];
+  
+  if (!visit) return;
+
   document.getElementById("editVisitId").value = visit.id;
   document.getElementById("editWorkingWith").value = visit.workingWith || "Individual";
   document.getElementById("editWorkingPersonName").value = visit.workingPersonName || "";
