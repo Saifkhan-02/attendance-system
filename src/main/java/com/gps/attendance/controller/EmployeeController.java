@@ -145,12 +145,24 @@ public Employee updateEmployeeProfile(
             .orElseThrow(() -> new RuntimeException("Employee not found"));
 
     // Editable Fields
+    employee.setName(updatedEmployee.getName());
+    employee.setUsername(updatedEmployee.getUsername());
+
+    // Update password only when a new password is supplied.
+    if (updatedEmployee.getPassword() != null
+            && !updatedEmployee.getPassword().trim().isEmpty()) {
+        employee.setPassword(updatedEmployee.getPassword());
+    }
+
     employee.setEmail(updatedEmployee.getEmail());
     employee.setMobile(updatedEmployee.getMobile());
     employee.setRole(updatedEmployee.getRole());
     employee.setReportingManager(updatedEmployee.getReportingManager());
     employee.setHeadquarters(updatedEmployee.getHeadquarters());
+    employee.setJoiningDate(updatedEmployee.getJoiningDate());
     employee.setStatus(updatedEmployee.getStatus());
+
+    // Employee ID is intentionally not changed.
 
     return repository.save(employee);
 }

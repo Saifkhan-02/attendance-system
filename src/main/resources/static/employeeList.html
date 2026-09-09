@@ -686,7 +686,11 @@
 
    <img src="${emp.profileImage || "https://cdn-icons-png.flaticon.com/512/149/149071.png"}">
 
-    <h2 class="mt-3">${emp.name}</h2>
+    <h2 class="mt-3">
+  <span id="nameText">${emp.name || "-"}</span>
+  <input type="text" id="nameInput" class="form-control d-none mt-2"
+         value="${emp.name || ""}" oninput="hasUnsavedChanges=true">
+</h2>
 
     <span class="status-badge">
         ${emp.status || "Active"}
@@ -712,7 +716,11 @@
     </div>
     <div>
         <div class="info-title">Username</div>
-        <div class="info-value">${emp.username || "-"}</div>
+        <div class="info-value">
+  <span id="usernameText">${emp.username || "-"}</span>
+  <input type="text" id="usernameInput" class="form-control d-none"
+         value="${emp.username || ""}" oninput="hasUnsavedChanges=true">
+</div>
     </div>
 </div>
 
@@ -759,13 +767,19 @@
             <button
                 type="button"
                 class="btn btn-sm btn-outline-primary"
-                onclick="togglePassword('${emp.password}')">
+                onclick="togglePassword('${emp.password || ""}')">
 
                 <i class="fas fa-eye"></i>
 
             </button>
 
         </div>
+
+        <input type="password" id="passwordInput"
+               class="form-control d-none mt-2"
+               value="${emp.password || ""}"
+               placeholder="Enter new password"
+               oninput="hasUnsavedChanges=true">
 
     </div>
 
@@ -857,7 +871,11 @@ oninput="hasUnsavedChanges=true">
     </div>
     <div>
         <div class="info-title">Joining Date</div>
-        <div class="info-value">${emp.joiningDate || "-"}</div>
+        <div class="info-value">
+          <span id="joiningDateText">${emp.joiningDate || "-"}</span>
+          <input type="date" id="joiningDateInput" class="form-control d-none"
+                 value="${emp.joiningDate || ""}" oninput="hasUnsavedChanges=true">
+        </div>
     </div>
 </div>
 
@@ -1467,8 +1485,16 @@ ${new Date().toLocaleString()}
           document.getElementById("editBtn").innerHTML =
             '<i class="fas fa-save"></i> Save Changes';
 
+          document.getElementById("nameText").classList.add("d-none");
+          document.getElementById("nameInput").classList.remove("d-none");
+
+          document.getElementById("usernameText").classList.add("d-none");
+          document.getElementById("usernameInput").classList.remove("d-none");
+
           document.getElementById("emailText").classList.add("d-none");
           document.getElementById("emailInput").classList.remove("d-none");
+
+          document.getElementById("passwordInput").classList.remove("d-none");
 
           document.getElementById("mobileText").classList.add("d-none");
           document.getElementById("mobileInput").classList.remove("d-none");
@@ -1487,6 +1513,9 @@ ${new Date().toLocaleString()}
           document
             .getElementById("headQuarterEditBox")
             .classList.remove("d-none");
+
+          document.getElementById("joiningDateText").classList.add("d-none");
+          document.getElementById("joiningDateInput").classList.remove("d-none");
 
           document.getElementById("statusText").classList.add("d-none");
           document.getElementById("statusInput").classList.remove("d-none");
@@ -1507,17 +1536,15 @@ ${new Date().toLocaleString()}
           }
 
           const updatedEmployee = {
+            name: document.getElementById("nameInput").value,
+            username: document.getElementById("usernameInput").value,
+            password: document.getElementById("passwordInput").value,
             email: document.getElementById("emailInput").value,
-
             mobile: document.getElementById("mobileInput").value,
-
             role: document.getElementById("roleInput").value,
-
-            reportingManager: document.getElementById("reportingManagerInput")
-              .value,
-
+            reportingManager: document.getElementById("reportingManagerInput").value,
             headquarters: selectedHeadquarters,
-
+            joiningDate: document.getElementById("joiningDateInput").value,
             status: document.getElementById("statusInput").value,
           };
 
@@ -1532,7 +1559,11 @@ ${new Date().toLocaleString()}
           })
             .then((res) => res.json())
             .then((data) => {
+              currentEmployee.name = data.name;
+              currentEmployee.username = data.username;
               currentEmployee.email = data.email;
+              currentEmployee.password = data.password;
+              currentEmployee.joiningDate = data.joiningDate;
               currentEmployee.mobile = data.mobile;
               currentEmployee.role = data.role;
               currentEmployee.reportingManager = data.reportingManager;
@@ -1544,6 +1575,16 @@ ${new Date().toLocaleString()}
 
               document.getElementById("editBtn").innerHTML =
                 '<i class="fas fa-edit"></i> Edit Employee';
+
+              document.getElementById("nameText").innerText =
+                document.getElementById("nameInput").value;
+              document.getElementById("nameText").classList.remove("d-none");
+              document.getElementById("nameInput").classList.add("d-none");
+
+              document.getElementById("usernameText").innerText =
+                document.getElementById("usernameInput").value;
+              document.getElementById("usernameText").classList.remove("d-none");
+              document.getElementById("usernameInput").classList.add("d-none");
 
               document.getElementById("emailText").innerText =
                 document.getElementById("emailInput").value;
@@ -1588,21 +1629,54 @@ ${new Date().toLocaleString()}
                 .getElementById("headQuarterEditBox")
                 .classList.add("d-none");
 
+              document.getElementById("empPassword").innerText = "********";
+              document.getElementById("passwordInput").classList.add("d-none");
+
+              document.getElementById("joiningDateText").innerText =
+                document.getElementById("joiningDateInput").value || "-";
+              document.getElementById("joiningDateText").classList.remove("d-none");
+              document.getElementById("joiningDateInput").classList.add("d-none");
+
               document.getElementById("statusText").innerText =
                 document.getElementById("statusInput").value;
 
               document.getElementById("statusText").classList.remove("d-none");
               document.getElementById("statusInput").classList.add("d-none");
 
-              // Update employee in allEmployees array
-
-              let index = allEmployees.findIndex(
+              // Update the local employee object immediately so the list
+              // reflects the saved values without requiring a page refresh.
+              const index = allEmployees.findIndex(
                 (emp) => emp.id == currentEmployee.id,
               );
 
               if (index !== -1) {
-                allEmployees[index] = data;
+                allEmployees[index] = {
+                  ...allEmployees[index],
+                  ...data,
+                  ...updatedEmployee,
+                  id: allEmployees[index].id,
+                };
               }
+
+              // Keep the currently displayed/filterable list in sync.
+              filteredEmployees = filteredEmployees.map((emp) =>
+                emp.id == currentEmployee.id
+                  ? { ...emp, ...allEmployees[index] }
+                  : emp,
+              );
+
+              // Always keep employee list alphabetically sorted after edit.
+              allEmployees.sort((a, b) =>
+                (a.name || "").localeCompare(b.name || "", undefined, {
+                  sensitivity: "base",
+                }),
+              );
+
+              filteredEmployees.sort((a, b) =>
+                (a.name || "").localeCompare(b.name || "", undefined, {
+                  sensitivity: "base",
+                }),
+              );
               if (
                 document.getElementById("roleInput").value.toUpperCase() ===
                 "ASM"
