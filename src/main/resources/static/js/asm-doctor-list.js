@@ -1,10 +1,11 @@
 // ==========================================
-// ASM DOCTOR & CHEMIST LIST JAVASCRIPT
+// ASM DOCTOR & CHEMIST LIST JAVASCRIPT (High Performance)
 // ==========================================
 
 let uniqueDoctors = [];
 let currentDoctorList = [];
 let selectedCategory = "DOCTOR";
+let currentDisplayLimit = 50; // Ek baar me 50 dikhayenge
 
 function getAsmId() {
   return localStorage.getItem("asmId") || localStorage.getItem("employeeId");
@@ -14,7 +15,7 @@ window.onload = function () {
   if (typeof checkAsmSession === "function") {
     checkAsmSession();
   }
-  loadAsmRoutes(); // 🔥 Fetch ALL routes from ALL HQs directly from Backend
+  loadAsmRoutes(); 
   loadTeamDoctors();
 };
 
@@ -42,7 +43,6 @@ function changeListCategory() {
   loadTeamDoctors();
 }
 
-// 🚀 API: Load all routes for all HQs of this ASM
 function loadAsmRoutes() {
   fetch(`${BASE_URL}/asm/routes/${getAsmId()}`)
     .then((res) => res.json())
@@ -50,14 +50,13 @@ function loadAsmRoutes() {
       const routeSelect = document.getElementById("routeFilter");
       routeSelect.innerHTML = '<option value="">All Routes</option>';
       data.forEach((r) => {
-        // Dropdown me Route Name aur (HQ Name) dono dikhega
         routeSelect.innerHTML += `<option value="${r.routeName}">${r.routeName} (${r.headquarterName})</option>`;
       });
     })
     .catch((err) => console.error("Error loading ASM routes:", err));
 }
 
-// 🚀 Smart Logic: Fetch Team -> Then fetch doctors for each team member
+// 🚀 FIXED: Sequential Loading to save Backend from Crashing
 async function loadTeamDoctors() {
   const asmId = getAsmId();
   const container = document.getElementById("doctorList");
@@ -66,13 +65,14 @@ async function loadTeamDoctors() {
   container.innerHTML = `
     <div class="col-12 text-center py-4">
       <div class="spinner-border text-primary"></div>
-      <div class="mt-2 text-muted">Fetching all MRs and their doctors...</div>
+      <div class="mt-2 text-muted fw-bold" id="loadingProgress">Connecting to server...</div>
     </div>
   `;
 
   try {
     let teamIds = [asmId]; 
     
+    // 1. Fetch Team
     try {
       const teamResponse = await fetch(`${BASE_URL}/asm/team/${asmId}`);
       if (teamResponse.ok) {
@@ -85,21 +85,31 @@ async function loadTeamDoctors() {
       console.warn("Could not fetch team, loading only ASM data");
     }
 
-    const fetchPromises = teamIds.map(empId => 
-      fetch(`${BASE_URL}/doctor-visit/unique-parties/${empId}?category=${encodeURIComponent(selectedCategory)}`)
-        .then(res => res.ok ? res.json() : [])
-        .catch(() => []) 
-    );
-
-    const allResults = await Promise.all(fetchPromises);
-    
     let combinedDoctors = [];
-    allResults.forEach(mrDoctors => {
-      if (mrDoctors && mrDoctors.length > 0) {
-        combinedDoctors = combinedDoctors.concat(mrDoctors);
-      }
-    });
+    const loadingText = document.getElementById("loadingProgress");
 
+    // 2. Fetch data ONE BY ONE (Sequentially) taaki DB overload na ho
+    for (let i = 0; i < teamIds.length; i++) {
+      if(loadingText) {
+        loadingText.innerText = `Fetching data... (${i + 1} of ${teamIds.length} MRs)`;
+      }
+      
+      try {
+        const res = await fetch(`${BASE_URL}/doctor-visit/unique-parties/${teamIds[i]}?category=${encodeURIComponent(selectedCategory)}`);
+        if(res.ok) {
+          const mrDoctors = await res.json();
+          if(mrDoctors && mrDoctors.length > 0) {
+            combinedDoctors = combinedDoctors.concat(mrDoctors);
+          }
+        }
+      } catch (err) {
+        console.error(`Failed to load for MR ${teamIds[i]}`);
+      }
+    }
+
+    // 3. Deduplicate 1500+ records safely
+    if(loadingText) loadingText.innerText = "Processing records...";
+    
     const doctorMap = new Map();
     combinedDoctors.forEach(doc => {
       const key = (doc.doctorName || "").toLowerCase() + "-" + (doc.hospitalName || "").toLowerCase();
@@ -116,7 +126,7 @@ async function loadTeamDoctors() {
     uniqueDoctors = Array.from(doctorMap.values());
 
     populateFilters();
-    applyFilters();
+    applyFilters(); // Isme display calling hogi
 
   } catch (error) {
     console.error("Error loading team doctors:", error);
@@ -124,10 +134,8 @@ async function loadTeamDoctors() {
   }
 }
 
-// Populate ONLY MR Filter (Route Filter is now handled by loadAsmRoutes)
 function populateFilters() {
   const mrDropdown = document.getElementById("mrFilter");
-  
   const mrs = [...new Set(uniqueDoctors.map(d => d.employeeName).filter(Boolean))].sort();
 
   mrDropdown.innerHTML = '<option value="">All MRs (Employees)</option>';
@@ -139,7 +147,7 @@ function populateFilters() {
 function applyFilters() {
   const keyword = document.getElementById("searchDoctor").value.trim().toLowerCase();
   const selectedMr = document.getElementById("mrFilter").value;
-  const selectedRoute = document.getElementById("routeFilter").value.toLowerCase(); // selectedRoute already has routeName as value
+  const selectedRoute = document.getElementById("routeFilter").value.toLowerCase();
 
   const filtered = uniqueDoctors.filter((item) => {
     const name = (item.doctorName || "").toLowerCase();
@@ -156,9 +164,11 @@ function applyFilters() {
     return matchesSearch && matchesMr && matchesRoute;
   });
 
+  currentDisplayLimit = 50; // Reset limit on new search
   displayDoctors(filtered);
 }
 
+// 🚀 FIXED: Pagination to stop browser hanging
 function displayDoctors(list) {
   const container = document.getElementById("doctorList");
   container.innerHTML = "";
@@ -170,12 +180,16 @@ function displayDoctors(list) {
     return;
   }
 
-  list.forEach((doctor, index) => {
+  // Sirf 50 (ya current limit) tak hi render karenge
+  const listToRender = list.slice(0, currentDisplayLimit);
+  let html = "";
+
+  listToRender.forEach((doctor, index) => {
     const isChemist = (doctor.visitCategory || selectedCategory) === "CHEMIST";
     const iconClass = isChemist ? "fa-prescription-bottle-medical" : "fa-user-doctor";
     const secondaryText = isChemist ? doctor.hospitalName || "-" : doctor.specialization || "-";
 
-    container.innerHTML += `
+    html += `
       <div class="col-md-6 col-lg-4">
         <div class="card doctor-card h-100" onclick="openDoctorFromList(${index})">
           <div class="card-body">
@@ -208,6 +222,25 @@ function displayDoctors(list) {
       </div>
     `;
   });
+
+  // Agar total records 50 se zyada hain, toh Load More ka button lagayenge
+  if (list.length > currentDisplayLimit) {
+    html += `
+      <div class="col-12 text-center mt-3">
+        <button class="btn btn-outline-primary px-4 py-2" onclick="loadMoreDoctors()" style="border-radius:10px; font-weight:600;">
+          Load More (Showing ${currentDisplayLimit} of ${list.length})
+        </button>
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+}
+
+// Load More function
+function loadMoreDoctors() {
+  currentDisplayLimit += 50; 
+  displayDoctors(currentDoctorList); // Wapas display call karo with new limit
 }
 
 function openDoctorFromList(index) {
