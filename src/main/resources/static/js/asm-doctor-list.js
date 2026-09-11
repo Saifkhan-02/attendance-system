@@ -264,6 +264,7 @@ function openDoctorFromList(index) {
   document.getElementById("modalVisitDate").innerText = doctor.visitDate || "-";
 
   const mobile = doctor.mobileNumber || doctor.mobile || doctor.phone;
+  document.getElementById("modalMobile").innerText = (mobile && mobile !== "N/A") ? mobile : "N/A";
   const callBtn = document.getElementById("callNowBtn");
   
   if (mobile && mobile !== "N/A" && mobile !== "-") {
