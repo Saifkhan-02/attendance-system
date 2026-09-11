@@ -675,6 +675,10 @@
 
         currentEmployee = emp;
 
+        // Always open employee details in View mode.
+        isEditMode = false;
+        hasUnsavedChanges = false;
+
         if (!emp) {
           alert("Employee not found");
           return;
