@@ -27,13 +27,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.gps.attendance.entity.DoctorVisit;
+import com.gps.attendance.entity.RouteMaster;
 import com.gps.attendance.repository.AttendanceRepository;
 import com.gps.attendance.repository.DoctorVisitRepository;
 import com.gps.attendance.repository.EmployeeRepository;
 import com.gps.attendance.repository.LeaveRequestRepository;
-import com.gps.attendance.service.CloudinaryService;
-import com.gps.attendance.entity.RouteMaster;
 import com.gps.attendance.repository.RouteMasterRepository;
+import com.gps.attendance.service.CloudinaryService;
 
 @RestController
 @CrossOrigin("*")
@@ -57,50 +57,83 @@ public class DoctorVisitController {
     @Autowired
     private RouteMasterRepository routeMasterRepository;
 
-    @PostMapping("/doctor-visit/save")
-    public ResponseEntity<?> saveDoctorVisit(
-            @RequestBody DoctorVisit visit) {
+@PostMapping("/doctor-visit/save")
+public ResponseEntity<?> saveDoctorVisit(
+        @RequestBody DoctorVisit visit) {
 
-        if (visit.getDoctorName() == null || visit.getDoctorName().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("Doctor name is required");
+    try {
+
+        // 1. Validate doctor name
+        if (visit.getDoctorName() == null ||
+                visit.getDoctorName().trim().isEmpty()) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body("Doctor name is required");
         }
 
+        // 2. Clean doctor name
         String doctorName = visit.getDoctorName().trim();
+        visit.setDoctorName(doctorName);
 
-        Optional<DoctorVisit> existingVisit
-                = repository.findFirstByEmployeeIdAndDoctorNameIgnoreCaseAndVisitDate(
+        // 3. Always generate today's date/time on server
+        ZoneId indiaZone = ZoneId.of("Asia/Kolkata");
+
+        String today = LocalDate.now(indiaZone).toString();
+        LocalTime currentTime = LocalTime.now(indiaZone);
+
+        visit.setVisitDate(today);
+        visit.setVisitTime(currentTime);
+
+        // 4. Check duplicate using today's date
+        Optional<DoctorVisit> existingVisit =
+                repository.findFirstByEmployeeIdAndDoctorNameIgnoreCaseAndVisitDate(
                         visit.getEmployeeId(),
                         doctorName,
-                        visit.getVisitDate()
+                        today
                 );
 
         if (existingVisit.isPresent()) {
+
             return ResponseEntity
                     .badRequest()
                     .body("This doctor visit is already submitted today.");
         }
 
-        visit.setDoctorName(doctorName);
-        visit.setVisitDate(LocalDate.now(ZoneId.of("Asia/Kolkata")).toString());
-        visit.setVisitTime(LocalTime.now(ZoneId.of("Asia/Kolkata")));
+        // 5. Set Headquarter from Route
         String route = visit.getRouteName();
 
         if (route != null && !route.isBlank()) {
 
-            RouteMaster routeMaster = routeMasterRepository
-                    .findByRouteNameIgnoreCase(route)
-                    .orElse(null);
+            RouteMaster routeMaster =
+                    routeMasterRepository
+                            .findByRouteNameIgnoreCase(route)
+                            .orElse(null);
 
             if (routeMaster != null) {
-                visit.setHeadquarter(routeMaster.getHeadquarterName());
+                visit.setHeadquarter(
+                        routeMaster.getHeadquarterName()
+                );
             }
         }
+
+        // 6. Set status
         visit.setStatus("Completed");
 
+        // 7. Save
         DoctorVisit savedVisit = repository.save(visit);
 
         return ResponseEntity.ok(savedVisit);
+
+    } catch (Exception e) {
+
+        e.printStackTrace();
+
+        return ResponseEntity
+                .internalServerError()
+                .body("Failed to save doctor visit: " + e.getMessage());
     }
+}
 
     @GetMapping("/doctor-visit/history/{employeeId}")
     public List<DoctorVisit> getDoctorVisitHistory(
