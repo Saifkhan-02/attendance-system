@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,19 +85,16 @@ public ResponseEntity<?> saveDoctorVisit(
         visit.setVisitTime(currentTime);
 
         // 4. Check duplicate using today's date
-        Optional<DoctorVisit> existingVisit =
-                repository.findFirstByEmployeeIdAndDoctorNameIgnoreCaseAndVisitDate(
-                        visit.getEmployeeId(),
-                        doctorName,
-                        today
-                );
+     boolean alreadyExists =
+        repository.existsByEmployeeIdAndDoctorNameIgnoreCaseAndVisitDate(
+                visit.getEmployeeId(),
+                doctorName,
+                today);
 
-        if (existingVisit.isPresent()) {
-
-            return ResponseEntity
-                    .badRequest()
-                    .body("This doctor visit is already submitted today.");
-        }
+if (alreadyExists) {
+    return ResponseEntity.badRequest()
+            .body("This doctor visit is already submitted today.");
+}
 
         // 5. Set Headquarter from Route
         String route = visit.getRouteName();

@@ -1,7 +1,6 @@
 package com.gps.attendance.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -57,11 +56,12 @@ public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> 
     long countByEmployeeId(@Param("employeeId") Long employeeId);
 
 // Duplicate protection
-    Optional<DoctorVisit> findFirstByEmployeeIdAndDoctorNameIgnoreCaseAndVisitDate(
-            Long employeeId,
-            String doctorName,
-            String visitDate
-    );
+ boolean existsByEmployeeIdAndDoctorNameIgnoreCaseAndVisitDate(
+        Long employeeId,
+        String doctorName,
+        String visitDate
+        
+        );
 
     List<DoctorVisit> findByEmployeeIdAndVisitDateOrderByIdDesc(
             Long employeeId,
