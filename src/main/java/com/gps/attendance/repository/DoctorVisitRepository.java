@@ -55,26 +55,7 @@ public interface DoctorVisitRepository extends JpaRepository<DoctorVisit, Long> 
     @Query("SELECT COUNT(d) FROM DoctorVisit d WHERE d.employeeId = :employeeId")
     long countByEmployeeId(@Param("employeeId") Long employeeId);
 
-// Duplicate protection:
-// Same employee + same category + same doctor/chemist name
-// + same hospital/medical name + same date = duplicate
-@Query("""
-    SELECT COUNT(d) > 0
-    FROM DoctorVisit d
-    WHERE d.employeeId = :employeeId
-      AND UPPER(TRIM(d.visitCategory)) = UPPER(TRIM(:visitCategory))
-      AND UPPER(TRIM(d.doctorName)) = UPPER(TRIM(:doctorName))
-      AND UPPER(TRIM(COALESCE(d.hospitalName, ''))) =
-          UPPER(TRIM(COALESCE(:hospitalName, '')))
-      AND d.visitDate = :visitDate
-""")
-boolean existsDuplicateVisit(
-        @Param("employeeId") Long employeeId,
-        @Param("visitCategory") String visitCategory,
-        @Param("doctorName") String doctorName,
-        @Param("hospitalName") String hospitalName,
-        @Param("visitDate") String visitDate
-);
+
 
     List<DoctorVisit> findByEmployeeIdAndVisitDateOrderByIdDesc(
             Long employeeId,

@@ -92,42 +92,22 @@ if (hospitalName != null) {
     visit.setHospitalName(hospitalName);
 }
 
-// Duplicate check:
-// Employee + Category + Doctor/Chemist + Hospital/Medical + Date
-boolean alreadyExists =
-        repository.existsDuplicateVisit(
-                visit.getEmployeeId(),
-                visit.getVisitCategory(),
-                doctorName,
-                hospitalName,
-                today
-        );
-
-if (alreadyExists) {
-    return ResponseEntity.badRequest()
-            .body("This doctor/medical visit is already submitted today.");
-}
-
-if (alreadyExists) {
-    return ResponseEntity.badRequest()
-            .body("This doctor visit is already submitted today.");
-}
 
         // 5. Set Headquarter from Route
         String route = visit.getRouteName();
 
         if (route != null && !route.isBlank()) {
 
-            RouteMaster routeMaster =
-                    routeMasterRepository
-                            .findByRouteNameIgnoreCase(route)
-                            .orElse(null);
+           List<RouteMaster> routeMasters =
+        routeMasterRepository.findByRouteNameIgnoreCase(route);
 
-            if (routeMaster != null) {
-                visit.setHeadquarter(
-                        routeMaster.getHeadquarterName()
-                );
-            }
+if (!routeMasters.isEmpty()) {
+    RouteMaster routeMaster = routeMasters.get(0);
+
+    visit.setHeadquarter(
+            routeMaster.getHeadquarterName()
+    );
+}
         }
 
         // 6. Set status
