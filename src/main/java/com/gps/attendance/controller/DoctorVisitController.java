@@ -84,12 +84,29 @@ public ResponseEntity<?> saveDoctorVisit(
         visit.setVisitDate(today);
         visit.setVisitTime(currentTime);
 
-        // 4. Check duplicate using today's date
-     boolean alreadyExists =
-        repository.existsByEmployeeIdAndDoctorNameIgnoreCaseAndVisitDate(
+  // Clean hospital / medical name
+String hospitalName = visit.getHospitalName();
+
+if (hospitalName != null) {
+    hospitalName = hospitalName.trim();
+    visit.setHospitalName(hospitalName);
+}
+
+// Duplicate check:
+// Employee + Category + Doctor/Chemist + Hospital/Medical + Date
+boolean alreadyExists =
+        repository.existsDuplicateVisit(
                 visit.getEmployeeId(),
+                visit.getVisitCategory(),
                 doctorName,
-                today);
+                hospitalName,
+                today
+        );
+
+if (alreadyExists) {
+    return ResponseEntity.badRequest()
+            .body("This doctor/medical visit is already submitted today.");
+}
 
 if (alreadyExists) {
     return ResponseEntity.badRequest()
