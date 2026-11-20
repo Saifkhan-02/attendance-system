@@ -189,7 +189,8 @@ function submitDoctorVisit() {
     longitude: document.getElementById("longitude").value,
     routeName: routeName,
     landmark: document.getElementById("landmark").value,
-    visitImage: imageBase64,
+    //visitImage: imageBase64,
+    photo: imageBase64,
     remarks: document.getElementById("remarks").value,
     visitDate: visitDate,
     visitTime: visitTime,
@@ -242,7 +243,7 @@ function loadDoctorVisitHistory() {
 
         let imgUrl = visit.photo || visit.visitImage;
         let imgBtn = imgUrl
-          ? `<button class="btn btn-sm btn-outline-primary" onclick="viewImage('${imgUrl}')"><i class="fa-solid fa-image"></i> View</button>`
+          ? `<button class="btn btn-sm btn-outline-primary" onclick="viewImage('${index}')"><i class="fa-solid fa-image"></i> View</button>`
           : `-`;
 
         // ✅ FIXED: Passed ONLY index to openEditModal
@@ -281,8 +282,13 @@ function loadDoctorVisitHistory() {
 }
 
 // 7. View Image Modal
-function viewImage(base64Str) {
-  document.getElementById("visitFullImage").src = base64Str;
+// 7. View Image Modal
+function viewImage(index) {
+  const visit = visitHistoryData[index];
+  const imgUrl = visit?.photo || visit?.visitImage;
+  if (!imgUrl) return;
+
+  document.getElementById("visitFullImage").src = imgUrl;
   const modal = new bootstrap.Modal(document.getElementById("visitImageModal"));
   modal.show();
 }

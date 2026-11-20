@@ -74,16 +74,12 @@ public ResponseEntity<?> saveDoctorVisit(
         // 2. Clean doctor name
         String doctorName = visit.getDoctorName().trim();
         visit.setDoctorName(doctorName);
-
         // 3. Always generate today's date/time on server
         ZoneId indiaZone = ZoneId.of("Asia/Kolkata");
-
         String today = LocalDate.now(indiaZone).toString();
         LocalTime currentTime = LocalTime.now(indiaZone);
-
         visit.setVisitDate(today);
         visit.setVisitTime(currentTime);
-
   // Clean hospital / medical name
 String hospitalName = visit.getHospitalName();
 
@@ -91,16 +87,12 @@ if (hospitalName != null) {
     hospitalName = hospitalName.trim();
     visit.setHospitalName(hospitalName);
 }
-
-
         // 5. Set Headquarter from Route
         String route = visit.getRouteName();
 
         if (route != null && !route.isBlank()) {
-
            List<RouteMaster> routeMasters =
         routeMasterRepository.findByRouteNameIgnoreCase(route);
-
 if (!routeMasters.isEmpty()) {
     RouteMaster routeMaster = routeMasters.get(0);
 
@@ -109,32 +101,23 @@ if (!routeMasters.isEmpty()) {
     );
 }
         }
-
         // 6. Set status
         visit.setStatus("Completed");
-
         // 7. Save
         DoctorVisit savedVisit = repository.save(visit);
-
         return ResponseEntity.ok(savedVisit);
-
     } catch (Exception e) {
-
         e.printStackTrace();
-
         return ResponseEntity
                 .internalServerError()
                 .body("Failed to save doctor visit: " + e.getMessage());
     }
 }
-
     @GetMapping("/doctor-visit/history/{employeeId}")
     public List<DoctorVisit> getDoctorVisitHistory(
             @PathVariable Long employeeId) {
-
         return repository.findByEmployeeIdOrderByIdDesc(employeeId);
     }
-
     @GetMapping("/doctor-visit/history/today/{employeeId}")
     public List<DoctorVisit> getTodayDoctorVisitHistory(
             @PathVariable Long employeeId
@@ -158,24 +141,20 @@ if (!routeMasters.isEmpty()) {
     ) {
         return repository.countUniqueByCategory(category);
     }
-
     @GetMapping("/doctor-visit/total-party-count")
     public long getTotalPartyCount() {
         return repository.countAllUniqueParties();
     }
-
     @GetMapping("/doctor-visit/monthly-count")
     public long getMonthlyVisitCount() {
         return repository.getCurrentMonthVisitCount();
     }
-
     @GetMapping("/doctor-visit/today-count")
     public long getTodayVisitCount(
             @RequestParam String category
     ) {
         return repository.getTodayVisitCount(category);
     }
-
     @GetMapping("/doctor-visit/top10")
     public List<DoctorVisit> getTop10DoctorVisits() {
 
@@ -191,10 +170,8 @@ if (!routeMasters.isEmpty()) {
         return repository
                 .findByEmployeeNameContainingIgnoreCase(keyword);
     }
-
     @GetMapping("/doctor-visit/chart-data")
     public List<Object[]> getChartData() {
-
         return repository.getMonthlyVisitStats();
     }
 
@@ -212,7 +189,6 @@ if (!routeMasters.isEmpty()) {
                 .stream()
                 .limit(7)
                 .collect(java.util.stream.Collectors.toList());
-
         java.util.Collections.reverse(data);
 
         return data;
@@ -220,38 +196,29 @@ if (!routeMasters.isEmpty()) {
 
     @GetMapping("/attendance/chart-data")
     public Map<String, Long> getAttendanceChartData() {
-
         LocalDate today = LocalDate.now();
-
         long totalEmployees = employeeRepository.count();
-
         long present
                 = attendanceRepository
                         .countByAttendanceDateAndStatus(
                                 today,
                                 "Present"
                         );
-
         long leave
                 = leaveRequestRepository
                         .countByFromDateAndStatus(
                                 today,
                                 "Approved"
                         );
-
         long absent
                 = Math.max(0, totalEmployees - present - leave);
-
         Map<String, Long> data
                 = new HashMap<>();
-
         data.put("present", present);
         data.put("absent", absent);
         data.put("leave", leave);
-
         return data;
     }
-
     @GetMapping("/doctor-visit/unique-doctors/{employeeId}")
     public List<DoctorVisit> getUniqueDoctors(@PathVariable Long employeeId) {
         return repository.findByEmployeeId(employeeId)
@@ -266,7 +233,6 @@ if (!routeMasters.isEmpty()) {
                 .stream()
                 .toList();
     }
-
     @GetMapping("/doctor-visit/directory")
     public Page<DoctorVisit> getDoctorDirectory(
             @RequestParam String category,
@@ -276,7 +242,6 @@ if (!routeMasters.isEmpty()) {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-
         return repository.findDoctorVisits(
                 category,
                 employeeName,
@@ -285,7 +250,6 @@ if (!routeMasters.isEmpty()) {
                 PageRequest.of(page, size)
         );
     }
-
     @GetMapping("/doctor-visit/unique-directory")
     public Page<DoctorVisit> getUniqueDoctorDirectory(
             @RequestParam String category,
@@ -306,44 +270,28 @@ if (!routeMasters.isEmpty()) {
                 PageRequest.of(page, size)
         );
     }
-
     @GetMapping("/doctor-visit/daily-target/{employeeId}")
     public Map<String, Object> getDailyTarget(@PathVariable Long employeeId) {
-
         String today = java.time.LocalDate.now().toString();
-
         long achievement
                 = repository.countByEmployeeIdAndVisitDate(employeeId, today);
-
         int target = 25;
-
         int progress
                 = (int) Math.min((achievement * 100) / target, 100);
-
         long remaining = Math.max(0, target - achievement);
-
         long extraVisits = Math.max(0, achievement - target);
-
         // System.out.println("EMPLOYEE ID: " + employeeId);
         // System.out.println("TODAY: " + today);
         // System.out.println("ACHIEVEMENT: " + achievement);
         Map<String, Object> data = new HashMap<>();
-
         data.put("target", target);
-
         data.put("achievement", achievement);
-
         data.put("remaining", remaining);
-
         data.put("extraVisits", extraVisits);
-
         data.put("progress", progress);
-
         data.put("date", today);
-
         return data;
     }
-
     @PostMapping("/doctor-visit/upload-photo/{employeeId}")
     public String uploadDoctorVisitPhoto(
             @PathVariable Long employeeId,
@@ -414,9 +362,7 @@ if (!routeMasters.isEmpty()) {
                 .values()
                 .stream()
                 .toList();
-
         for (DoctorVisit doctor : doctors) {
-
             doctor.setTotalVisitCount(
                     repository.countByDoctorNameIgnoreCase(
                             doctor.getDoctorName()
@@ -424,11 +370,8 @@ if (!routeMasters.isEmpty()) {
             );
 
         }
-
         return doctors;
-
     }
-
     @PutMapping("/doctor-visit/update/{id}")
     public DoctorVisit updateDoctorVisit(
             @PathVariable Long id,
@@ -436,7 +379,6 @@ if (!routeMasters.isEmpty()) {
     ) {
         DoctorVisit visit = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Visit not found"));
-
         visit.setWorkingWith(updatedVisit.getWorkingWith());
         visit.setWorkingPersonName(updatedVisit.getWorkingPersonName());
         visit.setDOB(updatedVisit.getDOB());
@@ -444,15 +386,12 @@ if (!routeMasters.isEmpty()) {
         visit.setMobileNumber(updatedVisit.getMobileNumber());
         visit.setRemarks(updatedVisit.getRemarks());
         visit.setLandmark(updatedVisit.getLandmark());
-
         return repository.save(visit);
     }
-
     @GetMapping("/employee/{id}/visit-count")
     public Long getVisitCount(@PathVariable Long id) {
         return repository.countByEmployeeId(id);
     }
-
     @GetMapping("/doctor-visit/search-party")
     public List<DoctorVisit> searchParty(
             @RequestParam Long employeeId,
@@ -466,7 +405,6 @@ if (!routeMasters.isEmpty()) {
                         name
                 );
     }
-
     @GetMapping("/doctor-visit/exact-party")
     public List<DoctorVisit> getExactParty(
             @RequestParam Long employeeId,
@@ -480,7 +418,6 @@ if (!routeMasters.isEmpty()) {
                         name
                 );
     }
-
     @GetMapping("/doctor-visit/category-summary/{employeeId}")
     public Map<String, Long> getCategorySummary(
             @PathVariable Long employeeId
@@ -494,7 +431,6 @@ if (!routeMasters.isEmpty()) {
                         "DOCTOR"
                 )
         );
-
         result.put(
                 "chemists",
                 repository.countByEmployeeIdAndVisitCategory(
@@ -502,10 +438,8 @@ if (!routeMasters.isEmpty()) {
                         "CHEMIST"
                 )
         );
-
         return result;
     }
-
     @GetMapping("/doctor-visit/list/{employeeId}")
     public List<DoctorVisit> getPartyList(
             @PathVariable Long employeeId,
@@ -518,56 +452,39 @@ if (!routeMasters.isEmpty()) {
                             category
                     );
         }
-
         return repository.findByEmployeeIdOrderByIdDesc(employeeId);
     }
-
     @GetMapping("/doctor-visit/unique-parties/{employeeId}")
-    public List<DoctorVisit> getUniqueParties(
-            @PathVariable Long employeeId,
-            @RequestParam String category
+    public List<DoctorVisit> getUniqueParties( @PathVariable Long employeeId, @RequestParam String category
     ) {
-        List<DoctorVisit> visits
-                = repository
-                        .findByEmployeeIdAndVisitCategoryOrderByVisitDateDesc(
-                                employeeId,
-                                category
+        List<DoctorVisit> visits = repository.findByEmployeeIdAndVisitCategoryOrderByVisitDateDesc(employeeId, category
                         );
-
         Map<String, DoctorVisit> uniqueMap = new LinkedHashMap<>();
-
         for (DoctorVisit visit : visits) {
             String name = visit.getDoctorName();
-
             if (name == null || name.isBlank()) {
                 continue;
             }
-
             String uniqueKey
                     = name.trim().toLowerCase()
                     + "|"
                     + (visit.getHospitalName() == null
                     ? ""
                     : visit.getHospitalName().trim().toLowerCase());
-
             uniqueMap.putIfAbsent(uniqueKey, visit);
         }
-
         return new ArrayList<>(uniqueMap.values());
     }
-
     @GetMapping("/doctor-visit/employees")
     public List<String> getEmployees(
             @RequestParam String category
     ) {
         return repository.findAllEmployeeNames(category);
     }
-
     @GetMapping("/doctor-visit/doctors")
     public List<String> getDoctors(
             @RequestParam String category
     ) {
         return repository.findAllDoctorNames(category);
     }
-
 }
