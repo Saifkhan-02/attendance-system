@@ -1,7 +1,3 @@
-// ==========================================
-// ASM ORDER MANAGEMENT JAVASCRIPT
-// ==========================================
-
 let distributorList = [];
 let distributorStockList = [];
 let employeeHeadquarters = "";
@@ -17,39 +13,31 @@ let editingOrderGroupId = null;
 let editingOrders = [];
 let allProducts = [];
 let allDoctors = [];
-
 // Helper function to safely get ID whether it's stored as asmId or employeeId
 function getAsmId() {
   return localStorage.getItem("asmId") || localStorage.getItem("employeeId");
 }
-
 function getAsmName() {
   return localStorage.getItem("asmName") || localStorage.getItem("employeeName");
 }
-
 window.onload = function () {
   if (typeof checkAsmSession === "function") {
     checkAsmSession();
   }
-  
   loadAssignedDoctors();
   loadEmployeeAndDistributors();
   loadOrderHistory();
   loadAllProducts();
   loadAllDoctors();
-
   const orderDateInput = document.getElementById("orderDate");
   if (orderDateInput) {
     orderDateInput.value = new Date().toISOString().split("T")[0];
   }
-
   setTimeout(() => {
     addCreateProductRow();
   }, 500);
-
   editOrderModal = new bootstrap.Modal(document.getElementById("editOrderModal"));
 };
-
 function loadAssignedDoctors() {
   const empId = getAsmId();
   fetch(`${BASE_URL}/doctor-visit/unique-doctors/${empId}`)
@@ -81,14 +69,65 @@ function loadAssignedDoctors() {
 
 function loadEmployeeAndDistributors() {
   const empId = getAsmId();
-  fetch(`${BASE_URL}/employee/${empId}`)
-    .then((response) => response.json())
-    .then((employee) => {
-      employeeHeadquarters = employee.headquarters || employee.headQuarters || employee.headQuarter || "";
-      document.getElementById("headquarters").value = employeeHeadquarters;
-      return fetch(`${BASE_URL}/distributor/by-headquarter/${encodeURIComponent(employeeHeadquarters)}`);
+  if (!empId) return;
+
+  fetch(`${BASE_URL}/hq/employee/${empId}`)
+    .then(async (response) => {
+      if (!response.ok) return [];
+      const data = await response.json();
+      return Array.isArray(data) ? data : [];
     })
-    .then((response) => response.json())
+    .then(async (hqObjects) => {
+      let hqNames = hqObjects
+        .map((hq) => (hq && hq.headquarterName ? String(hq.headquarterName).trim() : ""))
+        .filter(Boolean);
+
+      // Fallback: agar mapping se koi HQ na aaye toh employee.headquarters check karein
+      if (hqNames.length === 0) {
+        const empRes = await fetch(`${BASE_URL}/employee/${empId}`);
+        if (empRes.ok) {
+          const employee = await empRes.json();
+          const rawHq =
+            employee.headquarters ||
+            employee.headQuarters ||
+            employee.headQuarter ||
+            "";
+          hqNames = String(rawHq)
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+        }
+      }
+
+      employeeHeadquarters = hqNames.join(", ");
+      const hqInput = document.getElementById("headquarters");
+      if (hqInput) {
+        hqInput.value = employeeHeadquarters;
+      }
+
+      if (hqNames.length === 0) {
+        return [];
+      }
+
+      // Duplicate HQ names hata kar har HQ ke active distributors fetch karein
+      const uniqueHqNames = [...new Set(hqNames)];
+      const responses = await Promise.all(
+        uniqueHqNames.map((hqName) =>
+          fetch(`${BASE_URL}/distributor/by-headquarter/${encodeURIComponent(hqName)}`)
+            .then((res) => (res.ok ? res.json() : []))
+            .catch(() => [])
+        )
+      );
+
+      const distributorMap = new Map();
+      responses.flat().forEach((dist) => {
+        if (dist && dist.id != null) {
+          distributorMap.set(dist.id, dist);
+        }
+      });
+
+      return Array.from(distributorMap.values());
+    })
     .then((data) => {
       distributorList = data || [];
       const dropdown = document.getElementById("distributorId");
@@ -96,20 +135,20 @@ function loadEmployeeAndDistributors() {
       distributorList.forEach((d) => {
         dropdown.innerHTML += `<option value="${d.id}" data-name="${d.distributorName}">${d.distributorName}</option>`;
       });
+    })
+    .catch((error) => {
+      console.error("Error loading employee HQs and distributors:", error);
     });
 }
-
 function loadDistributorProducts() {
   const distributorId = document.getElementById("distributorId").value;
   const selected = document.getElementById("distributorId").selectedOptions[0];
   document.getElementById("distributorName").value = selected ? selected.getAttribute("data-name") : "";
-  
   if (!distributorId) {
     distributorStockList = [];
     document.getElementById("productItems").innerHTML = "";
     return;
   }
-  
   fetch(`${BASE_URL}/distributor-stock/${distributorId}`)
     .then((response) => response.json())
     .then((data) => {
@@ -120,7 +159,6 @@ function loadDistributorProducts() {
       addCreateProductRow(); // Automatically add first row
     });
 }
-
 function getProductOptions() {
   let options = "";
   stockList.forEach((product) => {
@@ -128,14 +166,12 @@ function getProductOptions() {
   });
   return options;
 }
-
 function addCreateProductRow() {
   const container = document.getElementById("productItems");
   const rowId = productRowIndex++;
   container.insertAdjacentHTML(
     "beforeend",
-    `
-    <div class="row g-3 align-items-end product-row mb-3 border rounded-4 p-3" id="productRow${rowId}">
+    `<div class="row g-3 align-items-end product-row mb-3 border rounded-4 p-3" id="productRow${rowId}">
       <div class="col-md-4">
         <label class="form-label small text-muted">Select Product</label>
         <select class="form-select productSelect" id="productSelect${rowId}" onchange="setRowProductDetails(this)">
@@ -166,7 +202,6 @@ function addCreateProductRow() {
     </div>
     `
   );
-  
   setTimeout(() => {
     new Choices(`#productSelect${rowId}`, {
       searchEnabled: true,
@@ -178,27 +213,22 @@ function addCreateProductRow() {
     });
   }, 100);
 }
-
 function removeCreateProductRow(rowId) {
   document.getElementById("productRow" + rowId).remove();
   calculateTotalOrderAmount();
 }
-
 function setRowProductDetails(selectElement) {
   const row = selectElement.closest(".product-row");
   const productId = selectElement.value;
-  const selectedProduct = stockList.find((p) => String(p.productId) === String(productId));
-  
+  const selectedProduct = stockList.find((p) => String(p.productId) === String(productId));  
   if (!selectedProduct) {
     row.querySelector(".availableStock").value = "0 Units";
     calculateTotalOrderAmount();
     return;
   }
-  
   row.querySelector(".availableStock").value = selectedProduct.availableUnits + " Units";
   calculateRowAmount(selectElement);
 }
-
 function calculateRowAmount(element) {
   const row = element.closest(".product-row");
   const qty = Number(row.querySelector(".orderQuantity").value || 0);
@@ -206,7 +236,6 @@ function calculateRowAmount(element) {
   row.querySelector(".rowAmount").value = qty * price;
   calculateTotalOrderAmount();
 }
-
 function calculateTotalOrderAmount() {
   let total = 0;
   document.querySelectorAll(".rowAmount").forEach((input) => {
@@ -223,7 +252,6 @@ function setDoctorName() {
   document.getElementById("visitCategory").value = selected ? selected.getAttribute("data-category") || "" : "";
   document.getElementById("area").value = selected ? selected.getAttribute("data-landmark") || "" : "";
 }
-
 function getLocalDate() {
   const now = new Date();
   const year = now.getFullYear();
@@ -231,7 +259,6 @@ function getLocalDate() {
   const day = String(now.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
-
 function placeOrder() {
   const area = document.getElementById("area").value.trim();
   const doctorId = document.getElementById("doctorId").value;
@@ -241,35 +268,27 @@ function placeOrder() {
   const distributorName = document.getElementById("distributorName").value;
   const headquarters = document.getElementById("headquarters").value;
   const paymentMode = document.getElementById("paymentMode").value;
-  
   if (!doctorId) return alert("Please select doctor");
   if (!visitCategory) return alert("Selected Doctor/Chemist category is missing");
   if (!distributorId) return alert("Please select distributor");
   if (!paymentMode) return alert("Please select payment mode");
   if (!area) return alert("Please enter area");
-  
   const rows = document.querySelectorAll(".product-row");
   if (rows.length === 0) return alert("Please add at least one product");
-  
   const paidAmountInput = document.getElementById("paidAmount").value.trim();
   if (paidAmountInput === "") return alert("Please enter paid amount (enter 0 if no payment received)");
-  
   const totalOrderAmount = Number(document.getElementById("orderAmount").value || 0);
   const totalPaidAmount = Number(paidAmountInput || 0);
-  
   if (totalOrderAmount <= 0) return alert("Please select product and enter quantity/price");
   if (totalPaidAmount < 0) return alert("Paid amount cannot be negative");
   if (totalPaidAmount > totalOrderAmount) return alert("Paid amount cannot be greater than total order amount");
-  
   let remainingPaidAmount = totalPaidAmount;
   const orders = [];
-  
   for (const row of rows) {
     const productId = row.querySelector(".productSelect").value;
     const orderQuantity = Number(row.querySelector(".orderQuantity").value || 0);
     const sellingPrice = Number(row.querySelector(".sellingPrice").value || 0);
     const orderAmount = Number(row.querySelector(".rowAmount").value || 0);
-    
     const selectedProduct = stockList.find((p) => String(p.productId) === String(productId));
     if (!selectedProduct) return alert("Please select product in all rows");
     if (orderQuantity <= 0) return alert("Enter valid quantity for " + selectedProduct.productName);
@@ -278,14 +297,12 @@ function placeOrder() {
     if (orderQuantity > Number(selectedProduct.availableUnits || 0)) {
       return alert("Quantity cannot be greater than stock for " + selectedProduct.productName);
     }
-    
     let rowPaidAmount = 0;
     if (remainingPaidAmount > 0) {
       rowPaidAmount = Math.min(remainingPaidAmount, orderAmount);
       remainingPaidAmount -= rowPaidAmount;
     }
     const dueAmount = orderAmount - rowPaidAmount;
-    
     orders.push({
       employeeId: Number(getAsmId()),
       employeeName: getAsmName(),
@@ -308,13 +325,10 @@ function placeOrder() {
       area: area,
     });
   }
-  
   const placeBtn = document.getElementById("placeOrderBtn");
   if (placeBtn.disabled) return;
-  
   placeBtn.disabled = true;
   placeBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Order Placing...';
-  
   fetch(`${BASE_URL}/order/place-multiple`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -324,18 +338,15 @@ function placeOrder() {
       const text = await response.text();
       if (!response.ok) throw new Error(text);
       alert("Orders Placed Successfully");
-      
       placeBtn.disabled = false;
       placeBtn.innerHTML = '<i class="fa-solid fa-cart-shopping me-2"></i>Place Order';
-      
       document.getElementById("productItems").innerHTML = "";
       productRowIndex = 0;
       addCreateProductRow();
       document.getElementById("orderAmount").value = "";
       document.getElementById("paidAmount").value = "";
       document.getElementById("dueAmount").value = "";
-      document.getElementById("remarks").value = "";
-      
+      document.getElementById("remarks").value = "";  
       loadDistributorProducts();
       loadOrderHistory();
     })
@@ -346,7 +357,6 @@ function placeOrder() {
       else alert("Failed to place order");
     });
 }
-
 function loadOrderHistory() {
   const empId = getAsmId();
   fetch(`${BASE_URL}/order/history/today/${empId}`)
@@ -358,13 +368,11 @@ function loadOrderHistory() {
     .then((data) => {
       historyList = data;
       const table = document.getElementById("orderTable");
-      table.innerHTML = "";
-      
+      table.innerHTML = "";      
       if (!data || data.length === 0) {
         table.innerHTML = `<tr><td colspan="13" class="text-center text-muted">No orders found</td></tr>`;
         return;
-      }
-      
+      }    
       const groupedOrders = {};
       data.forEach((order) => {
         const key = order.orderGroupId;
@@ -398,12 +406,10 @@ function loadOrderHistory() {
             </div>
           </div>
         `);
-      });
-      
+      });  
       Object.values(groupedOrders).forEach((order) => {
         table.innerHTML += `
-          <tr>
-            <td>${order.orderDate || "-"}</td>
+          <tr><td>${order.orderDate || "-"}</td>
             <td>${order.orderTime || "-"}</td>
             <td>${order.doctorName || "-"}</td>
             <td>${order.visitCategory === "CHEMIST" ? '<span class="badge bg-warning text-dark">Chemist</span>' : '<span class="badge bg-primary">Doctor</span>'}</td>
@@ -415,10 +421,8 @@ function loadOrderHistory() {
             <td>${order.paymentMode || "-"}</td>
             <td>${order.remarks || "-"}</td>
             <td><span class="status-placed">${order.status}</span></td>
-            <td class="text-center">
-                <button class="btn btn-sm btn-outline-warning" onclick="editOrder('${order.orderGroupId}')"><i class="fa-solid fa-pen"></i></button>
-            </td>
-          </tr>
+            <td class="text-center"><button class="btn btn-sm btn-outline-warning" onclick="editOrder('${order.orderGroupId}')"><i class="fa-solid fa-pen"></i></button>
+            </td></tr>
         `;
       });
     })
@@ -427,11 +431,9 @@ function loadOrderHistory() {
       document.getElementById("orderTable").innerHTML = `<tr><td colspan="13" class="text-center text-danger">Failed to load order history</td></tr>`;
     });
 }
-
 function calculateDueAmount() {
   const orderAmount = Number(document.getElementById("orderAmount").value || 0);
   let paidAmount = Number(document.getElementById("paidAmount").value || 0);
-  
   if (paidAmount > orderAmount) {
     alert("Paid amount cannot be greater than Total Amount");
     paidAmount = orderAmount;
@@ -439,42 +441,31 @@ function calculateDueAmount() {
   }
   document.getElementById("dueAmount").value = (orderAmount - paidAmount).toFixed(2);
 }
-
-// -------------------------------------
-// EDIT ORDER MODAL LOGIC
-// -------------------------------------
-
-function editOrder(groupId) {
+function editOrder(groupId) {// EDIT ORDER MODAL LOGIC
   editingOrderGroupId = groupId;
   editingOrders = historyList.filter((o) => o.orderGroupId === groupId);
   if (editingOrders.length === 0) return alert("Order not found");
-  
   const first = editingOrders[0];
   document.getElementById("editOrderGroupId").value = groupId;
   document.getElementById("editDistributor").value = first.distributorName || "";
   document.getElementById("editPaymentMode").value = first.paymentMode || "Pending";
   document.getElementById("editRemarks").value = first.remarks || "";
-  
   const totalPaid = editingOrders.reduce((sum, order) => sum + Number(order.paidAmount || 0), 0);
   const totalDue = editingOrders.reduce((sum, order) => sum + Number(order.dueAmount || 0), 0);
-  
   document.getElementById("editPaidAmount").value = totalPaid;
   document.getElementById("editDueAmount").value = totalDue;
   document.getElementById("submitBtn").innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Changes';
   document.getElementById("editDoctor").value = first.doctorName || "";
-  
   renderProductRows();
   loadDistributorProductsForEdit(first.distributorId);
   editOrderModal.show();
 }
-
 function renderProductRows() {
   const tbody = document.getElementById("editProductTable");
   tbody.innerHTML = "";
   editingOrders.forEach((order, index) => {
     tbody.innerHTML += `
-      <tr>
-        <td><select class="form-select edit-product" data-index="${index}"></select></td>
+      <tr><td><select class="form-select edit-product" data-index="${index}"></select></td>
         <td><input type="number" class="form-control edit-qty" value="${order.orderQuantity}" min="1" data-index="${index}" oninput="calculateRow(${index})"></td>
         <td><input type="number" class="form-control edit-price" value="${order.sellingPrice}" min="0" step="0.01" data-index="${index}" oninput="calculateRow(${index})"></td>
         <td><input class="form-control edit-amount bg-light" value="${order.orderAmount}" readonly></td>
@@ -487,26 +478,22 @@ function renderProductRows() {
   fillProductDropdowns();
   updateGrandTotal();
 }
-
 function calculateRow(index) {
   const qty = Number(document.querySelectorAll(".edit-qty")[index].value);
   const price = Number(document.querySelectorAll(".edit-price")[index].value);
   const amount = qty * price;
   document.querySelectorAll(".edit-amount")[index].value = amount.toFixed(2);
-  
   editingOrders[index].orderQuantity = qty;
   editingOrders[index].sellingPrice = price;
   editingOrders[index].orderAmount = amount;
   updateGrandTotal();
 }
-
 function updateGrandTotal() {
   let total = 0;
   editingOrders.forEach((order) => { total += Number(order.orderAmount || 0); });
   document.getElementById("editGrandTotal").innerText = total.toFixed(2);
   calculateEditDueAmount();
 }
-
 function addEditProductRow() {
   editingOrders.push({
     id: null,
@@ -530,7 +517,6 @@ function addEditProductRow() {
   });
   renderProductRows();
 }
-
 function fillProductDropdowns() {
   const productSelects = document.querySelectorAll(".edit-product");
   productSelects.forEach((select, index) => {
@@ -552,14 +538,12 @@ function fillProductDropdowns() {
     };
   });
 }
-
 function loadAllProducts() {
   fetch(`${BASE_URL}/order/all`)
     .then((r) => r.json())
     .then((data) => { allProducts = data; })
     .catch(console.error);
 }
-
 function loadAllDoctors() {
   const empId = getAsmId();
   fetch(`${BASE_URL}/doctor-visit/history/today/${empId}`)
@@ -567,7 +551,6 @@ function loadAllDoctors() {
     .then((data) => { allDoctors = data; })
     .catch(console.error);
 }
-
 function loadDistributorProductsForEdit(distributorId) {
   fetch(`${BASE_URL}/distributor-stock/${distributorId}`)
     .then((r) => r.json())
@@ -577,7 +560,6 @@ function loadDistributorProductsForEdit(distributorId) {
     })
     .catch(console.error);
 }
-
 function calculateEditDueAmount() {
   const total = Number(document.getElementById("editGrandTotal").innerText);
   let paid = Number(document.getElementById("editPaidAmount").value || 0);
@@ -588,18 +570,14 @@ function calculateEditDueAmount() {
   }
   document.getElementById("editDueAmount").value = (total - paid).toFixed(2);
 }
-
 function saveOrderChanges() {
   const btn = document.getElementById("submitBtn");
   btn.disabled = true;
   btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span>Updating...`;
-  
   const paymentMode = document.getElementById("editPaymentMode").value;
   const remarks = document.getElementById("editRemarks").value;
   const paidAmount = Number(document.getElementById("editPaidAmount").value || 0);
-  
   let remainingPaid = paidAmount;
-  
   editingOrders.forEach((order, index) => {
     order.paymentMode = paymentMode;
     order.remarks = remarks;
@@ -612,7 +590,6 @@ function saveOrderChanges() {
     order.paidAmount = rowPaidAmount;
     order.dueAmount = orderAmt - rowPaidAmount;
   });
-  
   document.querySelectorAll(".edit-product").forEach((select, index) => {
     const product = allProducts.find((p) => p.productId == select.value);
     if (product) {
@@ -620,7 +597,6 @@ function saveOrderChanges() {
       editingOrders[index].productName = product.productName;
     }
   });
-  
   fetch(`${BASE_URL}/order/update-group/${editingOrderGroupId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -642,16 +618,13 @@ function saveOrderChanges() {
       btn.innerHTML = '<i class="fa-solid fa-floppy-disk me-2"></i> Save Changes';
     });
 }
-
 function clearEditModal() {
   editingOrders = [];
   editingOrderGroupId = "";
   document.getElementById("editProductTable").innerHTML = "";
   document.getElementById("editGrandTotal").innerText = "0";
 }
-
 document.getElementById("editOrderModal").addEventListener("hidden.bs.modal", clearEditModal);
-
 function removeEditProductRow(index) {
   if (editingOrders.length == 1) return alert("At least one product is required.");
   if (!confirm("Remove this product?")) return;
