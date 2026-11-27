@@ -40,11 +40,9 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
     border: 1px solid #dee2e6;
     border-radius: 8px;
 }
-
 .tab-table-scroll table{
     margin-bottom: 0;
 }
-
 .tab-table-scroll thead th{
     position: sticky;
     top: 0;
@@ -53,26 +51,20 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
 }
 </style>
 </head>
-
 <body>
-
 <div class="header">
   <div class="d-flex align-items-center justify-content-between">
     <button class="back-btn" onclick="window.location.href='ASMTeam.html'">
       <i class="fa-solid fa-arrow-left"></i>
     </button>
-
     <div class="text-center">
       <img src="images/Inflix-logo-web.png" class="logo">
       <h5 class="fw-bold mt-2 mb-0">Employee Performance</h5>
     </div>
-
     <div style="width:45px"></div>
   </div>
 </div>
-
 <div class="container py-4">
-
   <div class="card-box">
     <div class="d-flex align-items-center gap-3">
       <div class="profile-icon">
@@ -88,7 +80,6 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
       </div>
     </div>
   </div>
-
   <div class="row g-3 mb-3">
     <div class="col-6 col-md-3">
       <div class="stat-card">
@@ -97,7 +88,6 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
         <h4 id="attendanceStatus" style="font-size: 20px;">-</h4>
       </div>
     </div>
-
     <div class="col-6 col-md-3">
       <div class="stat-card">
         <i class="fa-solid fa-user-doctor"></i>
@@ -105,7 +95,6 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
         <h4 id="todayVisits">0</h4>
       </div>
     </div>
-
     <div class="col-6 col-md-3">
       <div class="stat-card">
         <i class="fa-solid fa-cart-shopping"></i>
@@ -113,7 +102,6 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
         <h4 id="todayOrders">0</h4>
       </div>
     </div>
-
     <div class="col-6 col-md-3">
       <div class="stat-card">
         <i class="fa-solid fa-indian-rupee-sign"></i>
@@ -121,7 +109,6 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
         <h4 id="totalSales">₹0</h4>
       </div>
     </div>
-
     <div class="col-6 col-md-3">
       <div class="stat-card">
         <i class="fa-solid fa-wallet"></i>
@@ -129,7 +116,6 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
         <h4 id="totalCollection">₹0</h4>
       </div>
     </div>
-
     <div class="col-6 col-md-3">
       <div class="stat-card">
         <i class="fa-solid fa-chart-pie"></i>
@@ -137,7 +123,6 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
         <h4 id="totalDue">₹0</h4>
       </div>
     </div>
-
     <div class="col-6 col-md-3">
       <div class="stat-card">
         <i class="fa-solid fa-receipt"></i>
@@ -145,7 +130,6 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
         <h4 id="totalExpense">₹0</h4>
       </div>
     </div>
-
     <div class="col-6 col-md-3">
   <div class="stat-card" onclick="openTourPlans()" style="cursor:pointer">
     <i class="fa-solid fa-route"></i>
@@ -154,56 +138,35 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
   </div>
 </div>
   </div>
-
   <div class="card-box">
    <div class="card border-0 shadow-sm mb-3">
     <div class="card-body">
-
         <div class="row g-3 align-items-end">
-
             <div class="col-6 col-md-4">
                 <label class="form-label fw-semibold">
                     <i class="fa-solid fa-calendar-days text-primary"></i>
                     From Date
                 </label>
-
-                <input type="date"
-                       id="fromDate"
-                       class="form-control">
+                <input type="date" id="fromDate" class="form-control">
             </div>
-
             <div class="col-6 col-md-4">
-                <label class="form-label fw-semibold">
-                    <i class="fa-solid fa-calendar-check text-success"></i>
-                    To Date
+                <label class="form-label fw-semibold">  <i class="fa-solid fa-calendar-check text-success"></i>  To Date
                 </label>
-
-                <input type="date"
-                       id="toDate"
-                       class="form-control">
+                <input type="date" id="toDate" class="form-control">
             </div>
-
             <div class="col-md-4">
-
                 <div class="d-flex gap-2">
-
                     <button class="btn btn-primary flex-fill"
                             onclick="loadAllDetails()">
                         <i class="fa-solid fa-magnifying-glass"></i>
                         Apply
                     </button>
-
-                    <button class="btn btn-outline-secondary"
-                            onclick="resetFilter()">
+                    <button class="btn btn-outline-secondary" onclick="resetFilter()">
                         <i class="fa-solid fa-rotate-right"></i>
                     </button>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
 </div>
     <!-- Tabs -->
@@ -216,7 +179,6 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#totalSalesTab">Total Sales </button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#leaveTab">Leaves </button></li>
     </ul>
-
     <div class="tab-content">
       <!-- Attendance Tab -->
       <div class="tab-pane fade show active" id="attendanceTab">
@@ -312,7 +274,6 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
           <th>Other</th>
           <th>Total</th>
           <th>Status</th>
-         
         </tr>
       </thead>
       <tbody id="tourPlansTable"></tbody>
@@ -321,9 +282,7 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
       </div>
       <!-- Total Sales Tab -->
       <div class="tab-pane fade" id="totalSalesTab">
-
   <div class="row g-3 mb-3">
-
     <div class="col-6 col-md-4">
       <div class="stat-card">
         <i class="fa-solid fa-indian-rupee-sign"></i>
@@ -331,7 +290,6 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
         <h4 id="filteredSales">₹0</h4>
       </div>
     </div>
-
     <div class="col-6 col-md-4">
       <div class="stat-card">
         <i class="fa-solid fa-wallet"></i>
@@ -339,7 +297,6 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
         <h4 id="filteredCollection">₹0</h4>
       </div>
     </div>
-
     <div class="col-12 col-md-4">
       <div class="stat-card">
         <i class="fa-solid fa-chart-pie"></i>
@@ -347,12 +304,9 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
         <h4 id="filteredDue">₹0</h4>
       </div>
     </div>
-
   </div>
-
   <div class="table-responsive tab-table-scroll">
     <table class="table table-bordered align-middle">
-
       <thead class="table-light">
        <tr>
   <th>Date</th>
@@ -367,34 +321,24 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
   <th>Status</th>
 </tr>
       </thead>
-
       <tbody id="totalSalesTable"></tbody>
-
     <tfoot class="table-primary">
   <tr>
-    <th colspan="6" class="text-end">
-      Grand Total
-    </th>
-
+    <th colspan="6" class="text-end">  Grand Total </th>
     <th id="grandSales">₹0</th>
     <th id="grandCollection">₹0</th>
     <th id="grandDue">₹0</th>
     <th></th>
   </tr>
 </tfoot>
-
     </table>
   </div>
   </div>
   <!-- Leave Tab -->
  <div class="tab-pane fade" id="leaveTab">
-
 <div class="table-responsive tab-table-scroll">
-
 <table class="table table-bordered align-middle">
-
 <thead>
-
 <tr>
     <th>Leave Type</th>
     <th>From</th>
@@ -402,149 +346,138 @@ body{background:#dfe8f6;font-family:Arial,sans-serif}
     <th>Reason</th>
     <th>Status</th>
 </tr>
-
 </thead>
-
 <tbody id="leaveTableBody">
-
 </tbody>
-
 </table>
-
 </div>
-
 </div>
-
     </div>
   </div>
-
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/config.js"></script>
-
 <script>
 const employeeId = localStorage.getItem("selectedEmployeeId");
 const asmId = localStorage.getItem("employeeId");
 const role = localStorage.getItem("employeeRole");
 const token = localStorage.getItem("sessionToken");
-
 if (!asmId || !token || role !== "ASM" || !employeeId) {
   window.location.href = "index.html";
 }
-function money(value){
-    return "₹" + Number(value || 0).toLocaleString("en-IN");
+let cachedDetails = null;
+const renderedTabs = new Set(["#attendanceTab"]);
+function money(value) {
+  return "₹" + Number(value || 0).toLocaleString("en-IN");
 }
-
 function partyCategoryBadge(category) {
   const value = String(category || "").trim().toUpperCase();
-
   if (value === "CHEMIST") {
-    return `
-      <span class="badge bg-success">
-        <i class="fa-solid fa-prescription-bottle-medical me-1"></i>
-        Chemist
-      </span>
-    `;
+    return `<span class="badge bg-success"><i class="fa-solid fa-prescription-bottle-medical me-1"></i> Chemist</span>`;
   }
-
   if (value === "DOCTOR") {
-    return `
-      <span class="badge bg-primary">
-        <i class="fa-solid fa-user-doctor me-1"></i>
-        Doctor
-      </span>
-    `;
+    return `<span class="badge bg-primary"><i class="fa-solid fa-user-doctor me-1"></i> Doctor</span>`;
   }
-
-  return `
-    <span class="badge bg-secondary">
-      Category Not Available
-    </span>
-  `;
+  return `<span class="badge bg-secondary"> Category Not Available </span>`;
 }
-window.onload = function(){
+window.onload = function () {
+  bindTabEvents();
   loadSummary();
   loadAllDetails();
 };
+function bindTabEvents() {
+  document.querySelectorAll('button[data-bs-toggle="tab"]').forEach((btn) => {
+    btn.addEventListener("shown.bs.tab", (e) => {
+      const target = e.target.getAttribute("data-bs-target");
+      if (target && cachedDetails && !renderedTabs.has(target)) {
+        renderTabBySelector(target, cachedDetails);
+        renderedTabs.add(target);
+      }
+    });
+  });
+}
+function renderTabBySelector(target, data) {
+  switch (target) {
+    case "#attendanceTab":
+      renderAttendance(data.attendance || []);
+      break;
+    case "#visitsTab":
+      renderVisits(data.visits || []);
+      break;
+    case "#ordersTab":
+      renderOrders(data.orders || []);
+      break;
+    case "#expensesTab":
+      renderExpenses(data.tourPlans || []);
+      break;
+    case "#tourPlansTab":
+      renderTourPlans(data.tourPlans || []);
+      break;
+    case "#totalSalesTab":
+      renderTotalSales(data.orders || []);
+      break;
+    case "#leaveTab":
+      renderLeaveHistory(data.leaves || []);
+      break;
+  }
+}
 function loadAllDetails() {
-
   const fromDate = document.getElementById("fromDate").value;
   const toDate = document.getElementById("toDate").value;
-
   if ((fromDate && !toDate) || (!fromDate && toDate)) {
     alert("Please select both From Date and To Date");
     return;
   }
-
   if (fromDate && toDate && toDate < fromDate) {
     alert("To Date cannot be before From Date");
     return;
   }
-
-  let url =
-    `${BASE_URL}/asm/employee-details-fast/${employeeId}`;
-
+  let url = `${BASE_URL}/asm/employee-details-fast/${employeeId}`;
   if (fromDate && toDate) {
     url += `?fromDate=${encodeURIComponent(fromDate)}&toDate=${encodeURIComponent(toDate)}`;
   }
-
   fetch(url)
-    .then(async res => {
+    .then(async (res) => {
       if (!res.ok) {
         throw new Error(await res.text());
       }
-
       return res.json();
     })
-    .then(data => {
-
+    .then((data) => {
+      cachedDetails = data;
+      renderedTabs.clear();
       const emp = data.employee || {};
-
-      document.getElementById("empName").innerText =
-        emp.name || "-";
-
-      document.getElementById("empRole").innerText =
-        emp.role || "MR";
-
-      document.getElementById("empHq").innerText =
-        emp.headquarters || "-";
-
-      document.getElementById("empMobile").innerText =
-        emp.mobile || "-";
-
+      document.getElementById("empName").innerText = emp.name || "-";
+      document.getElementById("empRole").innerText = emp.role || "MR";
+      document.getElementById("empHq").innerText = emp.headquarters || "-";
+      document.getElementById("empMobile").innerText = emp.mobile || "-";
+      const activeBtn = document.querySelector(".nav-tabs .nav-link.active");
+      const activeTarget = activeBtn ? activeBtn.getAttribute("data-bs-target") : "#attendanceTab";
       renderAttendance(data.attendance || []);
-      renderVisits(data.visits || []);
-      renderOrders(data.orders || []);
-      renderExpenses(data.tourPlans || []);
-      renderTourPlans(data.tourPlans || []);
-      renderTotalSales(data.orders || []);
-      renderLeaveHistory(data.leaves || []);
+      renderedTabs.add("#attendanceTab");
+      if (activeTarget && activeTarget !== "#attendanceTab") {
+        renderTabBySelector(activeTarget, data);
+        renderedTabs.add(activeTarget);
+      }
     })
-    .catch(error => {
+    .catch((error) => {
       console.error("Employee details error:", error);
       alert("Failed to load employee details");
     });
 }
-function loadSummary(){
+function loadSummary() {
   fetch(`${BASE_URL}/asm/employee-summary/${employeeId}`)
-    .then(res => res.json())
-    .then(s => {
-      document.getElementById("attendanceStatus").innerText = s.attendanceStatus || "-";
+    .then((res) => res.json())
+    .then((s) => {
       const attendance = s.attendanceStatus || "Not Marked Yet";
       const attEl = document.getElementById("attendanceStatus");
-          
       attEl.innerText = attendance;
-          
       attEl.className = "";
-          
-      if(attendance.toLowerCase() === "present"){
+      if (attendance.toLowerCase() === "present") {
         attEl.classList.add("text-success", "fw-bold");
-      }
-      else if(attendance.toLowerCase() === "absent"){
+      } else if (attendance.toLowerCase() === "absent") {
         attEl.classList.add("text-danger", "fw-bold");
-      }
-      else{
+      } else {
         attEl.classList.add("text-warning", "fw-bold");
       }
       document.getElementById("todayVisits").innerText = s.todayVisits || 0;
@@ -554,404 +487,227 @@ function loadSummary(){
       document.getElementById("totalDue").innerText = money(s.totalDue);
       document.getElementById("totalExpense").innerText = money(s.totalExpense);
       document.getElementById("todayTourPlans").innerText = s.todayTourPlans || 0;
-   })
-.catch(error => {
-  console.error("Employee summary error:", error);
-});
+    })
+    .catch((error) => {
+      console.error("Employee summary error:", error);
+    });
 }
-function resetFilter(){
-
-    document.getElementById("fromDate").value="";
-    document.getElementById("toDate").value="";
-
-    loadAllDetails();
-
+function resetFilter() {
+  document.getElementById("fromDate").value = "";
+  document.getElementById("toDate").value = "";
+  loadAllDetails();
 }
-function renderAttendance(data){
+function renderAttendance(data) {
   const table = document.getElementById("attendanceTable");
-  table.innerHTML = "";
-
-  if(!data || data.length === 0){
+  if (!data || data.length === 0) {
     table.innerHTML = `<tr><td colspan="4" class="text-center">No attendance found</td></tr>`;
     return;
   }
-
-  data.forEach(a => {
-    table.innerHTML += `
-      <tr>
-        <td>${a.attendanceDate || "-"}</td>
-        <td>${a.attendanceTime || a.time || "-"}</td>
-        <td>${a.location || "-"}</td>
-        <td>${a.status || "-"}</td>
-      </tr>
-    `;
-  });
+  const rows = data.map((a) => `
+    <tr>
+      <td>${a.attendanceDate || "-"}</td>
+      <td>${a.attendanceTime || a.time || "-"}</td>
+      <td>${a.location || "-"}</td>
+      <td>${a.status || "-"}</td>
+    </tr>
+  `);
+  table.innerHTML = rows.join("");
 }
-
 function renderVisits(data) {
   const table = document.getElementById("visitsTable");
-  table.innerHTML = "";
-
   if (!data || data.length === 0) {
-    table.innerHTML = `
-      <tr>
-        <td colspan="11" class="text-center">
-          No visits found
-        </td>
-      </tr>
-    `;
+    table.innerHTML = `<tr><td colspan="11" class="text-center">No visits found</td></tr>`;
     return;
   }
-
-  data.forEach(v => {
-   table.innerHTML += `
-<tr>
-
-    <td>${v.visitDate || "-"}</td>
-
-    <td>
-        ${
-            v.workingWith === "Individual"
-            ? "Individual"
-            : (v.workingWith || "-")
-        }
-    </td>
-
-    <td>
-        ${
-            v.workingWith === "Individual"
-            ? "-"
-            : (v.workingPersonName || "-")
-        }
-    </td>
-
-    <td>
-        ${partyCategoryBadge(v.visitCategory)}
-    </td>
-
-    <td>${v.doctorName || "-"}</td>
-
-    <td>${v.visitTime || "-"}</td>
-
-    <td>${v.routeName || "-"}</td>
-
-    <td>${v.landmark || "-"}</td>
-
-    <td>${v.location || "-"}</td> 
-
-    <td>
-        ${
-            v.photo
-            ? `<img src="${v.photo}"
-                    style="width:55px;height:55px;
-                    object-fit:cover;
-                    border-radius:10px;
-                    cursor:pointer"
-                    onclick="window.open('${v.photo}','_blank')">`
-            : "-"
-        }
-    </td>
-
-    <td>${v.remarks || "-"}</td>
-
-</tr>
-`;
+  const rows = data.map((v) => {
+    const imgHtml = v.photo
+      ? `<img src="${v.photo}" loading="lazy" style="width:55px;height:55px;object-fit:cover;border-radius:10px;cursor:pointer" onclick="window.open('${v.photo}','_blank')">`
+      : "-";
+    return `
+      <tr>
+        <td>${v.visitDate || "-"}</td>
+        <td>${v.workingWith === "Individual" ? "Individual" : (v.workingWith || "-")}</td>
+        <td>${v.workingWith === "Individual" ? "-" : (v.workingPersonName || "-")}</td>
+        <td>${partyCategoryBadge(v.visitCategory)}</td>
+        <td>${v.doctorName || "-"}</td>
+        <td>${v.visitTime || "-"}</td>
+        <td>${v.routeName || "-"}</td>
+        <td>${v.landmark || "-"}</td>
+        <td>${v.location || "-"}</td>
+        <td>${imgHtml}</td>
+        <td>${v.remarks || "-"}</td>
+      </tr>
+    `;
   });
+  table.innerHTML = rows.join("");
 }
-
 function renderOrders(data) {
   const table = document.getElementById("ordersTable");
-  table.innerHTML = "";
-
   if (!data || data.length === 0) {
-    table.innerHTML = `
-      <tr>
-        <td colspan="9" class="text-center">
-          No orders found
-        </td>
-      </tr>
-    `;
+    table.innerHTML = `<tr><td colspan="9" class="text-center">No orders found</td></tr>`;
     return;
   }
-
-const groupedOrders = {};
-
-data.forEach(order => {
-
-  const key =
-    `${order.doctorId}_${order.distributorId}_${order.orderDate}_${order.remarks || ""}`;
-
-  if (!groupedOrders[key]) {
-    groupedOrders[key] = {
-      orderDate: order.orderDate,
-      visitCategory: order.visitCategory,
-      doctorName: order.doctorName,
-      distributorName: order.distributorName,
-      status: order.status || "Placed",
-      products: [],
-      totalAmount: 0,
-      totalPaidAmount: 0,
-      totalDueAmount: 0
-    };
-  }
-
-  groupedOrders[key].totalAmount +=
-    Number(order.orderAmount || 0);
-
-groupedOrders[key].totalPaidAmount +=
-  Number(order.paidAmount || 0);
-
-groupedOrders[key].totalDueAmount +=
-  Number(order.dueAmount || 0);
-
-  groupedOrders[key].products.push(`
-    <div class="border-top pt-2 mt-2">
-      <div class="fw-semibold">
-        ${order.productName || "-"}
+  const groupedOrders = {};
+  data.forEach((order) => {
+    const key = `${order.doctorId}_${order.distributorId}_${order.orderDate}_${order.remarks || ""}`;
+    if (!groupedOrders[key]) {
+      groupedOrders[key] = {
+        orderDate: order.orderDate,
+        visitCategory: order.visitCategory,
+        doctorName: order.doctorName,
+        distributorName: order.distributorName,
+        status: order.status || "Placed",
+        products: [],
+        totalAmount: 0,
+        totalPaidAmount: 0,
+        totalDueAmount: 0
+      };
+    }
+    groupedOrders[key].totalAmount += Number(order.orderAmount || 0);
+    groupedOrders[key].totalPaidAmount += Number(order.paidAmount || 0);
+    groupedOrders[key].totalDueAmount += Number(order.dueAmount || 0);
+    groupedOrders[key].products.push(`
+      <div class="border-top pt-2 mt-2">
+        <div class="fw-semibold">${order.productName || "-"}</div>
+        <div class="small text-muted">
+          Qty: ${order.orderQuantity || 0} | SP: ${money(order.sellingPrice)} | Amount: ${money(order.orderAmount)}
+        </div>
       </div>
-
-      <div class="small text-muted">
-        Qty: ${order.orderQuantity || 0}
-        |
-        SP: ${money(order.sellingPrice)}
-        |
-        Amount: ${money(order.orderAmount)}
-      </div>
-    </div>
-  `);
-});
-Object.values(groupedOrders).forEach(order => {
-
-  table.innerHTML += `
+    `);
+  });
+  const rows = Object.values(groupedOrders).map((order) => `
     <tr>
       <td>${order.orderDate || "-"}</td>
-
-      <td>
-        ${partyCategoryBadge(order.visitCategory)}
-      </td>
-
+      <td>${partyCategoryBadge(order.visitCategory)}</td>
       <td>${order.doctorName || "-"}</td>
-
       <td>${order.distributorName || "-"}</td>
-
-      <td style="min-width:280px">
-        ${order.products.join("")}
-      </td>
-
-<td>
-  <strong>${money(order.totalAmount)}</strong>
-</td>
-
-<td class="text-success fw-bold">
-  ${money(order.totalPaidAmount)}
-</td>
-
-<td class="text-danger fw-bold">
-  ${money(order.totalDueAmount)}
-</td>
-
-<td>${order.status || "-"}</td>
+      <td style="min-width:280px">${order.products.join("")}</td>
+      <td><strong>${money(order.totalAmount)}</strong></td>
+      <td class="text-success fw-bold">${money(order.totalPaidAmount)}</td>
+      <td class="text-danger fw-bold">${money(order.totalDueAmount)}</td>
+      <td>${order.status || "-"}</td>
     </tr>
-  `;
-});
+  `);
+  table.innerHTML = rows.join("");
 }
-
-function renderExpenses(data){
+function renderExpenses(data) {
   const table = document.getElementById("expensesTable");
-  table.innerHTML = "";
-
-  if(!data || data.length === 0){
+  if (!data || data.length === 0) {
     table.innerHTML = `<tr><td colspan="6" class="text-center">No expense found</td></tr>`;
     return;
   }
-
-  data.forEach(t => {
-    table.innerHTML += `
-      <tr>
-        <td>${t.travelDate || "-"}</td>
-        <td>${t.routeName || "-"}</td>
-        <td>${money(t.fareAmount)}</td>
-        <td>${money(t.daAmount)}</td>
-        <td>${money(t.otherAmount)}</td>
-        <td>${money(t.totalExpense)}</td>
-      </tr>
-    `;
-  });
+  const rows = data.map((t) => `
+    <tr>
+      <td>${t.travelDate || "-"}</td>
+      <td>${t.routeName || "-"}</td>
+      <td>${money(t.fareAmount)}</td>
+      <td>${money(t.daAmount)}</td>
+      <td>${money(t.otherAmount)}</td>
+      <td>${money(t.totalExpense)}</td>
+    </tr>
+  `);
+  table.innerHTML = rows.join("");
 }
-
-function renderTourPlans(data){
+function renderTourPlans(data) {
   const table = document.getElementById("tourPlansTable");
-  table.innerHTML = "";
-
-  if(!data || data.length === 0){
+  if (!data || data.length === 0) {
     table.innerHTML = `<tr><td colspan="10" class="text-center">No tour plans found</td></tr>`;
     return;
   }
-
-  data.forEach(t => {
-    table.innerHTML += `
-      <tr>
-        <td>${t.travelDate || "-"}</td>
-        <td>${t.headquarter || "-"}</td>
-        <td>${t.routeName || "-"}</td>
-        <td>${t.weekDay || "-"}</td>
-        <td>${t.travelKm || 0}</td>
-        <td>${money(t.fareAmount)}</td>
-        <td>${money(t.daAmount)}</td>
-        <td>${money(t.otherAmount)}</td>
-        <td>${money(t.totalExpense)}</td>
-        <td>${t.status || "-"}</td>
-      </tr>
-    `;
-  });
+  const rows = data.map((t) => `
+    <tr>
+      <td>${t.travelDate || "-"}</td>
+      <td>${t.headquarter || "-"}</td>
+      <td>${t.routeName || "-"}</td>
+      <td>${t.weekDay || "-"}</td>
+      <td>${t.travelKm || 0}</td>
+      <td>${money(t.fareAmount)}</td>
+      <td>${money(t.daAmount)}</td>
+      <td>${money(t.otherAmount)}</td>
+      <td>${money(t.totalExpense)}</td>
+      <td>${t.status || "-"}</td>
+    </tr>
+  `);
+  table.innerHTML = rows.join("");
 }
-
-function openTourPlans(){
+function openTourPlans() {
   const tabBtn = document.querySelector('[data-bs-target="#tourPlansTab"]');
-
-  if(tabBtn){
+  if (tabBtn) {
     new bootstrap.Tab(tabBtn).show();
-
     document.getElementById("tourPlansTab").scrollIntoView({
       behavior: "smooth",
       block: "start"
     });
   }
 }
-
 function renderTotalSales(data) {
   const table = document.getElementById("totalSalesTable");
-  table.innerHTML = "";
-
-  let totalSales = 0;
-  let totalCollection = 0;
-  let totalDue = 0;
-
   if (!data || data.length === 0) {
-    table.innerHTML = `
-      <tr>
-        <td colspan="10" class="text-center">
-          No sales history found
-        </td>
-      </tr>
-    `;
-
+    table.innerHTML = `<tr><td colspan="10" class="text-center">No sales history found</td></tr>`;
     updateSalesTotals(0, 0, 0);
     return;
   }
-
-  data.forEach(order => {
+  let totalSales = 0;
+  let totalCollection = 0;
+  let totalDue = 0;
+  const rows = data.map((order) => {
     const sale = Number(order.orderAmount || 0);
     const collection = Number(order.paidAmount || 0);
     const due = Number(order.dueAmount || 0);
-
     totalSales += sale;
     totalCollection += collection;
     totalDue += due;
-
-    table.innerHTML += `
+    return `
       <tr>
         <td>${order.orderDate || "-"}</td>
-
         <td>${order.orderTime || "-"}</td>
-
-        <td>
-          ${partyCategoryBadge(order.visitCategory)}
-        </td>
-
+        <td>${partyCategoryBadge(order.visitCategory)}</td>
         <td>${order.doctorName || "-"}</td>
-
         <td>${order.distributorName || "-"}</td>
-
         <td>${order.productName || "-"}</td>
-
         <td>${money(sale)}</td>
-
         <td>${money(collection)}</td>
-
         <td>${money(due)}</td>
-
         <td>${order.status || "-"}</td>
       </tr>
     `;
   });
-
-  updateSalesTotals(
-    totalSales,
-    totalCollection,
-    totalDue
-  );
+  table.innerHTML = rows.join("");
+  updateSalesTotals(totalSales, totalCollection, totalDue);
 }
-
 function updateSalesTotals(sales, collection, due) {
-
-  document.getElementById("filteredSales").innerText =
-    money(sales);
-
-  document.getElementById("filteredCollection").innerText =
-    money(collection);
-
-  document.getElementById("filteredDue").innerText =
-    money(due);
-
-  document.getElementById("grandSales").innerText =
-    money(sales);
-
-  document.getElementById("grandCollection").innerText =
-    money(collection);
-
-  document.getElementById("grandDue").innerText =
-    money(due);
+  document.getElementById("filteredSales").innerText = money(sales);
+  document.getElementById("filteredCollection").innerText = money(collection);
+  document.getElementById("filteredDue").innerText = money(due);
+  document.getElementById("grandSales").innerText = money(sales);
+  document.getElementById("grandCollection").innerText = money(collection);
+  document.getElementById("grandDue").innerText = money(due);
 }
-
-function renderLeaveHistory(leaves){
-
-    const table =
-        document.getElementById("leaveTableBody");
-
-    table.innerHTML = "";
-
-    if (!leaves || leaves.length === 0) {
-
-        table.innerHTML=`
-        <tr>
-            <td colspan="5" class="text-center">
-                No Leave History
-            </td>
-        </tr>`;
-        return;
-    }
-
-    leaves.forEach(l=>{
-
-        table.innerHTML += `
-        <tr>
-
-            <td>${l.leaveType || "-"}</td>
-
-            <td>${l.fromDate || "-"}</td>
-
-            <td>${l.toDate || "-"}</td>
-
-            <td>${l.reason || "-"}</td>
-
-            <td>
-                <span class="badge ${
-                    l.status==="Approved"
-                    ? "bg-success"
-                    : l.status==="Rejected"
-                    ? "bg-danger"
-                    : "bg-warning text-dark"
-                }">
-                    ${l.status}
-                </span>
-            </td>
-
-        </tr>`;
-    });
-
+function renderLeaveHistory(leaves) {
+  const table = document.getElementById("leaveTableBody");
+  if (!leaves || leaves.length === 0) {
+    table.innerHTML = `<tr><td colspan="5" class="text-center">No Leave History</td></tr>`;
+    return;
+  }
+  const rows = leaves.map((l) => {
+    const badgeClass =
+      l.status === "Approved"
+        ? "bg-success"
+        : l.status === "Rejected"
+        ? "bg-danger"
+        : "bg-warning text-dark";
+    return `
+      <tr>
+        <td>${l.leaveType || "-"}</td>
+        <td>${l.fromDate || "-"}</td>
+        <td>${l.toDate || "-"}</td>
+        <td>${l.reason || "-"}</td>
+        <td><span class="badge ${badgeClass}">${l.status}</span></td>
+      </tr>
+    `;
+  });
+  table.innerHTML = rows.join("");
 }
 </script>
-
 </body>
 </html>
