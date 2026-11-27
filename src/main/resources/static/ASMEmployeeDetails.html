@@ -367,6 +367,45 @@ if (!asmId || !token || role !== "ASM" || !employeeId) {
 }
 let cachedDetails = null;
 const renderedTabs = new Set(["#attendanceTab"]);
+function formatLocalDate(dateObj) {
+  const y = dateObj.getFullYear();
+  const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+  const d = String(dateObj.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+function getCurrentMonthRange() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), 1);
+  return {
+    fromDate: formatLocalDate(start),
+    toDate: formatLocalDate(now)
+  };
+}
+function isDateInRange(dateStr, fromDate, toDate) {
+  if (!dateStr) return false;
+  const normalized = String(dateStr).slice(0, 10);
+  if (fromDate && normalized < fromDate) return false;
+  if (toDate && normalized > toDate) return false;
+  return true;
+}
+function filterDetailsByDate(data, fromDate, toDate) {
+  if (!data || (!fromDate && !toDate)) return data;
+  return {
+    ...data,
+    attendance: (data.attendance || []).filter((a) => isDateInRange(a.attendanceDate, fromDate, toDate)),
+    visits: (data.visits || []).filter((v) => isDateInRange(v.visitDate, fromDate, toDate)),
+    orders: (data.orders || []).filter((o) => isDateInRange(o.orderDate, fromDate, toDate)),
+    tourPlans: (data.tourPlans || []).filter((t) => isDateInRange(t.travelDate, fromDate, toDate)),
+    leaves: (data.leaves || []).filter((l) => {
+      const f = l.fromDate ? String(l.fromDate).slice(0, 10) : "";
+      const t = l.toDate ? String(l.toDate).slice(0, 10) : f;
+      if (!f && !t) return false;
+      if (fromDate && t < fromDate) return false;
+      if (toDate && f > toDate) return false;
+      return true;
+    })
+  };
+}
 function money(value) {
   return "₹" + Number(value || 0).toLocaleString("en-IN");
 }
@@ -382,6 +421,9 @@ function partyCategoryBadge(category) {
 }
 window.onload = function () {
   bindTabEvents();
+  const range = getCurrentMonthRange();
+  document.getElementById("fromDate").value = range.fromDate;
+  document.getElementById("toDate").value = range.toDate;
   loadSummary();
   loadAllDetails();
 };
@@ -422,8 +464,8 @@ function renderTabBySelector(target, data) {
   }
 }
 function loadAllDetails() {
-  const fromDate = document.getElementById("fromDate").value;
-  const toDate = document.getElementById("toDate").value;
+  let fromDate = document.getElementById("fromDate").value;
+  let toDate = document.getElementById("toDate").value;
   if ((fromDate && !toDate) || (!fromDate && toDate)) {
     alert("Please select both From Date and To Date");
     return;
@@ -432,10 +474,14 @@ function loadAllDetails() {
     alert("To Date cannot be before From Date");
     return;
   }
-  let url = `${BASE_URL}/asm/employee-details-fast/${employeeId}`;
-  if (fromDate && toDate) {
-    url += `?fromDate=${encodeURIComponent(fromDate)}&toDate=${encodeURIComponent(toDate)}`;
+  if (!fromDate && !toDate) {
+    const range = getCurrentMonthRange();
+    fromDate = range.fromDate;
+    toDate = range.toDate;
+    document.getElementById("fromDate").value = fromDate;
+    document.getElementById("toDate").value = toDate;
   }
+  const url = `${BASE_URL}/asm/employee-details-fast/${employeeId}?fromDate=${encodeURIComponent(fromDate)}&toDate=${encodeURIComponent(toDate)}`;
   fetch(url)
     .then(async (res) => {
       if (!res.ok) {
@@ -443,7 +489,8 @@ function loadAllDetails() {
       }
       return res.json();
     })
-    .then((data) => {
+    .then((rawData) => {
+      const data = filterDetailsByDate(rawData, fromDate, toDate);
       cachedDetails = data;
       renderedTabs.clear();
       const emp = data.employee || {};
@@ -493,8 +540,9 @@ function loadSummary() {
     });
 }
 function resetFilter() {
-  document.getElementById("fromDate").value = "";
-  document.getElementById("toDate").value = "";
+  const range = getCurrentMonthRange();
+  document.getElementById("fromDate").value = range.fromDate;
+  document.getElementById("toDate").value = range.toDate;
   loadAllDetails();
 }
 function renderAttendance(data) {
